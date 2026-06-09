@@ -59,9 +59,11 @@ use crate::ValidationError;
 ///
 /// Marker trait for validation groups.
 /// 验证分组的标记trait。
-pub trait ValidationGroup: Any + Send + Sync + 'static {
+pub trait ValidationGroup: Any + Send + Sync + 'static
+{
     /// Get the group name / 获取分组名称
-    fn name(&self) -> &'static str {
+    fn name(&self) -> &'static str
+    {
         let type_name = std::any::type_name::<Self>();
         // Extract just the type name from the full path
         // 从完整路径中提取类型名称
@@ -69,7 +71,8 @@ pub trait ValidationGroup: Any + Send + Sync + 'static {
     }
 
     /// Get the group `TypeId` / `获取分组TypeId`
-    fn type_id(&self) -> TypeId {
+    fn type_id(&self) -> TypeId
+    {
         TypeId::of::<Self>()
     }
 }
@@ -85,16 +88,19 @@ impl ValidationGroup for DefaultGroup {}
 /// Represents a set of active validation groups.
 /// 表示一组活跃的验证分组。
 #[derive(Clone)]
-pub struct GroupSet {
+pub struct GroupSet
+{
     /// Active group type IDs / `活跃分组TypeId`
     groups: HashSet<TypeId>,
     /// Group names for display / 用于显示的分组名称
     names: HashSet<String>,
 }
 
-impl GroupSet {
+impl GroupSet
+{
     /// Create a new empty group set / 创建新的空分组集合
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             groups: HashSet::new(),
             names: HashSet::new(),
@@ -102,67 +108,81 @@ impl GroupSet {
     }
 
     /// Create with default group / 使用默认分组创建
-    pub fn default_group() -> Self {
+    pub fn default_group() -> Self
+    {
         Self::with_group(DefaultGroup)
     }
 
     /// Create with a single group / 使用单个分组创建
     #[allow(clippy::needless_pass_by_value)]
-    pub fn with_group<G: ValidationGroup>(group: G) -> Self {
+    pub fn with_group<G: ValidationGroup>(group: G) -> Self
+    {
         let mut set = Self::new();
         set.add(&group);
         set
     }
 
     /// Create with multiple groups / 使用多个分组创建
-    pub fn with_groups<G: ValidationGroup>(groups: impl IntoIterator<Item = G>) -> Self {
+    pub fn with_groups<G: ValidationGroup>(groups: impl IntoIterator<Item = G>) -> Self
+    {
         let mut set = Self::new();
-        for group in groups {
+        for group in groups
+        {
             set.add(&group);
         }
         set
     }
 
     /// Add a group / 添加分组
-    pub fn add<G: ValidationGroup>(&mut self, group: &G) {
+    pub fn add<G: ValidationGroup>(&mut self, group: &G)
+    {
         self.groups.insert(TypeId::of::<G>());
         self.names.insert(group.name().to_string());
     }
 
     /// Check if a group is active / 检查分组是否活跃
-    pub fn contains<G: ValidationGroup>(&self) -> bool {
+    pub fn contains<G: ValidationGroup>(&self) -> bool
+    {
         self.groups.contains(&TypeId::of::<G>())
     }
 
     /// Check if default group is active / 检查默认分组是否活跃
-    pub fn contains_default(&self) -> bool {
+    pub fn contains_default(&self) -> bool
+    {
         self.contains::<DefaultGroup>()
     }
 
     /// Check if the set is empty / 检查集合是否为空
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.groups.is_empty()
     }
 
     /// Get the number of groups / 获取分组数量
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.groups.len()
     }
 
     /// Get all group names / 获取所有分组名称
-    pub fn names(&self) -> &HashSet<String> {
+    pub fn names(&self) -> &HashSet<String>
+    {
         &self.names
     }
 }
 
-impl Default for GroupSet {
-    fn default() -> Self {
+impl Default for GroupSet
+{
+    fn default() -> Self
+    {
         Self::default_group()
     }
 }
 
-impl fmt::Debug for GroupSet {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Debug for GroupSet
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.debug_set().entries(self.names.iter()).finish()
     }
 }
@@ -197,33 +217,40 @@ impl fmt::Debug for GroupSet {
 ///     // Only validates fields marked with CreateGroup
 /// }
 /// ```
-pub struct Validated<T, G = DefaultGroup> {
+pub struct Validated<T, G = DefaultGroup>
+{
     /// The validated value / 已验证的值
     pub value: T,
     /// The validation group / 验证分组
     pub group: G,
 }
 
-impl<T, G> Validated<T, G> {
+impl<T, G> Validated<T, G>
+{
     /// Create a new Validated wrapper / 创建新的Validated包装器
-    pub fn new(value: T, group: G) -> Self {
+    pub fn new(value: T, group: G) -> Self
+    {
         Self { value, group }
     }
 
     /// Consume and return the inner value / 消耗并返回内部值
-    pub fn into_inner(self) -> T {
+    pub fn into_inner(self) -> T
+    {
         self.value
     }
 
     /// Get reference to the inner value / 获取内部值的引用
-    pub fn get(&self) -> &T {
+    pub fn get(&self) -> &T
+    {
         &self.value
     }
 }
 
-impl<T> Validated<T, DefaultGroup> {
+impl<T> Validated<T, DefaultGroup>
+{
     /// Create with default group / 使用默认分组创建
-    pub fn with_default(value: T) -> Self {
+    pub fn with_default(value: T) -> Self
+    {
         Self {
             value,
             group: DefaultGroup,
@@ -231,20 +258,25 @@ impl<T> Validated<T, DefaultGroup> {
     }
 }
 
-impl<T, G: ValidationGroup> Validated<T, G> {
+impl<T, G: ValidationGroup> Validated<T, G>
+{
     /// Get the group name / 获取分组名称
-    pub fn group_name(&self) -> &'static str {
+    pub fn group_name(&self) -> &'static str
+    {
         self.group.name()
     }
 
     /// Get the group `TypeId` / `获取分组TypeId`
-    pub fn group_type_id(&self) -> TypeId {
+    pub fn group_type_id(&self) -> TypeId
+    {
         ValidationGroup::type_id(&self.group)
     }
 }
 
-impl<T: fmt::Debug, G> fmt::Debug for Validated<T, G> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl<T: fmt::Debug, G> fmt::Debug for Validated<T, G>
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.debug_struct("Validated")
             .field("value", &self.value)
             .field("group", &std::any::type_name::<G>())
@@ -252,8 +284,10 @@ impl<T: fmt::Debug, G> fmt::Debug for Validated<T, G> {
     }
 }
 
-impl<T: Clone, G: Clone> Clone for Validated<T, G> {
-    fn clone(&self) -> Self {
+impl<T: Clone, G: Clone> Clone for Validated<T, G>
+{
+    fn clone(&self) -> Self
+    {
         Self {
             value: self.value.clone(),
             group: self.group.clone(),
@@ -269,7 +303,8 @@ where
     G: ValidationGroup,
 {
     /// Validate with group / 使用分组验证
-    pub fn validate_with_group(data: T, _group: G) -> Result<Self, ValidationError> {
+    pub fn validate_with_group(data: T, _group: G) -> Result<Self, ValidationError>
+    {
         // For now, just validate using the Validate trait
         // The group-based validation will be enhanced with macro support
         // 目前，仅使用Validate trait进行验证
@@ -314,7 +349,8 @@ macro_rules! validation_groups {
 }
 
 /// Common validation groups / 常用验证分组
-pub mod common {
+pub mod common
+{
     use super::ValidationGroup;
 
     /// Create operation group / 创建操作分组
@@ -354,18 +390,21 @@ pub use common::{CreateGroup, DeleteGroup, LoginGroup, RegisterGroup, UpdateGrou
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_group_set() {
+    fn test_group_set()
+    {
         let set = GroupSet::default_group();
         assert!(set.contains::<DefaultGroup>());
         assert_eq!(set.len(), 1);
     }
 
     #[test]
-    fn test_group_set_with_multiple() {
+    fn test_group_set_with_multiple()
+    {
         // Test with separate add calls since different group types can't be in the same vec
         let mut set = GroupSet::new();
         set.add(&CreateGroup);
@@ -377,14 +416,16 @@ mod tests {
     }
 
     #[test]
-    fn test_group_names() {
+    fn test_group_names()
+    {
         assert_eq!(DefaultGroup.name(), "DefaultGroup");
         assert_eq!(CreateGroup.name(), "CreateGroup");
         assert_eq!(UpdateGroup.name(), "UpdateGroup");
     }
 
     #[test]
-    fn test_validated_wrapper() {
+    fn test_validated_wrapper()
+    {
         let validated = Validated::with_default("test value");
         assert_eq!(validated.get(), &"test value");
         assert_eq!(validated.group_name(), "DefaultGroup");
@@ -392,7 +433,8 @@ mod tests {
     }
 
     #[test]
-    fn test_validation_groups_macro() {
+    fn test_validation_groups_macro()
+    {
         // The macro should generate the group types
         // 宏应该生成分组类型
         validation_groups! {

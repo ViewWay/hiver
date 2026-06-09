@@ -11,7 +11,8 @@ use crate::{
 /// Message splitter
 /// 消息拆分器
 #[async_trait]
-pub trait MessageSplitter: Send + Sync {
+pub trait MessageSplitter: Send + Sync
+{
     /// Split a message into multiple messages
     /// 将消息拆分为多个消息
     async fn split(&self, message: Message) -> Result<Vec<Message>>;
@@ -32,7 +33,8 @@ where
 {
     /// Create a new iterator splitter
     /// 创建新的迭代器拆分器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             _phantom: std::marker::PhantomData,
         }
@@ -43,7 +45,8 @@ impl<T> Default for IteratorSplitter<T>
 where
     T: Send + Sync + 'static,
 {
-    fn default() -> Self {
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -53,7 +56,8 @@ impl<T> MessageSplitter for IteratorSplitter<T>
 where
     T: Clone + Send + Sync + 'static,
 {
-    async fn split(&self, message: Message) -> Result<Vec<Message>> {
+    async fn split(&self, message: Message) -> Result<Vec<Message>>
+    {
         let items = message
             .get_payload::<Vec<T>>()
             .ok_or_else(|| IntegrationError::Payload("Payload is not a Vec".to_string()))?;
@@ -80,7 +84,8 @@ where
 {
     /// Create a new function splitter
     /// 创建新的函数拆分器
-    pub fn new(f: F) -> Self {
+    pub fn new(f: F) -> Self
+    {
         Self { f }
     }
 }
@@ -90,7 +95,8 @@ impl<F> MessageSplitter for FunctionSplitter<F>
 where
     F: Fn(Message) -> Result<Vec<Message>> + Send + Sync,
 {
-    async fn split(&self, message: Message) -> Result<Vec<Message>> {
+    async fn split(&self, message: Message) -> Result<Vec<Message>>
+    {
         (self.f)(message)
     }
 }
@@ -112,7 +118,8 @@ where
 {
     /// Create a new async function splitter
     /// 创建新的异步函数拆分器
-    pub fn new(f: F) -> Self {
+    pub fn new(f: F) -> Self
+    {
         Self { f }
     }
 }
@@ -123,22 +130,26 @@ where
     F: Fn(Message) -> Fut + Send + Sync,
     Fut: std::future::Future<Output = Result<Vec<Message>>> + Send,
 {
-    async fn split(&self, message: Message) -> Result<Vec<Message>> {
+    async fn split(&self, message: Message) -> Result<Vec<Message>>
+    {
         (self.f)(message).await
     }
 }
 
 /// Delimiter-based splitter for strings
 /// 基于分隔符的字符串拆分器
-pub struct DelimiterSplitter {
+pub struct DelimiterSplitter
+{
     delimiter: String,
     trim: bool,
 }
 
-impl DelimiterSplitter {
+impl DelimiterSplitter
+{
     /// Create a new delimiter splitter
     /// 创建新的分隔符拆分器
-    pub fn new(delimiter: impl Into<String>) -> Self {
+    pub fn new(delimiter: impl Into<String>) -> Self
+    {
         Self {
             delimiter: delimiter.into(),
             trim: false,
@@ -147,24 +158,30 @@ impl DelimiterSplitter {
 
     /// Enable trimming of split parts
     /// 启用分割部分的修剪
-    pub fn with_trim(mut self) -> Self {
+    pub fn with_trim(mut self) -> Self
+    {
         self.trim = true;
         self
     }
 }
 
 #[async_trait]
-impl MessageSplitter for DelimiterSplitter {
-    async fn split(&self, message: Message) -> Result<Vec<Message>> {
+impl MessageSplitter for DelimiterSplitter
+{
+    async fn split(&self, message: Message) -> Result<Vec<Message>>
+    {
         let text = message
             .get_payload::<String>()
             .ok_or_else(|| IntegrationError::Payload("Payload is not a String".to_string()))?;
 
-        let parts: Vec<String> = if self.trim {
+        let parts: Vec<String> = if self.trim
+        {
             text.split(&self.delimiter)
                 .map(|s| s.trim().to_string())
                 .collect()
-        } else {
+        }
+        else
+        {
             text.split(&self.delimiter).map(|s| s.to_string()).collect()
         };
 
@@ -178,21 +195,26 @@ impl MessageSplitter for DelimiterSplitter {
 
 /// Size-based splitter - splits collections into chunks
 /// 基于大小的拆分器 - 将集合拆分为块
-pub struct SizeSplitter {
+pub struct SizeSplitter
+{
     chunk_size: usize,
 }
 
-impl SizeSplitter {
+impl SizeSplitter
+{
     /// Create a new size splitter
     /// 创建新的大小拆分器
-    pub fn new(chunk_size: usize) -> Self {
+    pub fn new(chunk_size: usize) -> Self
+    {
         Self { chunk_size }
     }
 }
 
 #[async_trait]
-impl MessageSplitter for SizeSplitter {
-    async fn split(&self, message: Message) -> Result<Vec<Message>> {
+impl MessageSplitter for SizeSplitter
+{
+    async fn split(&self, message: Message) -> Result<Vec<Message>>
+    {
         let items = message
             .get_payload::<Vec<String>>()
             .ok_or_else(|| IntegrationError::Payload("Payload is not a Vec<String>".to_string()))?;
@@ -208,23 +230,29 @@ impl MessageSplitter for SizeSplitter {
 /// JSON 数组拆分器
 pub struct JsonArraySplitter;
 
-impl JsonArraySplitter {
+impl JsonArraySplitter
+{
     /// Create a new JSON array splitter
     /// 创建新的 JSON 数组拆分器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self
     }
 }
 
-impl Default for JsonArraySplitter {
-    fn default() -> Self {
+impl Default for JsonArraySplitter
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
 #[async_trait]
-impl MessageSplitter for JsonArraySplitter {
-    async fn split(&self, message: Message) -> Result<Vec<Message>> {
+impl MessageSplitter for JsonArraySplitter
+{
+    async fn split(&self, message: Message) -> Result<Vec<Message>>
+    {
         let json_str = message
             .get_payload::<String>()
             .ok_or_else(|| IntegrationError::Payload("Payload is not a String".to_string()))?;
@@ -250,43 +278,54 @@ impl MessageSplitter for JsonArraySplitter {
 
 /// Line splitter - splits by newlines
 /// 行拆分器 - 按换行符拆分
-pub struct LineSplitter {
+pub struct LineSplitter
+{
     skip_empty: bool,
 }
 
-impl LineSplitter {
+impl LineSplitter
+{
     /// Create a new line splitter
     /// 创建新的行拆分器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self { skip_empty: true }
     }
 
     /// Configure whether to skip empty lines
     /// 配置是否跳过空行
-    pub fn skip_empty(mut self, skip: bool) -> Self {
+    pub fn skip_empty(mut self, skip: bool) -> Self
+    {
         self.skip_empty = skip;
         self
     }
 }
 
-impl Default for LineSplitter {
-    fn default() -> Self {
+impl Default for LineSplitter
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
 #[async_trait]
-impl MessageSplitter for LineSplitter {
-    async fn split(&self, message: Message) -> Result<Vec<Message>> {
+impl MessageSplitter for LineSplitter
+{
+    async fn split(&self, message: Message) -> Result<Vec<Message>>
+    {
         let text = message
             .get_payload::<String>()
             .ok_or_else(|| IntegrationError::Payload("Payload is not a String".to_string()))?;
 
         let lines: Vec<String> = text.lines().map(|s| s.to_string()).collect();
 
-        let filtered = if self.skip_empty {
+        let filtered = if self.skip_empty
+        {
             lines.into_iter().filter(|l| !l.is_empty()).collect()
-        } else {
+        }
+        else
+        {
             lines
         };
 
@@ -305,11 +344,13 @@ impl MessageSplitter for LineSplitter {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[tokio::test]
-    async fn test_iterator_splitter() {
+    async fn test_iterator_splitter()
+    {
         let splitter = IteratorSplitter::<i32>::new();
 
         let data = vec![1, 2, 3, 4, 5];
@@ -323,7 +364,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_delimiter_splitter() {
+    async fn test_delimiter_splitter()
+    {
         let splitter = DelimiterSplitter::new(",").with_trim();
 
         let message = Message::new("apple, banana, cherry, date".to_string());
@@ -338,7 +380,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_size_splitter() {
+    async fn test_size_splitter()
+    {
         let splitter = SizeSplitter::new(2);
 
         let data = vec![
@@ -359,7 +402,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_json_array_splitter() {
+    async fn test_json_array_splitter()
+    {
         let splitter = JsonArraySplitter::new();
 
         let json = r#"["a", "b", "c"]"#;
@@ -371,7 +415,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_line_splitter() {
+    async fn test_line_splitter()
+    {
         let splitter = LineSplitter::new();
 
         let text = "line1\nline2\n\nline3\n\n\nline4";
@@ -387,7 +432,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_function_splitter() {
+    async fn test_function_splitter()
+    {
         let splitter = FunctionSplitter::new(|msg| {
             let text = msg.get_payload::<String>().unwrap_or_default();
             Ok(text

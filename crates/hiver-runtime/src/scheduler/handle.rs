@@ -10,24 +10,28 @@ use super::{RawTask, TaskId, gen_task_id, queue::LocalQueue};
 ///
 /// Uses eventfd on Linux and pipe on macOS/BSD for cross-platform support.
 /// 在Linux上使用eventfd，在macOS/BSD上使用pipe以支持跨平台。
-pub(crate) struct WakeChannel {
+pub(crate) struct WakeChannel
+{
     /// Read file descriptor / 读文件描述符
     read_fd: std::os::fd::RawFd,
     /// Write file descriptor / 写文件描述符
     write_fd: std::os::fd::RawFd,
 }
 
-impl WakeChannel {
+impl WakeChannel
+{
     /// Create a new wake channel
     /// 创建新的唤醒通道
-    pub(crate) fn new() -> std::io::Result<Self> {
+    pub(crate) fn new() -> std::io::Result<Self>
+    {
         #[cfg(target_os = "linux")]
         {
             // Use eventfd on Linux (more efficient)
             // 在Linux上使用eventfd（更高效）
             let fd = unsafe { libc::eventfd(0, libc::EFD_CLOEXEC | libc::EFD_NONBLOCK) };
 
-            if fd < 0 {
+            if fd < 0
+            {
                 return Err(std::io::Error::last_os_error());
             }
 
@@ -44,7 +48,8 @@ impl WakeChannel {
             let mut fds = [-1i32; 2];
             let result = unsafe { libc::pipe(fds.as_mut_ptr()) };
 
-            if result < 0 {
+            if result < 0
+            {
                 return Err(std::io::Error::last_os_error());
             }
 
@@ -69,7 +74,8 @@ impl WakeChannel {
 
     /// Send a wake-up notification
     /// 发送唤醒通知
-    pub(crate) fn notify(&self) {
+    pub(crate) fn notify(&self)
+    {
         #[cfg(target_os = "linux")]
         unsafe {
             // Write to eventfd
@@ -89,11 +95,13 @@ impl WakeChannel {
 
     /// Drain all pending notifications
     /// 排空所有挂起的通知
-    pub(crate) fn drain(&self) {
+    pub(crate) fn drain(&self)
+    {
         #[cfg(target_os = "linux")]
         unsafe {
             let mut val: u64 = 0;
-            while libc::read(self.read_fd, &mut val as *mut _ as *mut _, 8) == 8 {
+            while libc::read(self.read_fd, &mut val as *mut _ as *mut _, 8) == 8
+            {
                 // Successfully drained a notification
                 // 成功排空一个通知
             }
@@ -102,7 +110,8 @@ impl WakeChannel {
         #[cfg(not(target_os = "linux"))]
         unsafe {
             let mut val: u8 = 0;
-            while libc::read(self.read_fd, &mut val as *mut _ as *mut _, 1) == 1 {
+            while libc::read(self.read_fd, &mut val as *mut _ as *mut _, 1) == 1
+            {
                 // Successfully drained a notification
                 // 成功排空一个通知
             }
@@ -114,7 +123,8 @@ impl WakeChannel {
     ///
     /// Returns `true` if a notification was received, `false` on timeout.
     /// 如果收到通知返回 `true`，超时返回 `false`。
-    pub(crate) fn recv_timeout(&self, timeout: std::time::Duration) -> bool {
+    pub(crate) fn recv_timeout(&self, timeout: std::time::Duration) -> bool
+    {
         let mut tv = libc::timeval {
             tv_sec: timeout.as_secs() as _,
             tv_usec: timeout.subsec_micros() as _,
@@ -133,10 +143,13 @@ impl WakeChannel {
                 &mut tv,
             );
 
-            if n > 0 {
+            if n > 0
+            {
                 self.drain();
                 true
-            } else {
+            }
+            else
+            {
                 false
             }
         }
@@ -145,16 +158,20 @@ impl WakeChannel {
     /// Get the file descriptor for epoll/kqueue registration
     /// 获取用于epoll/kqueue注册的文件描述符
     #[must_use]
-    pub(crate) fn raw_fd(&self) -> std::os::fd::RawFd {
+    pub(crate) fn raw_fd(&self) -> std::os::fd::RawFd
+    {
         self.read_fd
     }
 }
 
-impl Drop for WakeChannel {
-    fn drop(&mut self) {
+impl Drop for WakeChannel
+{
+    fn drop(&mut self)
+    {
         #[cfg(target_os = "linux")]
         {
-            if self.read_fd >= 0 {
+            if self.read_fd >= 0
+            {
                 unsafe {
                     libc::close(self.read_fd);
                 }
@@ -163,12 +180,14 @@ impl Drop for WakeChannel {
 
         #[cfg(not(target_os = "linux"))]
         {
-            if self.read_fd >= 0 {
+            if self.read_fd >= 0
+            {
                 unsafe {
                     libc::close(self.read_fd);
                 }
             }
-            if self.write_fd >= 0 {
+            if self.write_fd >= 0
+            {
                 unsafe {
                     libc::close(self.write_fd);
                 }
@@ -183,7 +202,8 @@ impl Drop for WakeChannel {
 /// This handle can be cloned and shared across threads.
 /// 此句柄可以在线程间克隆和共享。
 #[derive(Clone)]
-pub struct SchedulerHandle {
+pub struct SchedulerHandle
+{
     /// Local queue for task injection
     /// 用于任务注入的本地队列
     queue: Arc<LocalQueue>,
@@ -192,16 +212,19 @@ pub struct SchedulerHandle {
     wake: Arc<WakeChannel>,
 }
 
-impl SchedulerHandle {
+impl SchedulerHandle
+{
     /// Create a new scheduler handle
     /// 创建新的调度器句柄
-    pub(crate) fn new(queue: Arc<LocalQueue>, wake: Arc<WakeChannel>) -> Self {
+    pub(crate) fn new(queue: Arc<LocalQueue>, wake: Arc<WakeChannel>) -> Self
+    {
         Self { queue, wake }
     }
 
     /// Create a new standalone handle (for runtime use)
     /// 创建新的独立句柄（用于运行时）
-    pub fn new_default() -> Self {
+    pub fn new_default() -> Self
+    {
         Self {
             queue: Arc::new(LocalQueue::new(256)),
             wake: Arc::new(WakeChannel::new().unwrap()),
@@ -210,20 +233,25 @@ impl SchedulerHandle {
 
     /// Submit a task to the scheduler
     /// 向调度器提交任务
-    pub fn submit(&self, task: RawTask) -> std::io::Result<()> {
-        if self.queue.push(task) {
+    pub fn submit(&self, task: RawTask) -> std::io::Result<()>
+    {
+        if self.queue.push(task)
+        {
             // Notify the scheduler that a new task is available
             // 通知调度器有新任务可用
             self.wake.notify();
             Ok(())
-        } else {
+        }
+        else
+        {
             Err(std::io::Error::new(std::io::ErrorKind::WouldBlock, "Scheduler queue is full"))
         }
     }
 
     /// Submit a task with an associated ID
     /// 提交带有关联ID的任务
-    pub fn submit_with_id(&self, _task_id: TaskId, task: RawTask) -> std::io::Result<()> {
+    pub fn submit_with_id(&self, _task_id: TaskId, task: RawTask) -> std::io::Result<()>
+    {
         // For now, just submit the task (ID tracking will be added later)
         // 目前只提交任务（ID跟踪稍后添加）
         self.submit(task)
@@ -232,26 +260,30 @@ impl SchedulerHandle {
     /// Get the file descriptor for wake-up events
     /// 获取唤醒事件的文件描述符
     #[must_use]
-    pub fn wake_fd(&self) -> std::os::fd::RawFd {
+    pub fn wake_fd(&self) -> std::os::fd::RawFd
+    {
         self.wake.raw_fd()
     }
 
     /// Handle wake-up events (call after epoll/kqueue returns)
     /// 处理唤醒事件（epoll/kqueue返回后调用）
-    pub fn handle_wake(&self) {
+    pub fn handle_wake(&self)
+    {
         self.wake.drain();
     }
 
     /// Generate a new task ID
     /// 生成新的任务ID
     #[must_use]
-    pub fn new_task_id(&self) -> TaskId {
+    pub fn new_task_id(&self) -> TaskId
+    {
         gen_task_id()
     }
 
     /// Get a waker for this handle
     /// 获取此句柄的waker
-    pub fn waker(&self) -> std::task::Waker {
+    pub fn waker(&self) -> std::task::Waker
+    {
         // Create a waker that will submit to the scheduler
         // 创建将提交到调度器的waker
         let handle_clone = self.clone();
@@ -275,7 +307,8 @@ impl SchedulerHandle {
     /// 1. Add a `HashMap<TaskId, Waker>` to the scheduler state
     /// 2. Store wakers when tasks are first polled
     /// 3. Clean up wakers when tasks complete
-    pub fn get_task_waker(&self, _id: u64) -> Option<std::task::Waker> {
+    pub fn get_task_waker(&self, _id: u64) -> Option<std::task::Waker>
+    {
         None
     }
 }
@@ -285,25 +318,29 @@ impl SchedulerHandle {
 static VTABLE: std::task::RawWakerVTable =
     std::task::RawWakerVTable::new(clone_waker, wake, wake_by_ref, drop_waker);
 
-unsafe fn clone_waker(data: *const ()) -> RawWaker {
+unsafe fn clone_waker(data: *const ()) -> RawWaker
+{
     let handle = Arc::from_raw(data as *const SchedulerHandle);
     let ptr = Arc::into_raw(handle.clone()) as *const ();
     RawWaker::new(ptr, &VTABLE)
 }
 
-unsafe fn wake(data: *const ()) {
+unsafe fn wake(data: *const ())
+{
     let handle = Arc::from_raw(data as *const SchedulerHandle);
     // Wake would submit a task - for now just notify
     // Wake会提交任务 - 目前只通知
     handle.wake.notify();
 }
 
-unsafe fn wake_by_ref(data: *const ()) {
+unsafe fn wake_by_ref(data: *const ())
+{
     let handle = &*(data as *const SchedulerHandle);
     handle.wake.notify();
 }
 
-unsafe fn drop_waker(data: *const ()) {
+unsafe fn drop_waker(data: *const ())
+{
     let _ = Arc::from_raw(data as *const SchedulerHandle);
 }
 
@@ -315,11 +352,13 @@ unsafe fn drop_waker(data: *const ()) {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_handle_submit() {
+    fn test_handle_submit()
+    {
         let queue = Arc::new(LocalQueue::new(16));
         let wake = Arc::new(WakeChannel::new().unwrap());
 
@@ -334,7 +373,8 @@ mod tests {
     }
 
     #[test]
-    fn test_wake_channel_notify_and_drain() {
+    fn test_wake_channel_notify_and_drain()
+    {
         let wake = WakeChannel::new().unwrap();
         assert!(wake.raw_fd() >= 0);
 
@@ -353,7 +393,8 @@ mod tests {
     }
 
     #[test]
-    fn test_wake_channel_multiple_notify() {
+    fn test_wake_channel_multiple_notify()
+    {
         let wake = WakeChannel::new().unwrap();
         wake.notify();
         wake.notify();
@@ -366,7 +407,8 @@ mod tests {
     }
 
     #[test]
-    fn test_recv_timeout_no_notification() {
+    fn test_recv_timeout_no_notification()
+    {
         let wake = WakeChannel::new().unwrap();
         let start = std::time::Instant::now();
         let received = wake.recv_timeout(std::time::Duration::from_millis(10));
@@ -377,7 +419,8 @@ mod tests {
     }
 
     #[test]
-    fn test_recv_timeout_with_notification() {
+    fn test_recv_timeout_with_notification()
+    {
         let wake = WakeChannel::new().unwrap();
         wake.notify();
 

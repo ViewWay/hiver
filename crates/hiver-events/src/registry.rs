@@ -30,7 +30,8 @@ use crate::{
 ///     boolean supportsSourceType(Class<?> sourceType);
 /// }
 /// ```
-pub trait EventFilter<E>: Send + Sync {
+pub trait EventFilter<E>: Send + Sync
+{
     /// Check if the event should be processed
     /// 检查是否应该处理事件
     fn should_process(&self, event: &E) -> bool;
@@ -41,8 +42,10 @@ pub trait EventFilter<E>: Send + Sync {
 #[derive(Debug, Clone, Copy)]
 pub struct PassAllFilter;
 
-impl<E> EventFilter<E> for PassAllFilter {
-    fn should_process(&self, _event: &E) -> bool {
+impl<E> EventFilter<E> for PassAllFilter
+{
+    fn should_process(&self, _event: &E) -> bool
+    {
         true
     }
 }
@@ -53,7 +56,8 @@ impl<E> EventFilter<E> for PassAllFilter {
 /// Represents a subscription to events of a specific type.
 /// 表示对特定类型事件的订阅。
 #[derive(Clone)]
-pub struct EventSubscription {
+pub struct EventSubscription
+{
     /// Event type ID
     /// 事件类型ID
     pub event_type_id: TypeId,
@@ -71,10 +75,12 @@ pub struct EventSubscription {
     pub order: i32,
 }
 
-impl EventSubscription {
+impl EventSubscription
+{
     /// Create new event subscription
     /// 创建新事件订阅
-    pub fn new<E: ApplicationEvent + 'static>(consumer_id: impl Into<String>) -> Self {
+    pub fn new<E: ApplicationEvent + 'static>(consumer_id: impl Into<String>) -> Self
+    {
         Self {
             event_type_id: TypeId::of::<E>(),
             event_type_name: std::any::type_name::<E>().to_string(),
@@ -85,15 +91,18 @@ impl EventSubscription {
 
     /// Create with order
     /// 创建带顺序的订阅
-    pub fn with_order(mut self, order: i32) -> Self {
+    pub fn with_order(mut self, order: i32) -> Self
+    {
         self.order = order;
         self
     }
 }
 
 #[allow(clippy::missing_fields_in_debug)]
-impl std::fmt::Debug for EventSubscription {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Debug for EventSubscription
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("EventSubscription")
             .field("event_type_name", &self.event_type_name)
             .field("consumer_id", &self.consumer_id)
@@ -122,7 +131,8 @@ impl std::fmt::Debug for EventSubscription {
 /// }
 /// ```
 #[derive(Default)]
-pub struct EventRegistry {
+pub struct EventRegistry
+{
     /// Map from event type ID to list of consumers
     /// 从事件类型ID到消费者列表的映射
     consumers: Arc<tokio::sync::RwLock<HashMap<TypeId, Vec<BoxedEventConsumer>>>>,
@@ -132,10 +142,12 @@ pub struct EventRegistry {
     subscriptions: Arc<tokio::sync::RwLock<HashMap<String, EventSubscription>>>,
 }
 
-impl EventRegistry {
+impl EventRegistry
+{
     /// Create new event registry
     /// 创建新事件注册表
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
@@ -165,7 +177,8 @@ impl EventRegistry {
 
     /// Register boxed consumer
     /// 注册装箱消费者
-    async fn register_boxed(&self, boxed: BoxedEventConsumer) {
+    async fn register_boxed(&self, boxed: BoxedEventConsumer)
+    {
         let event_type_id = boxed.event_type_id();
         let consumer_id = boxed.consumer_id().to_string();
         let order = boxed.order();
@@ -186,7 +199,8 @@ impl EventRegistry {
             .push(boxed.clone());
 
         // Sort by order
-        if let Some(list) = consumers.get_mut(&event_type_id) {
+        if let Some(list) = consumers.get_mut(&event_type_id)
+        {
             list.sort_by_key(BoxedEventConsumer::order);
         }
 
@@ -196,15 +210,19 @@ impl EventRegistry {
 
     /// Get consumers for event type
     /// 获取事件类型的消费者
-    pub async fn get_consumers(&self, type_name: &str) -> Vec<BoxedEventConsumer> {
+    pub async fn get_consumers(&self, type_name: &str) -> Vec<BoxedEventConsumer>
+    {
         // Note: This is a simplified lookup
         // In a full implementation, we'd need to resolve type_name to TypeId
         let consumers = self.consumers.read().await;
         let mut result = Vec::new();
 
-        for (_id, list) in consumers.iter() {
-            for consumer in list {
-                if consumer.event_type_name() == type_name {
+        for (_id, list) in consumers.iter()
+        {
+            for consumer in list
+            {
+                if consumer.event_type_name() == type_name
+                {
                     result.push(consumer.clone());
                 }
             }
@@ -215,7 +233,8 @@ impl EventRegistry {
 
     /// Get consumers by `TypeId`
     /// `通过TypeId获取消费者`
-    pub async fn get_consumers_by_id(&self, type_id: TypeId) -> Vec<BoxedEventConsumer> {
+    pub async fn get_consumers_by_id(&self, type_id: TypeId) -> Vec<BoxedEventConsumer>
+    {
         let consumers = self.consumers.read().await;
         consumers.get(&type_id).cloned().unwrap_or_default()
     }
@@ -240,7 +259,8 @@ impl EventRegistry {
         let type_id = TypeId::of::<E>();
         let mut consumers = self.consumers.write().await;
 
-        if let Some(list) = consumers.get_mut(&type_id) {
+        if let Some(list) = consumers.get_mut(&type_id)
+        {
             list.retain(|c| c.consumer_id() != consumer_id);
         }
 
@@ -270,14 +290,16 @@ impl EventRegistry {
 
     /// Get all subscriptions
     /// 获取所有订阅
-    pub async fn get_subscriptions(&self) -> Vec<EventSubscription> {
+    pub async fn get_subscriptions(&self) -> Vec<EventSubscription>
+    {
         let subscriptions = self.subscriptions.read().await;
         subscriptions.values().cloned().collect()
     }
 
     /// Clear all consumers
     /// 清除所有消费者
-    pub async fn clear(&self) {
+    pub async fn clear(&self)
+    {
         let mut consumers = self.consumers.write().await;
         consumers.clear();
         let mut subscriptions = self.subscriptions.write().await;
@@ -286,14 +308,17 @@ impl EventRegistry {
 
     /// Get total consumer count
     /// 获取总消费者数量
-    pub async fn total_count(&self) -> usize {
+    pub async fn total_count(&self) -> usize
+    {
         let consumers = self.consumers.read().await;
         consumers.values().map(Vec::len).sum()
     }
 }
 
-impl Clone for EventRegistry {
-    fn clone(&self) -> Self {
+impl Clone for EventRegistry
+{
+    fn clone(&self) -> Self
+    {
         Self {
             consumers: self.consumers.clone(),
             subscriptions: self.subscriptions.clone(),
@@ -314,7 +339,8 @@ impl Clone for EventRegistry {
 /// }
 /// ```
 #[async_trait::async_trait]
-pub trait ListenerRegistry {
+pub trait ListenerRegistry
+{
     /// Add a listener for an event type
     /// 为事件类型添加监听器
     async fn add_listener<E>(&self, listener: BoxedEventConsumer)
@@ -351,16 +377,19 @@ pub trait ListenerRegistry {
 ///     }
 /// }
 /// ```
-pub struct EventMulticaster {
+pub struct EventMulticaster
+{
     /// Event registry
     /// 事件注册表
     registry: EventRegistry,
 }
 
-impl EventMulticaster {
+impl EventMulticaster
+{
     /// Create new multicaster
     /// 创建新多播器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             registry: EventRegistry::new(),
         }
@@ -368,13 +397,15 @@ impl EventMulticaster {
 
     /// Create with registry
     /// 使用注册表创建
-    pub fn with_registry(registry: EventRegistry) -> Self {
+    pub fn with_registry(registry: EventRegistry) -> Self
+    {
         Self { registry }
     }
 
     /// Get registry
     /// 获取注册表
-    pub fn registry(&self) -> &EventRegistry {
+    pub fn registry(&self) -> &EventRegistry
+    {
         &self.registry
     }
 
@@ -387,12 +418,14 @@ impl EventMulticaster {
         let type_id = TypeId::of::<E>();
         let consumers = self.registry.get_consumers_by_id(type_id).await;
 
-        if consumers.is_empty() {
+        if consumers.is_empty()
+        {
             return Err(format!("No listeners for event: {}", std::any::type_name::<E>()));
         }
 
         // Process in order
-        for consumer in consumers {
+        for consumer in consumers
+        {
             if let Err(e) = consumer
                 .consumer()
                 .call_boxed(event as &(dyn std::any::Any + Send + Sync))
@@ -418,8 +451,10 @@ impl EventMulticaster {
     }
 }
 
-impl Default for EventMulticaster {
-    fn default() -> Self {
+impl Default for EventMulticaster
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -432,7 +467,8 @@ impl Default for EventMulticaster {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::{
         event::ContextRefreshedEvent,
@@ -440,41 +476,50 @@ mod tests {
     };
 
     #[derive(Clone, Debug)]
-    struct TestEvent {
+    struct TestEvent
+    {
         data: String,
     }
 
-    impl ApplicationEvent for TestEvent {
-        fn timestamp(&self) -> chrono::DateTime<chrono::Utc> {
+    impl ApplicationEvent for TestEvent
+    {
+        fn timestamp(&self) -> chrono::DateTime<chrono::Utc>
+        {
             chrono::Utc::now()
         }
 
-        fn as_any(&self) -> &dyn std::any::Any {
+        fn as_any(&self) -> &dyn std::any::Any
+        {
             self
         }
     }
 
     #[derive(Clone)]
-    struct TestListener {
+    struct TestListener
+    {
         name: String,
     }
 
-    impl EventListener<TestEvent> for TestListener {
-        fn on_event(&self, event: &TestEvent) -> Result<(), String> {
+    impl EventListener<TestEvent> for TestListener
+    {
+        fn on_event(&self, event: &TestEvent) -> Result<(), String>
+        {
             println!("{} received: {}", self.name, event.data);
             Ok(())
         }
     }
 
     #[tokio::test]
-    async fn test_registry_creation() {
+    async fn test_registry_creation()
+    {
         let registry = EventRegistry::new();
         assert_eq!(registry.total_count().await, 0);
         assert!(!registry.has_consumers::<TestEvent>().await);
     }
 
     #[tokio::test]
-    async fn test_register_consumer() {
+    async fn test_register_consumer()
+    {
         let registry = EventRegistry::new();
         let listener = TestListener {
             name: "test".to_string(),
@@ -487,7 +532,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_unregister() {
+    async fn test_unregister()
+    {
         let registry = EventRegistry::new();
         let listener = TestListener {
             name: "test".to_string(),
@@ -501,7 +547,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_multicaster() {
+    async fn test_multicaster()
+    {
         let multicaster = EventMulticaster::new();
         let listener = TestListener {
             name: "multicast_test".to_string(),
@@ -519,7 +566,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_context_event_multicast() {
+    async fn test_context_event_multicast()
+    {
         let multicaster = EventMulticaster::new();
 
         let listener = crate::listener::ListenerFn::new(|event: &ContextRefreshedEvent| {
@@ -536,7 +584,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_subscription() {
+    async fn test_subscription()
+    {
         let subscription = EventSubscription::new::<TestEvent>("test_consumer").with_order(10);
 
         assert_eq!(subscription.consumer_id, "test_consumer");

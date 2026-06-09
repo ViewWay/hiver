@@ -11,26 +11,31 @@ use crate::error::Error;
 /// Database row — map of column name to value
 /// 数据库行 — 列名到值的映射
 #[derive(Debug, Clone)]
-pub struct Row {
+pub struct Row
+{
     columns: Vec<(String, ColumnValue)>,
 }
 
-impl Row {
+impl Row
+{
     /// Create a new empty row
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             columns: Vec::new(),
         }
     }
 
     /// Add a column value
-    pub fn with_column(mut self, name: impl Into<String>, value: ColumnValue) -> Self {
+    pub fn with_column(mut self, name: impl Into<String>, value: ColumnValue) -> Self
+    {
         self.columns.push((name.into(), value));
         self
     }
 
     /// Get a column value by name
-    pub fn get(&self, name: &str) -> Option<&ColumnValue> {
+    pub fn get(&self, name: &str) -> Option<&ColumnValue>
+    {
         self.columns
             .iter()
             .find(|(col, _)| col == name)
@@ -38,21 +43,25 @@ impl Row {
     }
 
     /// Require a column value by name
-    pub fn require(&self, name: &str) -> Result<&ColumnValue, Error> {
+    pub fn require(&self, name: &str) -> Result<&ColumnValue, Error>
+    {
         self.get(name)
             .ok_or_else(|| Error::RowMapping(format!("column '{}' not found", name)))
     }
 
     /// Get as a specific type (with column name)
-    pub fn get_as<T: FromRowValue>(&self, name: &str) -> Result<T, Error> {
+    pub fn get_as<T: FromRowValue>(&self, name: &str) -> Result<T, Error>
+    {
         self.require(name)?
             .as_type()
             .ok_or_else(|| Error::RowMapping(format!("cannot convert column '{}'", name)))
     }
 
     /// Try to get a value, returning None if not found
-    pub fn try_get<T: FromRowValue>(&self, name: &str) -> Result<Option<T>, Error> {
-        match self.get(name) {
+    pub fn try_get<T: FromRowValue>(&self, name: &str) -> Result<Option<T>, Error>
+    {
+        match self.get(name)
+        {
             Some(v) => v
                 .as_type()
                 .map(Some)
@@ -62,22 +71,26 @@ impl Row {
     }
 
     /// Iterate over all columns
-    pub fn columns(&self) -> impl Iterator<Item = &(String, ColumnValue)> {
+    pub fn columns(&self) -> impl Iterator<Item = &(String, ColumnValue)>
+    {
         self.columns.iter()
     }
 
     /// Number of columns
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.columns.len()
     }
 
     /// Whether the row is empty
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.columns.is_empty()
     }
 
     /// Create a row from a list of (name, value) pairs
-    pub fn from_pairs(pairs: Vec<(impl Into<String>, ColumnValue)>) -> Self {
+    pub fn from_pairs(pairs: Vec<(impl Into<String>, ColumnValue)>) -> Self
+    {
         Self {
             columns: pairs.into_iter().map(|(n, v)| (n.into(), v)).collect(),
         }
@@ -85,7 +98,8 @@ impl Row {
 
     /// Deserialize this row into a type using serde JSON as intermediate
     /// 通过 serde JSON 作为中间格式将行反序列化为目标类型
-    pub fn deserialize<T: serde::de::DeserializeOwned>(&self) -> Result<T, Error> {
+    pub fn deserialize<T: serde::de::DeserializeOwned>(&self) -> Result<T, Error>
+    {
         let map: serde_json::Map<String, serde_json::Value> = self
             .columns
             .iter()
@@ -96,15 +110,19 @@ impl Row {
     }
 }
 
-impl Default for Row {
-    fn default() -> Self {
+impl Default for Row
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
 // Allow iterating rows directly as &Row → usable by RowMapper
-impl AsRef<Row> for Row {
-    fn as_ref(&self) -> &Row {
+impl AsRef<Row> for Row
+{
+    fn as_ref(&self) -> &Row
+    {
         self
     }
 }
@@ -112,7 +130,8 @@ impl AsRef<Row> for Row {
 /// Column value
 /// 列值
 #[derive(Debug, Clone)]
-pub enum ColumnValue {
+pub enum ColumnValue
+{
     /// Null value
     Null,
     /// Boolean value
@@ -139,20 +158,25 @@ pub enum ColumnValue {
     NaiveDateTime(chrono::NaiveDateTime),
 }
 
-impl ColumnValue {
+impl ColumnValue
+{
     /// Check if value is null
-    pub fn is_null(&self) -> bool {
+    pub fn is_null(&self) -> bool
+    {
         matches!(self, Self::Null)
     }
 
     /// Try to convert to a specific type
-    pub fn as_type<T: FromRowValue>(&self) -> Option<T> {
+    pub fn as_type<T: FromRowValue>(&self) -> Option<T>
+    {
         FromRowValue::from_column_value(self)
     }
 
     /// Convert to serde_json::Value for serialization
-    pub fn to_json_value(&self) -> serde_json::Value {
-        match self {
+    pub fn to_json_value(&self) -> serde_json::Value
+    {
+        match self
+        {
             Self::Null => serde_json::Value::Null,
             Self::Bool(v) => serde_json::json!(*v),
             Self::I8(v) => serde_json::json!(*v),
@@ -171,14 +195,18 @@ impl ColumnValue {
 
 /// Trait for types that can be extracted from a ColumnValue
 /// 可从 ColumnValue 中提取的类型的 trait
-pub trait FromRowValue: Sized {
+pub trait FromRowValue: Sized
+{
     /// Try to convert from ColumnValue
     fn from_column_value(val: &ColumnValue) -> Option<Self>;
 }
 
-impl FromRowValue for i32 {
-    fn from_column_value(val: &ColumnValue) -> Option<Self> {
-        match val {
+impl FromRowValue for i32
+{
+    fn from_column_value(val: &ColumnValue) -> Option<Self>
+    {
+        match val
+        {
             ColumnValue::I32(v) => Some(*v),
             ColumnValue::I8(v) => Some(*v as i32),
             ColumnValue::I16(v) => Some(*v as i32),
@@ -187,9 +215,12 @@ impl FromRowValue for i32 {
     }
 }
 
-impl FromRowValue for i64 {
-    fn from_column_value(val: &ColumnValue) -> Option<Self> {
-        match val {
+impl FromRowValue for i64
+{
+    fn from_column_value(val: &ColumnValue) -> Option<Self>
+    {
+        match val
+        {
             ColumnValue::I64(v) => Some(*v),
             ColumnValue::I32(v) => Some(*v as i64),
             ColumnValue::I8(v) => Some(*v as i64),
@@ -199,9 +230,12 @@ impl FromRowValue for i64 {
     }
 }
 
-impl FromRowValue for f64 {
-    fn from_column_value(val: &ColumnValue) -> Option<Self> {
-        match val {
+impl FromRowValue for f64
+{
+    fn from_column_value(val: &ColumnValue) -> Option<Self>
+    {
+        match val
+        {
             ColumnValue::F64(v) => Some(*v),
             ColumnValue::F32(v) => Some(*v as f64),
             _ => None,
@@ -209,9 +243,12 @@ impl FromRowValue for f64 {
     }
 }
 
-impl FromRowValue for String {
-    fn from_column_value(val: &ColumnValue) -> Option<Self> {
-        match val {
+impl FromRowValue for String
+{
+    fn from_column_value(val: &ColumnValue) -> Option<Self>
+    {
+        match val
+        {
             ColumnValue::String(v) => Some(v.clone()),
             ColumnValue::I32(v) => Some(v.to_string()),
             ColumnValue::I64(v) => Some(v.to_string()),
@@ -220,27 +257,36 @@ impl FromRowValue for String {
     }
 }
 
-impl FromRowValue for bool {
-    fn from_column_value(val: &ColumnValue) -> Option<Self> {
-        match val {
+impl FromRowValue for bool
+{
+    fn from_column_value(val: &ColumnValue) -> Option<Self>
+    {
+        match val
+        {
             ColumnValue::Bool(v) => Some(*v),
             _ => None,
         }
     }
 }
 
-impl FromRowValue for Vec<u8> {
-    fn from_column_value(val: &ColumnValue) -> Option<Self> {
-        match val {
+impl FromRowValue for Vec<u8>
+{
+    fn from_column_value(val: &ColumnValue) -> Option<Self>
+    {
+        match val
+        {
             ColumnValue::Bytes(v) => Some(v.clone()),
             _ => None,
         }
     }
 }
 
-impl FromRowValue for uuid::Uuid {
-    fn from_column_value(val: &ColumnValue) -> Option<Self> {
-        match val {
+impl FromRowValue for uuid::Uuid
+{
+    fn from_column_value(val: &ColumnValue) -> Option<Self>
+    {
+        match val
+        {
             ColumnValue::Uuid(v) => Some(*v),
             ColumnValue::String(s) => uuid::Uuid::parse_str(s).ok(),
             _ => None,
@@ -248,9 +294,12 @@ impl FromRowValue for uuid::Uuid {
     }
 }
 
-impl FromRowValue for chrono::NaiveDateTime {
-    fn from_column_value(val: &ColumnValue) -> Option<Self> {
-        match val {
+impl FromRowValue for chrono::NaiveDateTime
+{
+    fn from_column_value(val: &ColumnValue) -> Option<Self>
+    {
+        match val
+        {
             ColumnValue::NaiveDateTime(v) => Some(*v),
             _ => None,
         }
@@ -260,9 +309,12 @@ impl FromRowValue for chrono::NaiveDateTime {
 /// `Option<T>` extracts as `Some(T)` when the column value is present and non-null,
 /// or `None` when the column is `Null` or the inner conversion fails.
 /// `Option<T>` 在列值存在且非空时提取为 `Some(T)`，在列为 `Null` 或内部转换失败时为 `None`。
-impl<T: FromRowValue> FromRowValue for Option<T> {
-    fn from_column_value(val: &ColumnValue) -> Option<Self> {
-        match val {
+impl<T: FromRowValue> FromRowValue for Option<T>
+{
+    fn from_column_value(val: &ColumnValue) -> Option<Self>
+    {
+        match val
+        {
             ColumnValue::Null => Some(None),
             other => T::from_column_value(other).map(Some),
         }
@@ -272,7 +324,8 @@ impl<T: FromRowValue> FromRowValue for Option<T> {
 /// Column metadata
 /// 列元数据
 #[derive(Debug, Clone)]
-pub struct Column {
+pub struct Column
+{
     /// Column name
     pub name: String,
     /// Column type
@@ -285,7 +338,8 @@ pub struct Column {
 /// 列类型
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[allow(missing_docs)]
-pub enum ColumnType {
+pub enum ColumnType
+{
     Bool,
     I8,
     I16,
@@ -309,11 +363,13 @@ pub enum ColumnType {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_row_building() {
+    fn test_row_building()
+    {
         let row = Row::new()
             .with_column("id", ColumnValue::I64(1))
             .with_column("name", ColumnValue::String("Alice".into()));
@@ -324,13 +380,15 @@ mod tests {
     }
 
     #[test]
-    fn test_column_value_null() {
+    fn test_column_value_null()
+    {
         let value = ColumnValue::Null;
         assert!(value.is_null());
     }
 
     #[test]
-    fn test_column_value_as_type() {
+    fn test_column_value_as_type()
+    {
         assert_eq!(ColumnValue::I64(42).as_type::<i64>(), Some(42));
         assert_eq!(ColumnValue::F64(3.15).as_type::<f64>(), Some(3.15));
         assert_eq!(ColumnValue::Bool(true).as_type::<bool>(), Some(true));
@@ -338,11 +396,13 @@ mod tests {
     }
 
     #[test]
-    fn test_row_deserialize() {
+    fn test_row_deserialize()
+    {
         use serde::Deserialize;
 
         #[derive(Debug, Deserialize, PartialEq)]
-        struct User {
+        struct User
+        {
             id: i64,
             name: String,
         }
@@ -353,12 +413,9 @@ mod tests {
         ]);
 
         let user: User = row.deserialize().unwrap();
-        assert_eq!(
-            user,
-            User {
-                id: 42,
-                name: "Bob".into()
-            }
-        );
+        assert_eq!(user, User {
+            id: 42,
+            name: "Bob".into()
+        });
     }
 }

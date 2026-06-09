@@ -17,7 +17,8 @@ use crate::{
 /// A handler that processes a message and optionally returns a reply.
 /// 处理消息并可选返回回复的处理器。
 #[async_trait]
-pub trait MessageHandler: Send + Sync {
+pub trait MessageHandler: Send + Sync
+{
     /// Handle a message. Return `Some(reply)` to send a reply, `None` for one-way.
     async fn handle(&self, message: Message) -> Result<Option<Message>>;
 }
@@ -27,17 +28,18 @@ pub trait MessageHandler: Send + Sync {
 pub struct FnMessageHandler<F: Fn(Message) -> Result<Option<Message>> + Send + Sync>(pub F);
 
 #[async_trait]
-impl<F: Fn(Message) -> Result<Option<Message>> + Send + Sync> MessageHandler
-    for FnMessageHandler<F>
+impl<F: Fn(Message) -> Result<Option<Message>> + Send + Sync> MessageHandler for FnMessageHandler<F>
 {
-    async fn handle(&self, message: Message) -> Result<Option<Message>> {
+    async fn handle(&self, message: Message) -> Result<Option<Message>>
+    {
         (self.0)(message)
     }
 }
 
 /// Configuration for a ServiceActivator.
 /// ServiceActivator 的配置。
-pub struct ServiceActivatorConfig {
+pub struct ServiceActivatorConfig
+{
     /// Input channel name.
     pub input_channel: String,
     /// Output channel name (optional).
@@ -46,9 +48,11 @@ pub struct ServiceActivatorConfig {
     pub concurrency: usize,
 }
 
-impl ServiceActivatorConfig {
+impl ServiceActivatorConfig
+{
     /// Create config for a one-way activator.
-    pub fn one_way(input_channel: impl Into<String>) -> Self {
+    pub fn one_way(input_channel: impl Into<String>) -> Self
+    {
         Self {
             input_channel: input_channel.into(),
             output_channel: None,
@@ -60,7 +64,8 @@ impl ServiceActivatorConfig {
     pub fn request_reply(
         input_channel: impl Into<String>,
         output_channel: impl Into<String>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             input_channel: input_channel.into(),
             output_channel: Some(output_channel.into()),
@@ -69,7 +74,8 @@ impl ServiceActivatorConfig {
     }
 
     /// Set concurrency.
-    pub fn with_concurrency(mut self, n: usize) -> Self {
+    pub fn with_concurrency(mut self, n: usize) -> Self
+    {
         self.concurrency = n;
         self
     }
@@ -77,20 +83,23 @@ impl ServiceActivatorConfig {
 
 /// Service Activator endpoint.
 /// 服务激活器端点。
-pub struct ServiceActivator {
+pub struct ServiceActivator
+{
     config: ServiceActivatorConfig,
     handler: Arc<dyn MessageHandler>,
     output_channel: Option<Arc<dyn MessageChannel>>,
 }
 
-impl ServiceActivator {
+impl ServiceActivator
+{
     /// Create a new service activator.
     pub fn new(
         config: ServiceActivatorConfig,
         handler: impl MessageHandler + 'static,
         _input_channel: Arc<dyn MessageChannel>,
         output_channel: Option<Arc<dyn MessageChannel>>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             config,
             handler: Arc::new(handler),
@@ -99,10 +108,14 @@ impl ServiceActivator {
     }
 
     /// Process a single message through the handler.
-    pub async fn process_one(&self, message: Message) -> Result<()> {
-        match self.handler.handle(message).await? {
-            Some(reply) => {
-                if let Some(ref output) = self.output_channel {
+    pub async fn process_one(&self, message: Message) -> Result<()>
+    {
+        match self.handler.handle(message).await?
+        {
+            Some(reply) =>
+            {
+                if let Some(ref output) = self.output_channel
+                {
                     output.send(reply).await?;
                 }
                 Ok(())
@@ -112,37 +125,45 @@ impl ServiceActivator {
     }
 
     /// Input channel name.
-    pub fn input_channel_name(&self) -> &str {
+    pub fn input_channel_name(&self) -> &str
+    {
         &self.config.input_channel
     }
 
     /// Output channel name.
-    pub fn output_channel_name(&self) -> Option<&str> {
+    pub fn output_channel_name(&self) -> Option<&str>
+    {
         self.config.output_channel.as_deref()
     }
 
     /// Concurrency limit.
-    pub fn concurrency(&self) -> usize {
+    pub fn concurrency(&self) -> usize
+    {
         self.config.concurrency
     }
 }
 
 /// Builder for ServiceActivator.
 /// ServiceActivator 构建器。
-pub struct ServiceActivatorBuilder {
+pub struct ServiceActivatorBuilder
+{
     config: Option<ServiceActivatorConfig>,
     handler: Option<Arc<dyn MessageHandler>>,
 }
 
-impl Default for ServiceActivatorBuilder {
-    fn default() -> Self {
+impl Default for ServiceActivatorBuilder
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl ServiceActivatorBuilder {
+impl ServiceActivatorBuilder
+{
     /// Create a new builder.
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             config: None,
             handler: None,
@@ -150,13 +171,15 @@ impl ServiceActivatorBuilder {
     }
 
     /// Set configuration.
-    pub fn config(mut self, config: ServiceActivatorConfig) -> Self {
+    pub fn config(mut self, config: ServiceActivatorConfig) -> Self
+    {
         self.config = Some(config);
         self
     }
 
     /// Set handler.
-    pub fn handler(mut self, handler: impl MessageHandler + 'static) -> Self {
+    pub fn handler(mut self, handler: impl MessageHandler + 'static) -> Self
+    {
         self.handler = Some(Arc::new(handler));
         self
     }
@@ -166,7 +189,8 @@ impl ServiceActivatorBuilder {
         self,
         _input_channel: Arc<dyn MessageChannel>,
         output_channel: Option<Arc<dyn MessageChannel>>,
-    ) -> Result<ServiceActivator> {
+    ) -> Result<ServiceActivator>
+    {
         let config = self
             .config
             .ok_or_else(|| IntegrationError::Message("ServiceActivator config not set".into()))?;
@@ -183,18 +207,22 @@ impl ServiceActivatorBuilder {
 
 /// Gateway — typed request-reply interface over channels.
 /// 网关 —— 通道之上的类型化请求-回复接口。
-pub struct Gateway {
+pub struct Gateway
+{
     request_channel: Arc<dyn MessageChannel>,
 }
 
-impl Gateway {
+impl Gateway
+{
     /// Create a new gateway.
-    pub fn new(request_channel: Arc<dyn MessageChannel>) -> Self {
+    pub fn new(request_channel: Arc<dyn MessageChannel>) -> Self
+    {
         Self { request_channel }
     }
 
     /// Send a message through the gateway.
-    pub async fn send(&self, message: Message) -> Result<()> {
+    pub async fn send(&self, message: Message) -> Result<()>
+    {
         self.request_channel.send(message).await
     }
 }
@@ -207,11 +235,13 @@ impl Gateway {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::channel::PointToPointChannel;
 
-    fn echo_handler() -> impl MessageHandler {
+    fn echo_handler() -> impl MessageHandler
+    {
         FnMessageHandler(|msg: Message| {
             let payload = msg.get_payload::<String>().unwrap_or_default();
             Ok(Some(Message::new(format!("echo: {payload}"))))
@@ -219,7 +249,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_activator_one_way() {
+    async fn test_activator_one_way()
+    {
         let input = Arc::new(PointToPointChannel::new("in", 10));
         let activator = ServiceActivator::new(
             ServiceActivatorConfig::one_way("in"),
@@ -234,7 +265,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_activator_request_reply() {
+    async fn test_activator_request_reply()
+    {
         let input = Arc::new(PointToPointChannel::new("in", 10));
         let output = Arc::new(PointToPointChannel::new("out", 10));
         let activator = ServiceActivator::new(
@@ -252,7 +284,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_activator_builder() {
+    async fn test_activator_builder()
+    {
         let input = Arc::new(PointToPointChannel::new("in", 10));
         let output = Arc::new(PointToPointChannel::new("out", 10));
         let activator = ServiceActivatorBuilder::new()
@@ -265,7 +298,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_activator_builder_missing_config() {
+    async fn test_activator_builder_missing_config()
+    {
         let input = Arc::new(PointToPointChannel::new("in", 10));
         let result = ServiceActivatorBuilder::new()
             .handler(echo_handler())
@@ -274,7 +308,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_gateway_send() {
+    async fn test_gateway_send()
+    {
         let channel = Arc::new(PointToPointChannel::new("gw", 10));
         let gateway = Gateway::new(channel.clone());
         gateway

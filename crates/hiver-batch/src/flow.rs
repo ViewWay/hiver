@@ -12,7 +12,8 @@ use crate::{
 /// Decision outcome for step transitions.
 /// 步骤转换的决策结果。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum FlowDecision {
+pub enum FlowDecision
+{
     /// Continue to the named step.
     Next(String),
     /// Transition to a different branch.
@@ -27,7 +28,8 @@ pub enum FlowDecision {
 
 /// A condition that determines step transition.
 /// 决定步骤转换的条件。
-pub trait FlowCondition: Send + Sync {
+pub trait FlowCondition: Send + Sync
+{
     /// Evaluate the condition against the current exit status.
     fn evaluate(&self, exit_status: &ExitStatus) -> FlowDecision;
 }
@@ -36,24 +38,29 @@ pub trait FlowCondition: Send + Sync {
 /// 基于闭包的流程条件。
 pub struct FnFlowCondition<F: Fn(&ExitStatus) -> FlowDecision + Send + Sync>(pub F);
 
-impl<F: Fn(&ExitStatus) -> FlowDecision + Send + Sync> FlowCondition for FnFlowCondition<F> {
-    fn evaluate(&self, exit_status: &ExitStatus) -> FlowDecision {
+impl<F: Fn(&ExitStatus) -> FlowDecision + Send + Sync> FlowCondition for FnFlowCondition<F>
+{
+    fn evaluate(&self, exit_status: &ExitStatus) -> FlowDecision
+    {
         (self.0)(exit_status)
     }
 }
 
 /// Transitions to one step on COMPLETED, another on FAILED.
 /// COMPLETED 时转到下一步，FAILED 时转到另一步。
-pub struct OnCompletedOrFailed {
+pub struct OnCompletedOrFailed
+{
     /// Step on success.
     pub on_completed: String,
     /// Step on failure.
     pub on_failed: String,
 }
 
-impl OnCompletedOrFailed {
+impl OnCompletedOrFailed
+{
     /// Create a new conditional transition.
-    pub fn new(on_completed: impl Into<String>, on_failed: impl Into<String>) -> Self {
+    pub fn new(on_completed: impl Into<String>, on_failed: impl Into<String>) -> Self
+    {
         Self {
             on_completed: on_completed.into(),
             on_failed: on_failed.into(),
@@ -61,11 +68,16 @@ impl OnCompletedOrFailed {
     }
 }
 
-impl FlowCondition for OnCompletedOrFailed {
-    fn evaluate(&self, exit_status: &ExitStatus) -> FlowDecision {
-        if exit_status.code == "COMPLETED" {
+impl FlowCondition for OnCompletedOrFailed
+{
+    fn evaluate(&self, exit_status: &ExitStatus) -> FlowDecision
+    {
+        if exit_status.code == "COMPLETED"
+        {
             FlowDecision::Next(self.on_completed.clone())
-        } else {
+        }
+        else
+        {
             FlowDecision::Next(self.on_failed.clone())
         }
     }
@@ -74,7 +86,8 @@ impl FlowCondition for OnCompletedOrFailed {
 /// A step in a flow graph with associated transition rules.
 /// 流程图中的一个步骤及其关联的转换规则。
 #[derive(Debug, Clone)]
-pub struct FlowStep {
+pub struct FlowStep
+{
     /// Step name.
     pub name: String,
     /// Transitions: (exit_code_pattern, target_step_name).
@@ -83,9 +96,11 @@ pub struct FlowStep {
     pub default_next: Option<String>,
 }
 
-impl FlowStep {
+impl FlowStep
+{
     /// Create a new flow step.
-    pub fn new(name: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>) -> Self
+    {
         Self {
             name: name.into(),
             transitions: Vec::new(),
@@ -94,28 +109,36 @@ impl FlowStep {
     }
 
     /// Add a transition on a specific exit code.
-    pub fn on(mut self, exit_code: &str, next_step: impl Into<String>) -> Self {
+    pub fn on(mut self, exit_code: &str, next_step: impl Into<String>) -> Self
+    {
         self.transitions
             .push((exit_code.to_string(), next_step.into()));
         self
     }
 
     /// Set the default next step.
-    pub fn default_next(mut self, step: impl Into<String>) -> Self {
+    pub fn default_next(mut self, step: impl Into<String>) -> Self
+    {
         self.default_next = Some(step.into());
         self
     }
 
     /// Resolve the next step given an exit status.
-    pub fn resolve_next(&self, exit_status: &ExitStatus) -> FlowDecision {
-        for (pattern, target) in &self.transitions {
-            if pattern == "*" || pattern == &exit_status.code {
+    pub fn resolve_next(&self, exit_status: &ExitStatus) -> FlowDecision
+    {
+        for (pattern, target) in &self.transitions
+        {
+            if pattern == "*" || pattern == &exit_status.code
+            {
                 return FlowDecision::Next(target.clone());
             }
         }
-        if let Some(ref next) = self.default_next {
+        if let Some(ref next) = self.default_next
+        {
             FlowDecision::Next(next.clone())
-        } else {
+        }
+        else
+        {
             FlowDecision::End
         }
     }
@@ -124,67 +147,85 @@ impl FlowStep {
 /// A complete job flow definition.
 /// 完整的作业流程定义。
 #[derive(Debug, Clone, Default)]
-pub struct JobFlow {
+pub struct JobFlow
+{
     /// Ordered flow steps.
     pub steps: Vec<FlowStep>,
     /// Name of the first step.
     pub start: Option<String>,
 }
 
-impl JobFlow {
+impl JobFlow
+{
     /// Create a new empty flow.
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set the starting step.
-    pub fn start(mut self, step_name: impl Into<String>) -> Self {
+    pub fn start(mut self, step_name: impl Into<String>) -> Self
+    {
         self.start = Some(step_name.into());
         self
     }
 
     /// Add a flow step.
-    pub fn add_step(mut self, step: FlowStep) -> Self {
+    pub fn add_step(mut self, step: FlowStep) -> Self
+    {
         self.steps.push(step);
         self
     }
 
     /// Resolve the first step name.
-    pub fn first_step(&self) -> BatchResult<&str> {
-        if let Some(ref name) = self.start {
+    pub fn first_step(&self) -> BatchResult<&str>
+    {
+        if let Some(ref name) = self.start
+        {
             Ok(name.as_str())
-        } else if let Some(first) = self.steps.first() {
+        }
+        else if let Some(first) = self.steps.first()
+        {
             Ok(first.name.as_str())
-        } else {
+        }
+        else
+        {
             Err(BatchError::Other("Flow has no steps".into()))
         }
     }
 
     /// Find a flow step by name.
-    pub fn find_step(&self, name: &str) -> Option<&FlowStep> {
+    pub fn find_step(&self, name: &str) -> Option<&FlowStep>
+    {
         self.steps.iter().find(|s| s.name == name)
     }
 
     /// Execute the flow: walk through steps using transition rules.
-    pub fn execute(&self, executor: &mut dyn StepExecutor) -> BatchResult<ExitStatus> {
+    pub fn execute(&self, executor: &mut dyn StepExecutor) -> BatchResult<ExitStatus>
+    {
         let mut current = self.first_step()?.to_string();
 
-        loop {
+        loop
+        {
             let step_result = executor.execute_step(&current)?;
 
-            let flow_step = match self.find_step(&current) {
+            let flow_step = match self.find_step(&current)
+            {
                 Some(s) => s,
                 None => return Ok(step_result),
             };
 
-            match flow_step.resolve_next(&step_result) {
-                FlowDecision::Next(next) => {
+            match flow_step.resolve_next(&step_result)
+            {
+                FlowDecision::Next(next) =>
+                {
                     current = next;
                 },
                 FlowDecision::End => return Ok(ExitStatus::completed()),
                 FlowDecision::Stop => return Ok(ExitStatus::stopped()),
                 FlowDecision::Fail => return Ok(ExitStatus::failed()),
-                FlowDecision::Branch(name) => {
+                FlowDecision::Branch(name) =>
+                {
                     current = name;
                 },
             }
@@ -195,37 +236,44 @@ impl JobFlow {
 /// Builder for `JobFlow`.
 /// JobFlow 的构建器。
 #[derive(Default)]
-pub struct FlowBuilder {
+pub struct FlowBuilder
+{
     flow: JobFlow,
 }
 
-impl FlowBuilder {
+impl FlowBuilder
+{
     /// Create a new flow builder.
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set the starting step.
-    pub fn start(mut self, step_name: impl Into<String>) -> Self {
+    pub fn start(mut self, step_name: impl Into<String>) -> Self
+    {
         self.flow.start = Some(step_name.into());
         self
     }
 
     /// Add a flow step.
-    pub fn add_step(mut self, step: FlowStep) -> Self {
+    pub fn add_step(mut self, step: FlowStep) -> Self
+    {
         self.flow.steps.push(step);
         self
     }
 
     /// Build the flow.
-    pub fn build(self) -> JobFlow {
+    pub fn build(self) -> JobFlow
+    {
         self.flow
     }
 }
 
 /// Trait for executing steps in a flow.
 /// 在流程中执行步骤的 trait。
-pub trait StepExecutor {
+pub trait StepExecutor
+{
     /// Execute a step by name and return its exit status.
     fn execute_step(&mut self, step_name: &str) -> BatchResult<ExitStatus>;
 }
@@ -238,11 +286,13 @@ pub trait StepExecutor {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_flow_step_resolve() {
+    fn test_flow_step_resolve()
+    {
         let step = FlowStep::new("step1")
             .on("COMPLETED", "step2")
             .on("FAILED", "error-handler");
@@ -255,7 +305,8 @@ mod tests {
     }
 
     #[test]
-    fn test_flow_step_wildcard() {
+    fn test_flow_step_wildcard()
+    {
         let step = FlowStep::new("step1").on("*", "step2");
         assert_eq!(
             step.resolve_next(&ExitStatus::new("ANYTHING")),
@@ -264,19 +315,22 @@ mod tests {
     }
 
     #[test]
-    fn test_flow_step_default_next() {
+    fn test_flow_step_default_next()
+    {
         let step = FlowStep::new("step1").default_next("step2");
         assert_eq!(step.resolve_next(&ExitStatus::completed()), FlowDecision::Next("step2".into()));
     }
 
     #[test]
-    fn test_flow_step_no_match_ends() {
+    fn test_flow_step_no_match_ends()
+    {
         let step = FlowStep::new("step1");
         assert_eq!(step.resolve_next(&ExitStatus::completed()), FlowDecision::End);
     }
 
     #[test]
-    fn test_on_completed_or_failed() {
+    fn test_on_completed_or_failed()
+    {
         let cond = OnCompletedOrFailed::new("success-step", "failure-step");
         assert_eq!(
             cond.evaluate(&ExitStatus::completed()),
@@ -286,10 +340,13 @@ mod tests {
     }
 
     #[test]
-    fn test_flow_execute_simple() {
+    fn test_flow_execute_simple()
+    {
         struct SimpleExecutor;
-        impl StepExecutor for SimpleExecutor {
-            fn execute_step(&mut self, _name: &str) -> BatchResult<ExitStatus> {
+        impl StepExecutor for SimpleExecutor
+        {
+            fn execute_step(&mut self, _name: &str) -> BatchResult<ExitStatus>
+            {
                 Ok(ExitStatus::completed())
             }
         }
@@ -306,22 +363,30 @@ mod tests {
     }
 
     #[test]
-    fn test_flow_no_steps() {
+    fn test_flow_no_steps()
+    {
         let flow = JobFlow::new();
         assert!(flow.first_step().is_err());
     }
 
     #[test]
-    fn test_flow_stop() {
-        struct StopThenCompleteExecutor {
+    fn test_flow_stop()
+    {
+        struct StopThenCompleteExecutor
+        {
             count: usize,
         }
-        impl StepExecutor for StopThenCompleteExecutor {
-            fn execute_step(&mut self, _name: &str) -> BatchResult<ExitStatus> {
+        impl StepExecutor for StopThenCompleteExecutor
+        {
+            fn execute_step(&mut self, _name: &str) -> BatchResult<ExitStatus>
+            {
                 self.count += 1;
-                if self.count == 1 {
+                if self.count == 1
+                {
                     Ok(ExitStatus::stopped())
-                } else {
+                }
+                else
+                {
                     Ok(ExitStatus::completed())
                 }
             }

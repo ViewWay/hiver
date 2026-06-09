@@ -10,7 +10,8 @@ use serde::{Deserialize, Serialize};
 /// Details of a single route mapping.
 /// 单个路由映射的详情。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MappingDetail {
+pub struct MappingDetail
+{
     /// HTTP method (GET, POST, etc.).
     /// HTTP 方法。
     pub method: String,
@@ -25,7 +26,8 @@ pub struct MappingDetail {
 /// Response for /actuator/mappings.
 /// /actuator/mappings 的响应。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MappingsResponse {
+pub struct MappingsResponse
+{
     /// Application context label.
     /// 应用上下文标签。
     pub context: String,
@@ -37,14 +39,17 @@ pub struct MappingsResponse {
 /// Builder for route mappings.
 /// 路由映射构建器。
 #[derive(Debug, Clone, Default)]
-pub struct MappingsBuilder {
+pub struct MappingsBuilder
+{
     mappings: Vec<MappingDetail>,
 }
 
-impl MappingsBuilder {
+impl MappingsBuilder
+{
     /// Create a new builder.
     /// 创建新构建器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
@@ -55,7 +60,8 @@ impl MappingsBuilder {
         method: impl Into<String>,
         pattern: impl Into<String>,
         handler: impl Into<String>,
-    ) -> Self {
+    ) -> Self
+    {
         self.mappings.push(MappingDetail {
             method: method.into(),
             pattern: pattern.into(),
@@ -66,7 +72,8 @@ impl MappingsBuilder {
 
     /// Build the response.
     /// 构建响应。
-    pub fn build(self) -> MappingsResponse {
+    pub fn build(self) -> MappingsResponse
+    {
         MappingsResponse {
             context: "application".to_string(),
             mappings: self.mappings,
@@ -82,11 +89,13 @@ impl MappingsBuilder {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_mappings_builder() {
+    fn test_mappings_builder()
+    {
         let resp = MappingsBuilder::new()
             .mapping("GET", "/api/users", "UserController::list")
             .mapping("POST", "/api/users", "UserController::create")
@@ -99,7 +108,8 @@ mod tests {
     }
 
     #[test]
-    fn test_mappings_serialize() {
+    fn test_mappings_serialize()
+    {
         let resp = MappingsBuilder::new().mapping("GET", "/", "index").build();
         let json = serde_json::to_string(&resp).unwrap();
         assert!(json.contains("\"mappings\""));

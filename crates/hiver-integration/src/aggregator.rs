@@ -14,7 +14,8 @@ use crate::{
 /// Message aggregator
 /// 消息聚合器
 #[async_trait]
-pub trait MessageAggregator: Send + Sync {
+pub trait MessageAggregator: Send + Sync
+{
     /// Add a message to the aggregation
     /// 添加消息到聚合
     async fn add(&self, message: Message) -> Result<()>;
@@ -34,15 +35,18 @@ pub trait MessageAggregator: Send + Sync {
 
 /// Count-based aggregator - aggregates a fixed number of messages
 /// 基于计数的聚合器 - 聚合固定数量的消息
-pub struct CountAggregator {
+pub struct CountAggregator
+{
     target: usize,
     messages: Arc<RwLock<Vec<Message>>>,
 }
 
-impl CountAggregator {
+impl CountAggregator
+{
     /// Create a new count-based aggregator
     /// 创建新的基于计数的聚合器
-    pub fn new(count: usize) -> Self {
+    pub fn new(count: usize) -> Self
+    {
         Self {
             target: count,
             messages: Arc::new(RwLock::new(Vec::new())),
@@ -51,26 +55,32 @@ impl CountAggregator {
 
     /// Get current count
     /// 获取当前计数
-    pub async fn count(&self) -> usize {
+    pub async fn count(&self) -> usize
+    {
         self.messages.read().await.len()
     }
 }
 
 #[async_trait]
-impl MessageAggregator for CountAggregator {
-    async fn add(&self, message: Message) -> Result<()> {
+impl MessageAggregator for CountAggregator
+{
+    async fn add(&self, message: Message) -> Result<()>
+    {
         let mut messages = self.messages.write().await;
         messages.push(message);
         Ok(())
     }
 
-    async fn is_complete(&self) -> bool {
+    async fn is_complete(&self) -> bool
+    {
         self.messages.read().await.len() >= self.target
     }
 
-    async fn result(&self) -> Result<Message> {
+    async fn result(&self) -> Result<Message>
+    {
         let messages = self.messages.read().await;
-        if messages.is_empty() {
+        if messages.is_empty()
+        {
             return Err(IntegrationError::Aggregation("No messages to aggregate".to_string()));
         }
 
@@ -85,23 +95,27 @@ impl MessageAggregator for CountAggregator {
         Ok(Message::clone(base).clone_with_payload(aggregated))
     }
 
-    async fn reset(&self) {
+    async fn reset(&self)
+    {
         self.messages.write().await.clear();
     }
 }
 
 /// Timeout-based aggregator - aggregates within a time window
 /// 基于超时的聚合器 - 在时间窗口内聚合
-pub struct TimeoutAggregator {
+pub struct TimeoutAggregator
+{
     duration: std::time::Duration,
     messages: Arc<RwLock<Vec<Message>>>,
     deadline: Arc<RwLock<Option<std::time::Instant>>>,
 }
 
-impl TimeoutAggregator {
+impl TimeoutAggregator
+{
     /// Create a new timeout-based aggregator
     /// 创建新的基于超时的聚合器
-    pub fn new(duration: std::time::Duration) -> Self {
+    pub fn new(duration: std::time::Duration) -> Self
+    {
         Self {
             duration,
             messages: Arc::new(RwLock::new(Vec::new())),
@@ -111,27 +125,35 @@ impl TimeoutAggregator {
 
     /// Reset and start a new timeout window
     /// 重置并启动新的超时窗口
-    pub async fn start_window(&self) {
+    pub async fn start_window(&self)
+    {
         *self.deadline.write().await = Some(std::time::Instant::now());
     }
 
     /// Check if the timeout has expired
     /// 检查超时是否已过期
-    pub async fn is_expired(&self) -> bool {
-        if let Some(deadline) = *self.deadline.read().await {
+    pub async fn is_expired(&self) -> bool
+    {
+        if let Some(deadline) = *self.deadline.read().await
+        {
             deadline.elapsed() > self.duration
-        } else {
+        }
+        else
+        {
             false
         }
     }
 }
 
 #[async_trait]
-impl MessageAggregator for TimeoutAggregator {
-    async fn add(&self, message: Message) -> Result<()> {
+impl MessageAggregator for TimeoutAggregator
+{
+    async fn add(&self, message: Message) -> Result<()>
+    {
         // Start window on first message if not started
         // 如果未启动，在第一条消息时启动窗口
-        if self.deadline.read().await.is_none() {
+        if self.deadline.read().await.is_none()
+        {
             self.start_window().await;
         }
 
@@ -139,13 +161,16 @@ impl MessageAggregator for TimeoutAggregator {
         Ok(())
     }
 
-    async fn is_complete(&self) -> bool {
+    async fn is_complete(&self) -> bool
+    {
         self.is_expired().await
     }
 
-    async fn result(&self) -> Result<Message> {
+    async fn result(&self) -> Result<Message>
+    {
         let messages = self.messages.read().await;
-        if messages.is_empty() {
+        if messages.is_empty()
+        {
             return Err(IntegrationError::Aggregation("No messages to aggregate".to_string()));
         }
 
@@ -158,7 +183,8 @@ impl MessageAggregator for TimeoutAggregator {
         Ok(Message::clone(base).clone_with_payload(aggregated))
     }
 
-    async fn reset(&self) {
+    async fn reset(&self)
+    {
         self.messages.write().await.clear();
         *self.deadline.write().await = None;
     }
@@ -166,15 +192,18 @@ impl MessageAggregator for TimeoutAggregator {
 
 /// Correlation aggregator - aggregates messages with the same correlation ID
 /// 关联聚合器 - 聚合具有相同关联 ID 的消息
-pub struct CorrelationAggregator {
+pub struct CorrelationAggregator
+{
     target_per_group: usize,
     groups: Arc<RwLock<HashMap<uuid::Uuid, Vec<Message>>>>,
 }
 
-impl CorrelationAggregator {
+impl CorrelationAggregator
+{
     /// Create a new correlation aggregator
     /// 创建新的关联聚合器
-    pub fn new(target_per_group: usize) -> Self {
+    pub fn new(target_per_group: usize) -> Self
+    {
         Self {
             target_per_group,
             groups: Arc::new(RwLock::new(HashMap::new())),
@@ -183,7 +212,8 @@ impl CorrelationAggregator {
 
     /// Get groups that are complete
     /// 获取已完成的组
-    pub async fn complete_groups(&self) -> Vec<uuid::Uuid> {
+    pub async fn complete_groups(&self) -> Vec<uuid::Uuid>
+    {
         let groups = self.groups.read().await;
         groups
             .iter()
@@ -194,22 +224,26 @@ impl CorrelationAggregator {
 
     /// Get messages for a specific correlation ID
     /// 获取特定关联 ID 的消息
-    pub async fn get_group(&self, correlation_id: uuid::Uuid) -> Vec<Message> {
+    pub async fn get_group(&self, correlation_id: uuid::Uuid) -> Vec<Message>
+    {
         let groups = self.groups.read().await;
         groups.get(&correlation_id).cloned().unwrap_or_default()
     }
 
     /// Remove a group
     /// 移除组
-    pub async fn remove_group(&self, correlation_id: uuid::Uuid) -> Option<Vec<Message>> {
+    pub async fn remove_group(&self, correlation_id: uuid::Uuid) -> Option<Vec<Message>>
+    {
         let mut groups = self.groups.write().await;
         groups.remove(&correlation_id)
     }
 }
 
 #[async_trait]
-impl MessageAggregator for CorrelationAggregator {
-    async fn add(&self, message: Message) -> Result<()> {
+impl MessageAggregator for CorrelationAggregator
+{
+    async fn add(&self, message: Message) -> Result<()>
+    {
         let correlation_id = message.correlation_id().ok_or_else(|| {
             IntegrationError::Aggregation("Message has no correlation ID".to_string())
         })?;
@@ -219,20 +253,24 @@ impl MessageAggregator for CorrelationAggregator {
         Ok(())
     }
 
-    async fn is_complete(&self) -> bool {
+    async fn is_complete(&self) -> bool
+    {
         let groups = self.groups.read().await;
         groups
             .values()
             .any(|msgs| msgs.len() >= self.target_per_group)
     }
 
-    async fn result(&self) -> Result<Message> {
+    async fn result(&self) -> Result<Message>
+    {
         let groups = self.groups.read().await;
 
         // Find first complete group
         // 查找第一个完整的组
-        for (_correlation_id, messages) in groups.iter() {
-            if messages.len() >= self.target_per_group {
+        for (_correlation_id, messages) in groups.iter()
+        {
+            if messages.len() >= self.target_per_group
+            {
                 let base = &messages[0];
                 let aggregated: Vec<String> = messages
                     .iter()
@@ -246,7 +284,8 @@ impl MessageAggregator for CorrelationAggregator {
         Err(IntegrationError::Aggregation("No complete groups".to_string()))
     }
 
-    async fn reset(&self) {
+    async fn reset(&self)
+    {
         self.groups.write().await.clear();
     }
 }
@@ -281,20 +320,23 @@ where
 
     /// Get all group keys
     /// 获取所有组键
-    pub async fn keys(&self) -> Vec<K> {
+    pub async fn keys(&self) -> Vec<K>
+    {
         self.groups.read().await.keys().cloned().collect()
     }
 
     /// Get messages for a specific group
     /// 获取特定组的消息
-    pub async fn get_group(&self, key: &K) -> Vec<Message> {
+    pub async fn get_group(&self, key: &K) -> Vec<Message>
+    {
         let groups = self.groups.read().await;
         groups.get(key).cloned().unwrap_or_default()
     }
 
     /// Check if a specific group is complete
     /// 检查特定组是否完成
-    pub async fn is_group_complete(&self, key: &K) -> bool {
+    pub async fn is_group_complete(&self, key: &K) -> bool
+    {
         let groups = self.groups.read().await;
         groups
             .get(key)
@@ -307,7 +349,8 @@ impl<K> MessageAggregator for GroupAggregator<K>
 where
     K: Clone + std::hash::Hash + Eq + Send + Sync + 'static,
 {
-    async fn add(&self, message: Message) -> Result<()> {
+    async fn add(&self, message: Message) -> Result<()>
+    {
         let key = (self.key_func)(&message).ok_or_else(|| {
             IntegrationError::Aggregation("Key function returned None".to_string())
         })?;
@@ -317,16 +360,20 @@ where
         Ok(())
     }
 
-    async fn is_complete(&self) -> bool {
+    async fn is_complete(&self) -> bool
+    {
         let groups = self.groups.read().await;
         groups.values().any(|msgs| msgs.len() >= self.target_size)
     }
 
-    async fn result(&self) -> Result<Message> {
+    async fn result(&self) -> Result<Message>
+    {
         let groups = self.groups.read().await;
 
-        for messages in groups.values() {
-            if messages.len() >= self.target_size {
+        for messages in groups.values()
+        {
+            if messages.len() >= self.target_size
+            {
                 let base = &messages[0];
                 let aggregated: Vec<String> = messages
                     .iter()
@@ -340,21 +387,24 @@ where
         Err(IntegrationError::Aggregation("No complete groups".to_string()))
     }
 
-    async fn reset(&self) {
+    async fn reset(&self)
+    {
         self.groups.write().await.clear();
     }
 }
 
 /// Expression-based aggregator - aggregates based on custom logic
 /// 基于表达式的聚合器 - 基于自定义逻辑聚合
-pub struct ExpressionAggregator {
+pub struct ExpressionAggregator
+{
     should_add: Arc<dyn Fn(&Message) -> bool + Send + Sync>,
     should_complete: Arc<dyn Fn(&[Message]) -> bool + Send + Sync>,
     aggregate: Arc<dyn Fn(&[Message]) -> Result<Message> + Send + Sync>,
     messages: Arc<RwLock<Vec<Message>>>,
 }
 
-impl ExpressionAggregator {
+impl ExpressionAggregator
+{
     /// Create a new expression-based aggregator
     /// 创建新的基于表达式的聚合器
     pub fn new<F1, F2, F3>(should_add: F1, should_complete: F2, aggregate: F3) -> Self
@@ -373,34 +423,42 @@ impl ExpressionAggregator {
 
     /// Get current message count
     /// 获取当前消息计数
-    pub async fn count(&self) -> usize {
+    pub async fn count(&self) -> usize
+    {
         self.messages.read().await.len()
     }
 }
 
 #[async_trait]
-impl MessageAggregator for ExpressionAggregator {
-    async fn add(&self, message: Message) -> Result<()> {
-        if (self.should_add)(&message) {
+impl MessageAggregator for ExpressionAggregator
+{
+    async fn add(&self, message: Message) -> Result<()>
+    {
+        if (self.should_add)(&message)
+        {
             self.messages.write().await.push(message);
         }
         Ok(())
     }
 
-    async fn is_complete(&self) -> bool {
+    async fn is_complete(&self) -> bool
+    {
         let messages = self.messages.read().await;
         (self.should_complete)(&messages)
     }
 
-    async fn result(&self) -> Result<Message> {
+    async fn result(&self) -> Result<Message>
+    {
         let messages = self.messages.read().await;
-        if messages.is_empty() {
+        if messages.is_empty()
+        {
             return Err(IntegrationError::Aggregation("No messages to aggregate".to_string()));
         }
         (self.aggregate)(&messages)
     }
 
-    async fn reset(&self) {
+    async fn reset(&self)
+    {
         self.messages.write().await.clear();
     }
 }
@@ -413,11 +471,13 @@ impl MessageAggregator for ExpressionAggregator {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[tokio::test]
-    async fn test_count_aggregator() {
+    async fn test_count_aggregator()
+    {
         let aggregator = CountAggregator::new(3);
 
         assert!(!aggregator.is_complete().await);
@@ -447,7 +507,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_correlation_aggregator() {
+    async fn test_correlation_aggregator()
+    {
         let aggregator = CorrelationAggregator::new(2);
         let correlation_id = uuid::Uuid::new_v4();
 
@@ -468,7 +529,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_group_aggregator() {
+    async fn test_group_aggregator()
+    {
         let aggregator = GroupAggregator::new(
             |msg| {
                 msg.header("category")
@@ -495,7 +557,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_expression_aggregator() {
+    async fn test_expression_aggregator()
+    {
         let aggregator = ExpressionAggregator::new(
             // Only add even numbers
             |msg| msg.get_payload::<i32>().is_some_and(|v| v % 2 == 0),
@@ -520,7 +583,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_aggregator_reset() {
+    async fn test_aggregator_reset()
+    {
         let aggregator = CountAggregator::new(2);
 
         aggregator

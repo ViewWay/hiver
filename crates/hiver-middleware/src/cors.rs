@@ -34,7 +34,8 @@ use hiver_router::{Middleware, Next};
 ///     .max_age(3600);
 /// ```
 #[derive(Debug, Clone)]
-pub struct CorsConfig {
+pub struct CorsConfig
+{
     /// Allowed origins (* for all)
     /// 允许的来源（*表示全部）
     pub allowed_origins: Vec<String>,
@@ -64,10 +65,12 @@ pub struct CorsConfig {
     pub wildcard: bool,
 }
 
-impl CorsConfig {
+impl CorsConfig
+{
     /// Create a new CORS configuration
     /// 创建新的CORS配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             allowed_origins: vec!["*".to_string()],
             allowed_methods: vec![
@@ -86,7 +89,8 @@ impl CorsConfig {
 
     /// Add an allowed origin
     /// 添加允许的来源
-    pub fn allowed_origin(mut self, origin: impl Into<String>) -> Self {
+    pub fn allowed_origin(mut self, origin: impl Into<String>) -> Self
+    {
         self.allowed_origins.push(origin.into());
         self.wildcard = false;
         self
@@ -94,49 +98,56 @@ impl CorsConfig {
 
     /// Set allowed origins
     /// 设置允许的来源
-    pub fn allowed_origins(mut self, origins: Vec<String>) -> Self {
+    pub fn allowed_origins(mut self, origins: Vec<String>) -> Self
+    {
         self.allowed_origins = origins;
         self
     }
 
     /// Set allowed methods
     /// 设置允许的方法
-    pub fn allowed_methods(mut self, methods: Vec<&str>) -> Self {
+    pub fn allowed_methods(mut self, methods: Vec<&str>) -> Self
+    {
         self.allowed_methods = methods.iter().map(ToString::to_string).collect();
         self
     }
 
     /// Set allowed headers
     /// 设置允许的headers
-    pub fn allowed_headers(mut self, headers: Vec<&str>) -> Self {
+    pub fn allowed_headers(mut self, headers: Vec<&str>) -> Self
+    {
         self.allowed_headers = headers.iter().map(ToString::to_string).collect();
         self
     }
 
     /// Set exposed headers
     /// 设置暴露的headers
-    pub fn exposed_headers(mut self, headers: Vec<&str>) -> Self {
+    pub fn exposed_headers(mut self, headers: Vec<&str>) -> Self
+    {
         self.exposed_headers = headers.iter().map(ToString::to_string).collect();
         self
     }
 
     /// Enable credentials
     /// 启用凭证
-    pub fn allow_credentials(mut self, allow: bool) -> Self {
+    pub fn allow_credentials(mut self, allow: bool) -> Self
+    {
         self.allow_credentials = allow;
         self
     }
 
     /// Set max age
     /// 设置最大时间
-    pub fn max_age(mut self, age: usize) -> Self {
+    pub fn max_age(mut self, age: usize) -> Self
+    {
         self.max_age = Some(age);
         self
     }
 
     /// Allow all origins
     /// 允许所有来源
-    pub fn allow_all(mut self) -> Self {
+    pub fn allow_all(mut self) -> Self
+    {
         self.allowed_origins = vec!["*".to_string()];
         self.allowed_methods = vec!["*".to_string()];
         self.allowed_headers = vec!["*".to_string()];
@@ -145,8 +156,10 @@ impl CorsConfig {
     }
 }
 
-impl Default for CorsConfig {
-    fn default() -> Self {
+impl Default for CorsConfig
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -181,20 +194,24 @@ impl Default for CorsConfig {
 ///     .get("/", handler);
 /// ```
 #[derive(Clone)]
-pub struct CorsMiddleware {
+pub struct CorsMiddleware
+{
     config: CorsConfig,
 }
 
-impl CorsMiddleware {
+impl CorsMiddleware
+{
     /// Create a new CORS middleware
     /// 创建新的CORS中间件
-    pub fn new(config: CorsConfig) -> Self {
+    pub fn new(config: CorsConfig) -> Self
+    {
         Self { config }
     }
 
     /// Create a permissive CORS middleware (allows all)
     /// 创建宽松的CORS中间件（允许所有）
-    pub fn permissive() -> Self {
+    pub fn permissive() -> Self
+    {
         Self::new(CorsConfig::new().allow_all())
     }
 }
@@ -208,24 +225,30 @@ where
         req: Request,
         state: Arc<S>,
         next: Next<S>,
-    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>> {
+    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>>
+    {
         let config = self.config.clone();
 
         Box::pin(async move {
             // Handle preflight OPTIONS request
             // 处理预检OPTIONS请求
-            if req.method() == Method::OPTIONS {
+            if req.method() == Method::OPTIONS
+            {
                 let origin = req.header("Origin").unwrap_or("*").to_string();
 
                 // Check if origin is allowed
                 // 检查来源是否被允许
-                let allowed = if config.wildcard {
+                let allowed = if config.wildcard
+                {
                     true
-                } else {
+                }
+                else
+                {
                     config.allowed_origins.contains(&origin)
                 };
 
-                if !allowed {
+                if !allowed
+                {
                     return Response::builder()
                         .status(StatusCode::FORBIDDEN)
                         .header("Access-Control-Allow-Origin", "*")
@@ -239,21 +262,25 @@ where
                     if config.wildcard { "*" } else { &origin },
                 );
 
-                if config.allow_credentials {
+                if config.allow_credentials
+                {
                     builder = builder.header("Access-Control-Allow-Credentials", "true");
                 }
 
-                if !config.allowed_methods.is_empty() {
+                if !config.allowed_methods.is_empty()
+                {
                     builder = builder
                         .header("Access-Control-Allow-Methods", config.allowed_methods.join(", "));
                 }
 
-                if !config.allowed_headers.is_empty() {
+                if !config.allowed_headers.is_empty()
+                {
                     builder = builder
                         .header("Access-Control-Allow-Headers", config.allowed_headers.join(", "));
                 }
 
-                if let Some(max_age) = config.max_age {
+                if let Some(max_age) = config.max_age
+                {
                     builder = builder.header("Access-Control-Max-Age", max_age.to_string());
                 }
 
@@ -264,7 +291,8 @@ where
             // 处理普通请求 - 向响应添加CORS headers
             let response = next.call(req, state).await;
 
-            if let Ok(ref _resp) = response {
+            if let Ok(ref _resp) = response
+            {
                 tracing::debug!("CORS headers added to response");
             }
 
@@ -275,34 +303,42 @@ where
 
 /// Function to add CORS headers to response builder
 /// 向响应构建器添加CORS headers的函数
-pub fn add_cors_headers(config: &CorsConfig, origin: Option<&str>) -> Vec<(&'static str, String)> {
+pub fn add_cors_headers(config: &CorsConfig, origin: Option<&str>) -> Vec<(&'static str, String)>
+{
     let mut headers = Vec::new();
 
-    if config.wildcard {
+    if config.wildcard
+    {
         headers.push(("Access-Control-Allow-Origin", "*".to_string()));
-    } else if let Some(origin) = origin
+    }
+    else if let Some(origin) = origin
         && config.allowed_origins.contains(&origin.to_string())
     {
         headers.push(("Access-Control-Allow-Origin", origin.to_string()));
     }
 
-    if !config.allowed_methods.is_empty() {
+    if !config.allowed_methods.is_empty()
+    {
         headers.push(("Access-Control-Allow-Methods", config.allowed_methods.join(", ")));
     }
 
-    if !config.allowed_headers.is_empty() {
+    if !config.allowed_headers.is_empty()
+    {
         headers.push(("Access-Control-Allow-Headers", config.allowed_headers.join(", ")));
     }
 
-    if !config.exposed_headers.is_empty() {
+    if !config.exposed_headers.is_empty()
+    {
         headers.push(("Access-Control-Expose-Headers", config.exposed_headers.join(", ")));
     }
 
-    if config.allow_credentials {
+    if config.allow_credentials
+    {
         headers.push(("Access-Control-Allow-Credentials", "true".to_string()));
     }
 
-    if let Some(max_age) = config.max_age {
+    if let Some(max_age) = config.max_age
+    {
         headers.push(("Access-Control-Max-Age", max_age.to_string()));
     }
 
@@ -317,18 +353,21 @@ pub fn add_cors_headers(config: &CorsConfig, origin: Option<&str>) -> Vec<(&'sta
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_cors_config_default() {
+    fn test_cors_config_default()
+    {
         let config = CorsConfig::new();
         assert!(config.wildcard);
         assert!(config.allowed_origins.contains(&"*".to_string()));
     }
 
     #[test]
-    fn test_cors_config_builder() {
+    fn test_cors_config_builder()
+    {
         let config = CorsConfig::new()
             .allowed_origin("https://example.com")
             .allowed_methods(vec!["GET", "POST"])

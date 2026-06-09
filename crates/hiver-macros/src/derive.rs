@@ -34,16 +34,19 @@ use syn::{
 ///     age: u32,
 /// }
 /// ```
-pub fn from_request(input: TokenStream) -> TokenStream {
+pub fn from_request(input: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(input as DeriveInput);
     let struct_name = &input.ident;
 
-    let fields = match &input.data {
+    let fields = match &input.data
+    {
         Data::Struct(DataStruct {
             fields: Fields::Named(fields),
             ..
         }) => &fields.named,
-        _ => {
+        _ =>
+        {
             return syn::Error::new_spanned(
                 struct_name,
                 "FromRequest can only be derived for structs with named fields",
@@ -90,17 +93,21 @@ pub fn from_request(input: TokenStream) -> TokenStream {
 /// #[bean(depends(UserRepository, EmailService))]
 /// struct UserService { /* ... */ }
 /// ```
-pub fn bean_derive(input: TokenStream) -> TokenStream {
+pub fn bean_derive(input: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(input as DeriveInput);
     let name = &input.ident;
 
     // Parse #[bean(depends(Type1, Type2, ...))] helper attribute
     let deps = parse_bean_depends(&input.attrs);
 
-    let dep_impl = if deps.is_empty() {
+    let dep_impl = if deps.is_empty()
+    {
         // No dependencies declared — skip BeanDependencies impl
         quote! {}
-    } else {
+    }
+    else
+    {
         let type_infos: Vec<_> = deps
             .iter()
             .map(|dep| {
@@ -136,16 +143,20 @@ pub fn bean_derive(input: TokenStream) -> TokenStream {
 }
 
 /// Parse `#[bean(depends(Type1, Type2))]` from derive helper attributes.
-fn parse_bean_depends(attrs: &[syn::Attribute]) -> Vec<Ident> {
-    for attr in attrs {
-        if !attr.path().is_ident("bean") {
+fn parse_bean_depends(attrs: &[syn::Attribute]) -> Vec<Ident>
+{
+    for attr in attrs
+    {
+        if !attr.path().is_ident("bean")
+        {
             continue;
         }
 
         let result: Result<Vec<Ident>, syn::Error> = attr.parse_args_with(|input: ParseStream| {
             // Parse: depends(Type1, Type2, ...)
             let keyword: Ident = input.parse()?;
-            if keyword != "depends" {
+            if keyword != "depends"
+            {
                 return Ok(Vec::new());
             }
 
@@ -155,7 +166,8 @@ fn parse_bean_depends(attrs: &[syn::Attribute]) -> Vec<Ident> {
             Ok(types.into_iter().collect())
         });
 
-        if let Ok(deps) = result {
+        if let Ok(deps) = result
+        {
             return deps;
         }
     }
@@ -183,7 +195,8 @@ fn parse_bean_depends(attrs: &[syn::Attribute]) -> Vec<Ident> {
 ///     name: String,
 /// }
 /// ```
-pub fn into_response(input: TokenStream) -> TokenStream {
+pub fn into_response(input: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(input as DeriveInput);
     let struct_name = &input.ident;
 

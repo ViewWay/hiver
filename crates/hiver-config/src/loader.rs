@@ -21,7 +21,8 @@ use crate::{Config, ConfigError, ConfigResult, FileFormat, ReloadStrategy};
 /// Handles loading configuration from various sources with priority ordering.
 /// 处理从各种来源加载具有优先级顺序的配置。
 #[derive(Debug, Clone)]
-pub struct ConfigLoader {
+pub struct ConfigLoader
+{
     /// Config being built
     /// 正在构建的配置
     config: Config,
@@ -47,10 +48,12 @@ pub struct ConfigLoader {
     load_args: bool,
 }
 
-impl ConfigLoader {
+impl ConfigLoader
+{
     /// Create a new loader
     /// 创建新的加载器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             config: Config::new(),
             search_paths: vec![
@@ -67,48 +70,55 @@ impl ConfigLoader {
 
     /// Create a loader builder
     /// 创建加载器构建器
-    pub fn builder() -> ConfigLoaderBuilder {
+    pub fn builder() -> ConfigLoaderBuilder
+    {
         ConfigLoaderBuilder::new()
     }
 
     /// Add a search path
     /// 添加搜索路径
-    pub fn add_search_path(mut self, path: impl Into<PathBuf>) -> Self {
+    pub fn add_search_path(mut self, path: impl Into<PathBuf>) -> Self
+    {
         self.search_paths.push(path.into());
         self
     }
 
     /// Add a file name to look for
     /// 添加要查找的文件名
-    pub fn add_file_name(mut self, name: impl Into<String>) -> Self {
+    pub fn add_file_name(mut self, name: impl Into<String>) -> Self
+    {
         self.file_names.push(name.into());
         self
     }
 
     /// Add an active profile
     /// 添加活动配置文件
-    pub fn add_profile(mut self, profile: impl Into<String>) -> Self {
+    pub fn add_profile(mut self, profile: impl Into<String>) -> Self
+    {
         self.profiles.push(profile.into());
         self
     }
 
     /// Set whether to load environment variables
     /// 设置是否加载环境变量
-    pub fn load_env(mut self, load: bool) -> Self {
+    pub fn load_env(mut self, load: bool) -> Self
+    {
         self.load_env = load;
         self
     }
 
     /// Set whether to load command line args
     /// 设置是否加载命令行参数
-    pub fn load_args(mut self, load: bool) -> Self {
+    pub fn load_args(mut self, load: bool) -> Self
+    {
         self.load_args = load;
         self
     }
 
     /// Load the configuration
     /// 加载配置
-    pub fn load(mut self) -> ConfigResult<Config> {
+    pub fn load(mut self) -> ConfigResult<Config>
+    {
         // Load in order of priority (lowest first)
         // 1. Application properties files
         self.load_application_files()?;
@@ -117,12 +127,14 @@ impl ConfigLoader {
         self.load_profile_files()?;
 
         // 3. Environment variables
-        if self.load_env {
+        if self.load_env
+        {
             self.load_environment_vars()?;
         }
 
         // 4. Command line arguments
-        if self.load_args {
+        if self.load_args
+        {
             self.load_command_line_args()?;
         }
 
@@ -131,7 +143,8 @@ impl ConfigLoader {
 
     /// Load base application files
     /// 加载基础应用程序文件
-    fn load_application_files(&mut self) -> ConfigResult<()> {
+    fn load_application_files(&mut self) -> ConfigResult<()>
+    {
         let formats = [
             FileFormat::Properties,
             FileFormat::Yaml,
@@ -139,15 +152,23 @@ impl ConfigLoader {
             FileFormat::Json,
         ];
 
-        for search_path in &self.search_paths {
-            for file_name in &self.file_names {
-                for format in &formats {
-                    for ext in format.extensions() {
+        for search_path in &self.search_paths
+        {
+            for file_name in &self.file_names
+            {
+                for format in &formats
+                {
+                    for ext in format.extensions()
+                    {
                         let path = search_path.join(format!("{}.{}", file_name, ext));
-                        if path.exists() {
-                            if let Err(e) = self.config.load_file(&path) {
+                        if path.exists()
+                        {
+                            if let Err(e) = self.config.load_file(&path)
+                            {
                                 tracing::debug!("Skipping {:?}: {}", path, e);
-                            } else {
+                            }
+                            else
+                            {
                                 tracing::debug!("Loaded config from {:?}", path);
                             }
                         }
@@ -161,7 +182,8 @@ impl ConfigLoader {
 
     /// Load profile-specific files
     /// 加载配置文件特定文件
-    fn load_profile_files(&mut self) -> ConfigResult<()> {
+    fn load_profile_files(&mut self) -> ConfigResult<()>
+    {
         let formats = [
             FileFormat::Properties,
             FileFormat::Yaml,
@@ -169,17 +191,26 @@ impl ConfigLoader {
             FileFormat::Json,
         ];
 
-        for profile in &self.profiles {
-            for search_path in &self.search_paths {
-                for file_name in &self.file_names {
-                    for format in &formats {
-                        for ext in format.extensions() {
+        for profile in &self.profiles
+        {
+            for search_path in &self.search_paths
+            {
+                for file_name in &self.file_names
+                {
+                    for format in &formats
+                    {
+                        for ext in format.extensions()
+                        {
                             let path =
                                 search_path.join(format!("{}-{}.{}", file_name, profile, ext));
-                            if path.exists() {
-                                if let Err(e) = self.config.load_file(&path) {
+                            if path.exists()
+                            {
+                                if let Err(e) = self.config.load_file(&path)
+                                {
                                     tracing::debug!("Skipping {:?}: {}", path, e);
-                                } else {
+                                }
+                                else
+                                {
                                     tracing::debug!(
                                         "Loaded config from {:?} (profile: {})",
                                         path,
@@ -198,14 +229,16 @@ impl ConfigLoader {
 
     /// Load environment variables
     /// 加载环境变量
-    fn load_environment_vars(&mut self) -> ConfigResult<()> {
+    fn load_environment_vars(&mut self) -> ConfigResult<()>
+    {
         use crate::{PropertySourceBuilder, PropertySourceType, Value};
 
         let mut builder = PropertySourceBuilder::new("environmentVariables")
             .source_type(PropertySourceType::SystemEnvironment)
             .order(200);
 
-        for (key, value) in std::env::vars() {
+        for (key, value) in std::env::vars()
+        {
             // Convert ENV_VAR to env.var format, and also keep original
             let config_key = key.to_lowercase().replace('_', ".");
             builder.put(config_key, Value::string(value.clone()));
@@ -218,7 +251,8 @@ impl ConfigLoader {
 
     /// Load command line arguments
     /// 加载命令行参数
-    fn load_command_line_args(&mut self) -> ConfigResult<()> {
+    fn load_command_line_args(&mut self) -> ConfigResult<()>
+    {
         use crate::{PropertySourceBuilder, PropertySourceType, Value};
 
         let mut builder = PropertySourceBuilder::new("commandLineArgs")
@@ -227,11 +261,16 @@ impl ConfigLoader {
 
         let args: Vec<String> = std::env::args().collect();
 
-        for arg in args.iter().skip(1) {
-            if let Some(arg) = arg.strip_prefix("--") {
-                if let Some((key, value)) = arg.split_once('=') {
+        for arg in args.iter().skip(1)
+        {
+            if let Some(arg) = arg.strip_prefix("--")
+            {
+                if let Some((key, value)) = arg.split_once('=')
+                {
                     builder.put(key, Value::string(value));
-                } else {
+                }
+                else
+                {
                     // Flag without value
                     builder.put(arg, Value::bool(true));
                 }
@@ -243,8 +282,10 @@ impl ConfigLoader {
     }
 }
 
-impl Default for ConfigLoader {
-    fn default() -> Self {
+impl Default for ConfigLoader
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -254,14 +295,17 @@ impl Default for ConfigLoader {
 ///
 /// Provides a fluent API for building a `ConfigLoader`.
 /// `为构建ConfigLoader提供流畅的API`。
-pub struct ConfigLoaderBuilder {
+pub struct ConfigLoaderBuilder
+{
     loader: ConfigLoader,
 }
 
-impl ConfigLoaderBuilder {
+impl ConfigLoaderBuilder
+{
     /// Create a new builder
     /// 创建新的构建器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             loader: ConfigLoader::new(),
         }
@@ -269,15 +313,18 @@ impl ConfigLoaderBuilder {
 
     /// Add a search path
     /// 添加搜索路径
-    pub fn search_path(mut self, path: impl Into<PathBuf>) -> Self {
+    pub fn search_path(mut self, path: impl Into<PathBuf>) -> Self
+    {
         self.loader = self.loader.add_search_path(path);
         self
     }
 
     /// Add multiple search paths
     /// 添加多个搜索路径
-    pub fn search_paths(mut self, paths: Vec<PathBuf>) -> Self {
-        for path in paths {
+    pub fn search_paths(mut self, paths: Vec<PathBuf>) -> Self
+    {
+        for path in paths
+        {
             self.loader = self.loader.add_search_path(path);
         }
         self
@@ -285,15 +332,18 @@ impl ConfigLoaderBuilder {
 
     /// Add a file name
     /// 添加文件名
-    pub fn file_name(mut self, name: impl Into<String>) -> Self {
+    pub fn file_name(mut self, name: impl Into<String>) -> Self
+    {
         self.loader = self.loader.add_file_name(name);
         self
     }
 
     /// Add multiple file names
     /// 添加多个文件名
-    pub fn file_names(mut self, names: Vec<String>) -> Self {
-        for name in names {
+    pub fn file_names(mut self, names: Vec<String>) -> Self
+    {
+        for name in names
+        {
             self.loader = self.loader.add_file_name(name);
         }
         self
@@ -301,15 +351,18 @@ impl ConfigLoaderBuilder {
 
     /// Add a profile
     /// 添加配置文件
-    pub fn profile(mut self, profile: impl Into<String>) -> Self {
+    pub fn profile(mut self, profile: impl Into<String>) -> Self
+    {
         self.loader = self.loader.add_profile(profile);
         self
     }
 
     /// Add multiple profiles
     /// 添加多个配置文件
-    pub fn profiles(mut self, profiles: Vec<String>) -> Self {
-        for profile in profiles {
+    pub fn profiles(mut self, profiles: Vec<String>) -> Self
+    {
+        for profile in profiles
+        {
             self.loader = self.loader.add_profile(profile);
         }
         self
@@ -317,33 +370,39 @@ impl ConfigLoaderBuilder {
 
     /// Enable/disable environment variable loading
     /// 启用/禁用环境变量加载
-    pub fn load_env(mut self, load: bool) -> Self {
+    pub fn load_env(mut self, load: bool) -> Self
+    {
         self.loader = self.loader.load_env(load);
         self
     }
 
     /// Enable/disable command line argument loading
     /// 启用/禁用命令行参数加载
-    pub fn load_args(mut self, load: bool) -> Self {
+    pub fn load_args(mut self, load: bool) -> Self
+    {
         self.loader = self.loader.load_args(load);
         self
     }
 
     /// Build the loader
     /// 构建加载器
-    pub fn build(self) -> ConfigLoader {
+    pub fn build(self) -> ConfigLoader
+    {
         self.loader
     }
 
     /// Build and load configuration
     /// 构建并加载配置
-    pub fn load(self) -> ConfigResult<Config> {
+    pub fn load(self) -> ConfigResult<Config>
+    {
         self.loader.load()
     }
 }
 
-impl Default for ConfigLoaderBuilder {
-    fn default() -> Self {
+impl Default for ConfigLoaderBuilder
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -353,7 +412,8 @@ impl Default for ConfigLoaderBuilder {
 ///
 /// Equivalent to Spring Cloud Config's watch functionality.
 /// 等价于Spring Cloud Config的watch功能。
-pub struct Watcher {
+pub struct Watcher
+{
     /// Config to watch
     /// 要监视的配置
     config: Arc<Config>,
@@ -375,10 +435,12 @@ pub struct Watcher {
     running: Arc<std::sync::atomic::AtomicBool>,
 }
 
-impl Watcher {
+impl Watcher
+{
     /// Create a new watcher
     /// 创建新的监视器
-    pub fn new(config: Arc<Config>) -> Self {
+    pub fn new(config: Arc<Config>) -> Self
+    {
         let strategy = config.reload_strategy();
 
         Self {
@@ -392,14 +454,16 @@ impl Watcher {
 
     /// Set check interval
     /// 设置检查间隔
-    pub fn interval(mut self, interval: Duration) -> Self {
+    pub fn interval(mut self, interval: Duration) -> Self
+    {
         self.interval = interval;
         self
     }
 
     /// Add a file to watch
     /// 添加要监视的文件
-    pub fn watch_file(&self, path: PathBuf) {
+    pub fn watch_file(&self, path: PathBuf)
+    {
         if let Ok(metadata) = std::fs::metadata(&path)
             && let Ok(modified) = metadata.modified()
         {
@@ -413,8 +477,10 @@ impl Watcher {
 
     /// Start watching
     /// 开始监视
-    pub fn start(&self) -> ConfigResult<()> {
-        if self.strategy != ReloadStrategy::Watch {
+    pub fn start(&self) -> ConfigResult<()>
+    {
+        if self.strategy != ReloadStrategy::Watch
+        {
             return Err(ConfigError::OverrideNotAllowed(
                 "Watcher requires ReloadStrategy::Watch".to_string(),
             ));
@@ -429,7 +495,8 @@ impl Watcher {
         let interval = self.interval;
 
         std::thread::spawn(move || {
-            while running.load(std::sync::atomic::Ordering::SeqCst) {
+            while running.load(std::sync::atomic::Ordering::SeqCst)
+            {
                 std::thread::sleep(interval);
 
                 let mut files = watched_files
@@ -437,7 +504,8 @@ impl Watcher {
                     .unwrap_or_else(std::sync::PoisonError::into_inner);
                 let mut changed = Vec::new();
 
-                for (path, last_modified) in files.iter() {
+                for (path, last_modified) in files.iter()
+                {
                     if let Ok(metadata) = std::fs::metadata(path)
                         && let Ok(modified) = metadata.modified()
                         && modified != *last_modified
@@ -446,13 +514,17 @@ impl Watcher {
                     }
                 }
 
-                for (path, modified) in changed {
+                for (path, modified) in changed
+                {
                     tracing::info!("Config file changed: {:?}, reloading...", path);
 
                     // Reload config
-                    if let Err(e) = config.load_file(&path) {
+                    if let Err(e) = config.load_file(&path)
+                    {
                         tracing::error!("Failed to reload config {:?}: {}", path, e);
-                    } else {
+                    }
+                    else
+                    {
                         tracing::info!("Successfully reloaded config from {:?}", path);
                     }
 
@@ -466,7 +538,8 @@ impl Watcher {
 
     /// Stop watching
     /// 停止监视
-    pub fn stop(&self) {
+    pub fn stop(&self)
+    {
         self.running
             .store(false, std::sync::atomic::Ordering::SeqCst);
     }
@@ -480,7 +553,8 @@ impl Watcher {
 ///
 /// Allows customizing the configuration after loading but before use.
 /// 允许在加载后但在使用前自定义配置。
-pub(crate) trait ConfigPostProcessor: Send + Sync {
+pub(crate) trait ConfigPostProcessor: Send + Sync
+{
     /// Post-process the configuration
     /// 后处理配置
     fn post_process(&self, config: &mut Config) -> ConfigResult<()>;
@@ -490,16 +564,19 @@ pub(crate) trait ConfigPostProcessor: Send + Sync {
 /// 标准配置后处理器
 pub(crate) struct StandardPostProcessors;
 
-impl StandardPostProcessors {
+impl StandardPostProcessors
+{
     /// Create a post-processor that expands placeholders
     /// 创建展开占位符的后处理器
-    pub(crate) fn placeholder_expander() -> impl ConfigPostProcessor {
+    pub(crate) fn placeholder_expander() -> impl ConfigPostProcessor
+    {
         PlaceholderExpander
     }
 
     /// Create a post-processor that validates required properties
     /// 创建验证必需属性的后处理器
-    pub(crate) fn required_validator(required: Vec<String>) -> impl ConfigPostProcessor {
+    pub(crate) fn required_validator(required: Vec<String>) -> impl ConfigPostProcessor
+    {
         RequiredValidator { required }
     }
 }
@@ -508,8 +585,10 @@ impl StandardPostProcessors {
 /// 占位符展开器后处理器
 struct PlaceholderExpander;
 
-impl ConfigPostProcessor for PlaceholderExpander {
-    fn post_process(&self, _config: &mut Config) -> ConfigResult<()> {
+impl ConfigPostProcessor for PlaceholderExpander
+{
+    fn post_process(&self, _config: &mut Config) -> ConfigResult<()>
+    {
         // This would expand ${...} placeholders in property values
         // Implementation would iterate through all properties and expand placeholders
         Ok(())
@@ -518,14 +597,19 @@ impl ConfigPostProcessor for PlaceholderExpander {
 
 /// Required properties validator post-processor
 /// 必需属性验证器后处理器
-struct RequiredValidator {
+struct RequiredValidator
+{
     required: Vec<String>,
 }
 
-impl ConfigPostProcessor for RequiredValidator {
-    fn post_process(&self, config: &mut Config) -> ConfigResult<()> {
-        for key in &self.required {
-            if !config.contains_key(key) {
+impl ConfigPostProcessor for RequiredValidator
+{
+    fn post_process(&self, config: &mut Config) -> ConfigResult<()>
+    {
+        for key in &self.required
+        {
+            if !config.contains_key(key)
+            {
                 return Err(ConfigError::MissingProperty(key.clone()));
             }
         }
@@ -541,12 +625,14 @@ impl ConfigPostProcessor for RequiredValidator {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::{PropertySource, Value};
 
     #[test]
-    fn test_loader_builder() {
+    fn test_loader_builder()
+    {
         let loader = ConfigLoaderBuilder::new()
             .search_path("./test")
             .profile("test")
@@ -559,7 +645,8 @@ mod tests {
     /// Test ConfigLoader::new has sensible defaults
     /// 测试ConfigLoader::new有合理的默认值
     #[test]
-    fn test_loader_new_defaults() {
+    fn test_loader_new_defaults()
+    {
         let loader = ConfigLoader::new();
         assert_eq!(loader.search_paths.len(), 3);
         assert_eq!(loader.file_names.len(), 1);
@@ -573,7 +660,8 @@ mod tests {
     /// Test ConfigLoader default trait
     /// 测试ConfigLoader的Default trait
     #[test]
-    fn test_loader_default() {
+    fn test_loader_default()
+    {
         let loader = ConfigLoader::default();
         assert_eq!(loader.search_paths.len(), 3);
     }
@@ -581,7 +669,8 @@ mod tests {
     /// Test ConfigLoaderBuilder search_paths bulk add
     /// 测试ConfigLoaderBuilder批量添加搜索路径
     #[test]
-    fn test_loader_builder_search_paths() {
+    fn test_loader_builder_search_paths()
+    {
         let loader = ConfigLoaderBuilder::new()
             .search_paths(vec![PathBuf::from("/a"), PathBuf::from("/b")])
             .build();
@@ -592,7 +681,8 @@ mod tests {
     /// Test ConfigLoaderBuilder file_names bulk add
     /// 测试ConfigLoaderBuilder批量添加文件名
     #[test]
-    fn test_loader_builder_file_names() {
+    fn test_loader_builder_file_names()
+    {
         let loader = ConfigLoaderBuilder::new()
             .file_names(vec!["custom".to_string(), "override".to_string()])
             .build();
@@ -603,7 +693,8 @@ mod tests {
     /// Test ConfigLoaderBuilder profiles bulk add
     /// 测试ConfigLoaderBuilder批量添加配置文件
     #[test]
-    fn test_loader_builder_profiles() {
+    fn test_loader_builder_profiles()
+    {
         let loader = ConfigLoaderBuilder::new()
             .profiles(vec!["staging".to_string(), "prod".to_string()])
             .build();
@@ -614,7 +705,8 @@ mod tests {
     /// Test ConfigLoaderBuilder load_env(false) and load_args(false)
     /// 测试ConfigLoaderBuilder禁用环境变量和命令行参数
     #[test]
-    fn test_loader_builder_disable_env_and_args() {
+    fn test_loader_builder_disable_env_and_args()
+    {
         let loader = ConfigLoaderBuilder::new()
             .load_env(false)
             .load_args(false)
@@ -626,7 +718,8 @@ mod tests {
     /// Test ConfigLoader add methods chain correctly
     /// 测试ConfigLoader的add方法链式调用
     #[test]
-    fn test_loader_add_methods() {
+    fn test_loader_add_methods()
+    {
         let loader = ConfigLoader::new()
             .add_search_path("/custom/path")
             .add_file_name("myapp")
@@ -640,7 +733,8 @@ mod tests {
     /// Test ConfigLoaderBuilder::new() default
     /// 测试ConfigLoaderBuilder的Default trait
     #[test]
-    fn test_loader_builder_default() {
+    fn test_loader_builder_default()
+    {
         let loader = ConfigLoaderBuilder::default().build();
         assert_eq!(loader.search_paths.len(), 3);
     }
@@ -648,7 +742,8 @@ mod tests {
     /// Test RequiredValidator post-processor succeeds when all keys present
     /// 测试RequiredValidator后处理器在所有键都存在时成功
     #[test]
-    fn test_required_validator_pass() {
+    fn test_required_validator_pass()
+    {
         let mut config = Config::new();
         let mut source = PropertySource::new("test");
         source.put("db.url", Value::string("postgres://localhost"));
@@ -665,7 +760,8 @@ mod tests {
     /// Test RequiredValidator post-processor fails when key missing
     /// 测试RequiredValidator后处理器在键缺失时失败
     #[test]
-    fn test_required_validator_fail() {
+    fn test_required_validator_fail()
+    {
         let mut config = Config::new();
         let source = PropertySource::new("test");
         config.add_property_source(source);
@@ -677,7 +773,8 @@ mod tests {
     /// Test PlaceholderExpander post-processor runs without error
     /// 测试PlaceholderExpander后处理器无错误运行
     #[test]
-    fn test_placeholder_expander() {
+    fn test_placeholder_expander()
+    {
         let mut config = Config::new();
         let expander = StandardPostProcessors::placeholder_expander();
         assert!(expander.post_process(&mut config).is_ok());
@@ -686,7 +783,8 @@ mod tests {
     /// Test ConfigLoader load with no existing files succeeds (graceful)
     /// 测试ConfigLoader在无现有文件时加载成功（优雅处理）
     #[test]
-    fn test_loader_load_no_files() {
+    fn test_loader_load_no_files()
+    {
         let result = ConfigLoaderBuilder::new()
             .search_path("/nonexistent_hiver_path")
             .load_env(false)

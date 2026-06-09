@@ -17,7 +17,8 @@ use crate::core::{ApplicationContext, AutoConfiguration};
 /// Database type detected from JDBC-style URL.
 /// 从 JDBC 风格 URL 检测的数据库类型。
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum DatabaseType {
+pub enum DatabaseType
+{
     PostgreSQL,
     MySQL,
     SQLite,
@@ -34,7 +35,8 @@ pub enum DatabaseType {
 /// 保存数据库连接配置，用于创建实际的连接池。
 /// Holds database connection configuration for creating the actual connection pool.
 #[derive(Clone, Debug)]
-pub struct DataSourceConfig {
+pub struct DataSourceConfig
+{
     /// 数据库连接 URL
     /// Database connection URL
     pub url: String,
@@ -55,10 +57,12 @@ pub struct DataSourceConfig {
     pub database_type: DatabaseType,
 }
 
-impl DataSourceConfig {
+impl DataSourceConfig
+{
     /// 创建新的数据源配置
     /// Create new data source configuration
-    pub fn new(url: impl Into<String>) -> Self {
+    pub fn new(url: impl Into<String>) -> Self
+    {
         let url_str = url.into();
         let database_type = Self::detect_database_type(&url_str);
 
@@ -78,7 +82,8 @@ impl DataSourceConfig {
         mut self,
         username: impl Into<String>,
         password: impl Into<String>,
-    ) -> Self {
+    ) -> Self
+    {
         self.username = Some(username.into());
         self.password = Some(password.into());
         self
@@ -86,30 +91,42 @@ impl DataSourceConfig {
 
     /// 设置最大连接数
     /// Set max connections
-    pub fn with_max_connections(mut self, max: u32) -> Self {
+    pub fn with_max_connections(mut self, max: u32) -> Self
+    {
         self.max_connections = max;
         self
     }
 
     /// 设置最小空闲连接数
     /// Set min idle connections
-    pub fn with_min_idle(mut self, min: u32) -> Self {
+    pub fn with_min_idle(mut self, min: u32) -> Self
+    {
         self.min_idle = min;
         self
     }
 
     /// 检测数据库类型
     /// Detect database type from URL
-    fn detect_database_type(url: &str) -> DatabaseType {
-        if url.starts_with("postgresql://") || url.starts_with("postgres://") {
+    fn detect_database_type(url: &str) -> DatabaseType
+    {
+        if url.starts_with("postgresql://") || url.starts_with("postgres://")
+        {
             DatabaseType::PostgreSQL
-        } else if url.starts_with("mysql://") || url.starts_with("mariadb://") {
+        }
+        else if url.starts_with("mysql://") || url.starts_with("mariadb://")
+        {
             DatabaseType::MySQL
-        } else if url.starts_with("sqlite://") || url.starts_with("sqlite:") {
+        }
+        else if url.starts_with("sqlite://") || url.starts_with("sqlite:")
+        {
             DatabaseType::SQLite
-        } else if url.starts_with("h2://") || url.starts_with("jdbc:h2:") {
+        }
+        else if url.starts_with("h2://") || url.starts_with("jdbc:h2:")
+        {
             DatabaseType::H2
-        } else {
+        }
+        else
+        {
             // Default to PostgreSQL
             DatabaseType::PostgreSQL
         }
@@ -117,7 +134,8 @@ impl DataSourceConfig {
 
     /// 创建连接池配置
     /// Create pool configuration
-    pub fn pool_config(&self) -> PoolConfig {
+    pub fn pool_config(&self) -> PoolConfig
+    {
         PoolConfig::new()
             .with_max_size(self.max_connections)
             .with_min_idle(self.min_idle)
@@ -133,7 +151,8 @@ impl DataSourceConfig {
     /// let pool = config.create_pool().await?;
     /// ```
     #[cfg(feature = "sqlx")]
-    pub async fn create_pool(&self) -> Result<SqlxPoolClient, hiver_data_rdbc::R2dbcError> {
+    pub async fn create_pool(&self) -> Result<SqlxPoolClient, hiver_data_rdbc::R2dbcError>
+    {
         SqlxPoolClient::connect_with_options(&self.url, self.max_connections).await
     }
 }
@@ -148,7 +167,8 @@ impl DataSourceConfig {
 /// 参考 Spring Boot 的 `DataSourceAutoConfiguration`。
 /// Based on Spring Boot's `DataSourceAutoConfiguration`.
 #[derive(Debug)]
-pub struct DataSourceAutoConfiguration {
+pub struct DataSourceAutoConfiguration
+{
     /// 数据源 URL
     pub url: Option<String>,
 
@@ -162,9 +182,11 @@ pub struct DataSourceAutoConfiguration {
     pub max_connections: u32,
 }
 
-impl DataSourceAutoConfiguration {
+impl DataSourceAutoConfiguration
+{
     /// 创建新的数据源自动配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             url: None,
             username: None,
@@ -174,7 +196,8 @@ impl DataSourceAutoConfiguration {
     }
 
     /// 从配置创建
-    pub fn from_config(ctx: &ApplicationContext) -> Self {
+    pub fn from_config(ctx: &ApplicationContext) -> Self
+    {
         Self {
             url: ctx.get_property("datasource.url"),
             username: ctx.get_property("datasource.username"),
@@ -187,36 +210,45 @@ impl DataSourceAutoConfiguration {
     }
 }
 
-impl Default for DataSourceAutoConfiguration {
-    fn default() -> Self {
+impl Default for DataSourceAutoConfiguration
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl AutoConfiguration for DataSourceAutoConfiguration {
-    fn name(&self) -> &'static str {
+impl AutoConfiguration for DataSourceAutoConfiguration
+{
+    fn name(&self) -> &'static str
+    {
         "DataSourceAutoConfiguration"
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         -50 // 较高优先级，在其他配置之前
     }
 
-    fn condition(&self) -> bool {
+    fn condition(&self) -> bool
+    {
         self.url.is_some()
     }
 
-    fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()> {
+    fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()>
+    {
         tracing::info!("Configuring DataSource");
 
-        if let Some(ref url) = self.url {
+        if let Some(ref url) = self.url
+        {
             tracing::info!("  URL: {}", url);
             tracing::info!("  Max connections: {}", self.max_connections);
 
             // Create DataSourceConfig from configuration
             // 从配置创建 DataSourceConfig
             let mut config = DataSourceConfig::new(url);
-            if let (Some(username), Some(password)) = (&self.username, &self.password) {
+            if let (Some(username), Some(password)) = (&self.username, &self.password)
+            {
                 config = config.with_credentials(username, password);
             }
             config = config.with_max_connections(self.max_connections);
@@ -243,16 +275,20 @@ impl AutoConfiguration for DataSourceAutoConfiguration {
 #[derive(Debug)]
 pub struct TransactionAutoConfiguration;
 
-impl AutoConfiguration for TransactionAutoConfiguration {
-    fn name(&self) -> &'static str {
+impl AutoConfiguration for TransactionAutoConfiguration
+{
+    fn name(&self) -> &'static str
+    {
         "TransactionAutoConfiguration"
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         50 // 在数据源配置之后
     }
 
-    fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()> {
+    fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()>
+    {
         tracing::info!("Configuring Transaction Manager");
 
         let tm = TransactionManager::new();
@@ -271,39 +307,47 @@ impl AutoConfiguration for TransactionAutoConfiguration {
 
 /// Register a real SQLx transaction manager when a datasource URL is configured.
 /// 当配置了数据源 URL 时注册真实的 SQLx 事务管理器。
-pub async fn register_sqlx_transaction_manager(ctx: &ApplicationContext) -> anyhow::Result<()> {
-    let Some(cfg) = ctx.get_bean::<DataSourceConfig>() else {
+pub async fn register_sqlx_transaction_manager(ctx: &ApplicationContext) -> anyhow::Result<()>
+{
+    let Some(cfg) = ctx.get_bean::<DataSourceConfig>()
+    else
+    {
         return Ok(());
     };
 
     #[cfg(feature = "sqlx")]
     {
-        let mgr: Arc<dyn hiver_tx::TransactionManager> =
-            if cfg.url.starts_with("postgres://") || cfg.url.starts_with("postgresql://") {
-                Arc::new(
-                    hiver_tx::PostgresTransactionManager::connect(&cfg.url)
-                        .await
-                        .map_err(|e| {
-                            anyhow::anyhow!("failed to connect SqlxTransactionManager: {e}")
-                        })?,
-                )
-            } else if cfg.url.starts_with("mysql://") {
-                Arc::new(
-                    hiver_tx::MySqlTransactionManager::connect(&cfg.url)
-                        .await
-                        .map_err(|e| {
-                            anyhow::anyhow!("failed to connect SqlxTransactionManager: {e}")
-                        })?,
-                )
-            } else {
-                Arc::new(
-                    hiver_tx::SqliteTransactionManager::connect(&cfg.url)
-                        .await
-                        .map_err(|e| {
-                            anyhow::anyhow!("failed to connect SqlxTransactionManager: {e}")
-                        })?,
-                )
-            };
+        let mgr: Arc<dyn hiver_tx::TransactionManager> = if cfg.url.starts_with("postgres://")
+            || cfg.url.starts_with("postgresql://")
+        {
+            Arc::new(
+                hiver_tx::PostgresTransactionManager::connect(&cfg.url)
+                    .await
+                    .map_err(|e| {
+                        anyhow::anyhow!("failed to connect SqlxTransactionManager: {e}")
+                    })?,
+            )
+        }
+        else if cfg.url.starts_with("mysql://")
+        {
+            Arc::new(
+                hiver_tx::MySqlTransactionManager::connect(&cfg.url)
+                    .await
+                    .map_err(|e| {
+                        anyhow::anyhow!("failed to connect SqlxTransactionManager: {e}")
+                    })?,
+            )
+        }
+        else
+        {
+            Arc::new(
+                hiver_tx::SqliteTransactionManager::connect(&cfg.url)
+                    .await
+                    .map_err(|e| {
+                        anyhow::anyhow!("failed to connect SqlxTransactionManager: {e}")
+                    })?,
+            )
+        };
         set_global_tx_manager(mgr);
         tracing::info!("Registered global SqlxTransactionManager");
     }
@@ -329,18 +373,21 @@ pub async fn register_sqlx_transaction_manager(ctx: &ApplicationContext) -> anyh
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_data_source_auto_config() {
+    fn test_data_source_auto_config()
+    {
         let config = DataSourceAutoConfiguration::new();
         assert!(config.url.is_none());
         assert_eq!(config.max_connections, 10);
     }
 
     #[test]
-    fn test_data_source_config_new() {
+    fn test_data_source_config_new()
+    {
         let config = DataSourceConfig::new("postgresql://localhost/mydb");
         assert_eq!(config.url, "postgresql://localhost/mydb");
         assert_eq!(config.database_type, DatabaseType::PostgreSQL);
@@ -349,7 +396,8 @@ mod tests {
     }
 
     #[test]
-    fn test_data_source_config_with_credentials() {
+    fn test_data_source_config_with_credentials()
+    {
         let config = DataSourceConfig::new("mysql://localhost/test")
             .with_credentials("user", "pass")
             .with_max_connections(20);
@@ -362,7 +410,8 @@ mod tests {
     }
 
     #[test]
-    fn test_data_source_config_registers_bean() {
+    fn test_data_source_config_registers_bean()
+    {
         let auto_config = DataSourceAutoConfiguration {
             url: Some("postgresql://localhost/test".to_string()),
             username: Some("user".to_string()),
@@ -379,7 +428,8 @@ mod tests {
     }
 
     #[test]
-    fn test_data_source_config_detect_database_type() {
+    fn test_data_source_config_detect_database_type()
+    {
         let pg_config = DataSourceConfig::new("postgresql://localhost/db");
         assert_eq!(pg_config.database_type, DatabaseType::PostgreSQL);
 
@@ -391,7 +441,8 @@ mod tests {
     }
 
     #[test]
-    fn test_data_source_config_pool_config() {
+    fn test_data_source_config_pool_config()
+    {
         let config = DataSourceConfig::new("postgresql://localhost/db")
             .with_max_connections(20)
             .with_min_idle(5);
@@ -402,7 +453,8 @@ mod tests {
     }
 
     #[test]
-    fn test_transaction_auto_config_registers_manager() {
+    fn test_transaction_auto_config_registers_manager()
+    {
         let auto_config = TransactionAutoConfiguration;
 
         let mut ctx = ApplicationContext::new();

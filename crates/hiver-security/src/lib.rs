@@ -161,7 +161,8 @@ pub use user::{InMemoryUserService, User, UserDetails, UserService};
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude {
+pub mod prelude
+{
     // CSRF re-exports / CSRF重新导出
     pub use super::{
         AuditLogger, Authentication, AuthenticationManager, Authority, ConsoleAuditLogger,

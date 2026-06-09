@@ -33,7 +33,8 @@ use syn::{ItemFn, parse_macro_input};
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn retry(args: TokenStream, input: TokenStream) -> TokenStream {
+pub fn retry(args: TokenStream, input: TokenStream) -> TokenStream
+{
     let input_fn = parse_macro_input!(input as ItemFn);
 
     // Parse arguments using string parsing
@@ -57,20 +58,24 @@ pub fn retry(args: TokenStream, input: TokenStream) -> TokenStream {
     let backoff_type = &config.backoff;
 
     // Calculate delay function
-    let delay_calc = if backoff_type == "exponential" {
+    let delay_calc = if backoff_type == "exponential"
+    {
         quote! {
             let delay = std::time::Duration::from_millis(
                 ((#initial_delay_ms as f64) * (#multiplier).powi(attempt as i32 - 1)).min(#max_delay_ms) as u64
             );
         }
-    } else {
+    }
+    else
+    {
         quote! {
             let delay = std::time::Duration::from_millis(#initial_delay_ms);
         }
     };
 
     // Generate retry wrapper
-    let expanded = if is_async {
+    let expanded = if is_async
+    {
         quote! {
             #(#attrs)*
             #vis #sig {
@@ -99,7 +104,9 @@ pub fn retry(args: TokenStream, input: TokenStream) -> TokenStream {
                 Err(last_error.expect("Error should exist after all retries"))
             }
         }
-    } else {
+    }
+    else
+    {
         quote! {
             #(#attrs)*
             #vis #sig {
@@ -156,7 +163,8 @@ pub fn retry(args: TokenStream, input: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn recover(_args: TokenStream, input: TokenStream) -> TokenStream {
+pub fn recover(_args: TokenStream, input: TokenStream) -> TokenStream
+{
     // For now, just pass through - recover methods work standalone
     input
 }
@@ -164,7 +172,8 @@ pub fn recover(_args: TokenStream, input: TokenStream) -> TokenStream {
 /// Retry configuration
 /// 重试配置
 #[derive(Debug, Default)]
-struct RetryConfig {
+struct RetryConfig
+{
     /// Maximum number of retry attempts
     /// 最大重试次数
     max_attempts: usize,
@@ -188,40 +197,54 @@ struct RetryConfig {
 
 /// Parse retry configuration from attribute string
 /// 从属性字符串解析重试配置
-fn parse_retry_config_string(args_str: &str) -> RetryConfig {
+fn parse_retry_config_string(args_str: &str) -> RetryConfig
+{
     let mut config = RetryConfig::default();
 
-    for pair in args_str.split(',') {
+    for pair in args_str.split(',')
+    {
         let pair = pair.trim();
-        if let Some((key, value)) = pair.split_once('=') {
+        if let Some((key, value)) = pair.split_once('=')
+        {
             let key = key.trim();
             let value = value.trim().trim_matches('"').trim_matches('\'');
 
-            match key {
-                "max_attempts" => {
-                    if let Ok(val) = value.parse::<usize>() {
+            match key
+            {
+                "max_attempts" =>
+                {
+                    if let Ok(val) = value.parse::<usize>()
+                    {
                         config.max_attempts = val;
                     }
                 },
-                "initial_delay" => {
-                    if let Ok(val) = value.parse::<u64>() {
+                "initial_delay" =>
+                {
+                    if let Ok(val) = value.parse::<u64>()
+                    {
                         config.initial_delay = val;
                     }
                 },
-                "backoff" => {
+                "backoff" =>
+                {
                     config.backoff = value.to_string();
                 },
-                "multiplier" => {
-                    if let Ok(val) = value.parse::<f64>() {
+                "multiplier" =>
+                {
+                    if let Ok(val) = value.parse::<f64>()
+                    {
                         config.multiplier = val;
                     }
                 },
-                "max_delay" => {
-                    if let Ok(val) = value.parse::<u64>() {
+                "max_delay" =>
+                {
+                    if let Ok(val) = value.parse::<u64>()
+                    {
                         config.max_delay = Some(val);
                     }
                 },
-                _ => {},
+                _ =>
+                {},
             }
         }
     }

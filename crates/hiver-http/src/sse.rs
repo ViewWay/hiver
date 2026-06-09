@@ -42,7 +42,8 @@ use crate::{Body, Response, StatusCode};
 /// Represents a single SSE event that can be sent to the client.
 /// 表示可以发送到客户端的单个SSE事件。
 #[derive(Debug, Clone, Default)]
-pub struct Event {
+pub struct Event
+{
     /// Event ID (optional)
     /// 事件ID（可选）
     id: Option<String>,
@@ -61,10 +62,12 @@ pub struct Event {
     retry: Option<u64>,
 }
 
-impl Event {
+impl Event
+{
     /// Create a new event with data
     /// 创建带有数据的新事件
-    pub fn data(data: impl Into<String>) -> Self {
+    pub fn data(data: impl Into<String>) -> Self
+    {
         Self {
             id: None,
             event_type: None,
@@ -75,7 +78,8 @@ impl Event {
 
     /// Create a comment event (won't be processed by clients)
     /// 创建注释事件（客户端不会处理）
-    pub fn comment(comment: impl Into<String>) -> Self {
+    pub fn comment(comment: impl Into<String>) -> Self
+    {
         Self {
             id: None,
             event_type: None,
@@ -86,56 +90,65 @@ impl Event {
 
     /// Set event ID
     /// 设置事件ID
-    pub fn id(mut self, id: impl Into<String>) -> Self {
+    pub fn id(mut self, id: impl Into<String>) -> Self
+    {
         self.id = Some(id.into());
         self
     }
 
     /// Set event type
     /// 设置事件类型
-    pub fn event(mut self, event: impl Into<String>) -> Self {
+    pub fn event(mut self, event: impl Into<String>) -> Self
+    {
         self.event_type = Some(event.into());
         self
     }
 
     /// Set retry interval
     /// 设置重试间隔
-    pub fn retry(mut self, millis: u64) -> Self {
+    pub fn retry(mut self, millis: u64) -> Self
+    {
         self.retry = Some(millis);
         self
     }
 
     /// Add additional data line
     /// 添加额外的数据行
-    pub fn data_line(mut self, line: impl Into<String>) -> Self {
+    pub fn data_line(mut self, line: impl Into<String>) -> Self
+    {
         self.data.push(line.into());
         self
     }
 
     /// Convert event to SSE format
     /// 将事件转换为SSE格式
-    pub fn to_sse_format(&self) -> String {
+    pub fn to_sse_format(&self) -> String
+    {
         let mut output = String::new();
 
-        if let Some(ref id) = self.id {
+        if let Some(ref id) = self.id
+        {
             output.push_str("id: ");
             output.push_str(id);
             output.push('\n');
         }
 
-        if let Some(ref event) = self.event_type {
+        if let Some(ref event) = self.event_type
+        {
             output.push_str("event: ");
             output.push_str(event);
             output.push('\n');
         }
 
-        for line in &self.data {
+        for line in &self.data
+        {
             output.push_str("data: ");
             output.push_str(line);
             output.push('\n');
         }
 
-        if let Some(retry) = self.retry {
+        if let Some(retry) = self.retry
+        {
             output.push_str("retry: ");
             output.push_str(&retry.to_string());
             output.push('\n');
@@ -146,8 +159,10 @@ impl Event {
     }
 }
 
-impl fmt::Display for Event {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for Event
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         write!(f, "{}", self.to_sse_format())
     }
 }
@@ -175,7 +190,8 @@ impl fmt::Display for Event {
 ///     .with_event(Event::data("Update").id("456"))
 ///     .into_response();
 /// ```
-pub struct Sse {
+pub struct Sse
+{
     /// Events to send
     /// 要发送的事件
     events: Vec<Event>,
@@ -189,10 +205,12 @@ pub struct Sse {
     last_event_id: Option<String>,
 }
 
-impl Sse {
+impl Sse
+{
     /// Create a new SSE response
     /// 创建新的SSE响应
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             events: Vec::new(),
             retry: None,
@@ -202,35 +220,40 @@ impl Sse {
 
     /// Add an event to the response
     /// 向响应添加事件
-    pub fn with_event(mut self, event: Event) -> Self {
+    pub fn with_event(mut self, event: Event) -> Self
+    {
         self.events.push(event);
         self
     }
 
     /// Add multiple events to the response
     /// 向响应添加多个事件
-    pub fn with_events(mut self, events: Vec<Event>) -> Self {
+    pub fn with_events(mut self, events: Vec<Event>) -> Self
+    {
         self.events.extend(events);
         self
     }
 
     /// Set the retry interval header
     /// 设置重试间隔头
-    pub fn with_retry(mut self, millis: u64) -> Self {
+    pub fn with_retry(mut self, millis: u64) -> Self
+    {
         self.retry = Some(millis);
         self
     }
 
     /// Set the Last-Event-ID header
     /// 设置Last-Event-ID头
-    pub fn with_last_event_id(mut self, id: impl Into<String>) -> Self {
+    pub fn with_last_event_id(mut self, id: impl Into<String>) -> Self
+    {
         self.last_event_id = Some(id.into());
         self
     }
 
     /// Convert to HTTP response
     /// 转换为HTTP响应
-    pub fn into_response(self) -> Response {
+    pub fn into_response(self) -> Response
+    {
         let mut builder = Response::builder()
             .status(StatusCode::OK)
             .header("content-type", "text/event-stream; charset=utf-8")
@@ -238,11 +261,13 @@ impl Sse {
             .header("connection", "keep-alive")
             .header("x-accel-buffering", "no"); // Disable nginx buffering
 
-        if let Some(retry) = self.retry {
+        if let Some(retry) = self.retry
+        {
             builder = builder.header("retry", retry.to_string());
         }
 
-        if let Some(ref id) = self.last_event_id {
+        if let Some(ref id) = self.last_event_id
+        {
             builder = builder.header("last-event-id", id);
         }
 
@@ -260,31 +285,38 @@ impl Sse {
 
     /// Create a simple event (shorthand)
     /// 创建简单事件（简写）
-    pub fn event(data: impl Into<String>) -> Event {
+    pub fn event(data: impl Into<String>) -> Event
+    {
         Event::data(data)
     }
 
     /// Create a named event
     /// 创建命名事件
-    pub fn named_event(name: impl Into<String>, data: impl Into<String>) -> Event {
+    pub fn named_event(name: impl Into<String>, data: impl Into<String>) -> Event
+    {
         Event::data(data).event(name)
     }
 
     /// Create an event with ID
     /// 创建带ID的事件
-    pub fn event_with_id(id: impl Into<String>, data: impl Into<String>) -> Event {
+    pub fn event_with_id(id: impl Into<String>, data: impl Into<String>) -> Event
+    {
         Event::data(data).id(id)
     }
 }
 
-impl Default for Sse {
-    fn default() -> Self {
+impl Default for Sse
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl From<Sse> for Response {
-    fn from(sse: Sse) -> Self {
+impl From<Sse> for Response
+{
+    fn from(sse: Sse) -> Self
+    {
         sse.into_response()
     }
 }
@@ -294,7 +326,8 @@ impl From<Sse> for Response {
 ///
 /// Automatically sends comment events to keep the connection alive.
 /// 自动发送注释事件以保持连接活跃。
-pub struct SseKeepAlive {
+pub struct SseKeepAlive
+{
     /// Interval between keep-alive events
     /// 保活事件之间的间隔
     interval: Duration,
@@ -304,10 +337,12 @@ pub struct SseKeepAlive {
     comment: String,
 }
 
-impl SseKeepAlive {
+impl SseKeepAlive
+{
     /// Create a new keep-alive configuration
     /// 创建新的保活配置
-    pub fn new(interval: Duration) -> Self {
+    pub fn new(interval: Duration) -> Self
+    {
         Self {
             interval,
             comment: "keepalive".to_string(),
@@ -316,32 +351,38 @@ impl SseKeepAlive {
 
     /// Set the comment text
     /// 设置注释文本
-    pub fn with_comment(mut self, comment: impl Into<String>) -> Self {
+    pub fn with_comment(mut self, comment: impl Into<String>) -> Self
+    {
         self.comment = comment.into();
         self
     }
 
     /// Get the interval
     /// 获取间隔
-    pub fn interval(&self) -> Duration {
+    pub fn interval(&self) -> Duration
+    {
         self.interval
     }
 
     /// Get the comment
     /// 获取注释
-    pub fn comment(&self) -> &str {
+    pub fn comment(&self) -> &str
+    {
         &self.comment
     }
 
     /// Create a keep-alive event
     /// 创建保活事件
-    pub fn to_event(&self) -> Event {
+    pub fn to_event(&self) -> Event
+    {
         Event::comment(&self.comment)
     }
 }
 
-impl Default for SseKeepAlive {
-    fn default() -> Self {
+impl Default for SseKeepAlive
+{
+    fn default() -> Self
+    {
         Self::new(Duration::from_secs(15))
     }
 }
@@ -354,18 +395,21 @@ impl Default for SseKeepAlive {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_event_data() {
+    fn test_event_data()
+    {
         let event = Event::data("Hello, World!");
         let output = event.to_sse_format();
         assert!(output.contains("data: Hello, World!\n"));
     }
 
     #[test]
-    fn test_event_with_id() {
+    fn test_event_with_id()
+    {
         let event = Event::data("test").id("123");
         let output = event.to_sse_format();
         assert!(output.contains("id: 123\n"));
@@ -373,7 +417,8 @@ mod tests {
     }
 
     #[test]
-    fn test_event_with_type() {
+    fn test_event_with_type()
+    {
         let event = Event::data("test").event("message");
         let output = event.to_sse_format();
         assert!(output.contains("event: message\n"));
@@ -381,7 +426,8 @@ mod tests {
     }
 
     #[test]
-    fn test_event_with_retry() {
+    fn test_event_with_retry()
+    {
         let event = Event::data("test").retry(3000);
         let output = event.to_sse_format();
         assert!(output.contains("retry: 3000\n"));
@@ -389,7 +435,8 @@ mod tests {
     }
 
     #[test]
-    fn test_event_multiple_data_lines() {
+    fn test_event_multiple_data_lines()
+    {
         let event = Event::data("Line 1")
             .data_line("Line 2")
             .data_line("Line 3");
@@ -400,14 +447,16 @@ mod tests {
     }
 
     #[test]
-    fn test_event_comment() {
+    fn test_event_comment()
+    {
         let event = Event::comment("This is a comment");
         let output = event.to_sse_format();
         assert!(output.contains(":This is a comment\n"));
     }
 
     #[test]
-    fn test_sse_builder() {
+    fn test_sse_builder()
+    {
         let sse = Sse::new()
             .with_event(Event::data("test"))
             .with_retry(5000)
@@ -419,7 +468,8 @@ mod tests {
     }
 
     #[test]
-    fn test_sse_into_response() {
+    fn test_sse_into_response()
+    {
         let sse = Sse::new().with_event(Event::data("Hello"));
         let response = sse.into_response();
 
@@ -428,21 +478,24 @@ mod tests {
     }
 
     #[test]
-    fn test_sse_keep_alive_default() {
+    fn test_sse_keep_alive_default()
+    {
         let keepalive = SseKeepAlive::default();
         assert_eq!(keepalive.interval(), Duration::from_secs(15));
         assert_eq!(keepalive.comment(), "keepalive");
     }
 
     #[test]
-    fn test_sse_keep_alive_custom() {
+    fn test_sse_keep_alive_custom()
+    {
         let keepalive = SseKeepAlive::new(Duration::from_secs(30)).with_comment("ping");
         assert_eq!(keepalive.interval(), Duration::from_secs(30));
         assert_eq!(keepalive.comment(), "ping");
     }
 
     #[test]
-    fn test_sse_keep_alive_to_event() {
+    fn test_sse_keep_alive_to_event()
+    {
         let keepalive = SseKeepAlive::new(Duration::from_secs(30)).with_comment("ping");
         let event = keepalive.to_event();
         let output = event.to_sse_format();

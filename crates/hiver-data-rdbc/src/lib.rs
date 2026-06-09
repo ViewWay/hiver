@@ -54,7 +54,8 @@ pub use transaction::{IsolationLevel, Transaction, TransactionManager};
 /// Database type enum
 /// 数据库类型枚举
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum DatabaseType {
+pub enum DatabaseType
+{
     /// PostgreSQL database
     PostgreSQL,
     /// MySQL database
@@ -69,7 +70,8 @@ pub enum DatabaseType {
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Commonly used types re-exported for convenience
-pub mod prelude {
+pub mod prelude
+{
     #[cfg(any(feature = "mysql", feature = "all"))]
     pub use super::MySqlPoolClient;
     #[cfg(any(feature = "sqlite", feature = "all"))]

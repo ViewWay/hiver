@@ -67,7 +67,8 @@ use crate::{
 /// }
 /// ```
 #[derive(Debug, Clone)]
-pub struct MultipartFile {
+pub struct MultipartFile
+{
     /// Original filename
     /// 原始文件名
     filename: Option<String>,
@@ -85,7 +86,8 @@ pub struct MultipartFile {
     name: String,
 }
 
-impl MultipartFile {
+impl MultipartFile
+{
     /// Create a new `MultipartFile`
     /// 创建新的 `MultipartFile`
     pub fn new(
@@ -93,7 +95,8 @@ impl MultipartFile {
         filename: Option<String>,
         content_type: Option<String>,
         data: Vec<u8>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             name: name.into(),
             filename,
@@ -104,50 +107,58 @@ impl MultipartFile {
 
     /// Get the original filename
     /// 获取原始文件名
-    pub fn filename(&self) -> Option<&str> {
+    pub fn filename(&self) -> Option<&str>
+    {
         self.filename.as_deref()
     }
 
     /// Get the content type
     /// 获取内容类型
-    pub fn content_type(&self) -> Option<&str> {
+    pub fn content_type(&self) -> Option<&str>
+    {
         self.content_type.as_deref()
     }
 
     /// Get the form field name
     /// 获取表单字段名
-    pub fn name(&self) -> &str {
+    pub fn name(&self) -> &str
+    {
         &self.name
     }
 
     /// Get the file size in bytes
     /// 获取文件大小（字节）
-    pub fn size(&self) -> usize {
+    pub fn size(&self) -> usize
+    {
         self.data.len()
     }
 
     /// Check if the file is empty
     /// 检查文件是否为空
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.data.is_empty()
     }
 
     /// Get the file bytes as a slice
     /// 获取文件字节切片
-    pub fn bytes(&self) -> &[u8] {
+    pub fn bytes(&self) -> &[u8]
+    {
         &self.data
     }
 
     /// Convert bytes to a String
     /// 将字节转换为字符串
-    pub fn bytes_as_string(&self) -> Result<String> {
+    pub fn bytes_as_string(&self) -> Result<String>
+    {
         String::from_utf8(self.data.clone())
             .map_err(|_| Error::bad_request("File is not valid UTF-8".to_string()))
     }
 
     /// Get file extension
     /// 获取文件扩展名
-    pub fn extension(&self) -> Option<&str> {
+    pub fn extension(&self) -> Option<&str>
+    {
         self.filename
             .as_ref()?
             .rsplit('.')
@@ -157,7 +168,8 @@ impl MultipartFile {
 
     /// Check if the file has a specific content type
     /// 检查文件是否有特定内容类型
-    pub fn has_content_type(&self, content_type: &str) -> bool {
+    pub fn has_content_type(&self, content_type: &str) -> bool
+    {
         self.content_type
             .as_ref()
             .is_some_and(|ct| ct.starts_with(content_type))
@@ -165,7 +177,8 @@ impl MultipartFile {
 
     /// Check if the file has a specific extension
     /// 检查文件是否有特定扩展名
-    pub fn has_extension(&self, extension: &str) -> bool {
+    pub fn has_extension(&self, extension: &str) -> bool
+    {
         self.extension()
             .is_some_and(|ext| ext.eq_ignore_ascii_case(extension))
     }
@@ -211,54 +224,66 @@ impl MultipartFile {
 /// }
 /// ```
 #[derive(Debug, Clone)]
-pub struct MultipartForm<T> {
+pub struct MultipartForm<T>
+{
     /// The deserialized form data
     /// 反序列化的表单数据
     pub inner: T,
 }
 
-impl<T> MultipartForm<T> {
+impl<T> MultipartForm<T>
+{
     /// Create a new `MultipartForm`
     /// 创建新的 `MultipartForm`
-    pub fn new(inner: T) -> Self {
+    pub fn new(inner: T) -> Self
+    {
         Self { inner }
     }
 
     /// Get the inner value
     /// 获取内部值
-    pub fn into_inner(self) -> T {
+    pub fn into_inner(self) -> T
+    {
         self.inner
     }
 
     /// Get a reference to the inner value
     /// 获取内部值的引用
-    pub fn get(&self) -> &T {
+    pub fn get(&self) -> &T
+    {
         &self.inner
     }
 
     /// Get a mutable reference to the inner value
     /// 获取内部值的可变引用
-    pub fn get_mut(&mut self) -> &mut T {
+    pub fn get_mut(&mut self) -> &mut T
+    {
         &mut self.inner
     }
 }
 
-impl<T> From<T> for MultipartForm<T> {
-    fn from(inner: T) -> Self {
+impl<T> From<T> for MultipartForm<T>
+{
+    fn from(inner: T) -> Self
+    {
         Self::new(inner)
     }
 }
 
-impl<T> std::ops::Deref for MultipartForm<T> {
+impl<T> std::ops::Deref for MultipartForm<T>
+{
     type Target = T;
 
-    fn deref(&self) -> &Self::Target {
+    fn deref(&self) -> &Self::Target
+    {
         &self.inner
     }
 }
 
-impl<T> std::ops::DerefMut for MultipartForm<T> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
+impl<T> std::ops::DerefMut for MultipartForm<T>
+{
+    fn deref_mut(&mut self) -> &mut Self::Target
+    {
         &mut self.inner
     }
 }
@@ -295,7 +320,8 @@ impl<T> std::ops::DerefMut for MultipartForm<T> {
 /// }
 /// ```
 #[derive(Debug, Clone)]
-pub struct MultipartData {
+pub struct MultipartData
+{
     /// Uploaded files
     /// 上传的文件
     files: HashMap<String, MultipartFile>,
@@ -305,10 +331,12 @@ pub struct MultipartData {
     fields: HashMap<String, String>,
 }
 
-impl MultipartData {
+impl MultipartData
+{
     /// Create a new `MultipartData`
     /// 创建新的 `MultipartData`
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             files: HashMap::new(),
             fields: HashMap::new(),
@@ -317,67 +345,79 @@ impl MultipartData {
 
     /// Add a file
     /// 添加文件
-    pub fn add_file(&mut self, name: impl Into<String>, file: MultipartFile) {
+    pub fn add_file(&mut self, name: impl Into<String>, file: MultipartFile)
+    {
         self.files.insert(name.into(), file);
     }
 
     /// Add a field
     /// 添加字段
-    pub fn add_field(&mut self, name: impl Into<String>, value: impl Into<String>) {
+    pub fn add_field(&mut self, name: impl Into<String>, value: impl Into<String>)
+    {
         self.fields.insert(name.into(), value.into());
     }
 
     /// Get a file by name
     /// 按名称获取文件
-    pub fn file(&self, name: &str) -> Option<&MultipartFile> {
+    pub fn file(&self, name: &str) -> Option<&MultipartFile>
+    {
         self.files.get(name)
     }
 
     /// Get all files
     /// 获取所有文件
-    pub fn files(&self) -> &HashMap<String, MultipartFile> {
+    pub fn files(&self) -> &HashMap<String, MultipartFile>
+    {
         &self.files
     }
 
     /// Get a field value by name
     /// 按名称获取字段值
-    pub fn field(&self, name: &str) -> Option<&str> {
+    pub fn field(&self, name: &str) -> Option<&str>
+    {
         self.fields.get(name).map(String::as_str)
     }
 
     /// Get all fields
     /// 获取所有字段
-    pub fn fields(&self) -> &HashMap<String, String> {
+    pub fn fields(&self) -> &HashMap<String, String>
+    {
         &self.fields
     }
 
     /// Check if a file exists
     /// 检查文件是否存在
-    pub fn has_file(&self, name: &str) -> bool {
+    pub fn has_file(&self, name: &str) -> bool
+    {
         self.files.contains_key(name)
     }
 
     /// Check if a field exists
     /// 检查字段是否存在
-    pub fn has_field(&self, name: &str) -> bool {
+    pub fn has_field(&self, name: &str) -> bool
+    {
         self.fields.contains_key(name)
     }
 
     /// Get the number of files
     /// 获取文件数量
-    pub fn file_count(&self) -> usize {
+    pub fn file_count(&self) -> usize
+    {
         self.files.len()
     }
 
     /// Get the number of fields
     /// 获取字段数量
-    pub fn field_count(&self) -> usize {
+    pub fn field_count(&self) -> usize
+    {
         self.fields.len()
     }
 }
 
-impl Default for MultipartData {
-    fn default() -> Self {
+impl Default for MultipartData
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -389,18 +429,22 @@ impl Default for MultipartData {
 
 /// Trait for extracting multipart data from requests
 /// 从请求中提取 multipart 数据的 Trait
-pub trait FromMultipart: Sized {
+pub trait FromMultipart: Sized
+{
     /// Extract multipart data from the request
     /// 从请求中提取 multipart 数据
     fn from_multipart(req: &Request) -> Pin<Box<dyn Future<Output = Result<Self>> + Send + '_>>;
 }
 
-impl FromMultipart for MultipartData {
-    fn from_multipart(req: &Request) -> Pin<Box<dyn Future<Output = Result<Self>> + Send + '_>> {
+impl FromMultipart for MultipartData
+{
+    fn from_multipart(req: &Request) -> Pin<Box<dyn Future<Output = Result<Self>> + Send + '_>>
+    {
         Box::pin(async move {
             let content_type = req.header("content-type").unwrap_or("");
 
-            if !content_type.starts_with("multipart/") {
+            if !content_type.starts_with("multipart/")
+            {
                 return Err(Error::bad_request("Expected multipart request".to_string()));
             }
 
@@ -417,8 +461,10 @@ impl FromMultipart for MultipartData {
     }
 }
 
-impl<T: for<'de> Deserialize<'de> + Send> FromMultipart for MultipartForm<T> {
-    fn from_multipart(req: &Request) -> Pin<Box<dyn Future<Output = Result<Self>> + Send + '_>> {
+impl<T: for<'de> Deserialize<'de> + Send> FromMultipart for MultipartForm<T>
+{
+    fn from_multipart(req: &Request) -> Pin<Box<dyn Future<Output = Result<Self>> + Send + '_>>
+    {
         Box::pin(async move {
             let body = req
                 .body()
@@ -443,7 +489,8 @@ impl<T: for<'de> Deserialize<'de> + Send> FromMultipart for MultipartForm<T> {
 /// File size limits for uploads
 /// 上传文件大小限制
 #[derive(Debug, Clone, Copy)]
-pub struct FileSizeLimits {
+pub struct FileSizeLimits
+{
     /// Maximum file size in bytes
     /// 最大文件大小（字节）
     pub max_file_size: usize,
@@ -453,10 +500,12 @@ pub struct FileSizeLimits {
     pub max_request_size: usize,
 }
 
-impl FileSizeLimits {
+impl FileSizeLimits
+{
     /// Create new file size limits
     /// 创建新的文件大小限制
-    pub fn new(max_file_size: usize, max_request_size: usize) -> Self {
+    pub fn new(max_file_size: usize, max_request_size: usize) -> Self
+    {
         Self {
             max_file_size,
             max_request_size,
@@ -465,7 +514,8 @@ impl FileSizeLimits {
 
     /// Default limits: 10MB per file, 100MB total
     /// 默认限制：每个文件 10MB，总共 100MB
-    pub fn default_limits() -> Self {
+    pub fn default_limits() -> Self
+    {
         Self {
             max_file_size: 10 * 1024 * 1024,     // 10MB
             max_request_size: 100 * 1024 * 1024, // 100MB
@@ -474,21 +524,25 @@ impl FileSizeLimits {
 
     /// Create custom max file size
     /// 创建自定义最大文件大小
-    pub fn with_max_file_size(mut self, size: usize) -> Self {
+    pub fn with_max_file_size(mut self, size: usize) -> Self
+    {
         self.max_file_size = size;
         self
     }
 
     /// Create custom max request size
     /// 创建自定义最大请求大小
-    pub fn with_max_request_size(mut self, size: usize) -> Self {
+    pub fn with_max_request_size(mut self, size: usize) -> Self
+    {
         self.max_request_size = size;
         self
     }
 }
 
-impl Default for FileSizeLimits {
-    fn default() -> Self {
+impl Default for FileSizeLimits
+{
+    fn default() -> Self
+    {
         Self::default_limits()
     }
 }
@@ -500,7 +554,8 @@ impl Default for FileSizeLimits {
 
 /// Validate file extension
 /// 验证文件扩展名
-pub fn validate_extension(filename: &str, allowed: &[&str]) -> bool {
+pub fn validate_extension(filename: &str, allowed: &[&str]) -> bool
+{
     filename.rsplit('.').next().is_some_and(|ext| {
         allowed
             .iter()
@@ -510,7 +565,8 @@ pub fn validate_extension(filename: &str, allowed: &[&str]) -> bool {
 
 /// Validate content type
 /// 验证内容类型
-pub fn validate_content_type(content_type: &str, allowed: &[&str]) -> bool {
+pub fn validate_content_type(content_type: &str, allowed: &[&str]) -> bool
+{
     allowed
         .iter()
         .any(|allowed| content_type.starts_with(allowed))
@@ -518,8 +574,10 @@ pub fn validate_content_type(content_type: &str, allowed: &[&str]) -> bool {
 
 /// Get common media type by extension
 /// 根据扩展名获取常见媒体类型
-pub fn media_type_for_extension(extension: &str) -> Option<&'static str> {
-    match extension.to_lowercase().as_str() {
+pub fn media_type_for_extension(extension: &str) -> Option<&'static str>
+{
+    match extension.to_lowercase().as_str()
+    {
         "jpg" | "jpeg" => Some("image/jpeg"),
         "png" => Some("image/png"),
         "gif" => Some("image/gif"),
@@ -554,11 +612,13 @@ pub fn media_type_for_extension(extension: &str) -> Option<&'static str> {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_multipart_file() {
+    fn test_multipart_file()
+    {
         let file = MultipartFile::new(
             "file",
             Some("test.txt".to_string()),
@@ -577,9 +637,11 @@ mod tests {
     }
 
     #[test]
-    fn test_multipart_form() {
+    fn test_multipart_form()
+    {
         #[derive(Debug, Clone)]
-        struct TestData {
+        struct TestData
+        {
             name: String,
             value: i32,
         }
@@ -595,7 +657,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multipart_data() {
+    fn test_multipart_data()
+    {
         let mut data = MultipartData::new();
         data.add_field("title", "Test Title");
         data.add_field("description", "Test Description");
@@ -607,14 +670,16 @@ mod tests {
     }
 
     #[test]
-    fn test_file_size_limits() {
+    fn test_file_size_limits()
+    {
         let limits = FileSizeLimits::default_limits();
         assert_eq!(limits.max_file_size, 10 * 1024 * 1024);
         assert_eq!(limits.max_request_size, 100 * 1024 * 1024);
     }
 
     #[test]
-    fn test_validate_extension() {
+    fn test_validate_extension()
+    {
         let allowed = vec!["jpg", "png", "gif"];
 
         assert!(validate_extension("image.jpg", &allowed));
@@ -624,7 +689,8 @@ mod tests {
     }
 
     #[test]
-    fn test_media_type_for_extension() {
+    fn test_media_type_for_extension()
+    {
         assert_eq!(media_type_for_extension("jpg"), Some("image/jpeg"));
         assert_eq!(media_type_for_extension("png"), Some("image/png"));
         assert_eq!(media_type_for_extension("pdf"), Some("application/pdf"));

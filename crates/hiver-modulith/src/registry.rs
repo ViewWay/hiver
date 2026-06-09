@@ -5,20 +5,24 @@ use std::{collections::HashMap, sync::RwLock};
 use crate::module::{Module, ModuleMetadata};
 
 /// Registry of application modules.
-pub struct ModuleRegistry {
+pub struct ModuleRegistry
+{
     modules: RwLock<HashMap<String, ModuleMetadata>>,
 }
 
-impl ModuleRegistry {
+impl ModuleRegistry
+{
     /// Create an empty registry.
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             modules: RwLock::new(HashMap::new()),
         }
     }
 
     /// Register a module.
-    pub fn register<M: Module>(&self, module: &M) {
+    pub fn register<M: Module>(&self, module: &M)
+    {
         let meta = ModuleMetadata::from_module(module);
         self.modules
             .write()
@@ -27,33 +31,40 @@ impl ModuleRegistry {
     }
 
     /// Get a module by name.
-    pub fn get(&self, name: &str) -> Option<ModuleMetadata> {
+    pub fn get(&self, name: &str) -> Option<ModuleMetadata>
+    {
         self.modules.read().unwrap().get(name).cloned()
     }
 
     /// List all registered module names.
-    pub fn module_names(&self) -> Vec<String> {
+    pub fn module_names(&self) -> Vec<String>
+    {
         self.modules.read().unwrap().keys().cloned().collect()
     }
 
     /// List all module metadata.
-    pub fn all_modules(&self) -> Vec<ModuleMetadata> {
+    pub fn all_modules(&self) -> Vec<ModuleMetadata>
+    {
         self.modules.read().unwrap().values().cloned().collect()
     }
 
     /// Number of registered modules.
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.modules.read().unwrap().len()
     }
 
     /// Check if empty.
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.modules.read().unwrap().is_empty()
     }
 }
 
-impl Default for ModuleRegistry {
-    fn default() -> Self {
+impl Default for ModuleRegistry
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -66,33 +77,41 @@ impl Default for ModuleRegistry {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     struct CustomerModule;
-    impl Module for CustomerModule {
-        fn name(&self) -> &'static str {
+    impl Module for CustomerModule
+    {
+        fn name(&self) -> &'static str
+        {
             "customer"
         }
 
-        fn description(&self) -> &'static str {
+        fn description(&self) -> &'static str
+        {
             "Customer management"
         }
     }
 
     struct OrderModule;
-    impl Module for OrderModule {
-        fn name(&self) -> &'static str {
+    impl Module for OrderModule
+    {
+        fn name(&self) -> &'static str
+        {
             "order"
         }
 
-        fn dependencies(&self) -> Vec<&str> {
+        fn dependencies(&self) -> Vec<&str>
+        {
             vec!["customer"]
         }
     }
 
     #[test]
-    fn test_register_and_get() {
+    fn test_register_and_get()
+    {
         let registry = ModuleRegistry::new();
         registry.register(&CustomerModule);
         registry.register(&OrderModule);
@@ -104,7 +123,8 @@ mod tests {
     }
 
     #[test]
-    fn test_module_names() {
+    fn test_module_names()
+    {
         let registry = ModuleRegistry::new();
         registry.register(&CustomerModule);
         registry.register(&OrderModule);

@@ -8,14 +8,16 @@ use serde::{Deserialize, Serialize};
 
 /// SOAP message / SOAP消息
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SoapMessage {
+pub struct SoapMessage
+{
     /// The SOAP envelope / SOAP信封
     pub envelope: SoapEnvelope,
 }
 
 /// SOAP envelope / SOAP信封
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SoapEnvelope {
+pub struct SoapEnvelope
+{
     /// Optional SOAP header / 可选SOAP头部
     pub header: Option<SoapHeader>,
     /// SOAP body / SOAP主体
@@ -24,14 +26,16 @@ pub struct SoapEnvelope {
 
 /// SOAP header / SOAP头部
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SoapHeader {
+pub struct SoapHeader
+{
     /// Header elements / 头部元素列表
     pub elements: Vec<SoapHeaderElement>,
 }
 
 /// SOAP header element / SOAP头部元素
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SoapHeaderElement {
+pub struct SoapHeaderElement
+{
     /// Element name / 元素名称
     pub name: String,
     /// Element namespace / 元素命名空间
@@ -42,14 +46,16 @@ pub struct SoapHeaderElement {
 
 /// SOAP body / SOAP主体
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SoapBody {
+pub struct SoapBody
+{
     /// Body payload as JSON value / 主体负载（JSON值）
     pub payload: serde_json::Value,
 }
 
 /// SOAP fault / SOAP故障
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SoapFault {
+pub struct SoapFault
+{
     /// Fault code / 故障代码
     pub code: String,
     /// Fault string / 故障描述
@@ -60,9 +66,11 @@ pub struct SoapFault {
     pub detail: Option<String>,
 }
 
-impl SoapMessage {
+impl SoapMessage
+{
     /// Create a new SOAP message with a payload / 创建带负载的新SOAP消息
-    pub fn new(payload: serde_json::Value) -> Self {
+    pub fn new(payload: serde_json::Value) -> Self
+    {
         Self {
             envelope: SoapEnvelope {
                 header: None,
@@ -72,7 +80,8 @@ impl SoapMessage {
     }
 
     /// Create a SOAP message with a header / 创建带头部的SOAP消息
-    pub fn with_header(payload: serde_json::Value, header: SoapHeader) -> Self {
+    pub fn with_header(payload: serde_json::Value, header: SoapHeader) -> Self
+    {
         Self {
             envelope: SoapEnvelope {
                 header: Some(header),
@@ -82,7 +91,8 @@ impl SoapMessage {
     }
 
     /// Create a SOAP fault message / 创建SOAP故障消息
-    pub fn fault(code: &str, string: &str) -> Self {
+    pub fn fault(code: &str, string: &str) -> Self
+    {
         let fault = SoapFault {
             code: code.to_string(),
             string: string.to_string(),
@@ -101,19 +111,23 @@ impl SoapMessage {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_create_message() {
+    fn test_create_message()
+    {
         let msg = SoapMessage::new(serde_json::json!({"greeting": "hello"}));
         assert!(msg.envelope.header.is_none());
     }
 
     #[test]
-    fn test_fault_message() {
+    fn test_fault_message()
+    {
         let msg = SoapMessage::fault("Server", "Internal error");
-        match msg.envelope.body.payload.get("code") {
+        match msg.envelope.body.payload.get("code")
+        {
             Some(code) => assert_eq!(code.as_str().unwrap(), "Server"),
             _ => panic!("Expected fault code"),
         }

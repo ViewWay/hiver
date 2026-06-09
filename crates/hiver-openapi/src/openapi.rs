@@ -21,7 +21,8 @@ use crate::{Components, InfoConfig, OpenApiConfig, PathItem, TagConfig};
 /// )
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OpenApi {
+pub struct OpenApi
+{
     /// `OpenAPI` version
     /// `OpenAPI版本`
     pub openapi: String,
@@ -60,10 +61,12 @@ pub struct OpenApi {
     pub external_docs: Option<crate::ExternalDocsConfig>,
 }
 
-impl OpenApi {
+impl OpenApi
+{
     /// Create a new `OpenAPI` specification
     /// `创建新的OpenAPI规范`
-    pub fn new(config: OpenApiConfig) -> Self {
+    pub fn new(config: OpenApiConfig) -> Self
+    {
         Self {
             openapi: crate::OPENAPI_VERSION.to_string(),
             info: config.info,
@@ -78,31 +81,38 @@ impl OpenApi {
 
     /// Add path
     /// 添加路径
-    pub fn add_path(mut self, path: impl Into<String>, item: PathItem) -> Self {
+    pub fn add_path(mut self, path: impl Into<String>, item: PathItem) -> Self
+    {
         self.paths.insert(path.into(), item);
         self
     }
 
     /// Add paths from iterator
     /// 从迭代器添加路径
-    pub fn add_paths(mut self, paths: impl IntoIterator<Item = (String, PathItem)>) -> Self {
+    pub fn add_paths(mut self, paths: impl IntoIterator<Item = (String, PathItem)>) -> Self
+    {
         self.paths.extend(paths);
         self
     }
 
     /// Set components
     /// 设置组件
-    pub fn components(mut self, components: Components) -> Self {
+    pub fn components(mut self, components: Components) -> Self
+    {
         self.components = Some(components);
         self
     }
 
     /// Add schema to components
     /// 向组件添加模式
-    pub fn add_schema(mut self, name: impl Into<String>, schema: crate::Schema) -> Self {
-        if let Some(ref mut components) = self.components {
+    pub fn add_schema(mut self, name: impl Into<String>, schema: crate::Schema) -> Self
+    {
+        if let Some(ref mut components) = self.components
+        {
             components.add_schema(name, schema);
-        } else {
+        }
+        else
+        {
             let mut c = Components::new();
             c.add_schema(name, schema);
             self.components = Some(c);
@@ -112,10 +122,14 @@ impl OpenApi {
 
     /// Add response to components
     /// 向组件添加响应
-    pub fn add_response(mut self, name: impl Into<String>, response: crate::Response) -> Self {
-        if let Some(ref mut components) = self.components {
+    pub fn add_response(mut self, name: impl Into<String>, response: crate::Response) -> Self
+    {
+        if let Some(ref mut components) = self.components
+        {
             components.add_response(name, response);
-        } else {
+        }
+        else
+        {
             let mut c = Components::new();
             c.add_response(name, response);
             self.components = Some(c);
@@ -125,26 +139,31 @@ impl OpenApi {
 
     /// Add security requirement
     /// 添加安全要求
-    pub fn add_security(mut self, security: HashMap<String, Vec<String>>) -> Self {
+    pub fn add_security(mut self, security: HashMap<String, Vec<String>>) -> Self
+    {
         self.security.push(security);
         self
     }
 
     /// Generate JSON
     /// 生成JSON
-    pub fn to_json(&self) -> Result<String, serde_json::Error> {
+    pub fn to_json(&self) -> Result<String, serde_json::Error>
+    {
         serde_json::to_string_pretty(self)
     }
 
     /// Generate YAML
     /// 生成YAML
-    pub fn to_yaml(&self) -> Result<String, serde_yaml::Error> {
+    pub fn to_yaml(&self) -> Result<String, serde_yaml::Error>
+    {
         serde_yaml::to_string(self)
     }
 }
 
-impl Default for OpenApi {
-    fn default() -> Self {
+impl Default for OpenApi
+{
+    fn default() -> Self
+    {
         Self::new(OpenApiConfig::default())
     }
 }
@@ -155,16 +174,19 @@ impl Default for OpenApi {
 /// Helper for building `OpenAPI` specifications.
 /// `用于构建OpenAPI规范的助手`。
 #[derive(Debug, Clone)]
-pub struct OpenApiBuilder {
+pub struct OpenApiBuilder
+{
     config: OpenApiConfig,
     paths: HashMap<String, PathItem>,
     schemas: HashMap<String, crate::Schema>,
 }
 
-impl OpenApiBuilder {
+impl OpenApiBuilder
+{
     /// Create a new builder
     /// 创建新构建器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             config: OpenApiConfig::default(),
             paths: HashMap::new(),
@@ -174,56 +196,65 @@ impl OpenApiBuilder {
 
     /// Set title
     /// 设置标题
-    pub fn title(mut self, title: impl Into<String>) -> Self {
+    pub fn title(mut self, title: impl Into<String>) -> Self
+    {
         self.config.info.title = title.into();
         self
     }
 
     /// Set version
     /// 设置版本
-    pub fn version(mut self, version: impl Into<String>) -> Self {
+    pub fn version(mut self, version: impl Into<String>) -> Self
+    {
         self.config.info.version = version.into();
         self
     }
 
     /// Set description
     /// 设置描述
-    pub fn description(mut self, description: impl Into<String>) -> Self {
+    pub fn description(mut self, description: impl Into<String>) -> Self
+    {
         self.config.info.description = Some(description.into());
         self
     }
 
     /// Add path
     /// 添加路径
-    pub fn add_path(mut self, path: impl Into<String>, item: PathItem) -> Self {
+    pub fn add_path(mut self, path: impl Into<String>, item: PathItem) -> Self
+    {
         self.paths.insert(path.into(), item);
         self
     }
 
     /// Add schema
     /// 添加模式
-    pub fn add_schema(mut self, name: impl Into<String>, schema: crate::Schema) -> Self {
+    pub fn add_schema(mut self, name: impl Into<String>, schema: crate::Schema) -> Self
+    {
         self.schemas.insert(name.into(), schema);
         self
     }
 
     /// Add tag
     /// 添加标签
-    pub fn add_tag(mut self, tag: TagConfig) -> Self {
+    pub fn add_tag(mut self, tag: TagConfig) -> Self
+    {
         self.config.tags.push(tag);
         self
     }
 
     /// Build the `OpenAPI` specification
     /// `构建OpenAPI规范`
-    pub fn build(self) -> OpenApi {
+    pub fn build(self) -> OpenApi
+    {
         let mut openapi = OpenApi::new(self.config);
 
-        for (path, item) in self.paths {
+        for (path, item) in self.paths
+        {
             openapi = openapi.add_path(path, item);
         }
 
-        for (name, schema) in self.schemas {
+        for (name, schema) in self.schemas
+        {
             openapi = openapi.add_schema(name, schema);
         }
 
@@ -231,8 +262,10 @@ impl OpenApiBuilder {
     }
 }
 
-impl Default for OpenApiBuilder {
-    fn default() -> Self {
+impl Default for OpenApiBuilder
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -245,12 +278,14 @@ impl Default for OpenApiBuilder {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::{Operation, Response, Schema};
 
     #[test]
-    fn test_openapi_builder() {
+    fn test_openapi_builder()
+    {
         let openapi = OpenApiBuilder::new()
             .title("Test API")
             .version("1.0.0")
@@ -268,7 +303,8 @@ mod tests {
     }
 
     #[test]
-    fn test_openapi_to_json() {
+    fn test_openapi_to_json()
+    {
         let openapi = OpenApiBuilder::new().title("Test API").build();
 
         let json = openapi.to_json().unwrap();

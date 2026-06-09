@@ -10,7 +10,8 @@
 /// REST resource mapping configuration.
 /// REST 资源映射配置。
 #[derive(Debug, Clone)]
-pub struct RestResourceConfig {
+pub struct RestResourceConfig
+{
     /// Base path (e.g., "/api").
     pub base_path: String,
     /// Resource name (e.g., "users").
@@ -21,9 +22,11 @@ pub struct RestResourceConfig {
     pub max_page_size: u32,
 }
 
-impl RestResourceConfig {
+impl RestResourceConfig
+{
     /// Create a new config for a resource.
-    pub fn new(resource_name: impl Into<String>) -> Self {
+    pub fn new(resource_name: impl Into<String>) -> Self
+    {
         Self {
             base_path: "/api".to_string(),
             resource_name: resource_name.into(),
@@ -33,20 +36,23 @@ impl RestResourceConfig {
     }
 
     /// Set the base path.
-    pub fn base_path(mut self, path: impl Into<String>) -> Self {
+    pub fn base_path(mut self, path: impl Into<String>) -> Self
+    {
         self.base_path = path.into();
         self
     }
 
     /// Get the full resource path.
-    pub fn full_path(&self) -> String {
+    pub fn full_path(&self) -> String
+    {
         format!("{}/{}", self.base_path, self.resource_name)
     }
 }
 
 /// HTTP method for REST endpoints.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RestMethod {
+pub enum RestMethod
+{
     /// GET
     Get,
     /// POST
@@ -59,9 +65,12 @@ pub enum RestMethod {
     Delete,
 }
 
-impl std::fmt::Display for RestMethod {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
+impl std::fmt::Display for RestMethod
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        match self
+        {
             Self::Get => write!(f, "GET"),
             Self::Post => write!(f, "POST"),
             Self::Put => write!(f, "PUT"),
@@ -73,7 +82,8 @@ impl std::fmt::Display for RestMethod {
 
 /// REST endpoint descriptor.
 #[derive(Debug, Clone)]
-pub struct RestEndpoint {
+pub struct RestEndpoint
+{
     /// HTTP method.
     pub method: RestMethod,
     /// URL path.
@@ -83,7 +93,8 @@ pub struct RestEndpoint {
 }
 
 /// Generates standard CRUD REST endpoints from a resource config.
-pub fn generate_crud_endpoints(config: &RestResourceConfig) -> Vec<RestEndpoint> {
+pub fn generate_crud_endpoints(config: &RestResourceConfig) -> Vec<RestEndpoint>
+{
     let base = config.full_path();
     vec![
         RestEndpoint {
@@ -115,7 +126,8 @@ pub fn generate_crud_endpoints(config: &RestResourceConfig) -> Vec<RestEndpoint>
 }
 
 /// Search endpoint for the resource.
-pub fn generate_search_endpoint(config: &RestResourceConfig) -> RestEndpoint {
+pub fn generate_search_endpoint(config: &RestResourceConfig) -> RestEndpoint
+{
     RestEndpoint {
         method: RestMethod::Get,
         path: format!("{}/search", config.full_path()),
@@ -125,17 +137,20 @@ pub fn generate_search_endpoint(config: &RestResourceConfig) -> RestEndpoint {
 
 #[cfg(test)]
 #[allow(clippy::indexing_slicing)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_rest_config() {
+    fn test_rest_config()
+    {
         let config = RestResourceConfig::new("users").base_path("/api/v1");
         assert_eq!(config.full_path(), "/api/v1/users");
     }
 
     #[test]
-    fn test_generate_crud_endpoints() {
+    fn test_generate_crud_endpoints()
+    {
         let config = RestResourceConfig::new("orders");
         let endpoints = generate_crud_endpoints(&config);
         assert_eq!(endpoints.len(), 5);

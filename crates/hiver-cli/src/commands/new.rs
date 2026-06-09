@@ -29,7 +29,8 @@ const MODULES: &[(&str, &str, &str)] = &[
 
 /// Run the `hiver new` command.
 /// 执行 `hiver new` 命令。
-pub fn run(args: &NewArgs) -> Result<(), Box<dyn std::error::Error>> {
+pub fn run(args: &NewArgs) -> Result<(), Box<dyn std::error::Error>>
+{
     // Validate architecture.
     // 验证架构。
     let arch = Architecture::from_str_opt(&args.arch).ok_or_else(|| {
@@ -39,7 +40,8 @@ pub fn run(args: &NewArgs) -> Result<(), Box<dyn std::error::Error>> {
     let project_dir = args.path.as_deref().unwrap_or(&args.name);
     let project_path = Path::new(project_dir);
 
-    if project_path.exists() {
+    if project_path.exists()
+    {
         return Err(format!(
             "Directory '{}' already exists / 目录 '{}' 已存在",
             project_dir, project_dir
@@ -49,12 +51,14 @@ pub fn run(args: &NewArgs) -> Result<(), Box<dyn std::error::Error>> {
 
     // Determine which modules to include.
     // 确定要包含的模块。
-    let modules = if args.all {
+    let modules = if args.all
+    {
         MODULES
             .iter()
             .map(|(k, _, _)| k.to_string())
             .collect::<Vec<_>>()
-    } else if args.web
+    }
+    else if args.web
         || args.security
         || args.data
         || args.cache
@@ -66,40 +70,54 @@ pub fn run(args: &NewArgs) -> Result<(), Box<dyn std::error::Error>> {
         || args.ai
     {
         let mut selected = Vec::new();
-        if args.web {
+        if args.web
+        {
             selected.push("web");
         }
-        if args.security {
+        if args.security
+        {
             selected.push("security");
         }
-        if args.data {
+        if args.data
+        {
             selected.push("data");
         }
-        if args.cache {
+        if args.cache
+        {
             selected.push("cache");
         }
-        if args.schedule {
+        if args.schedule
+        {
             selected.push("schedule");
         }
-        if args.actuator {
+        if args.actuator
+        {
             selected.push("actuator");
         }
-        if args.web3 {
+        if args.web3
+        {
             selected.push("web3");
         }
-        if args.graphql {
+        if args.graphql
+        {
             selected.push("graphql");
         }
-        if args.grpc {
+        if args.grpc
+        {
             selected.push("grpc");
         }
-        if args.ai {
+        if args.ai
+        {
             selected.push("ai");
         }
         selected.iter().map(|s| s.to_string()).collect()
-    } else if !args.no_interactive {
+    }
+    else if !args.no_interactive
+    {
         select_modules_interactive()?
-    } else {
+    }
+    else
+    {
         vec!["web".to_string()]
     };
 
@@ -170,7 +188,8 @@ pub fn run(args: &NewArgs) -> Result<(), Box<dyn std::error::Error>> {
 
 /// Interactive module selection.
 /// 交互式模块选择。
-fn select_modules_interactive() -> Result<Vec<String>, Box<dyn std::error::Error>> {
+fn select_modules_interactive() -> Result<Vec<String>, Box<dyn std::error::Error>>
+{
     println!(
         "{} Select modules to include (use space to toggle, enter to confirm)",
         style(">").cyan()

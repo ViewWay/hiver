@@ -55,7 +55,8 @@ use std::collections::HashMap;
 /// assert_eq!(field.alias(), "first_name");
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ProjectionField {
+pub struct ProjectionField
+{
     /// The source field name on the entity.
     /// 实体上的源字段名。
     name: String,
@@ -69,7 +70,8 @@ pub struct ProjectionField {
     alias: String,
 }
 
-impl ProjectionField {
+impl ProjectionField
+{
     /// Create a new projection field.
     /// 创建新的投影字段。
     ///
@@ -77,7 +79,8 @@ impl ProjectionField {
     ///
     /// - `name`: Source field name on the entity / 实体上的源字段名
     /// - `alias`: Optional alias for the target field / 目标字段的可选别名
-    pub fn new(name: impl Into<String>, alias: Option<impl Into<String>>) -> Self {
+    pub fn new(name: impl Into<String>, alias: Option<impl Into<String>>) -> Self
+    {
         let name = name.into();
         let alias_str = alias.map(|a| a.into());
         Self {
@@ -99,7 +102,8 @@ impl ProjectionField {
         name: impl Into<String>,
         expression: impl Into<String>,
         alias: impl Into<String>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             name: name.into(),
             expression: Some(expression.into()),
@@ -109,19 +113,22 @@ impl ProjectionField {
 
     /// Get the source field name.
     /// 获取源字段名。
-    pub fn name(&self) -> &str {
+    pub fn name(&self) -> &str
+    {
         &self.name
     }
 
     /// Get the expression, if any.
     /// 获取表达式（如果有）。
-    pub fn expression(&self) -> Option<&str> {
+    pub fn expression(&self) -> Option<&str>
+    {
         self.expression.as_deref()
     }
 
     /// Get the target alias.
     /// 获取目标别名。
-    pub fn alias(&self) -> &str {
+    pub fn alias(&self) -> &str
+    {
         &self.alias
     }
 }
@@ -150,7 +157,8 @@ impl ProjectionField {
 ///     }
 /// }
 /// ```
-pub trait Projection {
+pub trait Projection
+{
     /// List of field names included in this projection.
     /// 此投影中包含的字段名列表。
     fn fields() -> Vec<String>;
@@ -170,7 +178,8 @@ pub trait Projection {
 ///
 /// let dto: HashMap<String, String> = transformer.transform(&entity, &fields);
 /// ```
-pub trait ProjectionTransformer {
+pub trait ProjectionTransformer
+{
     /// Source entity type.
     /// 源实体类型。
     type Source;
@@ -204,64 +213,76 @@ pub trait ProjectionTransformer {
 /// assert_eq!(dto.get("missing"), None);
 /// ```
 #[derive(Debug, Clone, Default)]
-pub struct DtoProjection {
+pub struct DtoProjection
+{
     /// Projected field values.
     /// 投影的字段值。
     data: HashMap<String, String>,
 }
 
-impl DtoProjection {
+impl DtoProjection
+{
     /// Create a new empty DTO projection.
     /// 创建新的空 DTO 投影。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set a field value.
     /// 设置字段值。
-    pub fn set(&mut self, key: impl Into<String>, value: impl Into<String>) {
+    pub fn set(&mut self, key: impl Into<String>, value: impl Into<String>)
+    {
         self.data.insert(key.into(), value.into());
     }
 
     /// Get a field value.
     /// 获取字段值。
-    pub fn get(&self, key: &str) -> Option<&str> {
+    pub fn get(&self, key: &str) -> Option<&str>
+    {
         self.data.get(key).map(|s| s.as_str())
     }
 
     /// Check if a field exists.
     /// 检查字段是否存在。
-    pub fn contains(&self, key: &str) -> bool {
+    pub fn contains(&self, key: &str) -> bool
+    {
         self.data.contains_key(key)
     }
 
     /// Get all field names.
     /// 获取所有字段名。
-    pub fn keys(&self) -> impl Iterator<Item = &str> {
+    pub fn keys(&self) -> impl Iterator<Item = &str>
+    {
         self.data.keys().map(|s| s.as_str())
     }
 
     /// Get the number of fields.
     /// 获取字段数量。
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.data.len()
     }
 
     /// Check if the DTO is empty.
     /// 检查 DTO 是否为空。
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.data.is_empty()
     }
 
     /// Convert to the underlying HashMap.
     /// 转换为底层 HashMap。
-    pub fn into_map(self) -> HashMap<String, String> {
+    pub fn into_map(self) -> HashMap<String, String>
+    {
         self.data
     }
 }
 
-impl Projection for DtoProjection {
-    fn fields() -> Vec<String> {
+impl Projection for DtoProjection
+{
+    fn fields() -> Vec<String>
+    {
         // DtoProjection is dynamic; fields are determined at runtime.
         // DtoProjection 是动态的；字段在运行时确定。
         Vec::new()
@@ -288,7 +309,8 @@ impl Projection for DtoProjection {
 /// // Transform entity -> NameDto using projection fields
 /// let dto: NameDto = ClosedProjection::from_entity(&entity, &fields);
 /// ```
-pub trait ClosedProjection: Sized {
+pub trait ClosedProjection: Sized
+{
     /// Create a closed projection from an entity using the given fields.
     /// 使用给定字段从实体创建封闭投影。
     fn from_entity(entity: &impl crate::Entity, fields: &[ProjectionField]) -> Option<Self>;
@@ -302,11 +324,13 @@ pub trait ClosedProjection: Sized {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_projection_field_new() {
+    fn test_projection_field_new()
+    {
         let field = ProjectionField::new("name", None::<&str>);
         assert_eq!(field.name(), "name");
         assert_eq!(field.alias(), "name");
@@ -314,14 +338,16 @@ mod tests {
     }
 
     #[test]
-    fn test_projection_field_with_alias() {
+    fn test_projection_field_with_alias()
+    {
         let field = ProjectionField::new("firstName", Some("first_name"));
         assert_eq!(field.name(), "firstName");
         assert_eq!(field.alias(), "first_name");
     }
 
     #[test]
-    fn test_projection_field_with_expression() {
+    fn test_projection_field_with_expression()
+    {
         let field = ProjectionField::with_expression("name", "target.getName()", "name");
         assert_eq!(field.name(), "name");
         assert_eq!(field.expression(), Some("target.getName()"));
@@ -329,7 +355,8 @@ mod tests {
     }
 
     #[test]
-    fn test_dto_projection() {
+    fn test_dto_projection()
+    {
         let mut dto = DtoProjection::new();
         assert!(dto.is_empty());
 
@@ -346,7 +373,8 @@ mod tests {
     }
 
     #[test]
-    fn test_dto_projection_keys() {
+    fn test_dto_projection_keys()
+    {
         let mut dto = DtoProjection::new();
         dto.set("name", "Alice");
         dto.set("email", "alice@example.com");
@@ -356,7 +384,8 @@ mod tests {
     }
 
     #[test]
-    fn test_dto_projection_into_map() {
+    fn test_dto_projection_into_map()
+    {
         let mut dto = DtoProjection::new();
         dto.set("name", "Alice");
         dto.set("email", "alice@example.com");
@@ -366,7 +395,8 @@ mod tests {
     }
 
     #[test]
-    fn test_dto_projection_fields() {
+    fn test_dto_projection_fields()
+    {
         let fields = DtoProjection::fields();
         assert!(fields.is_empty());
     }

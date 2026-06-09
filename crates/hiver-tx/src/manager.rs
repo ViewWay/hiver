@@ -22,7 +22,8 @@ use crate::{IsolationLevel, Propagation, TransactionError, TransactionResult, Tr
 /// }
 /// ```
 #[async_trait]
-pub trait TransactionManager: Send + Sync {
+pub trait TransactionManager: Send + Sync
+{
     /// Begin a new transaction
     /// 开始新事务
     ///
@@ -55,7 +56,8 @@ pub trait TransactionManager: Send + Sync {
 /// Equivalent to Spring's `TransactionDefinition`.
 /// `等价于Spring的TransactionDefinition`。
 #[derive(Debug, Clone)]
-pub struct TransactionDefinition {
+pub struct TransactionDefinition
+{
     /// Transaction name
     /// 事务名称
     pub name: String,
@@ -77,10 +79,12 @@ pub struct TransactionDefinition {
     pub read_only: bool,
 }
 
-impl TransactionDefinition {
+impl TransactionDefinition
+{
     /// Create a new transaction definition
     /// 创建新的事务定义
-    pub fn new(name: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>) -> Self
+    {
         Self {
             name: name.into(),
             propagation: Propagation::default(),
@@ -92,35 +96,41 @@ impl TransactionDefinition {
 
     /// Set propagation
     /// 设置传播行为
-    pub fn propagation(mut self, propagation: Propagation) -> Self {
+    pub fn propagation(mut self, propagation: Propagation) -> Self
+    {
         self.propagation = propagation;
         self
     }
 
     /// Set isolation
     /// 设置隔离级别
-    pub fn isolation(mut self, isolation: IsolationLevel) -> Self {
+    pub fn isolation(mut self, isolation: IsolationLevel) -> Self
+    {
         self.isolation = isolation;
         self
     }
 
     /// Set timeout
     /// 设置超时
-    pub fn timeout_secs(mut self, timeout: u64) -> Self {
+    pub fn timeout_secs(mut self, timeout: u64) -> Self
+    {
         self.timeout_secs = Some(timeout);
         self
     }
 
     /// Set read-only
     /// 设置只读
-    pub fn read_only(mut self, read_only: bool) -> Self {
+    pub fn read_only(mut self, read_only: bool) -> Self
+    {
         self.read_only = read_only;
         self
     }
 }
 
-impl Default for TransactionDefinition {
-    fn default() -> Self {
+impl Default for TransactionDefinition
+{
+    fn default() -> Self
+    {
         Self::new(crate::DEFAULT_TX_NAME)
     }
 }
@@ -131,7 +141,8 @@ impl Default for TransactionDefinition {
 /// Equivalent to Spring's `TransactionManagerCustomizer`.
 /// `等价于Spring的TransactionManagerCustomizer`。
 #[derive(Debug, Clone)]
-pub struct TransactionManagerBuilder {
+pub struct TransactionManagerBuilder
+{
     /// Default timeout
     /// 默认超时
     default_timeout_secs: u64,
@@ -149,10 +160,12 @@ pub struct TransactionManagerBuilder {
     enable_transactions: bool,
 }
 
-impl TransactionManagerBuilder {
+impl TransactionManagerBuilder
+{
     /// Create a new builder
     /// 创建新的构建器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             default_timeout_secs: crate::DEFAULT_TX_TIMEOUT_SECS,
             default_isolation: IsolationLevel::Default,
@@ -163,35 +176,40 @@ impl TransactionManagerBuilder {
 
     /// Set default timeout
     /// 设置默认超时
-    pub fn default_timeout_secs(mut self, timeout: u64) -> Self {
+    pub fn default_timeout_secs(mut self, timeout: u64) -> Self
+    {
         self.default_timeout_secs = timeout;
         self
     }
 
     /// Set default isolation level
     /// 设置默认隔离级别
-    pub fn default_isolation(mut self, isolation: IsolationLevel) -> Self {
+    pub fn default_isolation(mut self, isolation: IsolationLevel) -> Self
+    {
         self.default_isolation = isolation;
         self
     }
 
     /// Set default propagation
     /// 设置默认传播行为
-    pub fn default_propagation(mut self, propagation: Propagation) -> Self {
+    pub fn default_propagation(mut self, propagation: Propagation) -> Self
+    {
         self.default_propagation = propagation;
         self
     }
 
     /// Enable or disable transactions
     /// 启用或禁用事务
-    pub fn enable_transactions(mut self, enable: bool) -> Self {
+    pub fn enable_transactions(mut self, enable: bool) -> Self
+    {
         self.enable_transactions = enable;
         self
     }
 
     /// Build transaction definition
     /// 构建事务定义
-    pub fn build_definition(&self, name: impl Into<String>) -> TransactionDefinition {
+    pub fn build_definition(&self, name: impl Into<String>) -> TransactionDefinition
+    {
         TransactionDefinition {
             name: name.into(),
             propagation: self.default_propagation,
@@ -202,8 +220,10 @@ impl TransactionManagerBuilder {
     }
 }
 
-impl Default for TransactionManagerBuilder {
-    fn default() -> Self {
+impl Default for TransactionManagerBuilder
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -214,14 +234,17 @@ impl Default for TransactionManagerBuilder {
 /// For demonstration purposes. In production, use a database-specific implementation.
 /// 用于演示目的。在生产中，使用特定数据库的实现。
 #[derive(Debug)]
-pub(crate) struct SimpleTransactionManager {
+pub(crate) struct SimpleTransactionManager
+{
     name: String,
 }
 
-impl SimpleTransactionManager {
+impl SimpleTransactionManager
+{
     /// Create a new simple transaction manager
     /// 创建新的简单事务管理器
-    pub(crate) fn new() -> Self {
+    pub(crate) fn new() -> Self
+    {
         Self {
             name: "simple".to_string(),
         }
@@ -229,13 +252,15 @@ impl SimpleTransactionManager {
 
     /// Create with name
     /// 使用名称创建
-    pub(crate) fn with_name(name: impl Into<String>) -> Self {
+    pub(crate) fn with_name(name: impl Into<String>) -> Self
+    {
         Self { name: name.into() }
     }
 
     /// Build a transaction definition
     /// 构建事务定义
-    pub(crate) fn build_definition(&self, name: impl Into<String>) -> TransactionDefinition {
+    pub(crate) fn build_definition(&self, name: impl Into<String>) -> TransactionDefinition
+    {
         TransactionDefinition::new(name)
             .propagation(Propagation::Required)
             .isolation(IsolationLevel::ReadCommitted)
@@ -244,24 +269,30 @@ impl SimpleTransactionManager {
     }
 }
 
-impl Default for SimpleTransactionManager {
-    fn default() -> Self {
+impl Default for SimpleTransactionManager
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
 #[async_trait]
-impl TransactionManager for SimpleTransactionManager {
+impl TransactionManager for SimpleTransactionManager
+{
     async fn begin(
         &self,
         definition: &TransactionDefinition,
-    ) -> TransactionResult<TransactionStatus> {
+    ) -> TransactionResult<TransactionStatus>
+    {
         // Create a new transaction status
         Ok(TransactionStatus::new(&definition.name))
     }
 
-    async fn commit(&self, status: TransactionStatus) -> TransactionResult<()> {
-        if status.is_rollback_only() {
+    async fn commit(&self, status: TransactionStatus) -> TransactionResult<()>
+    {
+        if status.is_rollback_only()
+        {
             return Err(TransactionError::InvalidState(
                 "Cannot commit transaction marked as rollback-only".to_string(),
             ));
@@ -270,12 +301,14 @@ impl TransactionManager for SimpleTransactionManager {
         Ok(())
     }
 
-    async fn rollback(&self, status: TransactionStatus) -> TransactionResult<()> {
+    async fn rollback(&self, status: TransactionStatus) -> TransactionResult<()>
+    {
         status.mark_completed();
         Ok(())
     }
 
-    fn name(&self) -> &str {
+    fn name(&self) -> &str
+    {
         &self.name
     }
 }
@@ -288,11 +321,13 @@ impl TransactionManager for SimpleTransactionManager {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_transaction_definition() {
+    fn test_transaction_definition()
+    {
         let def = TransactionDefinition::new("test")
             .propagation(Propagation::RequiresNew)
             .isolation(IsolationLevel::Serializable)
@@ -307,7 +342,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_simple_transaction_manager() {
+    async fn test_simple_transaction_manager()
+    {
         let manager = SimpleTransactionManager::new();
         let def = manager.build_definition("test");
 
@@ -326,13 +362,15 @@ static GLOBAL_TX_MANAGER: OnceLock<Arc<dyn TransactionManager>> = OnceLock::new(
 
 /// Install the global `TransactionManager`.
 /// 安装全局 `TransactionManager`。
-pub fn set_global_tx_manager(mgr: Arc<dyn TransactionManager>) {
+pub fn set_global_tx_manager(mgr: Arc<dyn TransactionManager>)
+{
     let _ = GLOBAL_TX_MANAGER.set(mgr);
 }
 
 /// Get the global `TransactionManager` if registered.
 /// 获取已注册的全局 `TransactionManager`。
-pub fn global_tx_manager() -> Option<Arc<dyn TransactionManager>> {
+pub fn global_tx_manager() -> Option<Arc<dyn TransactionManager>>
+{
     GLOBAL_TX_MANAGER.get().cloned()
 }
 
@@ -342,25 +380,30 @@ pub fn global_tx_manager() -> Option<Arc<dyn TransactionManager>> {
 pub struct NoopTransactionManager;
 
 #[async_trait::async_trait]
-impl TransactionManager for NoopTransactionManager {
+impl TransactionManager for NoopTransactionManager
+{
     async fn begin(
         &self,
         definition: &TransactionDefinition,
-    ) -> TransactionResult<TransactionStatus> {
+    ) -> TransactionResult<TransactionStatus>
+    {
         Ok(TransactionStatus::new(&definition.name))
     }
 
-    async fn commit(&self, status: TransactionStatus) -> TransactionResult<()> {
+    async fn commit(&self, status: TransactionStatus) -> TransactionResult<()>
+    {
         status.mark_completed();
         Ok(())
     }
 
-    async fn rollback(&self, status: TransactionStatus) -> TransactionResult<()> {
+    async fn rollback(&self, status: TransactionStatus) -> TransactionResult<()>
+    {
         status.mark_completed();
         Ok(())
     }
 
-    fn name(&self) -> &'static str {
+    fn name(&self) -> &'static str
+    {
         "noop"
     }
 }

@@ -18,7 +18,8 @@ use std::sync::Arc;
 /// Security context carrying authentication state through the filter chain.
 /// 安全上下文，在过滤器链中传递认证状态。
 #[derive(Debug, Clone)]
-pub struct SecurityContext {
+pub struct SecurityContext
+{
     /// The authenticated principal (user identity).
     /// 已认证的主体（用户身份）。
     pub principal: Option<String>,
@@ -36,8 +37,10 @@ pub struct SecurityContext {
     pub attributes: std::collections::HashMap<String, String>,
 }
 
-impl Default for SecurityContext {
-    fn default() -> Self {
+impl Default for SecurityContext
+{
+    fn default() -> Self
+    {
         Self {
             principal: None,
             authorities: Vec::new(),
@@ -47,43 +50,50 @@ impl Default for SecurityContext {
     }
 }
 
-impl SecurityContext {
+impl SecurityContext
+{
     /// Create a new empty security context.
     /// 创建新的空安全上下文。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set the principal.
     /// 设置主体。
-    pub fn with_principal(mut self, principal: impl Into<String>) -> Self {
+    pub fn with_principal(mut self, principal: impl Into<String>) -> Self
+    {
         self.principal = Some(principal.into());
         self
     }
 
     /// Set the authorities.
     /// 设置权限。
-    pub fn with_authorities(mut self, authorities: Vec<String>) -> Self {
+    pub fn with_authorities(mut self, authorities: Vec<String>) -> Self
+    {
         self.authorities = authorities;
         self
     }
 
     /// Mark as authenticated.
     /// 标记为已认证。
-    pub fn authenticated(mut self) -> Self {
+    pub fn authenticated(mut self) -> Self
+    {
         self.authenticated = true;
         self
     }
 
     /// Check if the context has a specific authority.
     /// 检查上下文是否拥有特定权限。
-    pub fn has_authority(&self, authority: &str) -> bool {
+    pub fn has_authority(&self, authority: &str) -> bool
+    {
         self.authorities.iter().any(|a| a == authority)
     }
 
     /// Check if the context has any of the given authorities.
     /// 检查上下文是否拥有给定权限中的任何一个。
-    pub fn has_any_authority(&self, authorities: &[&str]) -> bool {
+    pub fn has_any_authority(&self, authorities: &[&str]) -> bool
+    {
         authorities.iter().any(|a| self.has_authority(a))
     }
 }
@@ -91,14 +101,16 @@ impl SecurityContext {
 /// Result of a security filter processing.
 /// 安全过滤器处理结果。
 #[derive(Debug, Clone)]
-pub enum FilterResult {
+pub enum FilterResult
+{
     /// Continue to the next filter.
     /// 继续下一个过滤器。
     Continue(SecurityContext),
 
     /// Stop the chain and deny the request.
     /// 停止链并拒绝请求。
-    Deny {
+    Deny
+    {
         /// HTTP status code.
         status: u16,
         /// Reason message.
@@ -111,14 +123,16 @@ pub enum FilterResult {
 ///
 /// Equivalent to Spring Security's `Filter` interface.
 /// 等价于 Spring Security 的 `Filter` 接口。
-pub trait SecurityFilter: Send + Sync {
+pub trait SecurityFilter: Send + Sync
+{
     /// Process the security context.
     /// 处理安全上下文。
     fn do_filter(&self, context: SecurityContext, request_path: &str) -> FilterResult;
 
     /// Filter ordering (lower = earlier). Default is 100.
     /// 过滤器排序（越小越先执行）。默认 100。
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         100
     }
 
@@ -132,14 +146,17 @@ pub trait SecurityFilter: Send + Sync {
 ///
 /// Equivalent to Spring Security's `SecurityFilterChain`.
 /// 等价于 Spring Security 的 `SecurityFilterChain`。
-pub struct SecurityFilterChain {
+pub struct SecurityFilterChain
+{
     filters: Vec<Arc<dyn SecurityFilter>>,
 }
 
-impl SecurityFilterChain {
+impl SecurityFilterChain
+{
     /// Create a new empty filter chain.
     /// 创建新的空过滤器链。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             filters: Vec::new(),
         }
@@ -147,7 +164,8 @@ impl SecurityFilterChain {
 
     /// Add a filter to the chain. Filters are sorted by `order()`.
     /// 添加过滤器到链中。过滤器按 `order()` 排序。
-    pub fn add_filter<F: SecurityFilter + 'static>(mut self, filter: F) -> Self {
+    pub fn add_filter<F: SecurityFilter + 'static>(mut self, filter: F) -> Self
+    {
         self.filters.push(Arc::new(filter));
         self.filters.sort_by_key(|f| f.order());
         self
@@ -155,10 +173,13 @@ impl SecurityFilterChain {
 
     /// Execute the filter chain.
     /// 执行过滤器链。
-    pub fn execute(&self, context: SecurityContext, request_path: &str) -> FilterResult {
+    pub fn execute(&self, context: SecurityContext, request_path: &str) -> FilterResult
+    {
         let mut ctx = context;
-        for filter in &self.filters {
-            match filter.do_filter(ctx, request_path) {
+        for filter in &self.filters
+        {
+            match filter.do_filter(ctx, request_path)
+            {
                 FilterResult::Continue(new_ctx) => ctx = new_ctx,
                 deny @ FilterResult::Deny { .. } => return deny,
             }
@@ -168,19 +189,23 @@ impl SecurityFilterChain {
 
     /// Get the number of filters.
     /// 获取过滤器数量。
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.filters.len()
     }
 
     /// Check if the chain is empty.
     /// 检查链是否为空。
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.filters.is_empty()
     }
 }
 
-impl Default for SecurityFilterChain {
-    fn default() -> Self {
+impl Default for SecurityFilterChain
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -193,11 +218,16 @@ impl Default for SecurityFilterChain {
 /// 拒绝未认证请求的过滤器。
 pub struct AuthenticationFilter;
 
-impl SecurityFilter for AuthenticationFilter {
-    fn do_filter(&self, context: SecurityContext, _request_path: &str) -> FilterResult {
-        if context.authenticated {
+impl SecurityFilter for AuthenticationFilter
+{
+    fn do_filter(&self, context: SecurityContext, _request_path: &str) -> FilterResult
+    {
+        if context.authenticated
+        {
             FilterResult::Continue(context)
-        } else {
+        }
+        else
+        {
             FilterResult::Deny {
                 status: 401,
                 reason: "Unauthorized: authentication required".to_string(),
@@ -205,34 +235,42 @@ impl SecurityFilter for AuthenticationFilter {
         }
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         200
     }
 
-    fn name(&self) -> &str {
+    fn name(&self) -> &str
+    {
         "AuthenticationFilter"
     }
 }
 
 /// Filter that checks for required roles/authorities.
 /// 检查所需角色/权限的过滤器。
-pub struct RoleAuthorizationFilter {
+pub struct RoleAuthorizationFilter
+{
     required_roles: Vec<String>,
 }
 
-impl RoleAuthorizationFilter {
+impl RoleAuthorizationFilter
+{
     /// Create a new filter requiring any of the given roles.
     /// 创建需要给定角色之一的新过滤器。
-    pub fn new(roles: &[&str]) -> Self {
+    pub fn new(roles: &[&str]) -> Self
+    {
         Self {
             required_roles: roles.iter().map(|s| s.to_string()).collect(),
         }
     }
 }
 
-impl SecurityFilter for RoleAuthorizationFilter {
-    fn do_filter(&self, context: SecurityContext, _request_path: &str) -> FilterResult {
-        if self.required_roles.is_empty() {
+impl SecurityFilter for RoleAuthorizationFilter
+{
+    fn do_filter(&self, context: SecurityContext, _request_path: &str) -> FilterResult
+    {
+        if self.required_roles.is_empty()
+        {
             return FilterResult::Continue(context);
         }
 
@@ -241,9 +279,12 @@ impl SecurityFilter for RoleAuthorizationFilter {
             .iter()
             .any(|role| context.has_authority(role));
 
-        if has_role {
+        if has_role
+        {
             FilterResult::Continue(context)
-        } else {
+        }
+        else
+        {
             FilterResult::Deny {
                 status: 403,
                 reason: format!("Forbidden: requires one of roles {:?}", self.required_roles),
@@ -251,49 +292,60 @@ impl SecurityFilter for RoleAuthorizationFilter {
         }
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         300
     }
 
-    fn name(&self) -> &str {
+    fn name(&self) -> &str
+    {
         "RoleAuthorizationFilter"
     }
 }
 
 /// Filter that allows path-based public access (skip authentication).
 /// 允许基于路径的公开访问（跳过认证）的过滤器。
-pub struct PublicPathFilter {
+pub struct PublicPathFilter
+{
     public_paths: Vec<String>,
 }
 
-impl PublicPathFilter {
+impl PublicPathFilter
+{
     /// Create a filter that marks certain paths as public.
     /// 创建标记某些路径为公开的过滤器。
-    pub fn new(paths: &[&str]) -> Self {
+    pub fn new(paths: &[&str]) -> Self
+    {
         Self {
             public_paths: paths.iter().map(|s| s.to_string()).collect(),
         }
     }
 }
 
-impl SecurityFilter for PublicPathFilter {
-    fn do_filter(&self, context: SecurityContext, request_path: &str) -> FilterResult {
+impl SecurityFilter for PublicPathFilter
+{
+    fn do_filter(&self, context: SecurityContext, request_path: &str) -> FilterResult
+    {
         if self
             .public_paths
             .iter()
             .any(|p| request_path.starts_with(p.as_str()))
         {
             FilterResult::Continue(context.authenticated())
-        } else {
+        }
+        else
+        {
             FilterResult::Continue(context)
         }
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         50
     }
 
-    fn name(&self) -> &str {
+    fn name(&self) -> &str
+    {
         "PublicPathFilter"
     }
 }
@@ -306,11 +358,13 @@ impl SecurityFilter for PublicPathFilter {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_security_context_authorities() {
+    fn test_security_context_authorities()
+    {
         let ctx = SecurityContext::new()
             .with_principal("admin")
             .with_authorities(vec!["ADMIN".into(), "USER".into()])
@@ -322,7 +376,8 @@ mod tests {
     }
 
     #[test]
-    fn test_filter_chain_allows_authenticated() {
+    fn test_filter_chain_allows_authenticated()
+    {
         let chain = SecurityFilterChain::new().add_filter(AuthenticationFilter);
 
         let ctx = SecurityContext::new()
@@ -333,7 +388,8 @@ mod tests {
     }
 
     #[test]
-    fn test_filter_chain_denies_unauthenticated() {
+    fn test_filter_chain_denies_unauthenticated()
+    {
         let chain = SecurityFilterChain::new().add_filter(AuthenticationFilter);
 
         let result = chain.execute(SecurityContext::new(), "/api/data");
@@ -341,7 +397,8 @@ mod tests {
     }
 
     #[test]
-    fn test_role_filter_allows() {
+    fn test_role_filter_allows()
+    {
         let chain = SecurityFilterChain::new()
             .add_filter(AuthenticationFilter)
             .add_filter(RoleAuthorizationFilter::new(&["ADMIN"]));
@@ -356,7 +413,8 @@ mod tests {
     }
 
     #[test]
-    fn test_role_filter_denies() {
+    fn test_role_filter_denies()
+    {
         let chain = SecurityFilterChain::new()
             .add_filter(AuthenticationFilter)
             .add_filter(RoleAuthorizationFilter::new(&["ADMIN"]));
@@ -371,7 +429,8 @@ mod tests {
     }
 
     #[test]
-    fn test_public_path_filter() {
+    fn test_public_path_filter()
+    {
         let chain = SecurityFilterChain::new()
             .add_filter(PublicPathFilter::new(&["/public", "/health"]))
             .add_filter(AuthenticationFilter);

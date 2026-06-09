@@ -40,7 +40,8 @@ use proc_macro::TokenStream;
 ///     pub profile: Profile,
 /// }
 /// ```
-pub(crate) fn impl_one_to_one(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_one_to_one(_attr: TokenStream, item: TokenStream) -> TokenStream
+{
     item
 }
 
@@ -73,7 +74,8 @@ pub(crate) fn impl_one_to_one(_attr: TokenStream, item: TokenStream) -> TokenStr
 ///     pub orders: Vec<Order>,
 /// }
 /// ```
-pub(crate) fn impl_one_to_many(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_one_to_many(_attr: TokenStream, item: TokenStream) -> TokenStream
+{
     item
 }
 
@@ -103,7 +105,8 @@ pub(crate) fn impl_one_to_many(_attr: TokenStream, item: TokenStream) -> TokenSt
 ///     pub user: User,
 /// }
 /// ```
-pub(crate) fn impl_many_to_one(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_many_to_one(_attr: TokenStream, item: TokenStream) -> TokenStream
+{
     item
 }
 
@@ -134,6 +137,7 @@ pub(crate) fn impl_many_to_one(_attr: TokenStream, item: TokenStream) -> TokenSt
 ///     pub roles: Vec<Role>,
 /// }
 /// ```
-pub(crate) fn impl_many_to_many(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_many_to_many(_attr: TokenStream, item: TokenStream) -> TokenStream
+{
     item
 }

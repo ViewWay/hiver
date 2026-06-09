@@ -25,7 +25,8 @@ use crate::core::{ApplicationContext, AutoConfiguration};
 /// 参考 Spring Boot 的 `ActuatorAutoConfiguration`。
 /// Based on Spring Boot's `ActuatorAutoConfiguration`.
 #[derive(Debug)]
-pub struct ActuatorAutoConfiguration {
+pub struct ActuatorAutoConfiguration
+{
     /// 是否启用 Actuator
     pub enabled: bool,
 
@@ -39,9 +40,11 @@ pub struct ActuatorAutoConfiguration {
     pub base_path: String,
 }
 
-impl ActuatorAutoConfiguration {
+impl ActuatorAutoConfiguration
+{
     /// 创建新的 Actuator 自动配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             enabled: true,
             health_enabled: true,
@@ -51,7 +54,8 @@ impl ActuatorAutoConfiguration {
     }
 
     /// 从配置创建
-    pub fn from_config(ctx: &ApplicationContext) -> Self {
+    pub fn from_config(ctx: &ApplicationContext) -> Self
+    {
         Self {
             enabled: ctx
                 .get_property("actuator.enabled")
@@ -70,22 +74,28 @@ impl ActuatorAutoConfiguration {
     }
 }
 
-impl Default for ActuatorAutoConfiguration {
-    fn default() -> Self {
+impl Default for ActuatorAutoConfiguration
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl AutoConfiguration for ActuatorAutoConfiguration {
-    fn name(&self) -> &'static str {
+impl AutoConfiguration for ActuatorAutoConfiguration
+{
+    fn name(&self) -> &'static str
+    {
         "ActuatorAutoConfiguration"
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         200 // 较低优先级，在业务配置之后
     }
 
-    fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()> {
+    fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()>
+    {
         tracing::info!("Configuring Actuator (base path: {})", self.base_path);
 
         // Create Actuator with configured settings
@@ -106,11 +116,13 @@ impl AutoConfiguration for ActuatorAutoConfiguration {
 
         // Log enabled endpoints
         // 记录启用的端点
-        if self.health_enabled {
+        if self.health_enabled
+        {
             tracing::info!("  Health endpoint: {}/health", self.base_path);
         }
 
-        if self.metrics_enabled {
+        if self.metrics_enabled
+        {
             tracing::info!("  Metrics endpoint: {}/metrics", self.base_path);
         }
 
@@ -137,11 +149,13 @@ impl AutoConfiguration for ActuatorAutoConfiguration {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_actuator_auto_config() {
+    fn test_actuator_auto_config()
+    {
         let config = ActuatorAutoConfiguration::new();
         assert!(config.enabled);
         assert!(config.health_enabled);
@@ -150,7 +164,8 @@ mod tests {
     }
 
     #[test]
-    fn test_actuator_auto_config_registers_actuator() {
+    fn test_actuator_auto_config_registers_actuator()
+    {
         let config = ActuatorAutoConfiguration {
             enabled: true,
             health_enabled: true,
@@ -167,7 +182,8 @@ mod tests {
     }
 
     #[test]
-    fn test_actuator_auto_config_with_custom_base_path() {
+    fn test_actuator_auto_config_with_custom_base_path()
+    {
         let config = ActuatorAutoConfiguration {
             enabled: true,
             health_enabled: true,

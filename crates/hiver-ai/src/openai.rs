@@ -39,7 +39,8 @@ const DEFAULT_EMBEDDING_MODEL: &str = "text-embedding-3-small";
 /// Configuration for the OpenAI API client.
 /// OpenAI API 客户端的配置。
 #[derive(Debug, Clone)]
-pub struct OpenAiConfig {
+pub struct OpenAiConfig
+{
     /// API key for authentication.
     /// 用于身份验证的 API 密钥。
     pub api_key: String,
@@ -54,11 +55,13 @@ pub struct OpenAiConfig {
     pub organization: Option<String>,
 }
 
-impl OpenAiConfig {
+impl OpenAiConfig
+{
     /// Creates a new configuration with the given API key.
     /// 使用给定的 API 密钥创建新配置。
     #[must_use]
-    pub fn new(api_key: impl Into<String>) -> Self {
+    pub fn new(api_key: impl Into<String>) -> Self
+    {
         Self {
             api_key: api_key.into(),
             base_url: DEFAULT_BASE_URL.to_string(),
@@ -70,7 +73,8 @@ impl OpenAiConfig {
     /// Sets a custom base URL (useful for Azure OpenAI or compatible APIs).
     /// 设置自定义基础 URL（适用于 Azure OpenAI 或兼容 API）。
     #[must_use]
-    pub fn base_url(mut self, url: impl Into<String>) -> Self {
+    pub fn base_url(mut self, url: impl Into<String>) -> Self
+    {
         self.base_url = url.into();
         self
     }
@@ -78,7 +82,8 @@ impl OpenAiConfig {
     /// Sets the default model for chat completions.
     /// 设置聊天补全的默认模型。
     #[must_use]
-    pub fn model(mut self, model: impl Into<String>) -> Self {
+    pub fn model(mut self, model: impl Into<String>) -> Self
+    {
         self.model = model.into();
         self
     }
@@ -86,7 +91,8 @@ impl OpenAiConfig {
     /// Sets the organization ID for multi-tenant access.
     /// 设置多租户访问的组织 ID。
     #[must_use]
-    pub fn organization(mut self, org: impl Into<String>) -> Self {
+    pub fn organization(mut self, org: impl Into<String>) -> Self
+    {
         self.organization = Some(org.into());
         self
     }
@@ -100,7 +106,8 @@ impl OpenAiConfig {
 /// OpenAI chat completion request body.
 /// OpenAI 聊天补全请求体。
 #[derive(Debug, Serialize)]
-struct OpenAiChatRequest {
+struct OpenAiChatRequest
+{
     model: String,
     messages: Vec<OpenAiMessage>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -114,7 +121,8 @@ struct OpenAiChatRequest {
 /// A single message in the OpenAI API format.
 /// OpenAI API 格式中的单条消息。
 #[derive(Debug, Serialize, Deserialize)]
-struct OpenAiMessage {
+struct OpenAiMessage
+{
     role: String,
     content: String,
 }
@@ -122,7 +130,8 @@ struct OpenAiMessage {
 /// OpenAI chat completion response body.
 /// OpenAI 聊天补全响应体。
 #[derive(Debug, Deserialize)]
-struct OpenAiChatResponse {
+struct OpenAiChatResponse
+{
     choices: Vec<OpenAiChoice>,
     usage: OpenAiUsage,
     model: String,
@@ -131,7 +140,8 @@ struct OpenAiChatResponse {
 /// A single choice in the OpenAI response.
 /// OpenAI 响应中的单个选择。
 #[derive(Debug, Deserialize)]
-struct OpenAiChoice {
+struct OpenAiChoice
+{
     message: OpenAiMessage,
     finish_reason: Option<String>,
 }
@@ -140,7 +150,8 @@ struct OpenAiChoice {
 /// OpenAI 响应格式中的 token 使用量。
 #[derive(Debug, Deserialize)]
 #[allow(clippy::struct_field_names)]
-struct OpenAiUsage {
+struct OpenAiUsage
+{
     prompt_tokens: u32,
     completion_tokens: u32,
     #[allow(dead_code)]
@@ -150,7 +161,8 @@ struct OpenAiUsage {
 /// A single streamed chunk from the OpenAI API.
 /// OpenAI API 的单个流式块。
 #[derive(Debug, Deserialize)]
-struct OpenAiStreamChunk {
+struct OpenAiStreamChunk
+{
     choices: Vec<OpenAiStreamChoice>,
     model: Option<String>,
 }
@@ -158,7 +170,8 @@ struct OpenAiStreamChunk {
 /// A choice within a streamed chunk.
 /// 流式块中的选择。
 #[derive(Debug, Deserialize)]
-struct OpenAiStreamChoice {
+struct OpenAiStreamChoice
+{
     delta: OpenAiDelta,
     finish_reason: Option<String>,
 }
@@ -166,14 +179,16 @@ struct OpenAiStreamChoice {
 /// Delta content in a streamed chunk.
 /// 流式块中的增量内容。
 #[derive(Debug, Deserialize)]
-struct OpenAiDelta {
+struct OpenAiDelta
+{
     content: Option<String>,
 }
 
 /// OpenAI embeddings request body.
 /// OpenAI 嵌入请求体。
 #[derive(Debug, Serialize)]
-struct OpenAiEmbeddingRequest {
+struct OpenAiEmbeddingRequest
+{
     model: String,
     input: Vec<String>,
 }
@@ -181,7 +196,8 @@ struct OpenAiEmbeddingRequest {
 /// OpenAI embeddings response body.
 /// OpenAI 嵌入响应体。
 #[derive(Debug, Deserialize)]
-struct OpenAiEmbeddingResponse {
+struct OpenAiEmbeddingResponse
+{
     data: Vec<OpenAiEmbeddingData>,
     model: String,
     usage: OpenAiUsage,
@@ -190,21 +206,24 @@ struct OpenAiEmbeddingResponse {
 /// A single embedding in the response.
 /// 响应中的单个嵌入。
 #[derive(Debug, Deserialize)]
-struct OpenAiEmbeddingData {
+struct OpenAiEmbeddingData
+{
     embedding: Vec<f32>,
 }
 
 /// OpenAI error response body.
 /// OpenAI 错误响应体。
 #[derive(Debug, Deserialize)]
-struct OpenAiErrorResponse {
+struct OpenAiErrorResponse
+{
     error: OpenAiErrorDetail,
 }
 
 /// Error detail from the OpenAI API.
 /// OpenAI API 的错误详情。
 #[derive(Debug, Deserialize)]
-struct OpenAiErrorDetail {
+struct OpenAiErrorDetail
+{
     message: String,
 }
 
@@ -221,16 +240,19 @@ struct OpenAiErrorDetail {
 /// 实现 `ChatModel` trait，用于与 OpenAI 聊天补全 API 交互，
 /// 支持完整和流式响应。
 #[derive(Debug)]
-pub struct OpenAiChatModel {
+pub struct OpenAiChatModel
+{
     config: OpenAiConfig,
     client: Client,
 }
 
-impl OpenAiChatModel {
+impl OpenAiChatModel
+{
     /// Creates a new OpenAI chat model with the given configuration.
     /// 使用给定配置创建新的 OpenAI 聊天模型。
     #[must_use]
-    pub fn new(config: OpenAiConfig) -> Self {
+    pub fn new(config: OpenAiConfig) -> Self
+    {
         Self {
             config,
             client: Client::new(),
@@ -240,13 +262,15 @@ impl OpenAiChatModel {
     /// Creates a new OpenAI chat model with a custom HTTP client.
     /// 使用自定义 HTTP 客户端创建新的 OpenAI 聊天模型。
     #[must_use]
-    pub fn with_http_client(config: OpenAiConfig, client: Client) -> Self {
+    pub fn with_http_client(config: OpenAiConfig, client: Client) -> Self
+    {
         Self { config, client }
     }
 
     /// Builds the request body from a `ChatRequest`.
     /// 从 `ChatRequest` 构建请求体。
-    fn build_request_body(&self, request: &ChatRequest) -> OpenAiChatRequest {
+    fn build_request_body(&self, request: &ChatRequest) -> OpenAiChatRequest
+    {
         let messages: Vec<OpenAiMessage> = request
             .messages
             .iter()
@@ -270,10 +294,12 @@ impl OpenAiChatModel {
 
     /// Builds the authenticated request builder with common headers.
     /// 使用公共请求头构建经过身份验证的请求构建器。
-    fn build_authenticated_request(&self, url: &str) -> reqwest::RequestBuilder {
+    fn build_authenticated_request(&self, url: &str) -> reqwest::RequestBuilder
+    {
         let mut builder = self.client.post(url).bearer_auth(&self.config.api_key);
 
-        if let Some(ref org) = self.config.organization {
+        if let Some(ref org) = self.config.organization
+        {
             builder = builder.header("OpenAI-Organization", org.as_str());
         }
 
@@ -282,7 +308,8 @@ impl OpenAiChatModel {
 
     /// Handles HTTP error responses and maps them to `ModelError`.
     /// 处理 HTTP 错误响应并将其映射到 `ModelError`。
-    async fn handle_error_response(response: reqwest::Response) -> ModelError {
+    async fn handle_error_response(response: reqwest::Response) -> ModelError
+    {
         let status = response.status().as_u16();
         let retry_after = response
             .headers()
@@ -295,16 +322,20 @@ impl OpenAiChatModel {
         // Try to parse structured OpenAI error / 尝试解析结构化的 OpenAI 错误
         let message = serde_json::from_str::<OpenAiErrorResponse>(&body).map_or_else(
             |_| {
-                if body.is_empty() {
+                if body.is_empty()
+                {
                     format!("HTTP {status}")
-                } else {
+                }
+                else
+                {
                     body
                 }
             },
             |e| e.error.message,
         );
 
-        match status {
+        match status
+        {
             401 | 403 => ModelError::AuthError(message),
             429 => ModelError::RateLimited {
                 retry_after_secs: retry_after.unwrap_or(60),
@@ -318,8 +349,10 @@ impl OpenAiChatModel {
 }
 
 #[async_trait]
-impl ChatModel for OpenAiChatModel {
-    async fn complete(&self, request: ChatRequest) -> Result<ChatResponse, ModelError> {
+impl ChatModel for OpenAiChatModel
+{
+    async fn complete(&self, request: ChatRequest) -> Result<ChatResponse, ModelError>
+    {
         let url = format!("{}/chat/completions", self.config.base_url);
         let body = self.build_request_body(&request);
 
@@ -330,7 +363,8 @@ impl ChatModel for OpenAiChatModel {
             .await
             .map_err(|e| ModelError::RequestFailed(e.to_string()))?;
 
-        if !response.status().is_success() {
+        if !response.status().is_success()
+        {
             return Err(Self::handle_error_response(response).await);
         }
 
@@ -356,7 +390,8 @@ impl ChatModel for OpenAiChatModel {
         })
     }
 
-    async fn stream(&self, request: ChatRequest) -> Result<ChatStream, ModelError> {
+    async fn stream(&self, request: ChatRequest) -> Result<ChatStream, ModelError>
+    {
         let url = format!("{}/chat/completions", self.config.base_url);
         let mut body = self.build_request_body(&request);
         body.stream = Some(true);
@@ -368,7 +403,8 @@ impl ChatModel for OpenAiChatModel {
             .await
             .map_err(|e| ModelError::RequestFailed(e.to_string()))?;
 
-        if !response.status().is_success() {
+        if !response.status().is_success()
+        {
             return Err(Self::handle_error_response(response).await);
         }
 
@@ -381,9 +417,11 @@ impl ChatModel for OpenAiChatModel {
         let stream = response
             .bytes_stream()
             .scan((String::new(), model_name), |(buffer, model_name), chunk_result| {
-                let chunk = match chunk_result {
+                let chunk = match chunk_result
+                {
                     Ok(c) => c,
-                    Err(e) => {
+                    Err(e) =>
+                    {
                         tracing::error!("Stream read error: {e}");
                         let empty: Vec<ChatChunk> = Vec::new();
                         return std::future::ready(Some(empty));
@@ -394,20 +432,27 @@ impl ChatModel for OpenAiChatModel {
 
                 let mut results: Vec<ChatChunk> = Vec::new();
 
-                while let Some(pos) = buffer.find('\n') {
+                while let Some(pos) = buffer.find('\n')
+                {
                     let line = buffer[..pos].trim().to_string();
                     buffer.drain(..=pos);
 
-                    if line.is_empty() || line == "data: [DONE]" {
+                    if line.is_empty() || line == "data: [DONE]"
+                    {
                         continue;
                     }
 
-                    if let Some(data) = line.strip_prefix("data: ") {
-                        match serde_json::from_str::<OpenAiStreamChunk>(data) {
-                            Ok(chunk) => {
-                                if let Some(choice) = chunk.choices.first() {
+                    if let Some(data) = line.strip_prefix("data: ")
+                    {
+                        match serde_json::from_str::<OpenAiStreamChunk>(data)
+                        {
+                            Ok(chunk) =>
+                            {
+                                if let Some(choice) = chunk.choices.first()
+                                {
                                     let content = choice.delta.content.clone().unwrap_or_default();
-                                    if !content.is_empty() || choice.finish_reason.is_some() {
+                                    if !content.is_empty() || choice.finish_reason.is_some()
+                                    {
                                         results.push(ChatChunk {
                                             content,
                                             model: chunk
@@ -419,7 +464,8 @@ impl ChatModel for OpenAiChatModel {
                                     }
                                 }
                             },
-                            Err(e) => {
+                            Err(e) =>
+                            {
                                 tracing::warn!("Failed to parse stream chunk: {e}");
                             },
                         }
@@ -447,18 +493,21 @@ impl ChatModel for OpenAiChatModel {
 ///
 /// 实现 `EmbeddingModel` trait，使用 OpenAI 嵌入 API 生成向量嵌入。
 #[derive(Debug)]
-pub struct OpenAiEmbeddingModel {
+pub struct OpenAiEmbeddingModel
+{
     api_key: String,
     base_url: String,
     model: String,
     client: Client,
 }
 
-impl OpenAiEmbeddingModel {
+impl OpenAiEmbeddingModel
+{
     /// Creates a new OpenAI embedding model with default settings.
     /// 使用默认设置创建新的 OpenAI 嵌入模型。
     #[must_use]
-    pub fn new(api_key: impl Into<String>) -> Self {
+    pub fn new(api_key: impl Into<String>) -> Self
+    {
         Self {
             api_key: api_key.into(),
             base_url: DEFAULT_BASE_URL.to_string(),
@@ -470,7 +519,8 @@ impl OpenAiEmbeddingModel {
     /// Creates a new embedding model with a custom HTTP client.
     /// 使用自定义 HTTP 客户端创建新的嵌入模型。
     #[must_use]
-    pub fn with_http_client(api_key: impl Into<String>, client: Client) -> Self {
+    pub fn with_http_client(api_key: impl Into<String>, client: Client) -> Self
+    {
         Self {
             api_key: api_key.into(),
             base_url: DEFAULT_BASE_URL.to_string(),
@@ -482,7 +532,8 @@ impl OpenAiEmbeddingModel {
     /// Sets a custom base URL.
     /// 设置自定义基础 URL。
     #[must_use]
-    pub fn base_url(mut self, url: impl Into<String>) -> Self {
+    pub fn base_url(mut self, url: impl Into<String>) -> Self
+    {
         self.base_url = url.into();
         self
     }
@@ -490,21 +541,25 @@ impl OpenAiEmbeddingModel {
     /// Sets the embedding model.
     /// 设置嵌入模型。
     #[must_use]
-    pub fn model(mut self, model: impl Into<String>) -> Self {
+    pub fn model(mut self, model: impl Into<String>) -> Self
+    {
         self.model = model.into();
         self
     }
 
     /// Handles HTTP error responses (shared with chat model).
     /// 处理 HTTP 错误响应（与聊天模型共享）。
-    async fn handle_error_response(response: reqwest::Response) -> ModelError {
+    async fn handle_error_response(response: reqwest::Response) -> ModelError
+    {
         OpenAiChatModel::handle_error_response(response).await
     }
 }
 
 #[async_trait]
-impl EmbeddingModel for OpenAiEmbeddingModel {
-    async fn embed(&self, request: EmbeddingRequest) -> Result<EmbeddingResponse, ModelError> {
+impl EmbeddingModel for OpenAiEmbeddingModel
+{
+    async fn embed(&self, request: EmbeddingRequest) -> Result<EmbeddingResponse, ModelError>
+    {
         let url = format!("{}/embeddings", self.base_url);
 
         let model = request.model.unwrap_or_else(|| self.model.clone());
@@ -522,7 +577,8 @@ impl EmbeddingModel for OpenAiEmbeddingModel {
             .await
             .map_err(|e| ModelError::RequestFailed(e.to_string()))?;
 
-        if !response.status().is_success() {
+        if !response.status().is_success()
+        {
             return Err(Self::handle_error_response(response).await);
         }
 
@@ -560,14 +616,16 @@ impl EmbeddingModel for OpenAiEmbeddingModel {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::chat_model::ChatMessage;
 
     // ---- Config tests / 配置测试 ----
 
     #[test]
-    fn test_config_new_defaults() {
+    fn test_config_new_defaults()
+    {
         let config = OpenAiConfig::new("sk-test-key");
         assert_eq!(config.api_key, "sk-test-key");
         assert_eq!(config.base_url, "https://api.openai.com/v1");
@@ -576,7 +634,8 @@ mod tests {
     }
 
     #[test]
-    fn test_config_builder() {
+    fn test_config_builder()
+    {
         let config = OpenAiConfig::new("sk-key")
             .base_url("https://custom.api.com/v1")
             .model("gpt-4")
@@ -590,7 +649,8 @@ mod tests {
     // ---- Request body serialization tests / 请求体序列化测试 ----
 
     #[test]
-    fn test_chat_request_serialization() {
+    fn test_chat_request_serialization()
+    {
         let config = OpenAiConfig::new("sk-test");
         let model = OpenAiChatModel::new(config);
 
@@ -612,7 +672,8 @@ mod tests {
     }
 
     #[test]
-    fn test_chat_request_custom_model() {
+    fn test_chat_request_custom_model()
+    {
         let config = OpenAiConfig::new("sk-test");
         let model = OpenAiChatModel::new(config);
 
@@ -625,7 +686,8 @@ mod tests {
     }
 
     #[test]
-    fn test_request_body_json_output() {
+    fn test_request_body_json_output()
+    {
         let config = OpenAiConfig::new("sk-test");
         let model = OpenAiChatModel::new(config);
 
@@ -648,7 +710,8 @@ mod tests {
     // ---- Response deserialization tests / 响应反序列化测试 ----
 
     #[test]
-    fn test_chat_response_deserialization() {
+    fn test_chat_response_deserialization()
+    {
         let json = r#"{
             "id": "chatcmpl-123",
             "object": "chat.completion",
@@ -681,7 +744,8 @@ mod tests {
     }
 
     #[test]
-    fn test_chat_response_multiple_choices() {
+    fn test_chat_response_multiple_choices()
+    {
         let json = r#"{
             "id": "chatcmpl-456",
             "object": "chat.completion",
@@ -709,7 +773,8 @@ mod tests {
     }
 
     #[test]
-    fn test_error_response_deserialization() {
+    fn test_error_response_deserialization()
+    {
         let json = r#"{
             "error": {
                 "message": "Incorrect API key provided",
@@ -726,7 +791,8 @@ mod tests {
     // ---- Stream chunk deserialization tests / 流式块反序列化测试 ----
 
     #[test]
-    fn test_stream_chunk_deserialization() {
+    fn test_stream_chunk_deserialization()
+    {
         let json = r#"{
             "id": "chatcmpl-789",
             "object": "chat.completion.chunk",
@@ -746,7 +812,8 @@ mod tests {
     }
 
     #[test]
-    fn test_stream_chunk_final() {
+    fn test_stream_chunk_final()
+    {
         let json = r#"{
             "id": "chatcmpl-790",
             "object": "chat.completion.chunk",
@@ -767,7 +834,8 @@ mod tests {
     // ---- Embedding tests / 嵌入测试 ----
 
     #[test]
-    fn test_embedding_request_serialization() {
+    fn test_embedding_request_serialization()
+    {
         let body = OpenAiEmbeddingRequest {
             model: "text-embedding-3-small".to_string(),
             input: vec!["Hello world".to_string(), "Test input".to_string()],
@@ -780,7 +848,8 @@ mod tests {
     }
 
     #[test]
-    fn test_embedding_response_deserialization() {
+    fn test_embedding_response_deserialization()
+    {
         let json = r#"{
             "object": "list",
             "data": [
@@ -807,7 +876,8 @@ mod tests {
     }
 
     #[test]
-    fn test_embedding_response_batch() {
+    fn test_embedding_response_batch()
+    {
         let json = r#"{
             "object": "list",
             "data": [
@@ -825,7 +895,8 @@ mod tests {
     }
 
     #[test]
-    fn test_embedding_model_config() {
+    fn test_embedding_model_config()
+    {
         let model = OpenAiEmbeddingModel::new("sk-test");
         assert_eq!(model.api_key, "sk-test");
         assert_eq!(model.base_url, "https://api.openai.com/v1");
@@ -833,7 +904,8 @@ mod tests {
     }
 
     #[test]
-    fn test_embedding_model_builder() {
+    fn test_embedding_model_builder()
+    {
         let model = OpenAiEmbeddingModel::new("sk-test")
             .base_url("https://custom.api.com/v1")
             .model("text-embedding-3-large");
@@ -845,7 +917,8 @@ mod tests {
     // ---- ChatModel::complete() with mockito / 使用 mockito 的 ChatModel::complete() 测试 ----
 
     #[tokio::test]
-    async fn test_complete_success_mocked() {
+    async fn test_complete_success_mocked()
+    {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/chat/completions")
@@ -894,7 +967,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_complete_with_organization_header() {
+    async fn test_complete_with_organization_header()
+    {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/chat/completions")
@@ -927,7 +1001,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_complete_auth_error() {
+    async fn test_complete_auth_error()
+    {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/chat/completions")
@@ -945,7 +1020,8 @@ mod tests {
             .await
             .expect_err("should fail with auth error");
 
-        match err {
+        match err
+        {
             ModelError::AuthError(msg) => assert!(msg.contains("Invalid API key")),
             _ => panic!("Expected AuthError, got: {err}"),
         }
@@ -954,7 +1030,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_complete_rate_limit() {
+    async fn test_complete_rate_limit()
+    {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/chat/completions")
@@ -973,7 +1050,8 @@ mod tests {
             .await
             .expect_err("should fail with rate limit");
 
-        match err {
+        match err
+        {
             ModelError::RateLimited { retry_after_secs } => assert_eq!(retry_after_secs, 30),
             _ => panic!("Expected RateLimited, got: {err}"),
         }
@@ -982,7 +1060,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_complete_server_error() {
+    async fn test_complete_server_error()
+    {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/chat/completions")
@@ -1000,8 +1079,10 @@ mod tests {
             .await
             .expect_err("should fail with server error");
 
-        match err {
-            ModelError::ApiError { status, message } => {
+        match err
+        {
+            ModelError::ApiError { status, message } =>
+            {
                 assert_eq!(status, 500);
                 assert!(message.contains("Internal server error"));
             },
@@ -1014,7 +1095,8 @@ mod tests {
     // ---- EmbeddingModel::embed() with mockito / 使用 mockito 的 EmbeddingModel::embed() 测试 ----
 
     #[tokio::test]
-    async fn test_embed_success_mocked() {
+    async fn test_embed_success_mocked()
+    {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/embeddings")
@@ -1045,7 +1127,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_embed_batch_mocked() {
+    async fn test_embed_batch_mocked()
+    {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/embeddings")
@@ -1075,7 +1158,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_embed_error_mocked() {
+    async fn test_embed_error_mocked()
+    {
         let mut server = mockito::Server::new_async().await;
         let mock = server
             .mock("POST", "/embeddings")
@@ -1089,7 +1173,8 @@ mod tests {
         let request = EmbeddingRequest::new("test");
         let err = model.embed(request).await.expect_err("should fail");
 
-        match err {
+        match err
+        {
             ModelError::AuthError(msg) => assert!(msg.contains("Bad auth")),
             _ => panic!("Expected AuthError, got: {err}"),
         }
@@ -1100,7 +1185,8 @@ mod tests {
     // ---- Edge case tests / 边界情况测试 ----
 
     #[test]
-    fn test_empty_choices_deserialization() {
+    fn test_empty_choices_deserialization()
+    {
         let json = r#"{
             "id": "chatcmpl-empty",
             "object": "chat.completion",
@@ -1115,7 +1201,8 @@ mod tests {
     }
 
     #[test]
-    fn test_delta_empty_content() {
+    fn test_delta_empty_content()
+    {
         let json = r#"{
             "id": "chatcmpl-delta",
             "object": "chat.completion.chunk",

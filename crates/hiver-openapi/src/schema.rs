@@ -9,7 +9,8 @@ use serde::{Deserialize, Serialize};
 /// 模式类型
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
-pub enum SchemaType {
+pub enum SchemaType
+{
     /// String
     /// 字符串
     String,
@@ -39,7 +40,8 @@ pub enum SchemaType {
 /// 模式格式
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
-pub enum SchemaFormat {
+pub enum SchemaFormat
+{
     /// Float
     /// 浮点
     Float,
@@ -97,7 +99,8 @@ pub enum SchemaFormat {
 /// }
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct Schema {
+pub struct Schema
+{
     /// Schema type
     /// 模式类型
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -179,44 +182,51 @@ pub struct Schema {
     pub nullable: Option<bool>,
 }
 
-impl Schema {
+impl Schema
+{
     /// Create a new schema
     /// 创建新模式
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set type
     /// 设置类型
-    pub fn with_type(mut self, schema_type: SchemaType) -> Self {
+    pub fn with_type(mut self, schema_type: SchemaType) -> Self
+    {
         self.schema_type = Some(schema_type);
         self
     }
 
     /// Set format
     /// 设置格式
-    pub fn with_format(mut self, format: SchemaFormat) -> Self {
+    pub fn with_format(mut self, format: SchemaFormat) -> Self
+    {
         self.format = Some(format);
         self
     }
 
     /// Set description
     /// 设置描述
-    pub fn description(mut self, description: impl Into<String>) -> Self {
+    pub fn description(mut self, description: impl Into<String>) -> Self
+    {
         self.description = Some(description.into());
         self
     }
 
     /// Set example
     /// 设置示例
-    pub fn example(mut self, example: impl Into<serde_json::Value>) -> Self {
+    pub fn example(mut self, example: impl Into<serde_json::Value>) -> Self
+    {
         self.example = Some(example.into());
         self
     }
 
     /// Add property
     /// 添加属性
-    pub fn add_property(mut self, name: impl Into<String>, property: SchemaProperty) -> Self {
+    pub fn add_property(mut self, name: impl Into<String>, property: SchemaProperty) -> Self
+    {
         self.properties
             .get_or_insert_with(HashMap::new)
             .insert(name.into(), property);
@@ -225,28 +235,32 @@ impl Schema {
 
     /// Add required property
     /// 添加必需属性
-    pub fn add_required(mut self, name: impl Into<String>) -> Self {
+    pub fn add_required(mut self, name: impl Into<String>) -> Self
+    {
         self.required.push(name.into());
         self
     }
 
     /// Set array items
     /// 设置数组项
-    pub fn items(mut self, items: Schema) -> Self {
+    pub fn items(mut self, items: Schema) -> Self
+    {
         self.items = Some(Box::new(items));
         self
     }
 
     /// Set enum values
     /// 设置枚举值
-    pub fn enum_values(mut self, values: Vec<serde_json::Value>) -> Self {
+    pub fn enum_values(mut self, values: Vec<serde_json::Value>) -> Self
+    {
         self.enum_values = Some(values);
         self
     }
 
     /// String schema
     /// 字符串模式
-    pub fn string() -> Self {
+    pub fn string() -> Self
+    {
         Self {
             schema_type: Some(SchemaType::String),
             ..Default::default()
@@ -255,7 +269,8 @@ impl Schema {
 
     /// Integer schema
     /// 整数模式
-    pub fn integer() -> Self {
+    pub fn integer() -> Self
+    {
         Self {
             schema_type: Some(SchemaType::Integer),
             format: Some(SchemaFormat::Int32),
@@ -265,7 +280,8 @@ impl Schema {
 
     /// Long schema
     /// 长整数模式
-    pub fn long() -> Self {
+    pub fn long() -> Self
+    {
         Self {
             schema_type: Some(SchemaType::Integer),
             format: Some(SchemaFormat::Int64),
@@ -275,7 +291,8 @@ impl Schema {
 
     /// Float schema
     /// 浮点模式
-    pub fn float() -> Self {
+    pub fn float() -> Self
+    {
         Self {
             schema_type: Some(SchemaType::Number),
             format: Some(SchemaFormat::Float),
@@ -285,7 +302,8 @@ impl Schema {
 
     /// Double schema
     /// 双精度模式
-    pub fn double() -> Self {
+    pub fn double() -> Self
+    {
         Self {
             schema_type: Some(SchemaType::Number),
             format: Some(SchemaFormat::Double),
@@ -295,7 +313,8 @@ impl Schema {
 
     /// Boolean schema
     /// 布尔模式
-    pub fn boolean() -> Self {
+    pub fn boolean() -> Self
+    {
         Self {
             schema_type: Some(SchemaType::Boolean),
             ..Default::default()
@@ -304,7 +323,8 @@ impl Schema {
 
     /// Array schema
     /// 数组模式
-    pub fn array(items: Schema) -> Self {
+    pub fn array(items: Schema) -> Self
+    {
         Self {
             schema_type: Some(SchemaType::Array),
             items: Some(Box::new(items)),
@@ -314,7 +334,8 @@ impl Schema {
 
     /// Object schema
     /// 对象模式
-    pub fn object() -> Self {
+    pub fn object() -> Self
+    {
         Self {
             schema_type: Some(SchemaType::Object),
             properties: Some(HashMap::new()),
@@ -324,7 +345,8 @@ impl Schema {
 
     /// Reference schema
     /// 引用模式
-    pub fn reference(ref_: impl Into<String>) -> Self {
+    pub fn reference(ref_: impl Into<String>) -> Self
+    {
         Self {
             ref_: Some(ref_.into()),
             ..Default::default()
@@ -335,23 +357,28 @@ impl Schema {
 /// Schema property
 /// 模式属性
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SchemaProperty {
+pub struct SchemaProperty
+{
     /// Property schema
     /// 属性模式
     #[serde(flatten)]
     pub schema: Schema,
 }
 
-impl SchemaProperty {
+impl SchemaProperty
+{
     /// Create a new property
     /// 创建新属性
-    pub fn new(schema: Schema) -> Self {
+    pub fn new(schema: Schema) -> Self
+    {
         Self { schema }
     }
 }
 
-impl From<Schema> for SchemaProperty {
-    fn from(schema: Schema) -> Self {
+impl From<Schema> for SchemaProperty
+{
+    fn from(schema: Schema) -> Self
+    {
         Self::new(schema)
     }
 }
@@ -364,32 +391,37 @@ impl From<Schema> for SchemaProperty {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_schema_string() {
+    fn test_schema_string()
+    {
         let schema = Schema::string().description("User name");
         assert_eq!(schema.schema_type, Some(SchemaType::String));
         assert_eq!(schema.description, Some("User name".to_string()));
     }
 
     #[test]
-    fn test_schema_integer() {
+    fn test_schema_integer()
+    {
         let schema = Schema::integer();
         assert_eq!(schema.schema_type, Some(SchemaType::Integer));
         assert_eq!(schema.format, Some(SchemaFormat::Int32));
     }
 
     #[test]
-    fn test_schema_array() {
+    fn test_schema_array()
+    {
         let schema = Schema::array(Schema::string());
         assert_eq!(schema.schema_type, Some(SchemaType::Array));
         assert!(schema.items.is_some());
     }
 
     #[test]
-    fn test_schema_object() {
+    fn test_schema_object()
+    {
         let schema = Schema::object()
             .add_property("id", Schema::integer().description("User ID").into())
             .add_property("name", Schema::string().description("User name").into())
@@ -401,7 +433,8 @@ mod tests {
     }
 
     #[test]
-    fn test_schema_reference() {
+    fn test_schema_reference()
+    {
         let schema = Schema::reference("#/components/schemas/User");
         assert_eq!(schema.ref_, Some("#/components/schemas/User".to_string()));
     }

@@ -51,7 +51,8 @@ use crate::{Cache, CacheEvictOptions, CachePutOptions, CacheableOptions};
 /// )
 /// ```
 #[derive(Debug, Clone, Default)]
-pub struct Caching {
+pub struct Caching
+{
     /// Cacheable operations
     /// Cacheable操作
     pub cacheable: Vec<CacheableOptions>,
@@ -65,73 +66,86 @@ pub struct Caching {
     pub evict: Vec<CacheEvictOptions>,
 }
 
-impl Caching {
+impl Caching
+{
     /// Create a new caching annotation
     /// 创建新的caching注解
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Add a cacheable operation
     /// 添加cacheable操作
-    pub fn cacheable(mut self, options: CacheableOptions) -> Self {
+    pub fn cacheable(mut self, options: CacheableOptions) -> Self
+    {
         self.cacheable.push(options);
         self
     }
 
     /// Add multiple cacheable operations
     /// 添加多个cacheable操作
-    pub fn cacheables(mut self, options: Vec<CacheableOptions>) -> Self {
+    pub fn cacheables(mut self, options: Vec<CacheableOptions>) -> Self
+    {
         self.cacheable.extend(options);
         self
     }
 
     /// Add a cache put operation
     /// 添加cache put操作
-    pub fn put(mut self, options: CachePutOptions) -> Self {
+    pub fn put(mut self, options: CachePutOptions) -> Self
+    {
         self.put.push(options);
         self
     }
 
     /// Add multiple cache put operations
     /// 添加多个cache put操作
-    pub fn puts(mut self, options: Vec<CachePutOptions>) -> Self {
+    pub fn puts(mut self, options: Vec<CachePutOptions>) -> Self
+    {
         self.put.extend(options);
         self
     }
 
     /// Add a cache evict operation
     /// 添加cache evict操作
-    pub fn evict(mut self, options: CacheEvictOptions) -> Self {
+    pub fn evict(mut self, options: CacheEvictOptions) -> Self
+    {
         self.evict.push(options);
         self
     }
 
     /// Add multiple cache evict operations
     /// 添加多个cache evict操作
-    pub fn evicts(mut self, options: Vec<CacheEvictOptions>) -> Self {
+    pub fn evicts(mut self, options: Vec<CacheEvictOptions>) -> Self
+    {
         self.evict.extend(options);
         self
     }
 
     /// Check if any operations are defined
     /// 检查是否定义了任何操作
-    pub fn has_operations(&self) -> bool {
+    pub fn has_operations(&self) -> bool
+    {
         !self.cacheable.is_empty() || !self.put.is_empty() || !self.evict.is_empty()
     }
 
     /// Get all cache names involved in operations
     /// 获取操作中涉及的所有缓存名称
-    pub fn all_cache_names(&self) -> Vec<String> {
+    pub fn all_cache_names(&self) -> Vec<String>
+    {
         let mut names = Vec::new();
 
-        for opts in &self.cacheable {
+        for opts in &self.cacheable
+        {
             names.extend(opts.cache_names.clone());
         }
-        for opts in &self.put {
+        for opts in &self.put
+        {
             names.extend(opts.cache_names.clone());
         }
-        for opts in &self.evict {
+        for opts in &self.evict
+        {
             names.extend(opts.cache_names.clone());
         }
 
@@ -146,7 +160,8 @@ impl Caching {
 /// 执行Caching注解中定义的所有缓存操作。
 pub struct CachingExec;
 
-impl CachingExec {
+impl CachingExec
+{
     /// Execute caching operations with a result value
     /// 使用结果值执行caching操作
     ///
@@ -186,8 +201,10 @@ impl CachingExec {
     {
         // First, check if any cacheable operation has a cached value
         // 首先，检查任何cacheable操作是否有缓存的值
-        for opts in &operations.cacheable {
-            for cache_name in &opts.cache_names {
+        for opts in &operations.cacheable
+        {
+            for cache_name in &opts.cache_names
+            {
                 if let Some(cache) = caches.get(cache_name)
                     && let Some(value) = cache.get(&key).await
                 {
@@ -204,10 +221,14 @@ impl CachingExec {
 
         // Apply put operations
         // 应用put操作
-        if let Some(ref value) = result {
-            for opts in &operations.put {
-                for cache_name in &opts.cache_names {
-                    if let Some(cache) = caches.get(cache_name) {
+        if let Some(ref value) = result
+        {
+            for opts in &operations.put
+            {
+                for cache_name in &opts.cache_names
+                {
+                    if let Some(cache) = caches.get(cache_name)
+                    {
                         cache.put(key.clone(), value.clone()).await;
                     }
                 }
@@ -215,9 +236,12 @@ impl CachingExec {
 
             // Also cache the result in cacheable caches for future retrieval
             // 也将结果缓存到cacheable缓存中以供将来检索
-            for opts in &operations.cacheable {
-                for cache_name in &opts.cache_names {
-                    if let Some(cache) = caches.get(cache_name) {
+            for opts in &operations.cacheable
+            {
+                for cache_name in &opts.cache_names
+                {
+                    if let Some(cache) = caches.get(cache_name)
+                    {
                         cache.put(key.clone(), value.clone()).await;
                     }
                 }
@@ -226,12 +250,18 @@ impl CachingExec {
 
         // Apply evict operations
         // 应用evict操作
-        for opts in &operations.evict {
-            for cache_name in &opts.cache_names {
-                if let Some(cache) = caches.get(cache_name) {
-                    if opts.all_entries {
+        for opts in &operations.evict
+        {
+            for cache_name in &opts.cache_names
+            {
+                if let Some(cache) = caches.get(cache_name)
+                {
+                    if opts.all_entries
+                    {
                         cache.invalidate_all().await;
-                    } else {
+                    }
+                    else
+                    {
                         cache.invalidate(&key).await;
                     }
                 }
@@ -262,9 +292,12 @@ impl CachingExec {
 
         // Apply cacheable operations (cache the result)
         // 应用cacheable操作（缓存结果）
-        for opts in &operations.cacheable {
-            for cache_name in &opts.cache_names {
-                if let Some(cache) = caches.get(cache_name) {
+        for opts in &operations.cacheable
+        {
+            for cache_name in &opts.cache_names
+            {
+                if let Some(cache) = caches.get(cache_name)
+                {
                     cache.put(key.clone(), result.clone()).await;
                 }
             }
@@ -272,9 +305,12 @@ impl CachingExec {
 
         // Apply put operations
         // 应用put操作
-        for opts in &operations.put {
-            for cache_name in &opts.cache_names {
-                if let Some(cache) = caches.get(cache_name) {
+        for opts in &operations.put
+        {
+            for cache_name in &opts.cache_names
+            {
+                if let Some(cache) = caches.get(cache_name)
+                {
                     cache.put(key.clone(), result.clone()).await;
                 }
             }
@@ -282,12 +318,18 @@ impl CachingExec {
 
         // Apply evict operations
         // 应用evict操作
-        for opts in &operations.evict {
-            for cache_name in &opts.cache_names {
-                if let Some(cache) = caches.get(cache_name) {
-                    if opts.all_entries {
+        for opts in &operations.evict
+        {
+            for cache_name in &opts.cache_names
+            {
+                if let Some(cache) = caches.get(cache_name)
+                {
+                    if opts.all_entries
+                    {
                         cache.invalidate_all().await;
-                    } else {
+                    }
+                    else
+                    {
                         cache.invalidate(&key).await;
                     }
                 }
@@ -317,16 +359,25 @@ impl CachingExec {
 
         // Apply evict operations
         // 应用evict操作
-        for opts in &operations.evict {
-            for cache_name in &opts.cache_names {
-                if let Some(cache) = caches.get(cache_name) {
-                    if opts.before_invocation {
+        for opts in &operations.evict
+        {
+            for cache_name in &opts.cache_names
+            {
+                if let Some(cache) = caches.get(cache_name)
+                {
+                    if opts.before_invocation
+                    {
                         // Already executed above
                         // 上面已执行
-                    } else {
-                        if opts.all_entries {
+                    }
+                    else
+                    {
+                        if opts.all_entries
+                        {
                             cache.invalidate_all().await;
-                        } else {
+                        }
+                        else
+                        {
                             cache.invalidate(key).await;
                         }
                     }
@@ -342,14 +393,17 @@ impl CachingExec {
 /// Provides a fluent API for building complex caching operations.
 /// `为构建复杂的caching操作提供流畅API`。
 #[derive(Debug, Clone, Default)]
-pub struct CachingBuilder {
+pub struct CachingBuilder
+{
     operations: Caching,
 }
 
-impl CachingBuilder {
+impl CachingBuilder
+{
     /// Create a new builder
     /// 创建新的构建器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             operations: Caching::new(),
         }
@@ -357,28 +411,32 @@ impl CachingBuilder {
 
     /// Add a cacheable operation
     /// 添加cacheable操作
-    pub fn cacheable(mut self, options: CacheableOptions) -> Self {
+    pub fn cacheable(mut self, options: CacheableOptions) -> Self
+    {
         self.operations.cacheable.push(options);
         self
     }
 
     /// Add a cache put operation
     /// 添加cache put操作
-    pub fn put(mut self, options: CachePutOptions) -> Self {
+    pub fn put(mut self, options: CachePutOptions) -> Self
+    {
         self.operations.put.push(options);
         self
     }
 
     /// Add a cache evict operation
     /// 添加cache evict操作
-    pub fn evict(mut self, options: CacheEvictOptions) -> Self {
+    pub fn evict(mut self, options: CacheEvictOptions) -> Self
+    {
         self.operations.evict.push(options);
         self
     }
 
     /// Build the caching operations
     /// 构建caching操作
-    pub fn build(self) -> Caching {
+    pub fn build(self) -> Caching
+    {
         self.operations
     }
 }
@@ -391,12 +449,14 @@ impl CachingBuilder {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::cache::MemoryCache;
 
     #[test]
-    fn test_caching_builder() {
+    fn test_caching_builder()
+    {
         let caching = CachingBuilder::new()
             .cacheable(CacheableOptions::new().cache_name("users"))
             .put(CachePutOptions::new().cache_name("currentUser"))
@@ -414,7 +474,8 @@ mod tests {
     }
 
     #[test]
-    fn test_caching_all_cache_names() {
+    fn test_caching_all_cache_names()
+    {
         let caching = Caching::new()
             .cacheable(CacheableOptions::new().cache_names(vec!["users".to_string()]))
             .put(CachePutOptions::new().cache_names(vec!["currentUser".to_string()]))
@@ -427,7 +488,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_caching_execute() {
+    async fn test_caching_execute()
+    {
         use std::{
             collections::HashMap,
             sync::atomic::{AtomicU32, Ordering},
@@ -484,7 +546,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_caching_execute_and_update() {
+    async fn test_caching_execute_and_update()
+    {
         use std::collections::HashMap;
 
         use crate::cache::CacheConfig;

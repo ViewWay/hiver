@@ -45,7 +45,8 @@ use crate::{
 /// ├── messages_zh_CN.properties
 /// └── errors.properties
 /// ```
-pub struct ResourceBundleMessageSource {
+pub struct ResourceBundleMessageSource
+{
     /// Base names for resource bundles (e.g., "messages", "errors")
     /// 资源包的基础名称（如"messages", "errors"）
     basenames: Vec<String>,
@@ -71,10 +72,12 @@ pub struct ResourceBundleMessageSource {
     last_reload: Arc<RwLock<tokio::time::Instant>>,
 }
 
-impl ResourceBundleMessageSource {
+impl ResourceBundleMessageSource
+{
     /// Create new resource bundle message source
     /// 创建新资源包消息源
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             basenames: Vec::new(),
             default_locale: "en".to_string(),
@@ -87,41 +90,47 @@ impl ResourceBundleMessageSource {
 
     /// Set basenames
     /// 设置基础名称
-    pub fn with_basenames(mut self, basenames: &[&str]) -> Self {
+    pub fn with_basenames(mut self, basenames: &[&str]) -> Self
+    {
         self.basenames = basenames.iter().map(|s| s.to_string()).collect();
         self
     }
 
     /// Set default locale
     /// 设置默认语言环境
-    pub fn with_default_locale(mut self, locale: impl Into<String>) -> Self {
+    pub fn with_default_locale(mut self, locale: impl Into<String>) -> Self
+    {
         self.default_locale = locale.into();
         self
     }
 
     /// Set base path
     /// 设置基础路径
-    pub fn with_base_path(mut self, path: impl AsRef<Path>) -> Self {
+    pub fn with_base_path(mut self, path: impl AsRef<Path>) -> Self
+    {
         self.base_path = path.as_ref().to_path_buf();
         self
     }
 
     /// Set cache duration
     /// 设置缓存时长
-    pub fn with_cache_seconds(mut self, seconds: u64) -> Self {
+    pub fn with_cache_seconds(mut self, seconds: u64) -> Self
+    {
         self.cache_seconds = seconds;
         self
     }
 
     /// Set basenames (builder style)
     /// 设置基础名称（构建器风格）
-    pub fn set_basenames(&mut self, basenames: &[&str]) {
+    pub fn set_basenames(&mut self, basenames: &[&str])
+    {
         self.basenames = basenames.iter().map(|s| s.to_string()).collect();
     }
 
     /// Clear cache
     /// 清除缓存
-    pub async fn clear_cache(&self) {
+    pub async fn clear_cache(&self)
+    {
         self.cache.write().await.clear();
         *self.last_reload.write().await = tokio::time::Instant::now();
     }
@@ -130,7 +139,8 @@ impl ResourceBundleMessageSource {
     /// 检查缓存是否需要重载
     /// Check if cache needs reload.
     /// 检查缓存是否需要重载。
-    pub async fn needs_reload(&self) -> bool {
+    pub async fn needs_reload(&self) -> bool
+    {
         let last = *self.last_reload.read().await;
         tokio::time::Instant::now().duration_since(last).as_secs() > self.cache_seconds
     }
@@ -141,23 +151,27 @@ impl ResourceBundleMessageSource {
         &self,
         basename: &str,
         locale: &str,
-    ) -> I18nResult<HashMap<String, String>> {
+    ) -> I18nResult<HashMap<String, String>>
+    {
         let locale = Locale::parse(locale)?;
 
         // Try locale-specific files first, then fall back to default
         let file_names = self.get_file_names(basename, &locale);
 
-        for file_name in file_names {
+        for file_name in file_names
+        {
             let file_path = self.base_path.join(&file_name);
 
-            if let Ok(content) = fs::read_to_string(&file_path).await {
+            if let Ok(content) = fs::read_to_string(&file_path).await
+            {
                 return self.parse_properties(&content);
             }
         }
 
         // Try default (no locale)
         let default_path = self.base_path.join(format!("{}.properties", basename));
-        if let Ok(content) = fs::read_to_string(&default_path).await {
+        if let Ok(content) = fs::read_to_string(&default_path).await
+        {
             return self.parse_properties(&content);
         }
 
@@ -167,16 +181,19 @@ impl ResourceBundleMessageSource {
 
     /// Get file names to try (in order)
     /// 获取要尝试的文件名（按顺序）
-    fn get_file_names(&self, basename: &str, locale: &Locale) -> Vec<String> {
+    fn get_file_names(&self, basename: &str, locale: &Locale) -> Vec<String>
+    {
         let mut names = Vec::new();
 
         // Try language_country_variant (e.g., messages_en_US.properties)
-        if let (Some(country), Some(_variant)) = (&locale.country, &locale.variant) {
+        if let (Some(country), Some(_variant)) = (&locale.country, &locale.variant)
+        {
             names.push(format!("{}_{}_{}.properties", basename, locale.language, country));
         }
 
         // Try language_country (e.g., messages_en_US.properties)
-        if let Some(country) = &locale.country {
+        if let Some(country) = &locale.country
+        {
             names.push(format!("{}_{}_{}.properties", basename, locale.language, country));
         }
 
@@ -188,19 +205,23 @@ impl ResourceBundleMessageSource {
 
     /// Parse properties file content
     /// 解析属性文件内容
-    fn parse_properties(&self, content: &str) -> I18nResult<HashMap<String, String>> {
+    fn parse_properties(&self, content: &str) -> I18nResult<HashMap<String, String>>
+    {
         let mut messages = HashMap::new();
 
-        for (line_num, line) in content.lines().enumerate() {
+        for (line_num, line) in content.lines().enumerate()
+        {
             let line = line.trim();
 
             // Skip empty lines and comments
-            if line.is_empty() || line.starts_with('#') || line.starts_with('!') {
+            if line.is_empty() || line.starts_with('#') || line.starts_with('!')
+            {
                 continue;
             }
 
             // Parse key=value
-            if let Some(eq_pos) = line.find('=') {
+            if let Some(eq_pos) = line.find('=')
+            {
                 let key = line[..eq_pos].trim();
                 let value = line[eq_pos + 1..].trim();
 
@@ -208,7 +229,9 @@ impl ResourceBundleMessageSource {
                 let value = self.decode_unicode(value);
 
                 messages.insert(key.to_string(), value);
-            } else if !line.is_empty() {
+            }
+            else if !line.is_empty()
+            {
                 // Invalid line
                 tracing::warn!("Invalid line {} in properties file", line_num + 1);
             }
@@ -219,17 +242,21 @@ impl ResourceBundleMessageSource {
 
     /// Decode unicode escapes
     /// 解码Unicode转义
-    fn decode_unicode(&self, s: &str) -> String {
+    fn decode_unicode(&self, s: &str) -> String
+    {
         let mut result = String::new();
         let mut chars = s.chars().peekable();
 
-        while let Some(c) = chars.next() {
-            if c == '\\' && chars.peek() == Some(&'u') {
+        while let Some(c) = chars.next()
+        {
+            if c == '\\' && chars.peek() == Some(&'u')
+            {
                 chars.next(); // consume 'u'
 
                 // Read 4 hex digits
                 let mut hex = String::new();
-                for _ in 0..4 {
+                for _ in 0..4
+                {
                     if let Some(&c) = chars.peek()
                         && c.is_ascii_hexdigit()
                     {
@@ -243,7 +270,9 @@ impl ResourceBundleMessageSource {
                 {
                     result.push(c);
                 }
-            } else {
+            }
+            else
+            {
                 result.push(c);
             }
         }
@@ -253,20 +282,24 @@ impl ResourceBundleMessageSource {
 
     /// Get messages for locale (with caching)
     /// 获取语言环境的消息（带缓存）
-    async fn get_messages(&self, basename: &str, locale: &str) -> HashMap<String, String> {
+    async fn get_messages(&self, basename: &str, locale: &str) -> HashMap<String, String>
+    {
         let cache_key = format!("{}_{}", basename, locale);
 
         // Check cache
         {
             let cache = self.cache.read().await;
-            if let Some(messages) = cache.get(&cache_key) {
+            if let Some(messages) = cache.get(&cache_key)
+            {
                 return messages.clone();
             }
         }
 
         // Load from file
-        match self.load_properties(basename, locale).await {
-            Ok(messages) => {
+        match self.load_properties(basename, locale).await
+        {
+            Ok(messages) =>
+            {
                 let mut cache = self.cache.write().await;
                 cache.insert(cache_key, messages.clone());
                 messages
@@ -277,23 +310,29 @@ impl ResourceBundleMessageSource {
 
     /// Format message with arguments
     /// 格式化带参数的消息
-    fn format_message(&self, template: &str, args: &[String]) -> String {
+    fn format_message(&self, template: &str, args: &[String]) -> String
+    {
         let mut result = template.to_string();
-        for (i, arg) in args.iter().enumerate() {
+        for (i, arg) in args.iter().enumerate()
+        {
             result = result.replace(&format!("{{{}}}", i), arg);
         }
         result
     }
 }
 
-impl Default for ResourceBundleMessageSource {
-    fn default() -> Self {
+impl Default for ResourceBundleMessageSource
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl Clone for ResourceBundleMessageSource {
-    fn clone(&self) -> Self {
+impl Clone for ResourceBundleMessageSource
+{
+    fn clone(&self) -> Self
+    {
         Self {
             basenames: self.basenames.clone(),
             default_locale: self.default_locale.clone(),
@@ -306,23 +345,30 @@ impl Clone for ResourceBundleMessageSource {
 }
 
 #[async_trait::async_trait]
-impl MessageSource for ResourceBundleMessageSource {
-    async fn get_message(&self, code: &str, args: &[String], locale: &str) -> I18nResult<String> {
+impl MessageSource for ResourceBundleMessageSource
+{
+    async fn get_message(&self, code: &str, args: &[String], locale: &str) -> I18nResult<String>
+    {
         // Try each basename in order
-        for basename in &self.basenames {
+        for basename in &self.basenames
+        {
             let messages = self.get_messages(basename, locale).await;
 
-            if let Some(template) = messages.get(code) {
+            if let Some(template) = messages.get(code)
+            {
                 return Ok(self.format_message(template, args));
             }
         }
 
         // Try default locale
-        if locale != self.default_locale {
-            for basename in &self.basenames {
+        if locale != self.default_locale
+        {
+            for basename in &self.basenames
+            {
                 let messages = self.get_messages(basename, &self.default_locale).await;
 
-                if let Some(template) = messages.get(code) {
+                if let Some(template) = messages.get(code)
+                {
                     return Ok(self.format_message(template, args));
                 }
             }
@@ -340,8 +386,10 @@ impl MessageSource for ResourceBundleMessageSource {
         args: &[String],
         default_message: &str,
         locale: &str,
-    ) -> String {
-        match self.get_message(code, args, locale).await {
+    ) -> String
+    {
+        match self.get_message(code, args, locale).await
+        {
             Ok(msg) => msg,
             Err(_) => self.format_message(default_message, args),
         }
@@ -354,7 +402,8 @@ impl MessageSource for ResourceBundleMessageSource {
 /// Simple representation of a loaded resource bundle.
 /// 已加载资源包的简单表示。
 #[derive(Debug, Clone)]
-pub struct ResourceBundleSource {
+pub struct ResourceBundleSource
+{
     /// Bundle basename
     /// 包基础名称
     pub basename: String,
@@ -368,10 +417,12 @@ pub struct ResourceBundleSource {
     pub messages: HashMap<String, String>,
 }
 
-impl ResourceBundleSource {
+impl ResourceBundleSource
+{
     /// Create new resource bundle source
     /// 创建新资源包源
-    pub fn new(basename: impl Into<String>, locale: impl Into<String>) -> Self {
+    pub fn new(basename: impl Into<String>, locale: impl Into<String>) -> Self
+    {
         Self {
             basename: basename.into(),
             locale: locale.into(),
@@ -381,14 +432,16 @@ impl ResourceBundleSource {
 
     /// Add message
     /// 添加消息
-    pub fn add_message(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn add_message(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
+    {
         self.messages.insert(key.into(), value.into());
         self
     }
 
     /// Get message
     /// 获取消息
-    pub fn get_message(&self, key: &str) -> Option<&str> {
+    pub fn get_message(&self, key: &str) -> Option<&str>
+    {
         self.messages.get(key).map(|s| s.as_str())
     }
 }
@@ -401,11 +454,13 @@ impl ResourceBundleSource {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[tokio::test]
-    async fn test_resource_bundle_creation() {
+    async fn test_resource_bundle_creation()
+    {
         let source = ResourceBundleMessageSource::new()
             .with_basenames(&["messages", "errors"])
             .with_default_locale("en");
@@ -415,7 +470,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_unicode_decode() {
+    async fn test_unicode_decode()
+    {
         let source = ResourceBundleMessageSource::new();
 
         // Chinese characters unicode escaped
@@ -430,7 +486,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_parse_properties() {
+    async fn test_parse_properties()
+    {
         let source = ResourceBundleMessageSource::new();
 
         let content = r#"
@@ -448,7 +505,8 @@ error.not.found=Resource not found: {0}
     }
 
     #[tokio::test]
-    async fn test_format_message() {
+    async fn test_format_message()
+    {
         let source = ResourceBundleMessageSource::new();
 
         let template = "Hello, {0}! Today is {1}.";
@@ -458,7 +516,8 @@ error.not.found=Resource not found: {0}
     }
 
     #[test]
-    fn test_resource_bundle_source() {
+    fn test_resource_bundle_source()
+    {
         let source = ResourceBundleSource::new("messages", "en")
             .add_message("welcome", "Welcome!")
             .add_message("greeting", "Hello, {0}!");
@@ -469,7 +528,8 @@ error.not.found=Resource not found: {0}
     }
 
     #[tokio::test]
-    async fn test_static_messages_fallback() {
+    async fn test_static_messages_fallback()
+    {
         let source = ResourceBundleMessageSource::new().with_basenames(&["test"]);
 
         // With no files, should use default message

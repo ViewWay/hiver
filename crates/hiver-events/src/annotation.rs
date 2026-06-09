@@ -110,7 +110,8 @@ pub use hiver_events_macros::TransactionalEventListener;
 ///
 /// This trait is implemented by the `EventListener` macro.
 /// 此trait由`EventListener`宏实现。
-pub trait RegisterEventListener {
+pub trait RegisterEventListener
+{
     /// Register all event listeners in this type
     /// 注册此类型中的所有事件监听器
     fn register_listeners(&self, registry: &crate::registry::EventRegistry);
@@ -124,7 +125,8 @@ pub trait RegisterEventListener {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use crate::{
         event::ApplicationEvent,
         registry::{EventFilter, PassAllFilter},
@@ -132,38 +134,47 @@ mod tests {
 
     // Test event
     #[derive(Clone, Debug)]
-    struct TestEvent {
+    struct TestEvent
+    {
         value: i32,
     }
 
-    impl ApplicationEvent for TestEvent {
-        fn timestamp(&self) -> chrono::DateTime<chrono::Utc> {
+    impl ApplicationEvent for TestEvent
+    {
+        fn timestamp(&self) -> chrono::DateTime<chrono::Utc>
+        {
             chrono::Utc::now()
         }
 
-        fn as_any(&self) -> &dyn std::any::Any {
+        fn as_any(&self) -> &dyn std::any::Any
+        {
             self
         }
     }
 
     // Example usage (macro would generate this)
-    struct ExampleListener {
+    struct ExampleListener
+    {
         call_count: std::sync::Arc<std::sync::atomic::AtomicU32>,
     }
 
-    impl ExampleListener {
-        fn new() -> Self {
+    impl ExampleListener
+    {
+        fn new() -> Self
+        {
             Self {
                 call_count: std::sync::Arc::new(std::sync::atomic::AtomicU32::new(0)),
             }
         }
 
-        fn count(&self) -> u32 {
+        fn count(&self) -> u32
+        {
             self.call_count.load(std::sync::atomic::Ordering::Relaxed)
         }
 
         // This method would be annotated with #[EventListener]
-        async fn handle_test_event(&self, event: &TestEvent) -> Result<(), String> {
+        async fn handle_test_event(&self, event: &TestEvent) -> Result<(), String>
+        {
             self.call_count
                 .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
             println!("Event received: {}", event.value);
@@ -172,7 +183,8 @@ mod tests {
     }
 
     #[test]
-    fn test_listener_trait() {
+    fn test_listener_trait()
+    {
         let listener = ExampleListener::new();
         assert_eq!(listener.count(), 0);
     }
@@ -180,14 +192,17 @@ mod tests {
     // Test conditional filter
     struct EvenValueFilter;
 
-    impl EventFilter<TestEvent> for EvenValueFilter {
-        fn should_process(&self, event: &TestEvent) -> bool {
+    impl EventFilter<TestEvent> for EvenValueFilter
+    {
+        fn should_process(&self, event: &TestEvent) -> bool
+        {
             event.value % 2 == 0
         }
     }
 
     #[test]
-    fn test_event_filter() {
+    fn test_event_filter()
+    {
         let filter = EvenValueFilter;
 
         assert!(filter.should_process(&TestEvent { value: 2 }));
@@ -198,7 +213,8 @@ mod tests {
 
     // Test pass-all filter
     #[test]
-    fn test_pass_all_filter() {
+    fn test_pass_all_filter()
+    {
         let filter = PassAllFilter;
         assert!(filter.should_process(&TestEvent { value: 999 }));
     }

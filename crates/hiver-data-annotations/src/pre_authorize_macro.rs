@@ -12,7 +12,8 @@ use syn::{ItemFn, parse_macro_input};
 /// @PreAuthorize 属性
 /// @PreAuthorize Attributes
 #[derive(Debug, FromMeta)]
-pub(crate) struct PreAuthorizeAttrs {
+pub(crate) struct PreAuthorizeAttrs
+{
     /// 权限表达式 / Permission expression
     pub expression: String,
 }
@@ -43,12 +44,14 @@ pub(crate) struct PreAuthorizeAttrs {
 /// }
 /// ```
 #[cfg(feature = "security")]
-pub(crate) fn pre_authorize(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn pre_authorize(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     pre_authorize_macro_impl(attr, item)
 }
 
 #[cfg(feature = "security")]
-pub(crate) fn pre_authorize_macro_impl(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn pre_authorize_macro_impl(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(item as ItemFn);
 
     let attr_str = attr.to_string();
@@ -79,7 +82,8 @@ pub(crate) fn pre_authorize_macro_impl(attr: TokenStream, item: TokenStream) -> 
 // Fallback implementation when security feature is not enabled
 // 当未启用 security feature 时的后备实现
 #[cfg(not(feature = "security"))]
-pub fn pre_authorize_macro_impl(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn pre_authorize_macro_impl(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     // When security feature is disabled, just return the item unchanged
     // 当未启用 security feature 时，直接返回原项
     item

@@ -35,14 +35,17 @@ use crate::{MongoError, MongoResult};
 /// A single operation in a bulk write.
 /// 批量写入中的单个操作。
 #[derive(Debug, Clone)]
-pub enum BulkWriteModel {
+pub enum BulkWriteModel
+{
     /// Insert a single document.
-    InsertOne {
+    InsertOne
+    {
         /// Document to insert
         document: Document,
     },
     /// Update a single document matching the filter.
-    UpdateOne {
+    UpdateOne
+    {
         /// Filter to match
         filter: Document,
         /// Update to apply
@@ -51,7 +54,8 @@ pub enum BulkWriteModel {
         upsert: bool,
     },
     /// Update multiple documents matching the filter.
-    UpdateMany {
+    UpdateMany
+    {
         /// Filter to match
         filter: Document,
         /// Update to apply
@@ -60,7 +64,8 @@ pub enum BulkWriteModel {
         upsert: bool,
     },
     /// Replace a single document matching the filter.
-    ReplaceOne {
+    ReplaceOne
+    {
         /// Filter to match
         filter: Document,
         /// Replacement document
@@ -69,12 +74,14 @@ pub enum BulkWriteModel {
         upsert: bool,
     },
     /// Delete a single document matching the filter.
-    DeleteOne {
+    DeleteOne
+    {
         /// Filter to match
         filter: Document,
     },
     /// Delete multiple documents matching the filter.
-    DeleteMany {
+    DeleteMany
+    {
         /// Filter to match
         filter: Document,
     },
@@ -88,16 +95,19 @@ pub enum BulkWriteModel {
 /// Executes multiple write operations in a single round-trip to MongoDB.
 /// 在单次往返 MongoDB 中执行多个写操作。
 #[derive(Debug, Clone, Default)]
-pub struct BulkOperations {
+pub struct BulkOperations
+{
     models: Vec<BulkWriteModel>,
     /// Whether operations should be executed in order (default: true).
     ordered: bool,
 }
 
-impl BulkOperations {
+impl BulkOperations
+{
     /// Create a new bulk operations builder.
     /// 创建新的批量操作构建器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             models: Vec::new(),
             ordered: true,
@@ -112,7 +122,8 @@ impl BulkOperations {
     /// 当 `ordered=true`（默认）时，第一个错误时停止。
     /// 当 `ordered=false` 时，独立尝试所有操作。
     #[must_use]
-    pub fn ordered(mut self, ordered: bool) -> Self {
+    pub fn ordered(mut self, ordered: bool) -> Self
+    {
         self.ordered = ordered;
         self
     }
@@ -120,7 +131,8 @@ impl BulkOperations {
     /// Add an insert one operation.
     /// 添加插入单文档操作。
     #[must_use]
-    pub fn insert_one(mut self, document: Document) -> Self {
+    pub fn insert_one(mut self, document: Document) -> Self
+    {
         self.models.push(BulkWriteModel::InsertOne { document });
         self
     }
@@ -128,7 +140,8 @@ impl BulkOperations {
     /// Add an insert one operation from a serializable model.
     /// 从可序列化模型添加插入单文档操作。
     #[must_use = "insert_model returns a new BulkOperations builder"]
-    pub fn insert_model<T: serde::Serialize>(self, model: &T) -> MongoResult<Self> {
+    pub fn insert_model<T: serde::Serialize>(self, model: &T) -> MongoResult<Self>
+    {
         let doc = mongodb::bson::to_document(model)
             .map_err(|e| MongoError::data_conversion(e.to_string()))?;
         Ok(self.insert_one(doc))
@@ -137,7 +150,8 @@ impl BulkOperations {
     /// Add an update one operation.
     /// 添加更新单文档操作。
     #[must_use]
-    pub fn update_one(mut self, filter: Document, update: Document) -> Self {
+    pub fn update_one(mut self, filter: Document, update: Document) -> Self
+    {
         self.models.push(BulkWriteModel::UpdateOne {
             filter,
             update,
@@ -149,7 +163,8 @@ impl BulkOperations {
     /// Add an upsert one operation (insert if not found).
     /// 添加 upsert 单文档操作（若未找到则插入）。
     #[must_use]
-    pub fn upsert_one(mut self, filter: Document, update: Document) -> Self {
+    pub fn upsert_one(mut self, filter: Document, update: Document) -> Self
+    {
         self.models.push(BulkWriteModel::UpdateOne {
             filter,
             update,
@@ -161,7 +176,8 @@ impl BulkOperations {
     /// Add an update many operation.
     /// 添加更新多文档操作。
     #[must_use]
-    pub fn update_many(mut self, filter: Document, update: Document) -> Self {
+    pub fn update_many(mut self, filter: Document, update: Document) -> Self
+    {
         self.models.push(BulkWriteModel::UpdateMany {
             filter,
             update,
@@ -173,7 +189,8 @@ impl BulkOperations {
     /// Add a replace one operation.
     /// 添加替换单文档操作。
     #[must_use]
-    pub fn replace_one(mut self, filter: Document, replacement: Document) -> Self {
+    pub fn replace_one(mut self, filter: Document, replacement: Document) -> Self
+    {
         self.models.push(BulkWriteModel::ReplaceOne {
             filter,
             replacement,
@@ -185,7 +202,8 @@ impl BulkOperations {
     /// Add an upsert replacement (replace or insert).
     /// 添加 upsert 替换（替换或插入）。
     #[must_use]
-    pub fn replace_one_upsert(mut self, filter: Document, replacement: Document) -> Self {
+    pub fn replace_one_upsert(mut self, filter: Document, replacement: Document) -> Self
+    {
         self.models.push(BulkWriteModel::ReplaceOne {
             filter,
             replacement,
@@ -197,7 +215,8 @@ impl BulkOperations {
     /// Add a delete one operation.
     /// 添加删除单文档操作。
     #[must_use]
-    pub fn delete_one(mut self, filter: Document) -> Self {
+    pub fn delete_one(mut self, filter: Document) -> Self
+    {
         self.models.push(BulkWriteModel::DeleteOne { filter });
         self
     }
@@ -205,20 +224,23 @@ impl BulkOperations {
     /// Add a delete many operation.
     /// 添加删除多文档操作。
     #[must_use]
-    pub fn delete_many(mut self, filter: Document) -> Self {
+    pub fn delete_many(mut self, filter: Document) -> Self
+    {
         self.models.push(BulkWriteModel::DeleteMany { filter });
         self
     }
 
     /// Get the number of operations in this batch.
     /// 获取此批次中的操作数量。
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.models.len()
     }
 
     /// Check if the batch is empty.
     /// 检查批次是否为空。
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.models.is_empty()
     }
 
@@ -230,16 +252,21 @@ impl BulkOperations {
     pub async fn execute(
         &self,
         collection: &mongodb::Collection<Document>,
-    ) -> MongoResult<BulkWriteResult> {
-        if self.models.is_empty() {
+    ) -> MongoResult<BulkWriteResult>
+    {
+        if self.models.is_empty()
+        {
             return Ok(BulkWriteResult::default());
         }
 
         let mut result = BulkWriteResult::default();
 
-        for model in &self.models {
-            match model {
-                BulkWriteModel::InsertOne { document } => {
+        for model in &self.models
+        {
+            match model
+            {
+                BulkWriteModel::InsertOne { document } =>
+                {
                     collection
                         .insert_one(document.clone())
                         .await
@@ -250,7 +277,8 @@ impl BulkOperations {
                     filter,
                     update,
                     upsert,
-                } => {
+                } =>
+                {
                     let opts = mongodb::options::UpdateOptions::builder()
                         .upsert(*upsert)
                         .build();
@@ -261,7 +289,8 @@ impl BulkOperations {
                         .map_err(MongoError::from)?;
                     result.matched_count += r.matched_count;
                     result.modified_count += r.modified_count;
-                    if r.upserted_id.is_some() {
+                    if r.upserted_id.is_some()
+                    {
                         result.upserted_count += 1;
                     }
                 },
@@ -269,7 +298,8 @@ impl BulkOperations {
                     filter,
                     update,
                     upsert,
-                } => {
+                } =>
+                {
                     let opts = mongodb::options::UpdateOptions::builder()
                         .upsert(*upsert)
                         .build();
@@ -280,7 +310,8 @@ impl BulkOperations {
                         .map_err(MongoError::from)?;
                     result.matched_count += r.matched_count;
                     result.modified_count += r.modified_count;
-                    if r.upserted_id.is_some() {
+                    if r.upserted_id.is_some()
+                    {
                         result.upserted_count += 1;
                     }
                 },
@@ -288,7 +319,8 @@ impl BulkOperations {
                     filter,
                     replacement,
                     upsert,
-                } => {
+                } =>
+                {
                     let opts = mongodb::options::ReplaceOptions::builder()
                         .upsert(*upsert)
                         .build();
@@ -299,18 +331,21 @@ impl BulkOperations {
                         .map_err(MongoError::from)?;
                     result.matched_count += r.matched_count;
                     result.modified_count += r.modified_count;
-                    if r.upserted_id.is_some() {
+                    if r.upserted_id.is_some()
+                    {
                         result.upserted_count += 1;
                     }
                 },
-                BulkWriteModel::DeleteOne { filter } => {
+                BulkWriteModel::DeleteOne { filter } =>
+                {
                     let r = collection
                         .delete_one(filter.clone())
                         .await
                         .map_err(MongoError::from)?;
                     result.deleted_count += r.deleted_count;
                 },
-                BulkWriteModel::DeleteMany { filter } => {
+                BulkWriteModel::DeleteMany { filter } =>
+                {
                     let r = collection
                         .delete_many(filter.clone())
                         .await
@@ -330,17 +365,20 @@ impl BulkOperations {
     pub async fn execute_insert_many(
         &self,
         collection: &mongodb::Collection<Document>,
-    ) -> MongoResult<u64> {
+    ) -> MongoResult<u64>
+    {
         let docs: Vec<Document> = self
             .models
             .iter()
-            .filter_map(|m| match m {
+            .filter_map(|m| match m
+            {
                 BulkWriteModel::InsertOne { document } => Some(document.clone()),
                 _ => None,
             })
             .collect();
 
-        if docs.is_empty() {
+        if docs.is_empty()
+        {
             return Ok(0);
         }
 
@@ -358,7 +396,8 @@ impl BulkOperations {
 /// Result of a bulk write operation.
 /// 批量写入操作的结果。
 #[derive(Debug, Clone, Default)]
-pub struct BulkWriteResult {
+pub struct BulkWriteResult
+{
     /// Number of documents inserted / 插入的文档数量
     pub inserted_count: u64,
     /// Number of documents matched / 匹配的文档数量
@@ -371,10 +410,12 @@ pub struct BulkWriteResult {
     pub upserted_count: u64,
 }
 
-impl BulkWriteResult {
+impl BulkWriteResult
+{
     /// Total number of documents affected.
     /// 受影响的文档总数。
-    pub fn total_affected(&self) -> u64 {
+    pub fn total_affected(&self) -> u64
+    {
         self.inserted_count + self.modified_count + self.deleted_count + self.upserted_count
     }
 }
@@ -387,13 +428,15 @@ impl BulkWriteResult {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use mongodb::bson::doc;
 
     use super::*;
 
     #[test]
-    fn test_bulk_insert_only() {
+    fn test_bulk_insert_only()
+    {
         let bulk = BulkOperations::new()
             .insert_one(doc! { "name": "Alice" })
             .insert_one(doc! { "name": "Bob" });
@@ -403,7 +446,8 @@ mod tests {
     }
 
     #[test]
-    fn test_bulk_mixed_operations() {
+    fn test_bulk_mixed_operations()
+    {
         let bulk = BulkOperations::new()
             .insert_one(doc! { "name": "Alice" })
             .update_one(doc! { "name": "Alice" }, doc! { "$set": { "age": 30 } })
@@ -417,20 +461,23 @@ mod tests {
     }
 
     #[test]
-    fn test_bulk_empty() {
+    fn test_bulk_empty()
+    {
         let bulk = BulkOperations::new();
         assert!(bulk.is_empty());
         assert_eq!(bulk.len(), 0);
     }
 
     #[test]
-    fn test_bulk_ordered_setting() {
+    fn test_bulk_ordered_setting()
+    {
         let bulk = BulkOperations::new().ordered(false);
         assert!(!bulk.ordered);
     }
 
     #[test]
-    fn test_bulk_result_total() {
+    fn test_bulk_result_total()
+    {
         let result = BulkWriteResult {
             inserted_count: 5,
             modified_count: 3,
@@ -442,27 +489,31 @@ mod tests {
     }
 
     #[test]
-    fn test_bulk_result_default() {
+    fn test_bulk_result_default()
+    {
         let result = BulkWriteResult::default();
         assert_eq!(result.inserted_count, 0);
         assert_eq!(result.total_affected(), 0);
     }
 
     #[test]
-    fn test_bulk_delete_many() {
+    fn test_bulk_delete_many()
+    {
         let bulk = BulkOperations::new().delete_many(doc! { "status": "inactive" });
         assert_eq!(bulk.len(), 1);
     }
 
     #[test]
-    fn test_bulk_replace_one() {
+    fn test_bulk_replace_one()
+    {
         let bulk = BulkOperations::new()
             .replace_one(doc! { "_id": 1 }, doc! { "_id": 1, "name": "Updated" });
         assert_eq!(bulk.len(), 1);
     }
 
     #[test]
-    fn test_bulk_replace_one_upsert() {
+    fn test_bulk_replace_one_upsert()
+    {
         let bulk = BulkOperations::new()
             .replace_one_upsert(doc! { "_id": 99 }, doc! { "_id": 99, "name": "New" });
         assert_eq!(bulk.len(), 1);

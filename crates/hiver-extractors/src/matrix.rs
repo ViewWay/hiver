@@ -98,7 +98,8 @@ where
 {
     fn from_request(
         req: &Request,
-    ) -> Pin<Box<dyn Future<Output = Result<Self, ExtractorError>> + Send>> {
+    ) -> Pin<Box<dyn Future<Output = Result<Self, ExtractorError>> + Send>>
+    {
         let path = req.path().to_string();
 
         Box::pin(async move {
@@ -107,10 +108,13 @@ where
                 .ok_or_else(|| ExtractorError::Missing("No matrix variable found".to_string()))?;
 
             // Deserialize to target type
-            let parsed = if value.contains(',') {
+            let parsed = if value.contains(',')
+            {
                 // Handle comma-separated values as JSON array
                 serde_json::from_str(format!("[{}]", value).as_str())
-            } else {
+            }
+            else
+            {
                 // Single value - try to deserialize directly
                 serde_json::from_value(serde_json::Value::String(value))
             }
@@ -123,10 +127,12 @@ where
     }
 }
 
-impl FromRequest for MatrixVariables {
+impl FromRequest for MatrixVariables
+{
     fn from_request(
         req: &Request,
-    ) -> Pin<Box<dyn Future<Output = Result<Self, ExtractorError>> + Send>> {
+    ) -> Pin<Box<dyn Future<Output = Result<Self, ExtractorError>> + Send>>
+    {
         let path = req.path().to_string();
 
         Box::pin(async move {
@@ -136,10 +142,12 @@ impl FromRequest for MatrixVariables {
     }
 }
 
-impl FromRequest for MatrixPath {
+impl FromRequest for MatrixPath
+{
     fn from_request(
         req: &Request,
-    ) -> Pin<Box<dyn Future<Output = Result<Self, ExtractorError>> + Send>> {
+    ) -> Pin<Box<dyn Future<Output = Result<Self, ExtractorError>> + Send>>
+    {
         let path = req.path().to_string();
 
         Box::pin(async move {
@@ -149,32 +157,42 @@ impl FromRequest for MatrixPath {
     }
 }
 
-impl MatrixVariables {
+impl MatrixVariables
+{
     /// Get a specific matrix variable by name
     /// 通过名称获取特定的矩阵变量
-    pub fn get(&self, key: &str) -> Option<&String> {
+    pub fn get(&self, key: &str) -> Option<&String>
+    {
         self.0.get(key)
     }
 
     /// Get a specific matrix variable by name, returning a default if not found
     /// 通过名称获取特定的矩阵变量，如果未找到则返回默认值
-    pub fn get_or(&self, key: &str, default: &str) -> String {
+    pub fn get_or(&self, key: &str, default: &str) -> String
+    {
         self.0.get(key).map_or(default, String::as_str).to_string()
     }
 }
 
 /// Extract the first matrix variable value from a path
 /// 从路径中提取第一个矩阵变量值
-fn extract_first_matrix_value(path: &str) -> Option<String> {
-    for segment in path.split('/') {
-        if let Some(semi_pos) = segment.find(';') {
+fn extract_first_matrix_value(path: &str) -> Option<String>
+{
+    for segment in path.split('/')
+    {
+        if let Some(semi_pos) = segment.find(';')
+        {
             let matrix_part = &segment[semi_pos + 1..];
-            if let Some(eq_pos) = matrix_part.find('=') {
+            if let Some(eq_pos) = matrix_part.find('=')
+            {
                 let value_part = &matrix_part[eq_pos + 1..];
                 // Stop at the next semicolon if present
-                let value = if let Some(semicolon_pos) = value_part.find(';') {
+                let value = if let Some(semicolon_pos) = value_part.find(';')
+                {
                     &value_part[..semicolon_pos]
-                } else {
+                }
+                else
+                {
                     value_part
                 };
                 return Some(value.to_string());
@@ -186,15 +204,20 @@ fn extract_first_matrix_value(path: &str) -> Option<String> {
 
 /// Parse all matrix variables from a path into a `HashMap`.
 /// 将路径中的所有矩阵变量解析为 `HashMap`。
-fn parse_matrix_variables(path: &str) -> HashMap<String, String> {
+fn parse_matrix_variables(path: &str) -> HashMap<String, String>
+{
     let mut result = HashMap::new();
 
-    for segment in path.split('/') {
-        if let Some(semi_pos) = segment.find(';') {
+    for segment in path.split('/')
+    {
+        if let Some(semi_pos) = segment.find(';')
+        {
             let matrix_part = &segment[semi_pos + 1..];
             // Parse key=value pairs separated by ;
-            for pair in matrix_part.split(';') {
-                if let Some(eq_pos) = pair.find('=') {
+            for pair in matrix_part.split(';')
+            {
+                if let Some(eq_pos) = pair.find('=')
+                {
                     let key = pair[..eq_pos].to_string();
                     let value = pair[eq_pos + 1..].to_string();
                     result.insert(key, value);
@@ -208,15 +231,20 @@ fn parse_matrix_variables(path: &str) -> HashMap<String, String> {
 
 /// Parse all matrix variables from a path into a Vec
 /// 将路径中的所有矩阵变量解析为Vec
-fn parse_matrix_variables_as_vec(path: &str) -> Vec<(String, String)> {
+fn parse_matrix_variables_as_vec(path: &str) -> Vec<(String, String)>
+{
     let mut result = Vec::new();
 
-    for segment in path.split('/') {
-        if let Some(semi_pos) = segment.find(';') {
+    for segment in path.split('/')
+    {
+        if let Some(semi_pos) = segment.find(';')
+        {
             let matrix_part = &segment[semi_pos + 1..];
             // Parse key=value pairs separated by ;
-            for pair in matrix_part.split(';') {
-                if let Some(eq_pos) = pair.find('=') {
+            for pair in matrix_part.split(';')
+            {
+                if let Some(eq_pos) = pair.find('=')
+                {
                     let key = pair[..eq_pos].to_string();
                     let value = pair[eq_pos + 1..].to_string();
                     result.push((key, value));
@@ -236,25 +264,29 @@ fn parse_matrix_variables_as_vec(path: &str) -> Vec<(String, String)> {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_extract_first_matrix_value() {
+    fn test_extract_first_matrix_value()
+    {
         let path = "/users;color=red;size=large/123";
         let value = extract_first_matrix_value(path);
         assert_eq!(value, Some("red".to_string()));
     }
 
     #[test]
-    fn test_extract_first_matrix_value_no_semicolon() {
+    fn test_extract_first_matrix_value_no_semicolon()
+    {
         let path = "/users/123";
         let value = extract_first_matrix_value(path);
         assert_eq!(value, None);
     }
 
     #[test]
-    fn test_parse_matrix_variables() {
+    fn test_parse_matrix_variables()
+    {
         let path = "/users;color=red;size=large/123";
         let vars = parse_matrix_variables(path);
         assert_eq!(vars.get("color"), Some(&"red".to_string()));
@@ -263,7 +295,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_matrix_variables_multiple_segments() {
+    fn test_parse_matrix_variables_multiple_segments()
+    {
         let path = "/users;color=blue/123;id=456";
         let vars = parse_matrix_variables(path);
         assert_eq!(vars.get("color"), Some(&"blue".to_string()));
@@ -271,27 +304,27 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_matrix_variables_as_vec() {
+    fn test_parse_matrix_variables_as_vec()
+    {
         let path = "/users;color=red;size=large/123";
         let vars = parse_matrix_variables_as_vec(path);
-        assert_eq!(
-            vars,
-            vec![
-                ("color".to_string(), "red".to_string()),
-                ("size".to_string(), "large".to_string()),
-            ]
-        );
+        assert_eq!(vars, vec![
+            ("color".to_string(), "red".to_string()),
+            ("size".to_string(), "large".to_string()),
+        ]);
     }
 
     #[test]
-    fn test_parse_matrix_variables_empty() {
+    fn test_parse_matrix_variables_empty()
+    {
         let path = "/users/123";
         let vars = parse_matrix_variables(path);
         assert!(vars.is_empty());
     }
 
     #[test]
-    fn test_matrix_variables_get() {
+    fn test_matrix_variables_get()
+    {
         let vars = MatrixVariables(
             vec![
                 ("color".to_string(), "red".to_string()),
@@ -306,7 +339,8 @@ mod tests {
     }
 
     #[test]
-    fn test_matrix_variables_get_or() {
+    fn test_matrix_variables_get_or()
+    {
         let vars = MatrixVariables(
             vec![("color".to_string(), "red".to_string())]
                 .into_iter()

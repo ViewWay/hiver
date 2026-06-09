@@ -51,7 +51,8 @@ use crate::SecurityContext;
 /// Determines which rows a user is allowed to access.
 /// 决定用户被允许访问哪些行。
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub enum DataScopeType {
+pub enum DataScopeType
+{
     /// Access all data — no filtering applied.
     /// 访问所有数据——不进行过滤。
     All,
@@ -73,17 +74,22 @@ pub enum DataScopeType {
     SelfOnly,
 }
 
-impl DataScopeType {
+impl DataScopeType
+{
     /// Returns `true` when no SQL filtering is needed.
     /// 当不需要 SQL 过滤时返回 `true`。
-    pub fn requires_filtering(&self) -> bool {
+    pub fn requires_filtering(&self) -> bool
+    {
         !matches!(self, DataScopeType::All)
     }
 }
 
-impl std::fmt::Display for DataScopeType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
+impl std::fmt::Display for DataScopeType
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        match self
+        {
             DataScopeType::All => write!(f, "ALL"),
             DataScopeType::Custom => write!(f, "CUSTOM"),
             DataScopeType::Department => write!(f, "DEPARTMENT"),
@@ -105,7 +111,8 @@ impl std::fmt::Display for DataScopeType {
 ///
 /// 保存范围类型以及用于构建 SQL WHERE 子句片段的部门 ID 和自定义条件。
 #[derive(Clone, Debug)]
-pub struct DataScope {
+pub struct DataScope
+{
     /// Scope type determines which rows are visible.
     /// 范围类型决定可见的行。
     pub scope_type: DataScopeType,
@@ -119,10 +126,12 @@ pub struct DataScope {
     pub custom_conditions: Vec<String>,
 }
 
-impl DataScope {
+impl DataScope
+{
     /// Create a new data scope with the given type.
     /// 创建具有给定类型的新数据范围。
-    pub fn new(scope_type: DataScopeType) -> Self {
+    pub fn new(scope_type: DataScopeType) -> Self
+    {
         Self {
             scope_type,
             dept_ids: Vec::new(),
@@ -132,64 +141,75 @@ impl DataScope {
 
     /// Create a data scope that grants access to all data.
     /// 创建授予对所有数据访问权限的数据范围。
-    pub fn all() -> Self {
+    pub fn all() -> Self
+    {
         Self::new(DataScopeType::All)
     }
 
     /// Create a data scope restricted to the user's own department.
     /// 创建限制为用户自己部门的数据范围。
-    pub fn department(dept_id: u64) -> Self {
+    pub fn department(dept_id: u64) -> Self
+    {
         Self::new(DataScopeType::Department).with_dept_ids(vec![dept_id])
     }
 
     /// Create a data scope restricted to the user's department and sub-departments.
     /// 创建限制为用户部门及子部门的数据范围。
-    pub fn dept_and_sub(dept_ids: Vec<u64>) -> Self {
+    pub fn dept_and_sub(dept_ids: Vec<u64>) -> Self
+    {
         Self::new(DataScopeType::DeptAndSub).with_dept_ids(dept_ids)
     }
 
     /// Create a data scope restricted to the current user only.
     /// 创建仅限制为当前用户的数据范围。
-    pub fn self_only() -> Self {
+    pub fn self_only() -> Self
+    {
         Self::new(DataScopeType::SelfOnly)
     }
 
     /// Create a data scope with custom SQL conditions.
     /// 创建具有自定义 SQL 条件的数据范围。
-    pub fn custom(conditions: Vec<String>) -> Self {
+    pub fn custom(conditions: Vec<String>) -> Self
+    {
         Self::new(DataScopeType::Custom).with_custom_conditions(conditions)
     }
 
     /// Add department IDs (builder-style).
     /// 添加部门 ID（构建器风格）。
-    pub fn with_dept_ids(mut self, ids: Vec<u64>) -> Self {
+    pub fn with_dept_ids(mut self, ids: Vec<u64>) -> Self
+    {
         self.dept_ids = ids;
         self
     }
 
     /// Add a single department ID (builder-style).
     /// 添加单个部门 ID（构建器风格）。
-    pub fn add_dept_id(mut self, id: u64) -> Self {
+    pub fn add_dept_id(mut self, id: u64) -> Self
+    {
         self.dept_ids.push(id);
         self
     }
 
     /// Set custom SQL conditions (builder-style).
     /// 设置自定义 SQL 条件（构建器风格）。
-    pub fn with_custom_conditions(mut self, conditions: Vec<String>) -> Self {
+    pub fn with_custom_conditions(mut self, conditions: Vec<String>) -> Self
+    {
         self.custom_conditions = conditions;
         self
     }
 
     /// Returns `true` if this scope requires SQL filtering.
     /// 如果此范围需要 SQL 过滤，则返回 `true`。
-    pub fn requires_filtering(&self) -> bool {
+    pub fn requires_filtering(&self) -> bool
+    {
         self.scope_type.requires_filtering()
     }
 }
 
-impl Default for DataScope {
-    fn default() -> Self {
+impl Default for DataScope
+{
+    fn default() -> Self
+    {
         Self::all()
     }
 }
@@ -217,7 +237,8 @@ impl Default for DataScope {
 /// let rule = DataScopeRule::new("d", "dept_id", "create_by");
 /// ```
 #[derive(Clone, Debug)]
-pub struct DataScopeRule {
+pub struct DataScopeRule
+{
     /// Table alias used in the SQL query (e.g. `"d"` for `department d`).
     /// SQL 查询中使用的表别名（例如 `department d` 的 `"d"`）。
     pub table_alias: String,
@@ -231,14 +252,16 @@ pub struct DataScopeRule {
     pub user_column: String,
 }
 
-impl DataScopeRule {
+impl DataScopeRule
+{
     /// Create a new data scope rule.
     /// 创建新的数据范围规则。
     pub fn new(
         table_alias: impl Into<String>,
         dept_column: impl Into<String>,
         user_column: impl Into<String>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             table_alias: table_alias.into(),
             dept_column: dept_column.into(),
@@ -248,13 +271,15 @@ impl DataScopeRule {
 
     /// Fully qualified department column reference (e.g. `d.dept_id`).
     /// 完全限定的部门列引用（例如 `d.dept_id`）。
-    pub fn dept_ref(&self) -> String {
+    pub fn dept_ref(&self) -> String
+    {
         format!("{}.{}", self.table_alias, self.dept_column)
     }
 
     /// Fully qualified user column reference (e.g. `d.create_by`).
     /// 完全限定的用户列引用（例如 `d.create_by`）。
-    pub fn user_ref(&self) -> String {
+    pub fn user_ref(&self) -> String
+    {
         format!("{}.{}", self.table_alias, self.user_column)
     }
 }
@@ -272,7 +297,8 @@ impl DataScopeRule {
 ///
 /// 为你的查询构建器实现此 trait，以根据当前用户的数据范围
 /// 自动生成 SQL WHERE 子句片段。
-pub trait DataScopeApply {
+pub trait DataScopeApply
+{
     /// Generate a SQL WHERE clause fragment for the given data scope.
     /// 为给定的数据范围生成 SQL WHERE 子句片段。
     ///
@@ -286,37 +312,50 @@ pub trait DataScopeApply {
 
 /// Blanket implementation: `DataScopeRule` can generate SQL conditions.
 /// Blanket实现：`DataScopeRule` 可以生成 SQL 条件。
-impl DataScopeApply for DataScopeRule {
-    fn apply_scope(&self, scope: &DataScope, user_id: u64, dept_id: u64) -> String {
-        match &scope.scope_type {
+impl DataScopeApply for DataScopeRule
+{
+    fn apply_scope(&self, scope: &DataScope, user_id: u64, dept_id: u64) -> String
+    {
+        match &scope.scope_type
+        {
             DataScopeType::All => String::new(),
 
-            DataScopeType::Custom => {
-                if scope.custom_conditions.is_empty() {
+            DataScopeType::Custom =>
+            {
+                if scope.custom_conditions.is_empty()
+                {
                     String::new()
-                } else {
+                }
+                else
+                {
                     format!("({})", scope.custom_conditions.join(" AND "))
                 }
             },
 
-            DataScopeType::Department => {
+            DataScopeType::Department =>
+            {
                 let col = self.dept_ref();
                 format!("{} = {}", col, dept_id)
             },
 
-            DataScopeType::DeptAndSub => {
+            DataScopeType::DeptAndSub =>
+            {
                 let col = self.dept_ref();
-                if scope.dept_ids.is_empty() {
+                if scope.dept_ids.is_empty()
+                {
                     // Fall back to own department when no sub-dept IDs are provided.
                     // 当没有提供子部门 ID 时，回退到自己的部门。
                     format!("{} = {}", col, dept_id)
-                } else {
+                }
+                else
+                {
                     let ids: Vec<String> = scope.dept_ids.iter().map(|id| id.to_string()).collect();
                     format!("{} IN ({})", col, ids.join(", "))
                 }
             },
 
-            DataScopeType::SelfOnly => {
+            DataScopeType::SelfOnly =>
+            {
                 let col = self.user_ref();
                 format!("{} = {}", col, user_id)
             },
@@ -337,7 +376,8 @@ impl DataScopeApply for DataScopeRule {
 /// 存储当前用户的数据范围、用户 ID 和部门 ID，
 /// 以便数据层在构建查询时可以访问。
 #[derive(Clone, Debug)]
-pub struct DataScopeContext {
+pub struct DataScopeContext
+{
     /// The data scope definition.
     /// 数据范围定义。
     scope: DataScope,
@@ -351,10 +391,12 @@ pub struct DataScopeContext {
     dept_id: u64,
 }
 
-impl DataScopeContext {
+impl DataScopeContext
+{
     /// Create a new data scope context.
     /// 创建新的数据范围上下文。
-    pub fn new(scope: DataScope, user_id: u64, dept_id: u64) -> Self {
+    pub fn new(scope: DataScope, user_id: u64, dept_id: u64) -> Self
+    {
         Self {
             scope,
             user_id,
@@ -364,25 +406,29 @@ impl DataScopeContext {
 
     /// Get a reference to the data scope.
     /// 获取数据范围的引用。
-    pub fn scope(&self) -> &DataScope {
+    pub fn scope(&self) -> &DataScope
+    {
         &self.scope
     }
 
     /// Get the current user ID.
     /// 获取当前用户 ID。
-    pub fn user_id(&self) -> u64 {
+    pub fn user_id(&self) -> u64
+    {
         self.user_id
     }
 
     /// Get the current department ID.
     /// 获取当前部门 ID。
-    pub fn dept_id(&self) -> u64 {
+    pub fn dept_id(&self) -> u64
+    {
         self.dept_id
     }
 
     /// Apply a rule to generate a SQL WHERE clause fragment.
     /// 应用规则生成 SQL WHERE 子句片段。
-    pub fn apply_rule(&self, rule: &DataScopeRule) -> String {
+    pub fn apply_rule(&self, rule: &DataScopeRule) -> String
+    {
         rule.apply_scope(&self.scope, self.user_id, self.dept_id)
     }
 }
@@ -454,7 +500,8 @@ where
 ///
 /// Returns `None` if no context has been set for the current task.
 /// 如果当前任务未设置上下文，则返回 `None`。
-pub async fn get_data_scope() -> Option<DataScopeContext> {
+pub async fn get_data_scope() -> Option<DataScopeContext>
+{
     CURRENT_DATA_SCOPE
         .try_with(|lock| {
             // We need a synchronous clone from the RwLock.
@@ -471,8 +518,10 @@ pub async fn get_data_scope() -> Option<DataScopeContext> {
 ///
 /// Returns an empty string if no context is set or no filtering is needed.
 /// 如果未设置上下文或不需要过滤，则返回空字符串。
-pub async fn apply_data_scope(rule: &DataScopeRule) -> String {
-    match get_data_scope().await {
+pub async fn apply_data_scope(rule: &DataScopeRule) -> String
+{
+    match get_data_scope().await
+    {
         Some(ctx) => ctx.apply_rule(rule),
         None => String::new(),
     }
@@ -499,7 +548,8 @@ pub async fn apply_data_scope(rule: &DataScopeRule) -> String {
 /// @DataScope(deptAlias = "d", userAlias = "u")
 /// public List<SysUser> selectUserList(SysUser user) { ... }
 /// ```
-pub struct DataScopeMiddleware {
+pub struct DataScopeMiddleware
+{
     /// Function that extracts the data scope from an `Authentication`.
     /// 从 `Authentication` 提取数据范围的函数。
     scope_resolver:
@@ -514,7 +564,8 @@ pub struct DataScopeMiddleware {
     fallback_dept_id: u64,
 }
 
-impl DataScopeMiddleware {
+impl DataScopeMiddleware
+{
     /// Create a new middleware with a custom scope resolver.
     /// 使用自定义范围解析器创建新中间件。
     ///
@@ -537,14 +588,16 @@ impl DataScopeMiddleware {
 
     /// Set the fallback user ID (defaults to 0).
     /// 设置回退用户 ID（默认为 0）。
-    pub fn fallback_user_id(mut self, id: u64) -> Self {
+    pub fn fallback_user_id(mut self, id: u64) -> Self
+    {
         self.fallback_user_id = id;
         self
     }
 
     /// Set the fallback department ID (defaults to 0).
     /// 设置回退部门 ID（默认为 0）。
-    pub fn fallback_dept_id(mut self, id: u64) -> Self {
+    pub fn fallback_dept_id(mut self, id: u64) -> Self
+    {
         self.fallback_dept_id = id;
         self
     }
@@ -560,8 +613,10 @@ impl DataScopeMiddleware {
     {
         // Try to resolve the data scope from the current authentication.
         // 尝试从当前认证解析数据范围。
-        if let Some(auth) = security_context.get_authentication().await {
-            if let Some((scope, user_id, dept_id)) = (self.scope_resolver)(&auth) {
+        if let Some(auth) = security_context.get_authentication().await
+        {
+            if let Some((scope, user_id, dept_id)) = (self.scope_resolver)(&auth)
+            {
                 let ctx = DataScopeContext::new(scope, user_id, dept_id);
                 return with_data_scope_async(ctx, handler).await;
             }
@@ -600,11 +655,15 @@ impl DataScopeMiddleware {
 /// let middleware = DataScopeMiddleware::new(default_scope_resolver());
 /// ```
 pub fn default_scope_resolver()
--> impl Fn(&crate::Authentication) -> Option<(DataScope, u64, u64)> + Send + Sync {
+-> impl Fn(&crate::Authentication) -> Option<(DataScope, u64, u64)> + Send + Sync
+{
     move |auth: &crate::Authentication| {
-        for authority in &auth.authorities {
-            if let crate::Authority::Permission(perm) = authority {
-                if let Some(rest) = perm.strip_prefix("DATASCOPE:") {
+        for authority in &auth.authorities
+        {
+            if let crate::Authority::Permission(perm) = authority
+            {
+                if let Some(rest) = perm.strip_prefix("DATASCOPE:")
+                {
                     return parse_data_scope_authority(rest);
                 }
             }
@@ -618,13 +677,16 @@ pub fn default_scope_resolver()
 ///
 /// Expected format: `<TYPE>:<user_id>:<dept_id>:<dept_ids_csv>`
 /// 预期格式：`<TYPE>:<user_id>:<dept_id>:<dept_ids_csv>`
-fn parse_data_scope_authority(value: &str) -> Option<(DataScope, u64, u64)> {
+fn parse_data_scope_authority(value: &str) -> Option<(DataScope, u64, u64)>
+{
     let parts: Vec<&str> = value.splitn(4, ':').collect();
-    if parts.len() < 3 {
+    if parts.len() < 3
+    {
         return None;
     }
 
-    let scope_type = match parts[0] {
+    let scope_type = match parts[0]
+    {
         "ALL" => DataScopeType::All,
         "CUSTOM" => DataScopeType::Custom,
         "DEPARTMENT" => DataScopeType::Department,
@@ -640,7 +702,8 @@ fn parse_data_scope_authority(value: &str) -> Option<(DataScope, u64, u64)> {
 
     // Parse department IDs if present (4th field).
     // 如果存在（第 4 个字段），则解析部门 ID。
-    if parts.len() == 4 && !parts[3].is_empty() {
+    if parts.len() == 4 && !parts[3].is_empty()
+    {
         let dept_ids: Vec<u64> = parts[3].split(',').filter_map(|s| s.parse().ok()).collect();
         scope.dept_ids = dept_ids;
     }
@@ -676,7 +739,8 @@ pub fn build_data_scope_authority(
     user_id: u64,
     dept_id: u64,
     dept_ids: &[u64],
-) -> String {
+) -> String
+{
     let type_str = scope_type.to_string();
     let dept_csv: String = dept_ids
         .iter()
@@ -698,13 +762,15 @@ pub fn build_data_scope_authority(
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     // -- DataScopeType --
 
     #[test]
-    fn test_data_scope_type_requires_filtering() {
+    fn test_data_scope_type_requires_filtering()
+    {
         assert!(!DataScopeType::All.requires_filtering());
         assert!(DataScopeType::Custom.requires_filtering());
         assert!(DataScopeType::Department.requires_filtering());
@@ -713,7 +779,8 @@ mod tests {
     }
 
     #[test]
-    fn test_data_scope_type_display() {
+    fn test_data_scope_type_display()
+    {
         assert_eq!(DataScopeType::All.to_string(), "ALL");
         assert_eq!(DataScopeType::Custom.to_string(), "CUSTOM");
         assert_eq!(DataScopeType::Department.to_string(), "DEPARTMENT");
@@ -724,7 +791,8 @@ mod tests {
     // -- DataScope --
 
     #[test]
-    fn test_data_scope_constructors() {
+    fn test_data_scope_constructors()
+    {
         let all = DataScope::all();
         assert_eq!(all.scope_type, DataScopeType::All);
         assert!(all.dept_ids.is_empty());
@@ -746,7 +814,8 @@ mod tests {
     }
 
     #[test]
-    fn test_data_scope_builder() {
+    fn test_data_scope_builder()
+    {
         let scope = DataScope::new(DataScopeType::DeptAndSub)
             .add_dept_id(100)
             .add_dept_id(101);
@@ -754,7 +823,8 @@ mod tests {
     }
 
     #[test]
-    fn test_data_scope_default() {
+    fn test_data_scope_default()
+    {
         let scope = DataScope::default();
         assert!(!scope.requires_filtering());
     }
@@ -762,7 +832,8 @@ mod tests {
     // -- DataScopeRule & DataScopeApply --
 
     #[test]
-    fn test_rule_all_scope() {
+    fn test_rule_all_scope()
+    {
         let rule = DataScopeRule::new("d", "dept_id", "create_by");
         let scope = DataScope::all();
         let sql = rule.apply_scope(&scope, 1001, 100);
@@ -770,7 +841,8 @@ mod tests {
     }
 
     #[test]
-    fn test_rule_custom_scope() {
+    fn test_rule_custom_scope()
+    {
         let rule = DataScopeRule::new("d", "dept_id", "create_by");
         let scope = DataScope::custom(vec!["status = 1".to_string(), "is_deleted = 0".to_string()]);
         let sql = rule.apply_scope(&scope, 1001, 100);
@@ -778,7 +850,8 @@ mod tests {
     }
 
     #[test]
-    fn test_rule_custom_scope_empty() {
+    fn test_rule_custom_scope_empty()
+    {
         let rule = DataScopeRule::new("d", "dept_id", "create_by");
         let scope = DataScope::custom(vec![]);
         let sql = rule.apply_scope(&scope, 1001, 100);
@@ -786,7 +859,8 @@ mod tests {
     }
 
     #[test]
-    fn test_rule_department_scope() {
+    fn test_rule_department_scope()
+    {
         let rule = DataScopeRule::new("d", "dept_id", "create_by");
         let scope = DataScope::department(100);
         let sql = rule.apply_scope(&scope, 1001, 100);
@@ -794,7 +868,8 @@ mod tests {
     }
 
     #[test]
-    fn test_rule_dept_and_sub_scope() {
+    fn test_rule_dept_and_sub_scope()
+    {
         let rule = DataScopeRule::new("d", "dept_id", "create_by");
         let scope = DataScope::dept_and_sub(vec![100, 101, 102]);
         let sql = rule.apply_scope(&scope, 1001, 100);
@@ -802,7 +877,8 @@ mod tests {
     }
 
     #[test]
-    fn test_rule_dept_and_sub_scope_empty_ids() {
+    fn test_rule_dept_and_sub_scope_empty_ids()
+    {
         let rule = DataScopeRule::new("d", "dept_id", "create_by");
         let scope = DataScope::dept_and_sub(vec![]);
         let sql = rule.apply_scope(&scope, 1001, 100);
@@ -811,7 +887,8 @@ mod tests {
     }
 
     #[test]
-    fn test_rule_self_only_scope() {
+    fn test_rule_self_only_scope()
+    {
         let rule = DataScopeRule::new("d", "dept_id", "create_by");
         let scope = DataScope::self_only();
         let sql = rule.apply_scope(&scope, 1001, 100);
@@ -821,7 +898,8 @@ mod tests {
     // -- DataScopeContext --
 
     #[test]
-    fn test_data_scope_context() {
+    fn test_data_scope_context()
+    {
         let scope = DataScope::dept_and_sub(vec![100, 101]);
         let ctx = DataScopeContext::new(scope, 1001, 100);
         assert_eq!(ctx.user_id(), 1001);
@@ -835,7 +913,8 @@ mod tests {
     // -- Task-local context --
 
     #[test]
-    fn test_with_data_scope() {
+    fn test_with_data_scope()
+    {
         let scope = DataScope::self_only();
         let ctx = DataScopeContext::new(scope, 42, 10);
 
@@ -849,7 +928,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_with_data_scope_async() {
+    async fn test_with_data_scope_async()
+    {
         let scope = DataScope::department(200);
         let ctx = DataScopeContext::new(scope, 42, 200);
 
@@ -864,12 +944,14 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_get_data_scope_none_when_unset() {
+    async fn test_get_data_scope_none_when_unset()
+    {
         assert!(get_data_scope().await.is_none());
     }
 
     #[tokio::test]
-    async fn test_apply_data_scope() {
+    async fn test_apply_data_scope()
+    {
         let scope = DataScope::self_only();
         let ctx = DataScopeContext::new(scope, 42, 10);
 
@@ -885,7 +967,8 @@ mod tests {
     // -- Authority parsing/building --
 
     #[test]
-    fn test_build_and_parse_authority_all() {
+    fn test_build_and_parse_authority_all()
+    {
         let auth_str = build_data_scope_authority(&DataScopeType::All, 1, 10, &[]);
         assert_eq!(auth_str, "DATASCOPE:ALL:1:10:");
 
@@ -896,7 +979,8 @@ mod tests {
     }
 
     #[test]
-    fn test_build_and_parse_authority_dept_and_sub() {
+    fn test_build_and_parse_authority_dept_and_sub()
+    {
         let auth_str =
             build_data_scope_authority(&DataScopeType::DeptAndSub, 1001, 100, &[100, 101, 102]);
         assert_eq!(auth_str, "DATASCOPE:DEPT_AND_SUB:1001:100:100,101,102");
@@ -909,7 +993,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_authority_self_only() {
+    fn test_parse_authority_self_only()
+    {
         let parsed = parse_data_scope_authority("SELF_ONLY:42:5:").unwrap();
         assert_eq!(parsed.0.scope_type, DataScopeType::SelfOnly);
         assert_eq!(parsed.1, 42);
@@ -917,7 +1002,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_authority_invalid() {
+    fn test_parse_authority_invalid()
+    {
         assert!(parse_data_scope_authority("").is_none());
         assert!(parse_data_scope_authority("INVALID:1:2:").is_none());
         assert!(parse_data_scope_authority("ALL").is_none());
@@ -927,7 +1013,8 @@ mod tests {
     // -- default_scope_resolver --
 
     #[test]
-    fn test_default_scope_resolver() {
+    fn test_default_scope_resolver()
+    {
         use crate::{Authentication, Authority};
 
         let resolver = default_scope_resolver();
@@ -965,7 +1052,8 @@ mod tests {
     // -- DataScopeRule column refs --
 
     #[test]
-    fn test_rule_column_refs() {
+    fn test_rule_column_refs()
+    {
         let rule = DataScopeRule::new("dept", "dept_id", "create_by");
         assert_eq!(rule.dept_ref(), "dept.dept_id");
         assert_eq!(rule.user_ref(), "dept.create_by");

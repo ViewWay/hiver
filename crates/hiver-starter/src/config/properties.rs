@@ -35,7 +35,8 @@ use super::loader::ConfigurationLoader;
 ///     pub host: String,
 /// }
 /// ```
-pub trait ConfigurationProperties: Send + Sync {
+pub trait ConfigurationProperties: Send + Sync
+{
     /// 从配置加载器加载属性
     /// Load properties from configuration loader
     fn from_loader(loader: &ConfigurationLoader) -> Result<Self>
@@ -53,7 +54,8 @@ pub trait ConfigurationProperties: Send + Sync {
 /// 用于解析配置属性，支持占位符替换。
 /// Used to resolve configuration properties with placeholder support.
 #[derive(Debug, Clone)]
-pub struct PropertyResolver {
+pub struct PropertyResolver
+{
     /// 配置加载器
     loader: Arc<ConfigurationLoader>,
 
@@ -67,9 +69,11 @@ pub struct PropertyResolver {
     value_separator: String,
 }
 
-impl PropertyResolver {
+impl PropertyResolver
+{
     /// 创建新的属性解析器
-    pub fn new(loader: Arc<ConfigurationLoader>) -> Self {
+    pub fn new(loader: Arc<ConfigurationLoader>) -> Self
+    {
         Self {
             loader,
             placeholder_prefix: "${".to_string(),
@@ -88,7 +92,8 @@ impl PropertyResolver {
     /// ${server.port:8080}    -> 从配置获取 server.port，默认 8080
     /// \${escaped}            -> 保留为 ${escaped}
     /// ```
-    pub fn resolve(&self, value: &str) -> String {
+    pub fn resolve(&self, value: &str) -> String
+    {
         let mut result = value.to_string();
 
         // Handle escaped placeholders: \${ -> temp marker
@@ -96,19 +101,25 @@ impl PropertyResolver {
 
         // 多轮解析以支持嵌套占位符和值中的占位符，最多10层防止循环引用
         // Multiple passes to support nested placeholders and placeholders in values
-        for _ in 0..10 {
+        for _ in 0..10
+        {
             let prev_result = result.clone();
             let mut pos = 0;
 
-            while pos < result.len() {
-                if let Some(start) = result[pos..].find(&self.placeholder_prefix) {
+            while pos < result.len()
+            {
+                if let Some(start) = result[pos..].find(&self.placeholder_prefix)
+                {
                     let start = start + pos;
 
                     // Find matching closing brace, accounting for nested placeholders
                     let end = self.find_matching_end(&result, start);
-                    let end = if let Some(e) = end {
+                    let end = if let Some(e) = end
+                    {
                         e + self.placeholder_suffix.len()
-                    } else {
+                    }
+                    else
+                    {
                         pos = start + self.placeholder_prefix.len();
                         continue;
                     };
@@ -126,7 +137,9 @@ impl PropertyResolver {
                         let key = &resolved_key[..colon_pos];
                         let default = &resolved_key[colon_pos + 1..];
                         self.loader.get_or(key, default)
-                    } else {
+                    }
+                    else
+                    {
                         // 无默认值: ${key}
                         self.loader
                             .get(&resolved_key)
@@ -135,13 +148,16 @@ impl PropertyResolver {
 
                     result = format!("{}{}{}", &result[..start], &resolved, &result[end..]);
                     pos = start + resolved.len();
-                } else {
+                }
+                else
+                {
                     break;
                 }
             }
 
             // 如果没有变化，退出循环
-            if result == prev_result {
+            if result == prev_result
+            {
                 break;
             }
         }
@@ -154,17 +170,23 @@ impl PropertyResolver {
 
     /// Resolve a single level of placeholders (non-recursive)
     /// 解析单层占位符（非递归）
-    fn resolve_single(&self, value: &str) -> String {
+    fn resolve_single(&self, value: &str) -> String
+    {
         let mut result = value.to_string();
         let mut pos = 0;
 
-        while pos < result.len() {
-            if let Some(start) = result[pos..].find(&self.placeholder_prefix) {
+        while pos < result.len()
+        {
+            if let Some(start) = result[pos..].find(&self.placeholder_prefix)
+            {
                 let start = start + pos;
                 let end = self.find_matching_end(&result, start);
-                let end = if let Some(e) = end {
+                let end = if let Some(e) = end
+                {
                     e + self.placeholder_suffix.len()
-                } else {
+                }
+                else
+                {
                     pos = start + self.placeholder_prefix.len();
                     continue;
                 };
@@ -173,11 +195,14 @@ impl PropertyResolver {
                 let inner = &placeholder[self.placeholder_prefix.len()
                     ..placeholder.len() - self.placeholder_suffix.len()];
 
-                let resolved = if let Some(colon_pos) = inner.find(&self.value_separator) {
+                let resolved = if let Some(colon_pos) = inner.find(&self.value_separator)
+                {
                     let key = &inner[..colon_pos];
                     let default = &inner[colon_pos + 1..];
                     self.loader.get_or(key, default)
-                } else {
+                }
+                else
+                {
                     self.loader
                         .get(inner)
                         .unwrap_or_else(|| placeholder.to_string())
@@ -185,7 +210,9 @@ impl PropertyResolver {
 
                 result = format!("{}{}{}", &result[..start], &resolved, &result[end..]);
                 pos = start + resolved.len();
-            } else {
+            }
+            else
+            {
                 break;
             }
         }
@@ -195,23 +222,31 @@ impl PropertyResolver {
 
     /// Find the matching closing brace for a placeholder starting at start
     /// 查找从 start 开始的占位符的匹配结束括号
-    fn find_matching_end(&self, s: &str, start: usize) -> Option<usize> {
+    fn find_matching_end(&self, s: &str, start: usize) -> Option<usize>
+    {
         let chars: Vec<char> = s[start..].chars().collect();
         let mut depth = 0;
         let mut i = 2; // Skip the initial ${
 
-        while i < chars.len() {
-            if i + 1 < chars.len() && chars[i] == '$' && chars[i + 1] == '{' {
+        while i < chars.len()
+        {
+            if i + 1 < chars.len() && chars[i] == '$' && chars[i + 1] == '{'
+            {
                 // Found nested ${, increase depth
                 depth += 1;
                 i += 2;
-            } else if chars[i] == '}' {
-                if depth == 0 {
+            }
+            else if chars[i] == '}'
+            {
+                if depth == 0
+                {
                     return Some(start + i);
                 }
                 depth -= 1;
                 i += 1;
-            } else {
+            }
+            else
+            {
                 i += 1;
             }
         }
@@ -221,19 +256,22 @@ impl PropertyResolver {
 
     /// 获取属性
     /// Get property
-    pub fn get_property(&self, key: &str) -> Option<String> {
+    pub fn get_property(&self, key: &str) -> Option<String>
+    {
         self.loader.get(key)
     }
 
     /// 获取属性或默认值
     /// Get property or default
-    pub fn get_property_or(&self, key: &str, default: &str) -> String {
+    pub fn get_property_or(&self, key: &str, default: &str) -> String
+    {
         self.loader.get_or(key, default)
     }
 
     /// 获取必需的属性
     /// Get required property
-    pub fn get_required_property(&self, key: &str) -> Result<String> {
+    pub fn get_required_property(&self, key: &str) -> Result<String>
+    {
         self.loader
             .get(key)
             .ok_or_else(|| anyhow::anyhow!("Required property '{}' not found", key))
@@ -247,7 +285,8 @@ impl PropertyResolver {
 /// 配置属性字段元数据
 /// Configuration property field metadata
 #[derive(Debug, Clone)]
-pub struct PropertyMetadata {
+pub struct PropertyMetadata
+{
     /// 字段名称
     pub name: String,
 
@@ -261,9 +300,11 @@ pub struct PropertyMetadata {
     pub default_value: Option<String>,
 }
 
-impl PropertyMetadata {
+impl PropertyMetadata
+{
     /// 创建新的属性元数据
-    pub fn new(name: impl Into<String>, key: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>, key: impl Into<String>) -> Self
+    {
         Self {
             name: name.into(),
             key: key.into(),
@@ -273,13 +314,15 @@ impl PropertyMetadata {
     }
 
     /// 设置为必需
-    pub fn required(mut self) -> Self {
+    pub fn required(mut self) -> Self
+    {
         self.required = true;
         self
     }
 
     /// 设置默认值
-    pub fn default_value(mut self, value: impl Into<String>) -> Self {
+    pub fn default_value(mut self, value: impl Into<String>) -> Self
+    {
         self.default_value = Some(value.into());
         self
     }
@@ -297,11 +340,13 @@ impl PropertyMetadata {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_property_metadata() {
+    fn test_property_metadata()
+    {
         let meta = PropertyMetadata::new("port", "server.port")
             .required()
             .default_value("8080");
@@ -313,7 +358,8 @@ mod tests {
     }
 
     #[test]
-    fn test_property_resolver_resolve() {
+    fn test_property_resolver_resolve()
+    {
         let mut loader = ConfigurationLoader::new();
         loader.set("server.port".to_string(), "9090".to_string());
 
@@ -330,7 +376,8 @@ mod tests {
     }
 
     #[test]
-    fn test_property_resolver_escaped() {
+    fn test_property_resolver_escaped()
+    {
         let resolver = PropertyResolver::new(Arc::new(ConfigurationLoader::new()));
 
         // 转义的占位符应该保留
@@ -348,7 +395,8 @@ mod tests {
     }
 
     #[test]
-    fn test_property_resolver_nested() {
+    fn test_property_resolver_nested()
+    {
         let mut loader = ConfigurationLoader::new();
         loader.set("app.prefix".to_string(), "server".to_string());
         loader.set("server.port".to_string(), "9090".to_string());
@@ -360,7 +408,8 @@ mod tests {
     }
 
     #[test]
-    fn test_property_resolver_recursive() {
+    fn test_property_resolver_recursive()
+    {
         let mut loader = ConfigurationLoader::new();
         // 值本身包含占位符
         loader.set("host".to_string(), "localhost".to_string());
@@ -373,7 +422,8 @@ mod tests {
     }
 
     #[test]
-    fn test_property_resolver_multiple() {
+    fn test_property_resolver_multiple()
+    {
         let mut loader = ConfigurationLoader::new();
         loader.set("host".to_string(), "localhost".to_string());
         loader.set("port".to_string(), "8080".to_string());
@@ -385,7 +435,8 @@ mod tests {
     }
 
     #[test]
-    fn test_property_resolver_get() {
+    fn test_property_resolver_get()
+    {
         let mut loader = ConfigurationLoader::new();
         loader.set("test.key".to_string(), "test.value".to_string());
 

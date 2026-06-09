@@ -20,7 +20,8 @@ use crate::cache::{Cache, CacheConfig, CacheStats};
 /// Serialization format for Redis cache values.
 /// Redis 缓存值的序列化格式。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum SerializationFormat {
+pub enum SerializationFormat
+{
     /// JSON (default). Human-readable, widely compatible.
     /// JSON（默认）。人类可读，广泛兼容。
     #[default]
@@ -34,8 +35,10 @@ pub enum SerializationFormat {
 
 /// Serialize a value to bytes according to the chosen format.
 /// 按所选格式将值序列化为字节。
-fn to_bytes<T: serde::Serialize>(value: &T, fmt: SerializationFormat) -> Option<Vec<u8>> {
-    match fmt {
+fn to_bytes<T: serde::Serialize>(value: &T, fmt: SerializationFormat) -> Option<Vec<u8>>
+{
+    match fmt
+    {
         SerializationFormat::Json => serde_json::to_vec(value).ok(),
         #[cfg(feature = "msgpack")]
         SerializationFormat::MsgPack => rmp_serde::to_vec(value).ok(),
@@ -44,8 +47,10 @@ fn to_bytes<T: serde::Serialize>(value: &T, fmt: SerializationFormat) -> Option<
 
 /// Deserialize a value from bytes according to the chosen format.
 /// 按所选格式从字节反序列化值。
-fn from_bytes<T: serde::de::DeserializeOwned>(data: &[u8], fmt: SerializationFormat) -> Option<T> {
-    match fmt {
+fn from_bytes<T: serde::de::DeserializeOwned>(data: &[u8], fmt: SerializationFormat) -> Option<T>
+{
+    match fmt
+    {
         SerializationFormat::Json => serde_json::from_slice(data).ok(),
         #[cfg(feature = "msgpack")]
         SerializationFormat::MsgPack => rmp_serde::from_slice(data).ok(),
@@ -60,7 +65,8 @@ fn from_bytes<T: serde::de::DeserializeOwned>(data: &[u8], fmt: SerializationFor
 /// A Redis connection string or client configuration.
 /// Redis 连接字符串或客户端配置。
 #[derive(Debug, Clone)]
-pub struct RedisConfig {
+pub struct RedisConfig
+{
     /// Redis connection URL, e.g. `redis://127.0.0.1:6379`.
     /// Redis 连接 URL，例如 `redis://127.0.0.1:6379`。
     pub url: String,
@@ -82,10 +88,12 @@ pub struct RedisConfig {
     pub fallback_to_memory: bool,
 }
 
-impl RedisConfig {
+impl RedisConfig
+{
     /// Create a new Redis config from a URL.
     /// 从 URL 创建新的 Redis 配置。
-    pub fn new(url: impl Into<String>) -> Self {
+    pub fn new(url: impl Into<String>) -> Self
+    {
         Self {
             url: url.into(),
             key_prefix: String::new(),
@@ -97,14 +105,16 @@ impl RedisConfig {
 
     /// Set key prefix.
     /// 设置键前缀。
-    pub fn key_prefix(mut self, prefix: impl Into<String>) -> Self {
+    pub fn key_prefix(mut self, prefix: impl Into<String>) -> Self
+    {
         self.key_prefix = prefix.into();
         self
     }
 
     /// Set default TTL in seconds.
     /// 设置默认 TTL（秒）。
-    pub fn default_ttl_secs(mut self, ttl: u64) -> Self {
+    pub fn default_ttl_secs(mut self, ttl: u64) -> Self
+    {
         self.default_ttl_secs = Some(ttl);
         self
     }
@@ -112,21 +122,24 @@ impl RedisConfig {
     /// Set serialization format to MessagePack.
     /// 设置序列化格式为 MessagePack。
     #[cfg(feature = "msgpack")]
-    pub fn msgpack(mut self) -> Self {
+    pub fn msgpack(mut self) -> Self
+    {
         self.format = SerializationFormat::MsgPack;
         self
     }
 
     /// Disable fallback to in-memory cache.
     /// 禁用回退到内存缓存。
-    pub fn no_fallback(mut self) -> Self {
+    pub fn no_fallback(mut self) -> Self
+    {
         self.fallback_to_memory = false;
         self
     }
 
     /// Enable fallback to in-memory cache (default behavior).
     /// 启用回退到内存缓存（默认行为）。
-    pub fn fallback_to_memory(mut self) -> Self {
+    pub fn fallback_to_memory(mut self) -> Self
+    {
         self.fallback_to_memory = true;
         self
     }
@@ -146,20 +159,23 @@ where
 {
     /// Connected to Redis.
     /// 已连接到 Redis。
-    Connected {
+    Connected
+    {
         conn: redis::aio::MultiplexedConnection,
         config: RedisConfig,
     },
     /// Fell back to in-memory.
     /// 已回退到内存。
-    Fallback {
+    Fallback
+    {
         memory: Arc<crate::cache::MemoryCache<K, V>>,
         #[allow(dead_code)]
         config: RedisConfig,
     },
     /// Neither Redis nor fallback is available (degraded, no-op mode).
     /// Redis 和回退均不可用（降级、空操作模式）。
-    Degraded {
+    Degraded
+    {
         #[allow(dead_code)]
         config: RedisConfig,
     },
@@ -170,8 +186,10 @@ where
     K: Hash + Eq + Send + Sync + 'static,
     V: Clone + Send + Sync + 'static,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        match self
+        {
             Self::Connected { .. } => f.write_str("Connected"),
             Self::Fallback { .. } => f.write_str("Fallback"),
             Self::Degraded { .. } => f.write_str("Degraded"),
@@ -212,7 +230,8 @@ where
     /// If the connection fails and `fallback_to_memory` is set, a memory
     /// cache is used instead.
     /// 如果连接失败且 `fallback_to_memory` 已设置，则改用内存缓存。
-    pub async fn new(cache_config: CacheConfig, redis_config: RedisConfig) -> Self {
+    pub async fn new(cache_config: CacheConfig, redis_config: RedisConfig) -> Self
+    {
         let inner = Self::connect_inner(&redis_config, &cache_config).await;
         let rc = redis_config.clone();
         Self {
@@ -228,13 +247,16 @@ where
     async fn connect_inner(
         redis_config: &RedisConfig,
         cache_config: &CacheConfig,
-    ) -> RedisCacheInner<K, V> {
-        match Self::try_connect(redis_config).await {
+    ) -> RedisCacheInner<K, V>
+    {
+        match Self::try_connect(redis_config).await
+        {
             Ok(conn) => RedisCacheInner::Connected {
                 conn,
                 config: redis_config.clone(),
             },
-            Err(_) if redis_config.fallback_to_memory => {
+            Err(_) if redis_config.fallback_to_memory =>
+            {
                 #[cfg(feature = "tracing")]
                 tracing::warn!(
                     "Redis unavailable, falling back to in-memory cache for '{}'",
@@ -246,7 +268,8 @@ where
                     config: redis_config.clone(),
                 }
             },
-            Err(_) => {
+            Err(_) =>
+            {
                 #[cfg(feature = "tracing")]
                 tracing::error!(
                     "Redis unavailable and fallback disabled for '{}'",
@@ -263,25 +286,32 @@ where
     /// 尝试连接 Redis 并返回多路复用连接。
     async fn try_connect(
         redis_config: &RedisConfig,
-    ) -> Result<redis::aio::MultiplexedConnection, redis::RedisError> {
+    ) -> Result<redis::aio::MultiplexedConnection, redis::RedisError>
+    {
         let client = redis::Client::open(redis_config.url.as_str())?;
         client.get_multiplexed_async_connection().await
     }
 
     /// Attempt to reconnect if currently in fallback or degraded state.
     /// 如果当前处于回退或降级状态，尝试重新连接。
-    pub async fn reconnect(&self) -> bool {
+    pub async fn reconnect(&self) -> bool
+    {
         let mut guard = self.inner.write().await;
-        match &*guard {
+        match &*guard
+        {
             RedisCacheInner::Connected { .. } => true,
-            _ => {
-                if let Ok(conn) = Self::try_connect(&self.redis_config).await {
+            _ =>
+            {
+                if let Ok(conn) = Self::try_connect(&self.redis_config).await
+                {
                     *guard = RedisCacheInner::Connected {
                         conn,
                         config: self.redis_config.clone(),
                     };
                     true
-                } else {
+                }
+                else
+                {
                     false
                 }
             },
@@ -290,18 +320,23 @@ where
 
     /// Check if currently connected to Redis.
     /// 检查当前是否已连接到 Redis。
-    pub async fn is_connected(&self) -> bool {
+    pub async fn is_connected(&self) -> bool
+    {
         let guard = self.inner.read().await;
         matches!(&*guard, RedisCacheInner::Connected { .. })
     }
 
     /// Build the full Redis key with prefix.
     /// 构建带前缀的完整 Redis 键。
-    fn full_key(&self, key: &K) -> String {
+    fn full_key(&self, key: &K) -> String
+    {
         let serialized = serde_json::to_string(key).unwrap_or_default();
-        if self.redis_config.key_prefix.is_empty() {
+        if self.redis_config.key_prefix.is_empty()
+        {
             serialized
-        } else {
+        }
+        else
+        {
             format!("{}{}", self.redis_config.key_prefix, serialized)
         }
     }
@@ -315,13 +350,15 @@ where
 {
     /// Get the cache configuration.
     /// 获取缓存配置。
-    pub fn config(&self) -> &CacheConfig {
+    pub fn config(&self) -> &CacheConfig
+    {
         &self.config
     }
 
     /// Get a handle to the internal stats lock.
     /// 获取内部统计锁的句柄。
-    pub fn stats_handle(&self) -> &Arc<RwLock<CacheStats>> {
+    pub fn stats_handle(&self) -> &Arc<RwLock<CacheStats>>
+    {
         &self.stats
     }
 }
@@ -331,7 +368,8 @@ where
     K: Hash + Eq + Send + Sync + 'static,
     V: Clone + Send + Sync + 'static,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self {
             inner: Arc::clone(&self.inner),
             config: self.config.clone(),
@@ -347,13 +385,16 @@ where
     K: Hash + Eq + Send + Sync + serde::Serialize + serde::de::DeserializeOwned + 'static,
     V: Clone + Send + Sync + serde::Serialize + serde::de::DeserializeOwned + 'static,
 {
-    async fn get(&self, key: &K) -> Option<V> {
+    async fn get(&self, key: &K) -> Option<V>
+    {
         let mut stats = self.stats.write().await;
         stats.total_requests += 1;
 
         let mut guard = self.inner.write().await;
-        match &mut *guard {
-            RedisCacheInner::Connected { conn, config } => {
+        match &mut *guard
+        {
+            RedisCacheInner::Connected { conn, config } =>
+            {
                 let full_key = self.full_key(key);
                 let result: Option<Vec<u8>> = redis::cmd("GET")
                     .arg(&full_key)
@@ -362,38 +403,49 @@ where
                     .ok()
                     .flatten();
 
-                if let Some(data) = result {
-                    if let Some(value) = from_bytes(&data, config.format) {
+                if let Some(data) = result
+                {
+                    if let Some(value) = from_bytes(&data, config.format)
+                    {
                         stats.hits += 1;
                         stats.calculate_hit_rate();
                         Some(value)
-                    } else {
+                    }
+                    else
+                    {
                         stats.misses += 1;
                         stats.calculate_hit_rate();
                         None
                     }
-                } else {
+                }
+                else
+                {
                     stats.misses += 1;
                     stats.calculate_hit_rate();
                     None
                 }
             },
-            RedisCacheInner::Fallback { memory, .. } => {
+            RedisCacheInner::Fallback { memory, .. } =>
+            {
                 let mem = Arc::clone(memory);
                 drop(guard);
                 drop(stats);
                 // Delegate to in-memory cache — need a separate stats update
                 let value = mem.get(key).await;
                 let mut stats = self.stats.write().await;
-                if value.is_some() {
+                if value.is_some()
+                {
                     stats.hits += 1;
-                } else {
+                }
+                else
+                {
                     stats.misses += 1;
                 }
                 stats.calculate_hit_rate();
                 value
             },
-            RedisCacheInner::Degraded { .. } => {
+            RedisCacheInner::Degraded { .. } =>
+            {
                 stats.misses += 1;
                 stats.calculate_hit_rate();
                 None
@@ -401,16 +453,23 @@ where
         }
     }
 
-    async fn put(&self, key: K, value: V) {
+    async fn put(&self, key: K, value: V)
+    {
         let ttl = self.redis_config.default_ttl_secs.or(self.config.ttl_secs);
-        if let Some(ttl_secs) = ttl {
+        if let Some(ttl_secs) = ttl
+        {
             self.put_with_ttl(key, value, ttl_secs).await;
-        } else {
+        }
+        else
+        {
             let mut guard = self.inner.write().await;
-            match &mut *guard {
-                RedisCacheInner::Connected { conn, config } => {
+            match &mut *guard
+            {
+                RedisCacheInner::Connected { conn, config } =>
+                {
                     let full_key = self.full_key(&key);
-                    if let Some(data) = to_bytes(&value, config.format) {
+                    if let Some(data) = to_bytes(&value, config.format)
+                    {
                         let _ = redis::cmd("SET")
                             .arg(&full_key)
                             .arg(data)
@@ -418,23 +477,29 @@ where
                             .await;
                     }
                 },
-                RedisCacheInner::Fallback { memory, .. } => {
+                RedisCacheInner::Fallback { memory, .. } =>
+                {
                     let mem = Arc::clone(memory);
                     let k = key;
                     drop(guard);
                     mem.put(k, value).await;
                 },
-                RedisCacheInner::Degraded { .. } => {},
+                RedisCacheInner::Degraded { .. } =>
+                {},
             }
         }
     }
 
-    async fn put_with_ttl(&self, key: K, value: V, ttl_secs: u64) {
+    async fn put_with_ttl(&self, key: K, value: V, ttl_secs: u64)
+    {
         let mut guard = self.inner.write().await;
-        match &mut *guard {
-            RedisCacheInner::Connected { conn, config } => {
+        match &mut *guard
+        {
+            RedisCacheInner::Connected { conn, config } =>
+            {
                 let full_key = self.full_key(&key);
-                if let Some(data) = to_bytes(&value, config.format) {
+                if let Some(data) = to_bytes(&value, config.format)
+                {
                     let _ = redis::cmd("SETEX")
                         .arg(&full_key)
                         .arg(ttl_secs)
@@ -443,40 +508,51 @@ where
                         .await;
                 }
             },
-            RedisCacheInner::Fallback { memory, .. } => {
+            RedisCacheInner::Fallback { memory, .. } =>
+            {
                 let mem = Arc::clone(memory);
                 let k = key;
                 drop(guard);
                 mem.put_with_ttl(k, value, ttl_secs).await;
             },
-            RedisCacheInner::Degraded { .. } => {},
+            RedisCacheInner::Degraded { .. } =>
+            {},
         }
     }
 
-    async fn invalidate(&self, key: &K) {
+    async fn invalidate(&self, key: &K)
+    {
         let mut guard = self.inner.write().await;
-        match &mut *guard {
-            RedisCacheInner::Connected { conn, .. } => {
+        match &mut *guard
+        {
+            RedisCacheInner::Connected { conn, .. } =>
+            {
                 let full_key = self.full_key(key);
                 let _ = redis::cmd("DEL")
                     .arg(&full_key)
                     .query_async::<()>(conn)
                     .await;
             },
-            RedisCacheInner::Fallback { memory, .. } => {
+            RedisCacheInner::Fallback { memory, .. } =>
+            {
                 let mem = Arc::clone(memory);
                 drop(guard);
                 mem.invalidate(key).await;
             },
-            RedisCacheInner::Degraded { .. } => {},
+            RedisCacheInner::Degraded { .. } =>
+            {},
         }
     }
 
-    async fn invalidate_all(&self) {
+    async fn invalidate_all(&self)
+    {
         let mut guard = self.inner.write().await;
-        match &mut *guard {
-            RedisCacheInner::Connected { conn, config } => {
-                if config.key_prefix.is_empty() {
+        match &mut *guard
+        {
+            RedisCacheInner::Connected { conn, config } =>
+            {
+                if config.key_prefix.is_empty()
+                {
                     // Cannot safely invalidate all keys without a prefix.
                     // 无法在没有前缀的情况下安全地清除所有键。
                     return;
@@ -488,23 +564,29 @@ where
                     .await
                     .ok()
                     .unwrap_or_default();
-                if !keys.is_empty() {
+                if !keys.is_empty()
+                {
                     let _ = redis::cmd("DEL").arg(keys).query_async::<()>(conn).await;
                 }
             },
-            RedisCacheInner::Fallback { memory, .. } => {
+            RedisCacheInner::Fallback { memory, .. } =>
+            {
                 let mem = Arc::clone(memory);
                 drop(guard);
                 mem.invalidate_all().await;
             },
-            RedisCacheInner::Degraded { .. } => {},
+            RedisCacheInner::Degraded { .. } =>
+            {},
         }
     }
 
-    async fn contains_key(&self, key: &K) -> bool {
+    async fn contains_key(&self, key: &K) -> bool
+    {
         let mut guard = self.inner.write().await;
-        match &mut *guard {
-            RedisCacheInner::Connected { conn, .. } => {
+        match &mut *guard
+        {
+            RedisCacheInner::Connected { conn, .. } =>
+            {
                 let full_key = self.full_key(key);
                 redis::cmd("EXISTS")
                     .arg(&full_key)
@@ -512,7 +594,8 @@ where
                     .await
                     .is_ok_and(|v| v > 0)
             },
-            RedisCacheInner::Fallback { memory, .. } => {
+            RedisCacheInner::Fallback { memory, .. } =>
+            {
                 let mem = Arc::clone(memory);
                 drop(guard);
                 mem.contains_key(key).await
@@ -521,11 +604,15 @@ where
         }
     }
 
-    async fn size(&self) -> usize {
+    async fn size(&self) -> usize
+    {
         let mut guard = self.inner.write().await;
-        match &mut *guard {
-            RedisCacheInner::Connected { conn, config } => {
-                if config.key_prefix.is_empty() {
+        match &mut *guard
+        {
+            RedisCacheInner::Connected { conn, config } =>
+            {
+                if config.key_prefix.is_empty()
+                {
                     return 0;
                 }
                 let pattern = format!("{}*", config.key_prefix);
@@ -535,7 +622,8 @@ where
                     .await
                     .map_or(0, |keys| keys.len())
             },
-            RedisCacheInner::Fallback { memory, .. } => {
+            RedisCacheInner::Fallback { memory, .. } =>
+            {
                 let mem = Arc::clone(memory);
                 drop(guard);
                 mem.size().await
@@ -544,12 +632,14 @@ where
         }
     }
 
-    async fn stats(&self) -> CacheStats {
+    async fn stats(&self) -> CacheStats
+    {
         let stats = self.stats.read().await;
         stats.clone()
     }
 
-    async fn clear(&self) {
+    async fn clear(&self)
+    {
         self.invalidate_all().await;
         let mut stats = self.stats.write().await;
         *stats = CacheStats::default();
@@ -568,13 +658,15 @@ where
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::cache::CacheConfig;
 
     /// Helper: build a CacheConfig for tests.
     /// 辅助：构建测试用的 CacheConfig。
-    fn test_config(name: &str) -> CacheConfig {
+    fn test_config(name: &str) -> CacheConfig
+    {
         CacheConfig::new(name).ttl_secs(300)
     }
 
@@ -584,7 +676,8 @@ mod tests {
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_redis_cache_falls_back_to_memory() {
+    async fn test_redis_cache_falls_back_to_memory()
+    {
         // Use an invalid URL — Redis will be unreachable, so fallback kicks in.
         // 使用无效 URL — Redis 不可达，触发回退。
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -603,7 +696,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_redis_cache_degraded_mode() {
+    async fn test_redis_cache_degraded_mode()
+    {
         // No fallback — degraded (no-op) mode.
         // 无回退 — 降级（空操作）模式。
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").no_fallback();
@@ -620,7 +714,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_redis_cache_put_and_get_memory_fallback() {
+    async fn test_redis_cache_put_and_get_memory_fallback()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let cache: RedisCache<String, i32> =
             RedisCache::new(test_config("test_put_get"), redis_cfg).await;
@@ -631,7 +726,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_redis_cache_put_with_ttl_memory_fallback() {
+    async fn test_redis_cache_put_with_ttl_memory_fallback()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let cache: RedisCache<String, String> =
             RedisCache::new(test_config("test_ttl"), redis_cfg).await;
@@ -643,7 +739,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_redis_cache_invalidate_memory_fallback() {
+    async fn test_redis_cache_invalidate_memory_fallback()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let cache: RedisCache<String, String> =
             RedisCache::new(test_config("test_invalidate"), redis_cfg).await;
@@ -657,7 +754,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_redis_cache_invalidate_all_memory_fallback() {
+    async fn test_redis_cache_invalidate_all_memory_fallback()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let cache: RedisCache<String, String> =
             RedisCache::new(test_config("test_invalidate_all"), redis_cfg).await;
@@ -672,7 +770,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_redis_cache_stats_tracking() {
+    async fn test_redis_cache_stats_tracking()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let cache: RedisCache<String, String> =
             RedisCache::new(test_config("test_stats"), redis_cfg).await;
@@ -691,7 +790,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_redis_cache_clear_resets_stats() {
+    async fn test_redis_cache_clear_resets_stats()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let cache: RedisCache<String, String> =
             RedisCache::new(test_config("test_clear"), redis_cfg).await;
@@ -706,7 +806,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_redis_cache_contains_key_memory_fallback() {
+    async fn test_redis_cache_contains_key_memory_fallback()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let cache: RedisCache<String, String> =
             RedisCache::new(test_config("test_contains"), redis_cfg).await;
@@ -717,7 +818,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_redis_cache_size_memory_fallback() {
+    async fn test_redis_cache_size_memory_fallback()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let cache: RedisCache<String, String> =
             RedisCache::new(test_config("test_size"), redis_cfg).await;
@@ -734,9 +836,11 @@ mod tests {
     // -----------------------------------------------------------------------
 
     #[test]
-    fn test_json_serialization_roundtrip() {
+    fn test_json_serialization_roundtrip()
+    {
         #[derive(serde::Serialize, serde::Deserialize, PartialEq, Debug)]
-        struct User {
+        struct User
+        {
             name: String,
             age: u32,
         }
@@ -751,7 +855,8 @@ mod tests {
     }
 
     #[test]
-    fn test_json_serialization_primitives() {
+    fn test_json_serialization_primitives()
+    {
         // i32
         let bytes = to_bytes(&42_i32, SerializationFormat::Json).unwrap();
         let val: i32 = from_bytes(&bytes, SerializationFormat::Json).unwrap();
@@ -770,9 +875,11 @@ mod tests {
 
     #[cfg(feature = "msgpack")]
     #[test]
-    fn test_msgpack_serialization_roundtrip() {
+    fn test_msgpack_serialization_roundtrip()
+    {
         #[derive(serde::Serialize, serde::Deserialize, PartialEq, Debug)]
-        struct Item {
+        struct Item
+        {
             id: u64,
             label: String,
             tags: Vec<String>,
@@ -789,9 +896,11 @@ mod tests {
     }
 
     #[test]
-    fn test_json_serialization_complex_struct() {
+    fn test_json_serialization_complex_struct()
+    {
         #[derive(serde::Serialize, serde::Deserialize, PartialEq, Debug)]
-        struct Order {
+        struct Order
+        {
             order_id: String,
             amount: f64,
             items: Vec<String>,
@@ -810,13 +919,15 @@ mod tests {
     }
 
     #[test]
-    fn test_deserialization_corrupted_data_returns_none() {
+    fn test_deserialization_corrupted_data_returns_none()
+    {
         let result: Option<String> = from_bytes(b"not valid json!!!", SerializationFormat::Json);
         assert!(result.is_none());
     }
 
     #[test]
-    fn test_serialization_empty_vec() {
+    fn test_serialization_empty_vec()
+    {
         let empty: Vec<String> = vec![];
         let bytes = to_bytes(&empty, SerializationFormat::Json).unwrap();
         let decoded: Vec<String> = from_bytes(&bytes, SerializationFormat::Json).unwrap();
@@ -829,7 +940,8 @@ mod tests {
     // -----------------------------------------------------------------------
 
     #[test]
-    fn test_redis_config_default() {
+    fn test_redis_config_default()
+    {
         let cfg = RedisConfig::new("redis://localhost:6379");
         assert_eq!(cfg.url, "redis://localhost:6379");
         assert!(cfg.key_prefix.is_empty());
@@ -839,7 +951,8 @@ mod tests {
     }
 
     #[test]
-    fn test_redis_config_builder() {
+    fn test_redis_config_builder()
+    {
         let cfg = RedisConfig::new("redis://localhost:6379")
             .key_prefix("myapp:")
             .default_ttl_secs(600);
@@ -849,14 +962,16 @@ mod tests {
     }
 
     #[test]
-    fn test_redis_config_no_fallback() {
+    fn test_redis_config_no_fallback()
+    {
         let cfg = RedisConfig::new("redis://localhost:6379").no_fallback();
         assert!(!cfg.fallback_to_memory);
     }
 
     #[cfg(feature = "msgpack")]
     #[test]
-    fn test_redis_config_msgpack() {
+    fn test_redis_config_msgpack()
+    {
         let cfg = RedisConfig::new("redis://localhost:6379").msgpack();
         assert_eq!(cfg.format, SerializationFormat::MsgPack);
     }
@@ -867,7 +982,8 @@ mod tests {
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_full_key_without_prefix() {
+    async fn test_full_key_without_prefix()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").no_fallback();
         let cache: RedisCache<String, String> =
             RedisCache::new(test_config("test_fullkey"), redis_cfg).await;
@@ -877,7 +993,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_full_key_with_prefix() {
+    async fn test_full_key_with_prefix()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1")
             .key_prefix("cache:users:")
             .no_fallback();
@@ -892,7 +1009,8 @@ mod tests {
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_redis_cache_clone() {
+    async fn test_redis_cache_clone()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let cache: RedisCache<String, String> =
             RedisCache::new(test_config("test_clone"), redis_cfg).await;
@@ -910,7 +1028,8 @@ mod tests {
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_reconnect_when_unavailable() {
+    async fn test_reconnect_when_unavailable()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let cache: RedisCache<String, String> =
             RedisCache::new(test_config("test_reconnect"), redis_cfg).await;
@@ -928,7 +1047,8 @@ mod tests {
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_cache_different_value_types() {
+    async fn test_cache_different_value_types()
+    {
         // String values
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let cache_str: RedisCache<String, String> =
@@ -960,7 +1080,8 @@ mod tests {
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_put_overwrites_existing_value() {
+    async fn test_put_overwrites_existing_value()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let cache: RedisCache<String, String> =
             RedisCache::new(test_config("test_overwrite"), redis_cfg).await;
@@ -978,13 +1099,15 @@ mod tests {
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_concurrent_access() {
+    async fn test_concurrent_access()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let cache: RedisCache<String, i32> =
             RedisCache::new(test_config("test_concurrent"), redis_cfg).await;
 
         let mut handles = Vec::new();
-        for i in 0..10 {
+        for i in 0..10
+        {
             let c = cache.clone();
             handles.push(tokio::spawn(async move {
                 c.put(format!("key{}", i), i).await;
@@ -992,7 +1115,8 @@ mod tests {
             }));
         }
 
-        for (i, handle) in handles.into_iter().enumerate() {
+        for (i, handle) in handles.into_iter().enumerate()
+        {
             let result = handle.await.unwrap();
             assert_eq!(result, Some(i as i32));
         }
@@ -1004,9 +1128,11 @@ mod tests {
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_cache_struct_value() {
+    async fn test_cache_struct_value()
+    {
         #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
-        struct Product {
+        struct Product
+        {
             id: u64,
             name: String,
             price: f64,
@@ -1032,7 +1158,8 @@ mod tests {
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_integer_key_type() {
+    async fn test_integer_key_type()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
         let cache: RedisCache<u64, String> =
             RedisCache::new(test_config("test_int_key"), redis_cfg).await;
@@ -1048,7 +1175,8 @@ mod tests {
     // -----------------------------------------------------------------------
 
     #[tokio::test]
-    async fn test_put_with_ttl_explicit() {
+    async fn test_put_with_ttl_explicit()
+    {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1")
             .default_ttl_secs(600)
             .fallback_to_memory();

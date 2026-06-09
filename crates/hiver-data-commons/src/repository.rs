@@ -47,7 +47,8 @@ use crate::{Page, PageRequest, Sort};
 /// }
 /// ```
 #[async_trait]
-pub trait Repository<T: Send + 'static, ID: Send + Sync + 'static>: Send + Sync {
+pub trait Repository<T: Send + 'static, ID: Send + Sync + 'static>: Send + Sync
+{
     /// Associated error type
     /// 关联的错误类型
     type Error: Into<crate::Error> + Debug + Send + Sync;
@@ -63,9 +64,11 @@ pub trait Repository<T: Send + 'static, ID: Send + Sync + 'static>: Send + Sync 
 
     /// Save all entities
     /// 批量保存实体
-    async fn save_all(&self, entities: Vec<T>) -> Result<Vec<T>, Self::Error> {
+    async fn save_all(&self, entities: Vec<T>) -> Result<Vec<T>, Self::Error>
+    {
         let mut results = Vec::new();
-        for entity in entities {
+        for entity in entities
+        {
             results.push(self.save(entity).await?);
         }
         Ok(results)
@@ -77,7 +80,8 @@ pub trait Repository<T: Send + 'static, ID: Send + Sync + 'static>: Send + Sync 
 
     /// Check if entity exists by ID
     /// 检查指定 ID 的实体是否存在
-    async fn exists_by_id(&self, id: ID) -> Result<bool, Self::Error> {
+    async fn exists_by_id(&self, id: ID) -> Result<bool, Self::Error>
+    {
         Ok(self.find_by_id(id).await?.is_some())
     }
 

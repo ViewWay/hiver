@@ -13,7 +13,8 @@ static TEST_POOL: OnceCell<SqlitePool> = OnceCell::const_new();
 
 /// Get or create the test database pool
 /// 获取或创建测试数据库连接池
-pub async fn get_test_pool() -> &'static SqlitePool {
+pub async fn get_test_pool() -> &'static SqlitePool
+{
     TEST_POOL
         .get_or_init(|| async {
             // Create new pool with shared in-memory database
@@ -39,7 +40,8 @@ pub async fn get_test_pool() -> &'static SqlitePool {
 
 /// Initialize the test database schema with given pool
 /// 使用给定连接池初始化测试数据库模式
-async fn init_test_schema_with_pool(pool: &SqlitePool) -> Result<(), sqlx::Error> {
+async fn init_test_schema_with_pool(pool: &SqlitePool) -> Result<(), sqlx::Error>
+{
     // Create test tables
     sqlx::query(
         r#"
@@ -75,7 +77,8 @@ async fn init_test_schema_with_pool(pool: &SqlitePool) -> Result<(), sqlx::Error
 
 /// Initialize the test database schema
 /// 初始化测试数据库模式
-pub async fn init_test_schema() -> Result<(), sqlx::Error> {
+pub async fn init_test_schema() -> Result<(), sqlx::Error>
+{
     // Already initialized in get_test_pool
     let _pool = get_test_pool().await;
     Ok(())
@@ -83,7 +86,8 @@ pub async fn init_test_schema() -> Result<(), sqlx::Error> {
 
 /// Clean up test data
 /// 清理测试数据
-pub async fn cleanup_test_data() -> Result<(), sqlx::Error> {
+pub async fn cleanup_test_data() -> Result<(), sqlx::Error>
+{
     let pool = get_test_pool().await;
 
     // Clean up posts if table exists (ignore errors)
@@ -97,7 +101,8 @@ pub async fn cleanup_test_data() -> Result<(), sqlx::Error> {
 
 /// Insert a test user
 /// 插入测试用户
-pub async fn insert_test_user(email: &str, name: Option<&str>) -> Result<i64, sqlx::Error> {
+pub async fn insert_test_user(email: &str, name: Option<&str>) -> Result<i64, sqlx::Error>
+{
     let pool = get_test_pool().await;
 
     let result = sqlx::query("INSERT INTO users (email, name) VALUES (?, ?)")
@@ -113,7 +118,8 @@ pub async fn insert_test_user(email: &str, name: Option<&str>) -> Result<i64, sq
 /// 通过邮箱查找用户（返回元组）
 pub async fn find_user_by_email(
     email: &str,
-) -> Result<Option<(i64, String, Option<String>)>, sqlx::Error> {
+) -> Result<Option<(i64, String, Option<String>)>, sqlx::Error>
+{
     let pool = get_test_pool().await;
 
     let row = sqlx::query_as::<_, (i64, String, Option<String>)>(
@@ -129,7 +135,8 @@ pub async fn find_user_by_email(
 
 /// Count users
 /// 统计用户数量
-pub async fn count_users() -> Result<i64, sqlx::Error> {
+pub async fn count_users() -> Result<i64, sqlx::Error>
+{
     let pool = get_test_pool().await;
 
     let row: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users")
@@ -140,12 +147,14 @@ pub async fn count_users() -> Result<i64, sqlx::Error> {
 }
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[tokio::test]
     #[ignore]
-    async fn test_setup_database() {
+    async fn test_setup_database()
+    {
         cleanup_test_data().await.unwrap();
 
         // Insert a test user

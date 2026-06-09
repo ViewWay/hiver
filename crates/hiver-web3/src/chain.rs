@@ -35,54 +35,67 @@ use std::{fmt, str::FromStr};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Eip155Chain(pub u64);
 
-impl Eip155Chain {
+impl Eip155Chain
+{
     /// Create a new EIP-155 chain ID
     /// 创建新的EIP-155链ID
-    pub const fn new(id: u64) -> Self {
+    pub const fn new(id: u64) -> Self
+    {
         Self(id)
     }
 
     /// Get the raw chain ID value
     /// 获取原始链ID值
-    pub const fn as_u64(self) -> u64 {
+    pub const fn as_u64(self) -> u64
+    {
         self.0
     }
 
     /// Check if this is a mainnet
     /// 检查这是否是主网
-    pub const fn is_mainnet(self) -> bool {
+    pub const fn is_mainnet(self) -> bool
+    {
         self.0 == 1 || self.0 == 56 || self.0 == 137 || self.0 == 42161 || self.0 == 10
     }
 
     /// Check if this is a testnet
     /// 检查这是否是测试网
-    pub const fn is_testnet(self) -> bool {
+    pub const fn is_testnet(self) -> bool
+    {
         !self.is_mainnet()
     }
 }
 
-impl fmt::Display for Eip155Chain {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for Eip155Chain
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         write!(f, "ChainId({})", self.0)
     }
 }
 
-impl From<u64> for Eip155Chain {
-    fn from(id: u64) -> Self {
+impl From<u64> for Eip155Chain
+{
+    fn from(id: u64) -> Self
+    {
         Self(id)
     }
 }
 
-impl From<Eip155Chain> for u64 {
-    fn from(chain: Eip155Chain) -> Self {
+impl From<Eip155Chain> for u64
+{
+    fn from(chain: Eip155Chain) -> Self
+    {
         chain.0
     }
 }
 
-impl FromStr for Eip155Chain {
+impl FromStr for Eip155Chain
+{
     type Err = ChainError;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self, Self::Err>
+    {
         let id = s
             .parse::<u64>()
             .map_err(|_| ChainError::InvalidChainId(s.to_string()))?;
@@ -96,7 +109,8 @@ impl FromStr for Eip155Chain {
 /// Predefined chain identifiers for common blockchains.
 /// 常见区块链的预定义链标识符。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum ChainId {
+pub enum ChainId
+{
     /// Ethereum Mainnet
     /// 以太坊主网
     Ethereum,
@@ -146,11 +160,14 @@ pub enum ChainId {
     Custom(u64),
 }
 
-impl ChainId {
+impl ChainId
+{
     /// Get the EIP-155 chain ID
     /// 获取EIP-155链ID
-    pub const fn as_u64(self) -> u64 {
-        match self {
+    pub const fn as_u64(self) -> u64
+    {
+        match self
+        {
             Self::Ethereum => 1,
             Self::Polygon => 137,
             Self::Bsc => 56,
@@ -168,8 +185,10 @@ impl ChainId {
 
     /// Get chain name
     /// 获取链名称
-    pub const fn name(self) -> &'static str {
-        match self {
+    pub const fn name(self) -> &'static str
+    {
+        match self
+        {
             Self::Ethereum => "Ethereum Mainnet",
             Self::Polygon => "Polygon PoS",
             Self::Bsc => "BNB Chain",
@@ -187,8 +206,10 @@ impl ChainId {
 
     /// Get short name
     /// 获取短名称
-    pub const fn short_name(self) -> &'static str {
-        match self {
+    pub const fn short_name(self) -> &'static str
+    {
+        match self
+        {
             Self::Ethereum => "eth",
             Self::Polygon => "polygon",
             Self::Bsc => "bsc",
@@ -206,14 +227,17 @@ impl ChainId {
 
     /// Check if this is a mainnet
     /// 检查这是否是主网
-    pub const fn is_mainnet(self) -> bool {
+    pub const fn is_mainnet(self) -> bool
+    {
         !matches!(self, Self::Sepolia | Self::Goerli | Self::Custom(_))
     }
 
     /// Create from EIP-155 chain ID
     /// 从EIP-155链ID创建
-    pub const fn from_eip155(id: u64) -> Self {
-        match id {
+    pub const fn from_eip155(id: u64) -> Self
+    {
+        match id
+        {
             1 => Self::Ethereum,
             137 => Self::Polygon,
             56 => Self::Bsc,
@@ -230,26 +254,34 @@ impl ChainId {
     }
 }
 
-impl fmt::Display for ChainId {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for ChainId
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         write!(f, "{} ({})", self.name(), self.as_u64())
     }
 }
 
-impl From<u64> for ChainId {
-    fn from(id: u64) -> Self {
+impl From<u64> for ChainId
+{
+    fn from(id: u64) -> Self
+    {
         Self::from_eip155(id)
     }
 }
 
-impl From<ChainId> for u64 {
-    fn from(chain: ChainId) -> Self {
+impl From<ChainId> for u64
+{
+    fn from(chain: ChainId) -> Self
+    {
         chain.as_u64()
     }
 }
 
-impl From<Eip155Chain> for ChainId {
-    fn from(chain: Eip155Chain) -> Self {
+impl From<Eip155Chain> for ChainId
+{
+    fn from(chain: Eip155Chain) -> Self
+    {
         Self::from_eip155(chain.0)
     }
 }
@@ -260,7 +292,8 @@ impl From<Eip155Chain> for ChainId {
 /// Configuration for a blockchain network.
 /// 区块链网络的配置。
 #[derive(Debug, Clone)]
-pub struct ChainConfig {
+pub struct ChainConfig
+{
     /// Chain ID
     /// 链ID
     pub chain_id: Eip155Chain,
@@ -297,7 +330,8 @@ pub struct ChainConfig {
 /// Currency information
 /// 货币信息
 #[derive(Debug, Clone)]
-pub struct Currency {
+pub struct Currency
+{
     /// Symbol (e.g., "ETH")
     /// 符号（例如"ETH"）
     pub symbol: String,
@@ -311,10 +345,12 @@ pub struct Currency {
     pub name: String,
 }
 
-impl ChainConfig {
+impl ChainConfig
+{
     /// Create a new chain config
     /// 创建新的链配置
-    pub fn new(chain_id: impl Into<Eip155Chain>, name: impl Into<String>) -> Self {
+    pub fn new(chain_id: impl Into<Eip155Chain>, name: impl Into<String>) -> Self
+    {
         let chain_id = chain_id.into();
         Self {
             chain_id,
@@ -334,28 +370,32 @@ impl ChainConfig {
 
     /// Add RPC URL
     /// 添加RPC URL
-    pub fn with_rpc_url(mut self, url: impl Into<String>) -> Self {
+    pub fn with_rpc_url(mut self, url: impl Into<String>) -> Self
+    {
         self.rpc_urls.push(url.into());
         self
     }
 
     /// Add multiple RPC URLs
     /// 添加多个RPC URL
-    pub fn with_rpc_urls(mut self, urls: Vec<String>) -> Self {
+    pub fn with_rpc_urls(mut self, urls: Vec<String>) -> Self
+    {
         self.rpc_urls = urls;
         self
     }
 
     /// Set WebSocket URLs
     /// `设置WebSocket` URL
-    pub fn with_ws_urls(mut self, urls: Vec<String>) -> Self {
+    pub fn with_ws_urls(mut self, urls: Vec<String>) -> Self
+    {
         self.ws_urls = Some(urls);
         self
     }
 
     /// Set explorer URL
     /// 设置浏览器URL
-    pub fn with_explorer(mut self, url: impl Into<String>) -> Self {
+    pub fn with_explorer(mut self, url: impl Into<String>) -> Self
+    {
         self.explorer_url = Some(url.into());
         self
     }
@@ -367,7 +407,8 @@ impl ChainConfig {
         symbol: impl Into<String>,
         decimals: u8,
         name: impl Into<String>,
-    ) -> Self {
+    ) -> Self
+    {
         self.native_currency = Currency {
             symbol: symbol.into(),
             decimals,
@@ -378,21 +419,24 @@ impl ChainConfig {
 
     /// Set block time
     /// 设置出块时间
-    pub fn with_block_time(mut self, seconds: u64) -> Self {
+    pub fn with_block_time(mut self, seconds: u64) -> Self
+    {
         self.block_time = seconds;
         self
     }
 
     /// Set confirmation requirement
     /// 设置确认要求
-    pub fn with_confirmations(mut self, count: u64) -> Self {
+    pub fn with_confirmations(mut self, count: u64) -> Self
+    {
         self.confirmations = count;
         self
     }
 
     /// Get Ethereum mainnet config
     /// 获取以太坊主网配置
-    pub fn ethereum_mainnet() -> Self {
+    pub fn ethereum_mainnet() -> Self
+    {
         Self::new(1u64, "Ethereum Mainnet")
             .with_rpc_urls(vec![
                 "https://eth.llamarpc.com".to_string(),
@@ -406,7 +450,8 @@ impl ChainConfig {
 
     /// Get Sepolia testnet config
     /// 获取Sepolia测试网配置
-    pub fn sepolia() -> Self {
+    pub fn sepolia() -> Self
+    {
         Self::new(11_155_111_u64, "Sepolia Testnet")
             .with_rpc_urls(vec![
                 "https://rpc.sepolia.org".to_string(),
@@ -420,7 +465,8 @@ impl ChainConfig {
 
     /// Get Polygon config
     /// 获取Polygon配置
-    pub fn polygon() -> Self {
+    pub fn polygon() -> Self
+    {
         Self::new(137u64, "Polygon PoS")
             .with_rpc_urls(vec![
                 "https://polygon-rpc.com".to_string(),
@@ -434,7 +480,8 @@ impl ChainConfig {
 
     /// Get Arbitrum config
     /// 获取Arbitrum配置
-    pub fn arbitrum() -> Self {
+    pub fn arbitrum() -> Self
+    {
         Self::new(42161u64, "Arbitrum One")
             .with_rpc_urls(vec![
                 "https://arb1.arbitrum.io/rpc".to_string(),
@@ -448,7 +495,8 @@ impl ChainConfig {
 
     /// Get Optimism config
     /// 获取Optimism配置
-    pub fn optimism() -> Self {
+    pub fn optimism() -> Self
+    {
         Self::new(10u64, "Optimism")
             .with_rpc_urls(vec![
                 "https://mainnet.optimism.io".to_string(),
@@ -462,7 +510,8 @@ impl ChainConfig {
 
     /// Get BSC config
     /// 获取BSC配置
-    pub fn bsc() -> Self {
+    pub fn bsc() -> Self
+    {
         Self::new(56u64, "BNB Chain")
             .with_rpc_urls(vec![
                 "https://bsc-dataseed.binance.org".to_string(),
@@ -478,7 +527,8 @@ impl ChainConfig {
 /// Chain error
 /// 链错误
 #[derive(Debug, Clone)]
-pub enum ChainError {
+pub enum ChainError
+{
     /// Invalid chain ID
     /// 无效的链ID
     InvalidChainId(String),
@@ -500,9 +550,12 @@ pub enum ChainError {
     Timeout,
 }
 
-impl fmt::Display for ChainError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for ChainError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::InvalidChainId(id) => write!(f, "Invalid chain ID: {}", id),
             Self::RpcError(msg) => write!(f, "RPC error: {}", msg),
             Self::NetworkError(msg) => write!(f, "Network error: {}", msg),
@@ -517,7 +570,8 @@ impl std::error::Error for ChainError {}
 /// Block information
 /// 区块信息
 #[derive(Debug, Clone)]
-pub struct Block {
+pub struct Block
+{
     /// Block hash
     /// 区块哈希
     pub hash: String,
@@ -550,7 +604,8 @@ pub struct Block {
 /// Block number or tag
 /// 区块号或标签
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum BlockNumber {
+pub enum BlockNumber
+{
     /// Latest block
     /// 最新区块
     Latest,
@@ -564,9 +619,12 @@ pub enum BlockNumber {
     Number(u64),
 }
 
-impl fmt::Display for BlockNumber {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for BlockNumber
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::Latest => write!(f, "latest"),
             Self::Pending => write!(f, "pending"),
             Self::Number(n) => write!(f, "{n}"),
@@ -574,15 +632,20 @@ impl fmt::Display for BlockNumber {
     }
 }
 
-impl From<u64> for BlockNumber {
-    fn from(n: u64) -> Self {
+impl From<u64> for BlockNumber
+{
+    fn from(n: u64) -> Self
+    {
         Self::Number(n)
     }
 }
 
-impl From<Option<u64>> for BlockNumber {
-    fn from(opt: Option<u64>) -> Self {
-        match opt {
+impl From<Option<u64>> for BlockNumber
+{
+    fn from(opt: Option<u64>) -> Self
+    {
+        match opt
+        {
             Some(n) => Self::Number(n),
             None => Self::Latest,
         }
@@ -597,29 +660,34 @@ impl From<Option<u64>> for BlockNumber {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_eip155_chain_new() {
+    fn test_eip155_chain_new()
+    {
         let chain = Eip155Chain::new(1);
         assert_eq!(chain.as_u64(), 1);
     }
 
     #[test]
-    fn test_eip155_chain_from_u64() {
+    fn test_eip155_chain_from_u64()
+    {
         let chain = Eip155Chain::from(137u64);
         assert_eq!(chain.as_u64(), 137);
     }
 
     #[test]
-    fn test_eip155_chain_display() {
+    fn test_eip155_chain_display()
+    {
         let chain = Eip155Chain::new(1);
         assert_eq!(chain.to_string(), "ChainId(1)");
     }
 
     #[test]
-    fn test_chain_id_as_u64() {
+    fn test_chain_id_as_u64()
+    {
         assert_eq!(ChainId::Ethereum.as_u64(), 1);
         assert_eq!(ChainId::Polygon.as_u64(), 137);
         assert_eq!(ChainId::Bsc.as_u64(), 56);
@@ -628,7 +696,8 @@ mod tests {
     }
 
     #[test]
-    fn test_chain_id_from_u64() {
+    fn test_chain_id_from_u64()
+    {
         assert_eq!(ChainId::from(1u64), ChainId::Ethereum);
         assert_eq!(ChainId::from(137u64), ChainId::Polygon);
         assert_eq!(ChainId::from(56u64), ChainId::Bsc);
@@ -636,14 +705,16 @@ mod tests {
     }
 
     #[test]
-    fn test_chain_id_name() {
+    fn test_chain_id_name()
+    {
         assert_eq!(ChainId::Ethereum.name(), "Ethereum Mainnet");
         assert_eq!(ChainId::Polygon.name(), "Polygon PoS");
         assert_eq!(ChainId::Bsc.name(), "BNB Chain");
     }
 
     #[test]
-    fn test_chain_id_is_mainnet() {
+    fn test_chain_id_is_mainnet()
+    {
         assert!(ChainId::Ethereum.is_mainnet());
         assert!(ChainId::Polygon.is_mainnet());
         assert!(!ChainId::Sepolia.is_mainnet());
@@ -651,7 +722,8 @@ mod tests {
     }
 
     #[test]
-    fn test_chain_config_builder() {
+    fn test_chain_config_builder()
+    {
         let config = ChainConfig::new(1u64, "Test Chain")
             .with_rpc_url("https://rpc.example.com")
             .with_explorer("https://explorer.example.com")
@@ -669,7 +741,8 @@ mod tests {
     }
 
     #[test]
-    fn test_chain_config_ethereum() {
+    fn test_chain_config_ethereum()
+    {
         let config = ChainConfig::ethereum_mainnet();
         assert_eq!(config.chain_id.as_u64(), 1);
         assert!(!config.rpc_urls.is_empty());
@@ -677,34 +750,39 @@ mod tests {
     }
 
     #[test]
-    fn test_chain_config_polygon() {
+    fn test_chain_config_polygon()
+    {
         let config = ChainConfig::polygon();
         assert_eq!(config.chain_id.as_u64(), 137);
         assert_eq!(config.native_currency.symbol, "MATIC");
     }
 
     #[test]
-    fn test_chain_config_arbitrum() {
+    fn test_chain_config_arbitrum()
+    {
         let config = ChainConfig::arbitrum();
         assert_eq!(config.chain_id.as_u64(), 42161);
         assert_eq!(config.block_time, 1);
     }
 
     #[test]
-    fn test_block_number_display() {
+    fn test_block_number_display()
+    {
         assert_eq!(BlockNumber::Latest.to_string(), "latest");
         assert_eq!(BlockNumber::Pending.to_string(), "pending");
         assert_eq!(BlockNumber::Number(12345).to_string(), "12345");
     }
 
     #[test]
-    fn test_block_number_from_u64() {
+    fn test_block_number_from_u64()
+    {
         let block: BlockNumber = 100u64.into();
         assert_eq!(block, BlockNumber::Number(100));
     }
 
     #[test]
-    fn test_chain_error_display() {
+    fn test_chain_error_display()
+    {
         let err = ChainError::InvalidChainId("test".to_string());
         assert!(err.to_string().contains("Invalid chain ID"));
 

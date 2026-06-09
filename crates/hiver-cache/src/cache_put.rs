@@ -94,7 +94,8 @@ where
 /// ```
 pub struct CachePutExec;
 
-impl CachePutExec {
+impl CachePutExec
+{
     /// Execute function and put result in cache
     /// 执行函数并将结果放入缓存
     ///
@@ -178,7 +179,8 @@ impl CachePutExec {
 /// )
 /// ```
 #[derive(Debug, Clone)]
-pub struct CachePutOptions {
+pub struct CachePutOptions
+{
     /// Cache name(s)
     /// 缓存名称
     pub cache_names: Vec<String>,
@@ -196,10 +198,12 @@ pub struct CachePutOptions {
     pub unless: Option<String>,
 }
 
-impl CachePutOptions {
+impl CachePutOptions
+{
     /// Create new cache put options
     /// 创建新的cache put选项
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             cache_names: vec![crate::DEFAULT_CACHE.to_string()],
             key: None,
@@ -210,42 +214,49 @@ impl CachePutOptions {
 
     /// Set cache name
     /// 设置缓存名称
-    pub fn cache_name(mut self, name: impl Into<String>) -> Self {
+    pub fn cache_name(mut self, name: impl Into<String>) -> Self
+    {
         self.cache_names = vec![name.into()];
         self
     }
 
     /// Set cache names
     /// 设置缓存名称
-    pub fn cache_names(mut self, names: Vec<String>) -> Self {
+    pub fn cache_names(mut self, names: Vec<String>) -> Self
+    {
         self.cache_names = names;
         self
     }
 
     /// Set key
     /// 设置key
-    pub fn key(mut self, key: impl Into<String>) -> Self {
+    pub fn key(mut self, key: impl Into<String>) -> Self
+    {
         self.key = Some(key.into());
         self
     }
 
     /// Set condition
     /// 设置条件
-    pub fn condition(mut self, condition: impl Into<String>) -> Self {
+    pub fn condition(mut self, condition: impl Into<String>) -> Self
+    {
         self.condition = Some(condition.into());
         self
     }
 
     /// Set unless
     /// 设置unless
-    pub fn unless(mut self, unless: impl Into<String>) -> Self {
+    pub fn unless(mut self, unless: impl Into<String>) -> Self
+    {
         self.unless = Some(unless.into());
         self
     }
 }
 
-impl Default for CachePutOptions {
-    fn default() -> Self {
+impl Default for CachePutOptions
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -258,11 +269,13 @@ impl Default for CachePutOptions {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_cache_put_options() {
+    fn test_cache_put_options()
+    {
         let options = CachePutOptions::new().cache_name("users").key("#user.id");
 
         assert_eq!(options.cache_names, vec!["users"]);

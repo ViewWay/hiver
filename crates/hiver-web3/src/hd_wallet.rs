@@ -47,7 +47,8 @@ use crate::wallet::{Address, LocalWallet, Signer, WalletError};
 /// Determines the entropy length for mnemonic generation.
 /// 决定助记词生成的熵长度。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum WordCount {
+pub enum WordCount
+{
     /// 12 words (128-bit entropy).
     /// 12个词（128位熵）。
     W12 = 12,
@@ -65,11 +66,14 @@ pub enum WordCount {
     W24 = 24,
 }
 
-impl WordCount {
+impl WordCount
+{
     /// Get the number of words.
     /// 获取词数。
-    pub const fn as_u8(self) -> u8 {
-        match self {
+    pub const fn as_u8(self) -> u8
+    {
+        match self
+        {
             Self::W12 => 12,
             Self::W15 => 15,
             Self::W18 => 18,
@@ -80,8 +84,10 @@ impl WordCount {
 
     /// Get the entropy length in bits for this word count.
     /// 获取此词数对应的熵长度（位）。
-    pub const fn entropy_bits(self) -> usize {
-        match self {
+    pub const fn entropy_bits(self) -> usize
+    {
+        match self
+        {
             Self::W12 => 128,
             Self::W15 => 160,
             Self::W18 => 192,
@@ -92,22 +98,28 @@ impl WordCount {
 
     /// Get the entropy length in bytes.
     /// 获取熵长度（字节）。
-    pub const fn entropy_bytes(self) -> usize {
+    pub const fn entropy_bytes(self) -> usize
+    {
         self.entropy_bits() / 8
     }
 }
 
-impl fmt::Display for WordCount {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for WordCount
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         write!(f, "{} words", self.as_u8())
     }
 }
 
-impl TryFrom<u8> for WordCount {
+impl TryFrom<u8> for WordCount
+{
     type Error = HdWalletError;
 
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
+    fn try_from(value: u8) -> Result<Self, Self::Error>
+    {
+        match value
+        {
             12 => Ok(Self::W12),
             15 => Ok(Self::W15),
             18 => Ok(Self::W18),
@@ -129,7 +141,8 @@ impl TryFrom<u8> for WordCount {
 ///
 /// 标准路径：`m / purpose' / coin_type' / account' / change / address_index`
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct DerivationPath {
+pub struct DerivationPath
+{
     /// Purpose (always 44 for BIP-44).
     /// 目的（BIP-44始终为44）。
     pub purpose: u32,
@@ -147,12 +160,14 @@ pub struct DerivationPath {
     pub index: u32,
 }
 
-impl DerivationPath {
+impl DerivationPath
+{
     /// Create a standard Ethereum derivation path at the given index.
     /// 在给定索引处创建标准以太坊派生路径。
     ///
     /// Path: `m/44'/60'/0'/0/{index}`
-    pub fn ethereum(index: u32) -> Self {
+    pub fn ethereum(index: u32) -> Self
+    {
         Self {
             purpose: 44,
             coin_type: 60,
@@ -166,7 +181,8 @@ impl DerivationPath {
     /// 在给定索引处创建标准比特币派生路径。
     ///
     /// Path: `m/44'/0'/0'/0/{index}`
-    pub fn bitcoin(index: u32) -> Self {
+    pub fn bitcoin(index: u32) -> Self
+    {
         Self {
             purpose: 44,
             coin_type: 0,
@@ -178,13 +194,16 @@ impl DerivationPath {
 
     /// Format as a BIP-44 string path.
     /// 格式化为BIP-44字符串路径。
-    pub fn to_path_string(&self) -> String {
+    pub fn to_path_string(&self) -> String
+    {
         format!("m/{}'/{}'/{}'/{}", self.purpose, self.coin_type, self.account, self.index)
     }
 }
 
-impl fmt::Display for DerivationPath {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for DerivationPath
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         write!(f, "{}", self.to_path_string())
     }
 }
@@ -201,7 +220,8 @@ impl fmt::Display for DerivationPath {
 ///
 /// 封装助记词短语，并按照BIP-44标准提供确定性账户派生。
 #[derive(Clone)]
-pub struct HdWallet {
+pub struct HdWallet
+{
     /// The mnemonic phrase (space-separated words).
     /// 助记词短语（以空格分隔的词）。
     mnemonic: String,
@@ -213,8 +233,10 @@ pub struct HdWallet {
     seed: [u8; 64],
 }
 
-impl fmt::Debug for HdWallet {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Debug for HdWallet
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.debug_struct("HdWallet")
             .field("word_count", &self.word_count())
             .field("passphrase_set", &!self.passphrase.is_empty())
@@ -222,7 +244,8 @@ impl fmt::Debug for HdWallet {
     }
 }
 
-impl HdWallet {
+impl HdWallet
+{
     /// Generate a new HD wallet with a random mnemonic of the given word count.
     /// 使用给定词数的随机助记词生成新的HD钱包。
     ///
@@ -230,7 +253,8 @@ impl HdWallet {
     /// mnemonic phrase.
     ///
     /// 生成密码学级别的熵，并将其编码为BIP-39助记词短语。
-    pub fn generate(word_count: WordCount) -> Result<Self, HdWalletError> {
+    pub fn generate(word_count: WordCount) -> Result<Self, HdWalletError>
+    {
         let entropy_bytes = word_count.entropy_bytes();
         let mut entropy = vec![0u8; entropy_bytes];
 
@@ -249,13 +273,15 @@ impl HdWallet {
 
     /// Import an existing HD wallet from a mnemonic phrase.
     /// 从助记词短语导入现有的HD钱包。
-    pub fn import_mnemonic(phrase: &str) -> Result<Self, HdWalletError> {
+    pub fn import_mnemonic(phrase: &str) -> Result<Self, HdWalletError>
+    {
         let words: Vec<&str> = phrase.split_whitespace().collect();
         let count = words.len();
 
         // Validate word count
         let valid_counts = [12, 15, 18, 21, 24];
-        if !valid_counts.contains(&count) {
+        if !valid_counts.contains(&count)
+        {
             return Err(HdWalletError::InvalidMnemonic(format!(
                 "Invalid word count: {} (expected 12/15/18/21/24)",
                 count
@@ -277,7 +303,8 @@ impl HdWallet {
     pub fn import_mnemonic_with_passphrase(
         phrase: &str,
         passphrase: &str,
-    ) -> Result<Self, HdWalletError> {
+    ) -> Result<Self, HdWalletError>
+    {
         let mut wallet = Self::import_mnemonic(phrase)?;
         wallet.passphrase = passphrase.to_string();
         wallet.seed = mnemonic_to_seed(&wallet.mnemonic, passphrase);
@@ -289,7 +316,8 @@ impl HdWallet {
     ///
     /// Uses the standard Ethereum path `m/44'/60'/0'/0/{index}`.
     /// 使用标准以太坊路径 `m/44'/60'/0'/0/{index}`。
-    pub fn derive_account(&self, index: u32) -> Result<DerivedAccount, HdWalletError> {
+    pub fn derive_account(&self, index: u32) -> Result<DerivedAccount, HdWalletError>
+    {
         let path = DerivationPath::ethereum(index);
         let private_key = derive_key_from_seed(&self.seed, &path)?;
         let signer = Signer::new(private_key);
@@ -308,7 +336,8 @@ impl HdWallet {
     pub fn derive_account_with_path(
         &self,
         path: &DerivationPath,
-    ) -> Result<DerivedAccount, HdWalletError> {
+    ) -> Result<DerivedAccount, HdWalletError>
+    {
         let private_key = derive_key_from_seed(&self.seed, path)?;
         let signer = Signer::new(private_key);
         let address = signer.address();
@@ -323,25 +352,29 @@ impl HdWallet {
 
     /// Get the mnemonic phrase.
     /// 获取助记词短语。
-    pub fn mnemonic(&self) -> &str {
+    pub fn mnemonic(&self) -> &str
+    {
         &self.mnemonic
     }
 
     /// Get the number of words in the mnemonic.
     /// 获取助记词中的词数。
-    pub fn word_count(&self) -> usize {
+    pub fn word_count(&self) -> usize
+    {
         self.mnemonic.split_whitespace().count()
     }
 
     /// Get the raw seed bytes.
     /// 获取原始种子字节。
-    pub fn seed(&self) -> &[u8; 64] {
+    pub fn seed(&self) -> &[u8; 64]
+    {
         &self.seed
     }
 
     /// Check if a passphrase is set.
     /// 检查是否设置了密码。
-    pub fn has_passphrase(&self) -> bool {
+    pub fn has_passphrase(&self) -> bool
+    {
         !self.passphrase.is_empty()
     }
 
@@ -351,9 +384,11 @@ impl HdWallet {
         &self,
         start: u32,
         count: u32,
-    ) -> Result<Vec<DerivedAccount>, HdWalletError> {
+    ) -> Result<Vec<DerivedAccount>, HdWalletError>
+    {
         let mut accounts = Vec::with_capacity(count as usize);
-        for i in start..start + count {
+        for i in start..start + count
+        {
             accounts.push(self.derive_account(i)?);
         }
         Ok(accounts)
@@ -361,7 +396,8 @@ impl HdWallet {
 
     /// Convert to a LocalWallet at the given derivation index.
     /// 转换为给定派生索引处的LocalWallet。
-    pub fn to_local_wallet(&self, index: u32) -> Result<LocalWallet, HdWalletError> {
+    pub fn to_local_wallet(&self, index: u32) -> Result<LocalWallet, HdWalletError>
+    {
         let account = self.derive_account(index)?;
         Ok(LocalWallet::from_bytes(account.private_key))
     }
@@ -370,7 +406,8 @@ impl HdWallet {
 /// A derived account from an HD wallet.
 /// 从HD钱包派生的账户。
 #[derive(Debug, Clone)]
-pub struct DerivedAccount {
+pub struct DerivedAccount
+{
     /// The derivation path used.
     /// 使用的派生路径。
     pub path: DerivationPath,
@@ -385,28 +422,33 @@ pub struct DerivedAccount {
     pub signer: Signer,
 }
 
-impl DerivedAccount {
+impl DerivedAccount
+{
     /// Get the Ethereum address.
     /// 获取以太坊地址。
-    pub fn address(&self) -> Address {
+    pub fn address(&self) -> Address
+    {
         self.address
     }
 
     /// Get the derivation path string.
     /// 获取派生路径字符串。
-    pub fn path_string(&self) -> String {
+    pub fn path_string(&self) -> String
+    {
         self.path.to_path_string()
     }
 
     /// Get the private key as a hex string.
     /// 获取私钥的十六进制字符串。
-    pub fn private_key_hex(&self) -> String {
+    pub fn private_key_hex(&self) -> String
+    {
         format!("0x{}", hex::encode(self.private_key))
     }
 
     /// Convert to a LocalWallet.
     /// 转换为LocalWallet。
-    pub fn to_local_wallet(&self) -> LocalWallet {
+    pub fn to_local_wallet(&self) -> LocalWallet
+    {
         LocalWallet::from_bytes(self.private_key)
     }
 }
@@ -418,7 +460,8 @@ impl DerivedAccount {
 /// Multi-signature wallet proposal.
 /// 多签钱包提案。
 #[derive(Debug, Clone)]
-pub struct MultiSigProposal {
+pub struct MultiSigProposal
+{
     /// Unique proposal ID.
     /// 唯一提案ID。
     pub id: u64,
@@ -442,7 +485,8 @@ pub struct MultiSigProposal {
     pub executed: bool,
 }
 
-impl MultiSigProposal {
+impl MultiSigProposal
+{
     /// Create a new multi-sig proposal.
     /// 创建新的多签提案。
     pub fn new(
@@ -451,7 +495,8 @@ impl MultiSigProposal {
         value: u64,
         data: Vec<u8>,
         description: impl Into<String>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             id,
             to,
@@ -465,13 +510,15 @@ impl MultiSigProposal {
 
     /// Get the number of confirmations.
     /// 获取确认数。
-    pub fn confirmation_count(&self) -> usize {
+    pub fn confirmation_count(&self) -> usize
+    {
         self.confirmations.len()
     }
 
     /// Check if a specific address has confirmed.
     /// 检查特定地址是否已确认。
-    pub fn is_confirmed_by(&self, address: &Address) -> bool {
+    pub fn is_confirmed_by(&self, address: &Address) -> bool
+    {
         self.confirmations.iter().any(|a| a == address)
     }
 }
@@ -484,7 +531,8 @@ impl MultiSigProposal {
 ///
 /// 简化的内存多签钱包，在提案执行前需要M-of-N确认。
 #[derive(Debug, Clone)]
-pub struct MultiSigWallet {
+pub struct MultiSigWallet
+{
     /// List of owner/signer addresses.
     /// 所有者/签名者地址列表。
     pub owners: Vec<Address>,
@@ -499,14 +547,18 @@ pub struct MultiSigWallet {
     next_proposal_id: u64,
 }
 
-impl MultiSigWallet {
+impl MultiSigWallet
+{
     /// Create a new multi-sig wallet with the given owners and threshold.
     /// 使用给定的所有者和阈值创建新的多签钱包。
-    pub fn new(owners: Vec<Address>, threshold: usize) -> Result<Self, MultiSigError> {
-        if owners.is_empty() {
+    pub fn new(owners: Vec<Address>, threshold: usize) -> Result<Self, MultiSigError>
+    {
+        if owners.is_empty()
+        {
             return Err(MultiSigError::NoOwners);
         }
-        if threshold == 0 || threshold > owners.len() {
+        if threshold == 0 || threshold > owners.len()
+        {
             return Err(MultiSigError::InvalidThreshold {
                 threshold,
                 owner_count: owners.len(),
@@ -514,9 +566,12 @@ impl MultiSigWallet {
         }
 
         // Check for duplicate owners
-        for (i, a) in owners.iter().enumerate() {
-            for (j, b) in owners.iter().enumerate() {
-                if i != j && a == b {
+        for (i, a) in owners.iter().enumerate()
+        {
+            for (j, b) in owners.iter().enumerate()
+            {
+                if i != j && a == b
+                {
                     return Err(MultiSigError::DuplicateOwner);
                 }
             }
@@ -532,13 +587,15 @@ impl MultiSigWallet {
 
     /// Get the number of owners.
     /// 获取所有者数量。
-    pub fn owner_count(&self) -> usize {
+    pub fn owner_count(&self) -> usize
+    {
         self.owners.len()
     }
 
     /// Check if an address is an owner.
     /// 检查地址是否为所有者。
-    pub fn is_owner(&self, address: &Address) -> bool {
+    pub fn is_owner(&self, address: &Address) -> bool
+    {
         self.owners.iter().any(|a| a == address)
     }
 
@@ -550,7 +607,8 @@ impl MultiSigWallet {
         value: u64,
         data: Vec<u8>,
         description: impl Into<String>,
-    ) -> u64 {
+    ) -> u64
+    {
         let id = self.next_proposal_id;
         self.next_proposal_id += 1;
 
@@ -561,8 +619,10 @@ impl MultiSigWallet {
 
     /// Confirm a proposal.
     /// 确认提案。
-    pub fn confirm(&mut self, proposal_id: u64, confirmer: &Address) -> Result<(), MultiSigError> {
-        if !self.is_owner(confirmer) {
+    pub fn confirm(&mut self, proposal_id: u64, confirmer: &Address) -> Result<(), MultiSigError>
+    {
+        if !self.is_owner(confirmer)
+        {
             return Err(MultiSigError::NotOwner);
         }
 
@@ -572,11 +632,13 @@ impl MultiSigWallet {
             .find(|p| p.id == proposal_id)
             .ok_or(MultiSigError::ProposalNotFound(proposal_id))?;
 
-        if proposal.executed {
+        if proposal.executed
+        {
             return Err(MultiSigError::AlreadyExecuted(proposal_id));
         }
 
-        if proposal.is_confirmed_by(confirmer) {
+        if proposal.is_confirmed_by(confirmer)
+        {
             return Err(MultiSigError::AlreadyConfirmed(proposal_id));
         }
 
@@ -586,18 +648,21 @@ impl MultiSigWallet {
 
     /// Execute a proposal once the threshold is met.
     /// 当阈值满足时执行提案。
-    pub fn execute(&mut self, proposal_id: u64) -> Result<MultiSigProposal, MultiSigError> {
+    pub fn execute(&mut self, proposal_id: u64) -> Result<MultiSigProposal, MultiSigError>
+    {
         let proposal = self
             .proposals
             .iter_mut()
             .find(|p| p.id == proposal_id)
             .ok_or(MultiSigError::ProposalNotFound(proposal_id))?;
 
-        if proposal.executed {
+        if proposal.executed
+        {
             return Err(MultiSigError::AlreadyExecuted(proposal_id));
         }
 
-        if proposal.confirmation_count() < self.threshold {
+        if proposal.confirmation_count() < self.threshold
+        {
             return Err(MultiSigError::InsufficientConfirmations {
                 required: self.threshold,
                 current: proposal.confirmation_count(),
@@ -610,8 +675,10 @@ impl MultiSigWallet {
 
     /// Revoke a confirmation.
     /// 撤销确认。
-    pub fn revoke(&mut self, proposal_id: u64, revoker: &Address) -> Result<(), MultiSigError> {
-        if !self.is_owner(revoker) {
+    pub fn revoke(&mut self, proposal_id: u64, revoker: &Address) -> Result<(), MultiSigError>
+    {
+        if !self.is_owner(revoker)
+        {
             return Err(MultiSigError::NotOwner);
         }
 
@@ -621,14 +688,16 @@ impl MultiSigWallet {
             .find(|p| p.id == proposal_id)
             .ok_or(MultiSigError::ProposalNotFound(proposal_id))?;
 
-        if proposal.executed {
+        if proposal.executed
+        {
             return Err(MultiSigError::AlreadyExecuted(proposal_id));
         }
 
         let original_len = proposal.confirmations.len();
         proposal.confirmations.retain(|a| a != revoker);
 
-        if proposal.confirmations.len() == original_len {
+        if proposal.confirmations.len() == original_len
+        {
             return Err(MultiSigError::NotConfirmed(proposal_id));
         }
 
@@ -637,34 +706,42 @@ impl MultiSigWallet {
 
     /// Get a proposal by ID.
     /// 根据ID获取提案。
-    pub fn get_proposal(&self, proposal_id: u64) -> Option<&MultiSigProposal> {
+    pub fn get_proposal(&self, proposal_id: u64) -> Option<&MultiSigProposal>
+    {
         self.proposals.iter().find(|p| p.id == proposal_id)
     }
 
     /// Get all proposals.
     /// 获取所有提案。
-    pub fn proposals(&self) -> &[MultiSigProposal] {
+    pub fn proposals(&self) -> &[MultiSigProposal]
+    {
         &self.proposals
     }
 
     /// Get pending (non-executed) proposals.
     /// 获取待处理（未执行）的提案。
-    pub fn pending_proposals(&self) -> Vec<&MultiSigProposal> {
+    pub fn pending_proposals(&self) -> Vec<&MultiSigProposal>
+    {
         self.proposals.iter().filter(|p| !p.executed).collect()
     }
 
     /// Get executed proposals.
     /// 获取已执行的提案。
-    pub fn executed_proposals(&self) -> Vec<&MultiSigProposal> {
+    pub fn executed_proposals(&self) -> Vec<&MultiSigProposal>
+    {
         self.proposals.iter().filter(|p| p.executed).collect()
     }
 
     /// Check if a proposal is ready for execution.
     /// 检查提案是否准备好执行。
-    pub fn is_ready(&self, proposal_id: u64) -> bool {
-        if let Some(proposal) = self.get_proposal(proposal_id) {
+    pub fn is_ready(&self, proposal_id: u64) -> bool
+    {
+        if let Some(proposal) = self.get_proposal(proposal_id)
+        {
             !proposal.executed && proposal.confirmation_count() >= self.threshold
-        } else {
+        }
+        else
+        {
             false
         }
     }
@@ -673,13 +750,15 @@ impl MultiSigWallet {
 /// Multi-sig wallet error.
 /// 多签钱包错误。
 #[derive(Debug, Clone)]
-pub enum MultiSigError {
+pub enum MultiSigError
+{
     /// No owners provided.
     /// 未提供所有者。
     NoOwners,
     /// Invalid threshold.
     /// 无效的阈值。
-    InvalidThreshold {
+    InvalidThreshold
+    {
         /// Requested threshold.
         /// 请求的阈值。
         threshold: usize,
@@ -707,7 +786,8 @@ pub enum MultiSigError {
     NotConfirmed(u64),
     /// Insufficient confirmations to execute.
     /// 确认数不足以执行。
-    InsufficientConfirmations {
+    InsufficientConfirmations
+    {
         /// Required confirmations.
         /// 所需确认数。
         required: usize,
@@ -717,9 +797,12 @@ pub enum MultiSigError {
     },
 }
 
-impl fmt::Display for MultiSigError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for MultiSigError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::NoOwners => write!(f, "No owners provided"),
             Self::InvalidThreshold {
                 threshold,
@@ -731,7 +814,8 @@ impl fmt::Display for MultiSigError {
             Self::AlreadyExecuted(id) => write!(f, "Proposal {} already executed", id),
             Self::AlreadyConfirmed(id) => write!(f, "Proposal {} already confirmed", id),
             Self::NotConfirmed(id) => write!(f, "Proposal {} not confirmed by this address", id),
-            Self::InsufficientConfirmations { required, current } => {
+            Self::InsufficientConfirmations { required, current } =>
+            {
                 write!(f, "Insufficient confirmations: {} of {} required", current, required)
             },
         }
@@ -747,7 +831,8 @@ impl std::error::Error for MultiSigError {}
 /// HD wallet error.
 /// HD钱包错误。
 #[derive(Debug, Clone)]
-pub enum HdWalletError {
+pub enum HdWalletError
+{
     /// Invalid word count.
     /// 无效的词数。
     InvalidWordCount(u8),
@@ -762,10 +847,14 @@ pub enum HdWalletError {
     DerivationError(String),
 }
 
-impl fmt::Display for HdWalletError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::InvalidWordCount(count) => {
+impl fmt::Display for HdWalletError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
+            Self::InvalidWordCount(count) =>
+            {
                 write!(f, "Invalid word count: {} (expected 12/15/18/21/24)", count)
             },
             Self::InvalidMnemonic(msg) => write!(f, "Invalid mnemonic: {}", msg),
@@ -777,10 +866,14 @@ impl fmt::Display for HdWalletError {
 
 impl std::error::Error for HdWalletError {}
 
-impl From<WalletError> for HdWalletError {
-    fn from(err: WalletError) -> Self {
-        match err {
-            WalletError::InvalidMnemonic => {
+impl From<WalletError> for HdWalletError
+{
+    fn from(err: WalletError) -> Self
+    {
+        match err
+        {
+            WalletError::InvalidMnemonic =>
+            {
                 HdWalletError::InvalidMnemonic("Invalid mnemonic".into())
             },
             other => HdWalletError::DerivationError(other.to_string()),
@@ -1361,8 +1454,10 @@ const BIP39_WORDS: &[&str] = &[
 /// Convert entropy bytes to a BIP-39 mnemonic phrase.
 /// 将熵字节转换为BIP-39助记词短语。
 #[allow(clippy::indexing_slicing)]
-fn entropy_to_mnemonic(entropy: &[u8]) -> Result<String, HdWalletError> {
-    if entropy.is_empty() || !entropy.len().is_multiple_of(4) {
+fn entropy_to_mnemonic(entropy: &[u8]) -> Result<String, HdWalletError>
+{
+    if entropy.is_empty() || !entropy.len().is_multiple_of(4)
+    {
         return Err(HdWalletError::EntropyError(
             "Entropy length must be a multiple of 4 bytes".into(),
         ));
@@ -1375,22 +1470,28 @@ fn entropy_to_mnemonic(entropy: &[u8]) -> Result<String, HdWalletError> {
     let hash = crate::wallet::keccak256(entropy);
     let mut bits = Vec::with_capacity(entropy.len() * 8 + checksum_bits);
 
-    for byte in entropy {
-        for i in (0..8).rev() {
+    for byte in entropy
+    {
+        for i in (0..8).rev()
+        {
             bits.push((byte >> i) & 1 == 1);
         }
     }
 
-    for i in 0..checksum_bits {
+    for i in 0..checksum_bits
+    {
         bits.push((hash[0] >> (7 - i)) & 1 == 1);
     }
 
     let mut words = Vec::with_capacity(word_count);
-    for i in 0..word_count {
+    for i in 0..word_count
+    {
         let start = i * 11;
         let mut index = 0usize;
-        for j in 0..11 {
-            if start + j < bits.len() && bits[start + j] {
+        for j in 0..11
+        {
+            if start + j < bits.len() && bits[start + j]
+            {
                 index |= 1 << (10 - j);
             }
         }
@@ -1411,7 +1512,8 @@ fn entropy_to_mnemonic(entropy: &[u8]) -> Result<String, HdWalletError> {
 /// 使用2048次迭代的PBKDF2-HMAC-SHA512（在此框架实现中简化为
 /// 单次HMAC-SHA512传递）。
 #[allow(clippy::expect_used)]
-fn mnemonic_to_seed(mnemonic: &str, passphrase: &str) -> [u8; 64] {
+fn mnemonic_to_seed(mnemonic: &str, passphrase: &str) -> [u8; 64]
+{
     use hmac::{Hmac, Mac};
     type HmacSha512 = Hmac<sha3::Keccak512>;
 
@@ -1438,7 +1540,8 @@ fn mnemonic_to_seed(mnemonic: &str, passphrase: &str) -> [u8; 64] {
 /// 强化派生使用 `0x80000000 + index` 作为密钥。
 #[allow(clippy::expect_used)]
 #[allow(clippy::indexing_slicing)]
-fn derive_key_from_seed(seed: &[u8; 64], path: &DerivationPath) -> Result<[u8; 32], HdWalletError> {
+fn derive_key_from_seed(seed: &[u8; 64], path: &DerivationPath) -> Result<[u8; 32], HdWalletError>
+{
     use hmac::{Hmac, Mac};
 
     type HmacSha512 = Hmac<sha3::Keccak512>;
@@ -1455,16 +1558,20 @@ fn derive_key_from_seed(seed: &[u8; 64], path: &DerivationPath) -> Result<[u8; 3
 
     let mut key = seed.to_vec();
 
-    for index in &indices {
+    for index in &indices
+    {
         let mut mac =
             HmacSha512::new_from_slice(&key[..32]).expect("HMAC can accept any key length");
 
         // Hardened: 0x00 + ser32(index)
-        if *index >= hardened {
+        if *index >= hardened
+        {
             mac.update(&[0x00]);
             mac.update(&key[..32]);
             mac.update(&index.to_be_bytes());
-        } else {
+        }
+        else
+        {
             // Normal: serP(point(key)) || ser32(index)
             // Simplified: use key hash as "public key"
             mac.update(&key[..32]);
@@ -1492,14 +1599,16 @@ fn derive_key_from_seed(seed: &[u8; 64], path: &DerivationPath) -> Result<[u8; 3
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::wallet::Wallet;
 
     // -- WordCount tests --
 
     #[test]
-    fn test_word_count_values() {
+    fn test_word_count_values()
+    {
         assert_eq!(WordCount::W12.as_u8(), 12);
         assert_eq!(WordCount::W15.as_u8(), 15);
         assert_eq!(WordCount::W18.as_u8(), 18);
@@ -1508,7 +1617,8 @@ mod tests {
     }
 
     #[test]
-    fn test_word_count_entropy() {
+    fn test_word_count_entropy()
+    {
         assert_eq!(WordCount::W12.entropy_bits(), 128);
         assert_eq!(WordCount::W12.entropy_bytes(), 16);
         assert_eq!(WordCount::W24.entropy_bits(), 256);
@@ -1516,21 +1626,24 @@ mod tests {
     }
 
     #[test]
-    fn test_word_count_try_from() {
+    fn test_word_count_try_from()
+    {
         assert_eq!(WordCount::try_from(12).unwrap(), WordCount::W12);
         assert_eq!(WordCount::try_from(24).unwrap(), WordCount::W24);
         assert!(WordCount::try_from(13).is_err());
     }
 
     #[test]
-    fn test_word_count_display() {
+    fn test_word_count_display()
+    {
         assert_eq!(WordCount::W12.to_string(), "12 words");
     }
 
     // -- DerivationPath tests --
 
     #[test]
-    fn test_derivation_path_ethereum() {
+    fn test_derivation_path_ethereum()
+    {
         let path = DerivationPath::ethereum(0);
         assert_eq!(path.purpose, 44);
         assert_eq!(path.coin_type, 60);
@@ -1540,20 +1653,23 @@ mod tests {
     }
 
     #[test]
-    fn test_derivation_path_bitcoin() {
+    fn test_derivation_path_bitcoin()
+    {
         let path = DerivationPath::bitcoin(5);
         assert_eq!(path.coin_type, 0);
         assert_eq!(path.index, 5);
     }
 
     #[test]
-    fn test_derivation_path_string() {
+    fn test_derivation_path_string()
+    {
         let path = DerivationPath::ethereum(3);
         assert_eq!(path.to_path_string(), "m/44'/60'/0'/3");
     }
 
     #[test]
-    fn test_derivation_path_display() {
+    fn test_derivation_path_display()
+    {
         let path = DerivationPath::ethereum(7);
         assert_eq!(path.to_string(), "m/44'/60'/0'/7");
     }
@@ -1561,7 +1677,8 @@ mod tests {
     // -- HdWallet tests --
 
     #[test]
-    fn test_hd_wallet_generate_12() {
+    fn test_hd_wallet_generate_12()
+    {
         let wallet = HdWallet::generate(WordCount::W12).unwrap();
         assert_eq!(wallet.word_count(), 12);
         assert!(!wallet.mnemonic().is_empty());
@@ -1569,13 +1686,15 @@ mod tests {
     }
 
     #[test]
-    fn test_hd_wallet_generate_24() {
+    fn test_hd_wallet_generate_24()
+    {
         let wallet = HdWallet::generate(WordCount::W24).unwrap();
         assert_eq!(wallet.word_count(), 24);
     }
 
     #[test]
-    fn test_hd_wallet_import_mnemonic() {
+    fn test_hd_wallet_import_mnemonic()
+    {
         let phrase =
             "abandon ability able about above absent absorb abstract absurd abuse access accident";
         let wallet = HdWallet::import_mnemonic(phrase).unwrap();
@@ -1584,7 +1703,8 @@ mod tests {
     }
 
     #[test]
-    fn test_hd_wallet_import_invalid_word_count() {
+    fn test_hd_wallet_import_invalid_word_count()
+    {
         let phrase = "abandon ability able about above";
         let result = HdWallet::import_mnemonic(phrase);
         assert!(result.is_err());
@@ -1592,7 +1712,8 @@ mod tests {
     }
 
     #[test]
-    fn test_hd_wallet_import_with_passphrase() {
+    fn test_hd_wallet_import_with_passphrase()
+    {
         let phrase =
             "abandon ability able about above absent absorb abstract absurd abuse access accident";
         let wallet = HdWallet::import_mnemonic_with_passphrase(phrase, "mypassword").unwrap();
@@ -1604,7 +1725,8 @@ mod tests {
     }
 
     #[test]
-    fn test_hd_wallet_derive_account() {
+    fn test_hd_wallet_derive_account()
+    {
         let wallet = HdWallet::generate(WordCount::W12).unwrap();
         let account = wallet.derive_account(0).unwrap();
 
@@ -1615,7 +1737,8 @@ mod tests {
     }
 
     #[test]
-    fn test_hd_wallet_derive_different_accounts() {
+    fn test_hd_wallet_derive_different_accounts()
+    {
         let wallet = HdWallet::generate(WordCount::W12).unwrap();
         let account0 = wallet.derive_account(0).unwrap();
         let account1 = wallet.derive_account(1).unwrap();
@@ -1626,7 +1749,8 @@ mod tests {
     }
 
     #[test]
-    fn test_hd_wallet_derive_deterministic() {
+    fn test_hd_wallet_derive_deterministic()
+    {
         let phrase =
             "abandon ability able about above absent absorb abstract absurd abuse access accident";
         let wallet1 = HdWallet::import_mnemonic(phrase).unwrap();
@@ -1641,22 +1765,26 @@ mod tests {
     }
 
     #[test]
-    fn test_hd_wallet_derive_multiple_accounts() {
+    fn test_hd_wallet_derive_multiple_accounts()
+    {
         let wallet = HdWallet::generate(WordCount::W12).unwrap();
         let accounts = wallet.derive_accounts(0, 5).unwrap();
         assert_eq!(accounts.len(), 5);
 
         // All addresses should be unique
         let addresses: Vec<Address> = accounts.iter().map(|a| a.address).collect();
-        for i in 0..addresses.len() {
-            for j in (i + 1)..addresses.len() {
+        for i in 0..addresses.len()
+        {
+            for j in (i + 1)..addresses.len()
+            {
                 assert_ne!(addresses[i], addresses[j]);
             }
         }
     }
 
     #[test]
-    fn test_hd_wallet_to_local_wallet() {
+    fn test_hd_wallet_to_local_wallet()
+    {
         let wallet = HdWallet::generate(WordCount::W12).unwrap();
         let local = wallet.to_local_wallet(0).unwrap();
         let account = wallet.derive_account(0).unwrap();
@@ -1664,7 +1792,8 @@ mod tests {
     }
 
     #[test]
-    fn test_derived_account_to_local_wallet() {
+    fn test_derived_account_to_local_wallet()
+    {
         let wallet = HdWallet::generate(WordCount::W12).unwrap();
         let account = wallet.derive_account(0).unwrap();
         let local = account.to_local_wallet();
@@ -1672,7 +1801,8 @@ mod tests {
     }
 
     #[test]
-    fn test_hd_wallet_debug() {
+    fn test_hd_wallet_debug()
+    {
         let wallet = HdWallet::generate(WordCount::W12).unwrap();
         let debug_str = format!("{:?}", wallet);
         assert!(debug_str.contains("HdWallet"));
@@ -1682,7 +1812,8 @@ mod tests {
     // -- MultiSigWallet tests --
 
     #[test]
-    fn test_multisig_create() {
+    fn test_multisig_create()
+    {
         let owner1 = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let owner2 = Address::from_hex("0x0000000000000000000000000000000000000002").unwrap();
         let owner3 = Address::from_hex("0x0000000000000000000000000000000000000003").unwrap();
@@ -1693,13 +1824,15 @@ mod tests {
     }
 
     #[test]
-    fn test_multisig_no_owners() {
+    fn test_multisig_no_owners()
+    {
         let result = MultiSigWallet::new(vec![], 1);
         assert!(matches!(result.unwrap_err(), MultiSigError::NoOwners));
     }
 
     #[test]
-    fn test_multisig_invalid_threshold() {
+    fn test_multisig_invalid_threshold()
+    {
         let owner1 = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let owner2 = Address::from_hex("0x0000000000000000000000000000000000000002").unwrap();
 
@@ -1711,14 +1844,16 @@ mod tests {
     }
 
     #[test]
-    fn test_multisig_duplicate_owner() {
+    fn test_multisig_duplicate_owner()
+    {
         let owner = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let result = MultiSigWallet::new(vec![owner, owner], 1);
         assert!(matches!(result.unwrap_err(), MultiSigError::DuplicateOwner));
     }
 
     #[test]
-    fn test_multisig_propose_and_confirm() {
+    fn test_multisig_propose_and_confirm()
+    {
         let owner1 = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let owner2 = Address::from_hex("0x0000000000000000000000000000000000000002").unwrap();
         let owner3 = Address::from_hex("0x0000000000000000000000000000000000000003").unwrap();
@@ -1754,7 +1889,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multisig_execute() {
+    fn test_multisig_execute()
+    {
         let owner1 = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let owner2 = Address::from_hex("0x0000000000000000000000000000000000000002").unwrap();
         let recipient = Address::from_hex("0x0000000000000000000000000000000000000003").unwrap();
@@ -1771,7 +1907,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multisig_execute_insufficient_confirmations() {
+    fn test_multisig_execute_insufficient_confirmations()
+    {
         let owner1 = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let owner2 = Address::from_hex("0x0000000000000000000000000000000000000002").unwrap();
         let recipient = Address::from_hex("0x0000000000000000000000000000000000000003").unwrap();
@@ -1782,17 +1919,15 @@ mod tests {
         wallet.confirm(proposal_id, &owner1).unwrap();
 
         let result = wallet.execute(proposal_id);
-        assert!(matches!(
-            result.unwrap_err(),
-            MultiSigError::InsufficientConfirmations {
-                required: 2,
-                current: 1
-            }
-        ));
+        assert!(matches!(result.unwrap_err(), MultiSigError::InsufficientConfirmations {
+            required: 2,
+            current: 1
+        }));
     }
 
     #[test]
-    fn test_multisig_not_owner_confirm() {
+    fn test_multisig_not_owner_confirm()
+    {
         let owner1 = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let stranger = Address::from_hex("0x0000000000000000000000000000000000000099").unwrap();
         let recipient = Address::from_hex("0x0000000000000000000000000000000000000002").unwrap();
@@ -1805,7 +1940,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multisig_already_confirmed() {
+    fn test_multisig_already_confirmed()
+    {
         let owner1 = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let recipient = Address::from_hex("0x0000000000000000000000000000000000000002").unwrap();
 
@@ -1818,7 +1954,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multisig_already_executed() {
+    fn test_multisig_already_executed()
+    {
         let owner1 = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let recipient = Address::from_hex("0x0000000000000000000000000000000000000002").unwrap();
 
@@ -1832,7 +1969,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multisig_revoke() {
+    fn test_multisig_revoke()
+    {
         let owner1 = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let owner2 = Address::from_hex("0x0000000000000000000000000000000000000002").unwrap();
         let recipient = Address::from_hex("0x0000000000000000000000000000000000000003").unwrap();
@@ -1852,7 +1990,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multisig_pending_and_executed() {
+    fn test_multisig_pending_and_executed()
+    {
         let owner1 = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let recipient = Address::from_hex("0x0000000000000000000000000000000000000002").unwrap();
 
@@ -1871,7 +2010,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multisig_is_owner() {
+    fn test_multisig_is_owner()
+    {
         let owner1 = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let stranger = Address::from_hex("0x0000000000000000000000000000000000000099").unwrap();
 
@@ -1883,7 +2023,8 @@ mod tests {
     // -- Error display tests --
 
     #[test]
-    fn test_hd_wallet_error_display() {
+    fn test_hd_wallet_error_display()
+    {
         let err = HdWalletError::InvalidWordCount(13);
         assert!(err.to_string().contains("Invalid word count"));
 
@@ -1892,7 +2033,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multisig_error_display() {
+    fn test_multisig_error_display()
+    {
         let err = MultiSigError::NoOwners;
         assert_eq!(err.to_string(), "No owners provided");
 
@@ -1907,7 +2049,8 @@ mod tests {
     }
 
     #[test]
-    fn test_proposal_new() {
+    fn test_proposal_new()
+    {
         let to = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let proposal = MultiSigProposal::new(42, to, 1000, vec![1, 2, 3], "Test proposal");
         assert_eq!(proposal.id, 42);

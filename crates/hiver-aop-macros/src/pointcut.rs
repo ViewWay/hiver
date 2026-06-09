@@ -11,12 +11,15 @@ use syn::{
 
 /// Parses pointcut expression from @Pointcut annotation
 /// 解析 @Pointcut 注解中的切点表达式
-struct PointcutExpr {
+struct PointcutExpr
+{
     expression: String,
 }
 
-impl Parse for PointcutExpr {
-    fn parse(input: ParseStream) -> SynResult<Self> {
+impl Parse for PointcutExpr
+{
+    fn parse(input: ParseStream) -> SynResult<Self>
+    {
         // Try to parse a string literal
         // 尝试解析字符串字面量
         let expr_lit: LitStr = input.parse()?;
@@ -86,7 +89,8 @@ impl Parse for PointcutExpr {
 /// #[Pointcut("execution(* com.example.Service.*(..)) || execution(* com.example.Repository.*(..))")]
 /// fn service_or_repository() -> PointcutExpression {}
 /// ```
-pub(crate) fn impl_pointcut(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_pointcut(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 

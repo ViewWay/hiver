@@ -2,22 +2,29 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{ItemFn, Pat, ReturnType, parse_macro_input};
 
-struct CacheAttr {
+struct CacheAttr
+{
     cache_name: String,
     key_template: Option<String>,
 }
 
-fn parse_cache_attr(attr: TokenStream) -> CacheAttr {
+fn parse_cache_attr(attr: TokenStream) -> CacheAttr
+{
     let s = attr.to_string();
     let mut cache_name = "default".to_string();
     let mut key_template = None;
-    for part in s.split(',') {
+    for part in s.split(',')
+    {
         let part = part.trim();
-        if part.starts_with("key") {
-            if let Some((_, v)) = part.split_once('=') {
+        if part.starts_with("key")
+        {
+            if let Some((_, v)) = part.split_once('=')
+            {
                 key_template = Some(v.trim().trim_matches('"').to_string());
             }
-        } else if !part.is_empty() && !part.contains('=') {
+        }
+        else if !part.is_empty() && !part.contains('=')
+        {
             cache_name = part.trim_matches('"').to_string();
         }
     }
@@ -29,7 +36,8 @@ fn parse_cache_attr(attr: TokenStream) -> CacheAttr {
 
 fn param_idents(
     inputs: &syn::punctuated::Punctuated<syn::FnArg, syn::token::Comma>,
-) -> Vec<syn::Ident> {
+) -> Vec<syn::Ident>
+{
     inputs
         .iter()
         .filter_map(|arg| {
@@ -47,28 +55,38 @@ fn build_key_expr(
     fn_name: &syn::Ident,
     params: &[syn::Ident],
     template: Option<&str>,
-) -> proc_macro2::TokenStream {
-    if let Some(tpl) = template {
+) -> proc_macro2::TokenStream
+{
+    if let Some(tpl) = template
+    {
         let mut fmt = tpl.to_string();
-        for p in params {
+        for p in params
+        {
             fmt = fmt.replace(&format!("#{p}"), &format!("{{{p}}}"));
         }
         quote! { format!(#fmt, #(#params = #params),*) }
-    } else if params.is_empty() {
+    }
+    else if params.is_empty()
+    {
         quote! { stringify!(#fn_name).to_string() }
-    } else {
+    }
+    else
+    {
         quote! { format!(concat!(stringify!(#fn_name), ":", "{:?}"), (#(#params),*)) }
     }
 }
 
-fn return_type_tokens(output: &ReturnType) -> proc_macro2::TokenStream {
-    match output {
+fn return_type_tokens(output: &ReturnType) -> proc_macro2::TokenStream
+{
+    match output
+    {
         ReturnType::Type(_, ty) => quote! { #ty },
         ReturnType::Default => quote! { () },
     }
 }
 
-pub fn cacheable(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn cacheable(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let attr = parse_cache_attr(attr);
     let input = parse_macro_input!(item as ItemFn);
     let fn_name = &input.sig.ident;
@@ -106,7 +124,8 @@ pub fn cacheable(attr: TokenStream, item: TokenStream) -> TokenStream {
     TokenStream::from(expanded)
 }
 
-pub fn cache_evict(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn cache_evict(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let attr = parse_cache_attr(attr);
     let input = parse_macro_input!(item as ItemFn);
     let fn_name = &input.sig.ident;
@@ -133,7 +152,8 @@ pub fn cache_evict(attr: TokenStream, item: TokenStream) -> TokenStream {
     TokenStream::from(expanded)
 }
 
-pub fn cache_put(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn cache_put(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let attr = parse_cache_attr(attr);
     let input = parse_macro_input!(item as ItemFn);
     let fn_name = &input.sig.ident;
@@ -163,10 +183,12 @@ pub fn cache_put(attr: TokenStream, item: TokenStream) -> TokenStream {
     TokenStream::from(expanded)
 }
 
-pub fn cache_config(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn cache_config(_attr: TokenStream, item: TokenStream) -> TokenStream
+{
     item
 }
 
-pub fn caching(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn caching(_attr: TokenStream, item: TokenStream) -> TokenStream
+{
     item
 }

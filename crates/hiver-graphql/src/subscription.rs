@@ -11,24 +11,28 @@ use serde_json::Value;
 /// graphql-ws 协议的消息类型。
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
-pub enum SubscriptionMessage {
+pub enum SubscriptionMessage
+{
     /// Client → Server: initialize the connection.
     #[serde(rename = "connection_init")]
-    ConnectionInit {
+    ConnectionInit
+    {
         /// Optional initialization payload. / 可选的初始化负载。
         #[serde(default, skip_serializing_if = "Option::is_none")]
         payload: Option<Value>,
     },
     /// Server → Client: connection acknowledged.
     #[serde(rename = "connection_ack")]
-    ConnectionAck {
+    ConnectionAck
+    {
         /// Optional acknowledgment payload. / 可选的确认负载。
         #[serde(default, skip_serializing_if = "Option::is_none")]
         payload: Option<Value>,
     },
     /// Client → Server: start a subscription.
     #[serde(rename = "subscribe")]
-    Subscribe {
+    Subscribe
+    {
         /// Subscription identifier. / 订阅标识符。
         id: String,
         /// Subscription request payload. / 订阅请求负载。
@@ -36,7 +40,8 @@ pub enum SubscriptionMessage {
     },
     /// Server → Client: subscription data.
     #[serde(rename = "next")]
-    Next {
+    Next
+    {
         /// Subscription identifier. / 订阅标识符。
         id: String,
         /// Subscription result data. / 订阅结果数据。
@@ -44,7 +49,8 @@ pub enum SubscriptionMessage {
     },
     /// Server → Client: subscription error.
     #[serde(rename = "error")]
-    Error {
+    Error
+    {
         /// Subscription identifier. / 订阅标识符。
         id: String,
         /// Error details. / 错误详情。
@@ -52,20 +58,23 @@ pub enum SubscriptionMessage {
     },
     /// Server → Client: subscription complete.
     #[serde(rename = "complete")]
-    Complete {
+    Complete
+    {
         /// Subscription identifier. / 订阅标识符。
         id: String,
     },
     /// Keep-alive ping.
     #[serde(rename = "ping")]
-    Ping {
+    Ping
+    {
         /// Optional ping payload. / 可选的 ping 负载。
         #[serde(default, skip_serializing_if = "Option::is_none")]
         payload: Option<Value>,
     },
     /// Keep-alive pong.
     #[serde(rename = "pong")]
-    Pong {
+    Pong
+    {
         /// Optional pong payload. / 可选的 pong 负载。
         #[serde(default, skip_serializing_if = "Option::is_none")]
         payload: Option<Value>,
@@ -74,7 +83,8 @@ pub enum SubscriptionMessage {
 
 /// Subscription start payload.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SubscribePayload {
+pub struct SubscribePayload
+{
     /// The GraphQL subscription query.
     pub query: String,
     /// Query variables. / 查询变量。
@@ -90,7 +100,8 @@ pub struct SubscribePayload {
 
 /// Subscription data payload.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SubscriptionData {
+pub struct SubscriptionData
+{
     /// Response data. / 响应数据。
     pub data: Option<Value>,
     /// Errors encountered during subscription resolution. / 订阅解析期间遇到的错误。
@@ -103,7 +114,8 @@ pub struct SubscriptionData {
 
 /// Simplified error payload for subscription messages.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GraphQLErrorPayload {
+pub struct GraphQLErrorPayload
+{
     /// Error message. / 错误信息。
     pub message: String,
     /// Source locations of the error. / 错误的源码位置。
@@ -116,7 +128,8 @@ pub struct GraphQLErrorPayload {
 
 /// Error location in a GraphQL document.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ErrorLocation {
+pub struct ErrorLocation
+{
     /// Line number. / 行号。
     pub line: u32,
     /// Column number. / 列号。
@@ -125,7 +138,8 @@ pub struct ErrorLocation {
 
 /// Configuration for WebSocket subscription transport.
 #[derive(Debug, Clone)]
-pub struct SubscriptionConfig {
+pub struct SubscriptionConfig
+{
     /// Keep-alive ping interval in seconds (0 = disabled).
     pub keep_alive_interval_secs: u64,
     /// Maximum concurrent subscriptions per connection.
@@ -134,8 +148,10 @@ pub struct SubscriptionConfig {
     pub connection_timeout_secs: u64,
 }
 
-impl Default for SubscriptionConfig {
-    fn default() -> Self {
+impl Default for SubscriptionConfig
+{
+    fn default() -> Self
+    {
         Self {
             keep_alive_interval_secs: 12,
             max_subscriptions_per_connection: 100,
@@ -146,69 +162,83 @@ impl Default for SubscriptionConfig {
 
 /// Builder for `SubscriptionConfig`.
 #[derive(Default)]
-pub struct SubscriptionConfigBuilder {
+pub struct SubscriptionConfigBuilder
+{
     config: SubscriptionConfig,
 }
 
-impl SubscriptionConfigBuilder {
+impl SubscriptionConfigBuilder
+{
     /// Create a new builder with defaults.
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set keep-alive interval in seconds.
-    pub fn keep_alive_interval(mut self, secs: u64) -> Self {
+    pub fn keep_alive_interval(mut self, secs: u64) -> Self
+    {
         self.config.keep_alive_interval_secs = secs;
         self
     }
 
     /// Set max subscriptions per connection.
-    pub fn max_subscriptions(mut self, n: usize) -> Self {
+    pub fn max_subscriptions(mut self, n: usize) -> Self
+    {
         self.config.max_subscriptions_per_connection = n;
         self
     }
 
     /// Set connection timeout in seconds.
-    pub fn connection_timeout(mut self, secs: u64) -> Self {
+    pub fn connection_timeout(mut self, secs: u64) -> Self
+    {
         self.config.connection_timeout_secs = secs;
         self
     }
 
     /// Build the configuration.
-    pub fn build(self) -> SubscriptionConfig {
+    pub fn build(self) -> SubscriptionConfig
+    {
         self.config
     }
 }
 
 /// Persisted query cache for storing pre-compiled queries.
 #[derive(Debug, Default)]
-pub struct PersistedQueryCache {
+pub struct PersistedQueryCache
+{
     queries: std::collections::HashMap<String, String>,
 }
 
-impl PersistedQueryCache {
+impl PersistedQueryCache
+{
     /// Create an empty cache.
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Register a persisted query.
-    pub fn register(&mut self, hash: impl Into<String>, query: impl Into<String>) {
+    pub fn register(&mut self, hash: impl Into<String>, query: impl Into<String>)
+    {
         self.queries.insert(hash.into(), query.into());
     }
 
     /// Look up a persisted query by hash.
-    pub fn get(&self, hash: &str) -> Option<&str> {
+    pub fn get(&self, hash: &str) -> Option<&str>
+    {
         self.queries.get(hash).map(String::as_str)
     }
 
     /// Number of persisted queries.
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.queries.len()
     }
 
     /// Returns `true` if the cache is empty.
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.queries.is_empty()
     }
 }
@@ -221,11 +251,13 @@ impl PersistedQueryCache {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_connection_init_serde() {
+    fn test_connection_init_serde()
+    {
         let msg = SubscriptionMessage::ConnectionInit {
             payload: Some(serde_json::json!({"token": "abc"})),
         };
@@ -236,7 +268,8 @@ mod tests {
     }
 
     #[test]
-    fn test_subscribe_message() {
+    fn test_subscribe_message()
+    {
         let msg = SubscriptionMessage::Subscribe {
             id: "sub1".to_string(),
             payload: SubscribePayload {
@@ -251,7 +284,8 @@ mod tests {
     }
 
     #[test]
-    fn test_config_builder() {
+    fn test_config_builder()
+    {
         let config = SubscriptionConfigBuilder::new()
             .keep_alive_interval(30)
             .max_subscriptions(50)
@@ -261,7 +295,8 @@ mod tests {
     }
 
     #[test]
-    fn test_persisted_query_cache() {
+    fn test_persisted_query_cache()
+    {
         let mut cache = PersistedQueryCache::new();
         assert!(cache.is_empty());
         cache.register("sha256:abc", "query { users { id } }");
@@ -270,7 +305,8 @@ mod tests {
     }
 
     #[test]
-    fn test_next_message() {
+    fn test_next_message()
+    {
         let msg = SubscriptionMessage::Next {
             id: "sub1".to_string(),
             payload: SubscriptionData {

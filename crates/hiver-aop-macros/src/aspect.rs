@@ -19,7 +19,8 @@ use syn::{DeriveInput, parse_macro_input};
 /// #[Aspect]
 /// struct LoggingAspect;
 /// ```
-pub(crate) fn impl_aspect(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_aspect(_attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(item as DeriveInput);
     let name = &input.ident;
 

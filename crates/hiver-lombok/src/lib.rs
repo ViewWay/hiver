@@ -89,7 +89,8 @@ use syn::parse_macro_input;
 /// // }
 /// ```
 #[proc_macro_derive(Getter, attributes(get))]
-pub fn derive_getter(input: TokenStream) -> TokenStream {
+pub fn derive_getter(input: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(input as syn::DeriveInput);
     getter::impl_getter(input).into()
 }
@@ -115,7 +116,8 @@ pub fn derive_getter(input: TokenStream) -> TokenStream {
 /// // }
 /// ```
 #[proc_macro_derive(Setter, attributes(set))]
-pub fn derive_setter(input: TokenStream) -> TokenStream {
+pub fn derive_setter(input: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(input as syn::DeriveInput);
     setter::impl_setter(input).into()
 }
@@ -142,7 +144,8 @@ pub fn derive_setter(input: TokenStream) -> TokenStream {
 /// // }
 /// ```
 #[proc_macro_derive(AllArgsConstructor)]
-pub fn derive_all_args_constructor(input: TokenStream) -> TokenStream {
+pub fn derive_all_args_constructor(input: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(input as syn::DeriveInput);
     constructor::impl_all_args(input).into()
 }
@@ -173,7 +176,8 @@ pub fn derive_all_args_constructor(input: TokenStream) -> TokenStream {
 ///  impl Default for User { ... }
 /// ```
 #[proc_macro_derive(NoArgsConstructor)]
-pub fn derive_no_args_constructor(input: TokenStream) -> TokenStream {
+pub fn derive_no_args_constructor(input: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(input as syn::DeriveInput);
     constructor::impl_no_args(input).into()
 }
@@ -205,7 +209,8 @@ pub fn derive_no_args_constructor(input: TokenStream) -> TokenStream {
 /// // - With methods: user.with_id(...), user.with_username(...), user.with_email(...)
 /// ```
 #[proc_macro_derive(Data)]
-pub fn derive_data(input: TokenStream) -> TokenStream {
+pub fn derive_data(input: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(input as syn::DeriveInput);
     data::impl_data(input).into()
 }
@@ -232,7 +237,8 @@ pub fn derive_data(input: TokenStream) -> TokenStream {
 ///     .unwrap();
 /// ```
 #[proc_macro_derive(Builder)]
-pub fn derive_builder(input: TokenStream) -> TokenStream {
+pub fn derive_builder(input: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(input as syn::DeriveInput);
     builder::impl_builder(input).into()
 }
@@ -258,7 +264,8 @@ pub fn derive_builder(input: TokenStream) -> TokenStream {
 /// // All fields are immutable (private + read-only)
 /// ```
 #[proc_macro_derive(Value)]
-pub fn derive_value(input: TokenStream) -> TokenStream {
+pub fn derive_value(input: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(input as syn::DeriveInput);
     value::impl_value(input).into()
 }
@@ -288,7 +295,8 @@ pub fn derive_value(input: TokenStream) -> TokenStream {
 /// // }
 /// ```
 #[proc_macro_derive(With)]
-pub fn derive_with(input: TokenStream) -> TokenStream {
+pub fn derive_with(input: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(input as syn::DeriveInput);
     with_method::impl_with(input).into()
 }

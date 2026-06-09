@@ -78,7 +78,8 @@ pub use load_balancer_ext::{
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude {
+pub mod prelude
+{
     pub use super::{
         AlwaysHealthyChecker, CircuitBreaker, CircuitState, CompositeConfigSource, ConfigClient,
         ConfigClientError, ConfigProvider, ConfigServerClient, ConfigSource, EnhancedConfigClient,

@@ -10,7 +10,8 @@ use syn::{Data, DataStruct, DeriveInput, Fields};
 ///
 /// Generates a builder pattern for the struct.
 /// 为结构体生成 builder 模式。
-pub fn impl_builder(input: DeriveInput) -> TokenStream {
+pub fn impl_builder(input: DeriveInput) -> TokenStream
+{
     let struct_name = &input.ident;
     let builder_name = format!("{}Builder", struct_name);
     let builder_ident = syn::Ident::new(&builder_name, struct_name.span());
@@ -19,12 +20,14 @@ pub fn impl_builder(input: DeriveInput) -> TokenStream {
 
     // Extract fields from struct
     // 从结构体中提取字段
-    let fields = match &input.data {
+    let fields = match &input.data
+    {
         Data::Struct(DataStruct {
             fields: Fields::Named(fields),
             ..
         }) => &fields.named,
-        _ => {
+        _ =>
+        {
             return syn::Error::new_spanned(
                 struct_name,
                 "#[Builder] can only be used on structs with named fields",
@@ -45,13 +48,16 @@ pub fn impl_builder(input: DeriveInput) -> TokenStream {
     let is_option: Vec<_> = field_types
         .iter()
         .map(|ty| {
-            if let syn::Type::Path(type_path) = ty {
+            if let syn::Type::Path(type_path) = ty
+            {
                 type_path
                     .path
                     .segments
                     .last()
                     .map_or(false, |seg| seg.ident == "Option")
-            } else {
+            }
+            else
+            {
                 false
             }
         })
@@ -63,9 +69,12 @@ pub fn impl_builder(input: DeriveInput) -> TokenStream {
         .zip(field_types.iter())
         .zip(is_option.iter())
         .map(|((name, ty), is_opt)| {
-            if *is_opt {
+            if *is_opt
+            {
                 quote! { #name: #ty }
-            } else {
+            }
+            else
+            {
                 quote! { #name: Option<#ty> }
             }
         })
@@ -97,7 +106,8 @@ pub fn impl_builder(input: DeriveInput) -> TokenStream {
         .zip(field_types.iter())
         .zip(is_option.iter())
         .map(|((name, ty), is_opt)| {
-            if *is_opt {
+            if *is_opt
+            {
                 quote! {
                     #[inline]
                     pub fn #name(mut self, #name: #ty) -> Self {
@@ -105,7 +115,9 @@ pub fn impl_builder(input: DeriveInput) -> TokenStream {
                         self
                     }
                 }
-            } else {
+            }
+            else
+            {
                 quote! {
                     #[inline]
                     pub fn #name(mut self, #name: #ty) -> Self {
@@ -121,9 +133,12 @@ pub fn impl_builder(input: DeriveInput) -> TokenStream {
         .iter()
         .zip(is_option.iter())
         .map(|(name, is_opt)| {
-            if *is_opt {
+            if *is_opt
+            {
                 quote! { #name: self.#name }
-            } else {
+            }
+            else
+            {
                 quote! {
                     #name: self.#name
                         .ok_or_else(|| concat!(stringify!(#name), " is required").to_string())?

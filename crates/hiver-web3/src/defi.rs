@@ -43,7 +43,8 @@ use crate::{
 
 /// Encode a 32-byte big-endian uint256 from a u64 value.
 /// 从u64值编码32字节大端uint256。
-fn encode_uint256(value: u64) -> [u8; 32] {
+fn encode_uint256(value: u64) -> [u8; 32]
+{
     let mut buf = [0u8; 32];
     buf[24..32].copy_from_slice(&value.to_be_bytes());
     buf
@@ -51,7 +52,8 @@ fn encode_uint256(value: u64) -> [u8; 32] {
 
 /// Encode an address as a 32-byte ABI word (left-padded with zeros).
 /// 将地址编码为32字节ABI字（左侧补零）。
-fn encode_address(addr: &Address) -> [u8; 32] {
+fn encode_address(addr: &Address) -> [u8; 32]
+{
     let mut buf = [0u8; 32];
     buf[12..32].copy_from_slice(&addr.0);
     buf
@@ -59,7 +61,8 @@ fn encode_address(addr: &Address) -> [u8; 32] {
 
 /// Decode a uint256 from a 32-byte ABI word into u64 (truncates upper bytes).
 /// 从32字节ABI字解码uint256为u64（截断高位字节）。
-fn decode_uint64(bytes: &[u8]) -> u64 {
+fn decode_uint64(bytes: &[u8]) -> u64
+{
     let mut arr = [0u8; 8];
     arr.copy_from_slice(&bytes[24..32]);
     u64::from_be_bytes(arr)
@@ -67,10 +70,12 @@ fn decode_uint64(bytes: &[u8]) -> u64 {
 
 /// Build call data from a selector and a slice of 32-byte ABI-encoded params.
 /// 从选择器和32字节ABI编码参数切片构建调用数据。
-fn build_call_data(selector: &FunctionSelector, params: &[[u8; 32]]) -> Vec<u8> {
+fn build_call_data(selector: &FunctionSelector, params: &[[u8; 32]]) -> Vec<u8>
+{
     let mut data = Vec::with_capacity(4 + params.len() * 32);
     data.extend_from_slice(&selector.0);
-    for p in params {
+    for p in params
+    {
         data.extend_from_slice(p);
     }
     data
@@ -88,22 +93,26 @@ fn build_call_data(selector: &FunctionSelector, params: &[[u8; 32]]) -> Vec<u8> 
 ///
 /// 提供标准ERC-20代币操作的函数选择器和ABI编码调用构建器。
 #[derive(Debug, Clone)]
-pub struct Erc20 {
+pub struct Erc20
+{
     /// Token contract address.
     /// 代币合约地址。
     address: Address,
 }
 
-impl Erc20 {
+impl Erc20
+{
     /// Create a new ERC-20 wrapper for the given contract address.
     /// 为给定的合约地址创建新的ERC-20包装器。
-    pub fn new(address: Address) -> Self {
+    pub fn new(address: Address) -> Self
+    {
         Self { address }
     }
 
     /// Get the token contract address.
     /// 获取代币合约地址。
-    pub fn address(&self) -> Address {
+    pub fn address(&self) -> Address
+    {
         self.address
     }
 
@@ -111,49 +120,57 @@ impl Erc20 {
 
     /// Selector for `balanceOf(address)`.
     /// `balanceOf(address)` 的选择器。
-    pub fn balance_of_selector() -> FunctionSelector {
+    pub fn balance_of_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("balanceOf(address)")
     }
 
     /// Selector for `transfer(address,uint256)`.
     /// `transfer(address,uint256)` 的选择器。
-    pub fn transfer_selector() -> FunctionSelector {
+    pub fn transfer_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("transfer(address,uint256)")
     }
 
     /// Selector for `approve(address,uint256)`.
     /// `approve(address,uint256)` 的选择器。
-    pub fn approve_selector() -> FunctionSelector {
+    pub fn approve_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("approve(address,uint256)")
     }
 
     /// Selector for `allowance(address,address)`.
     /// `allowance(address,address)` 的选择器。
-    pub fn allowance_selector() -> FunctionSelector {
+    pub fn allowance_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("allowance(address,address)")
     }
 
     /// Selector for `totalSupply()`.
     /// `totalSupply()` 的选择器。
-    pub fn total_supply_selector() -> FunctionSelector {
+    pub fn total_supply_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("totalSupply()")
     }
 
     /// Selector for `decimals()`.
     /// `decimals()` 的选择器。
-    pub fn decimals_selector() -> FunctionSelector {
+    pub fn decimals_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("decimals()")
     }
 
     /// Selector for `name()`.
     /// `name()` 的选择器。
-    pub fn name_selector() -> FunctionSelector {
+    pub fn name_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("name()")
     }
 
     /// Selector for `symbol()`.
     /// `symbol()` 的选择器。
-    pub fn symbol_selector() -> FunctionSelector {
+    pub fn symbol_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("symbol()")
     }
 
@@ -161,55 +178,63 @@ impl Erc20 {
 
     /// Build `balanceOf(address)` call data.
     /// 构建 `balanceOf(address)` 调用数据。
-    pub fn balance_of_call(owner: &Address) -> Vec<u8> {
+    pub fn balance_of_call(owner: &Address) -> Vec<u8>
+    {
         build_call_data(&Self::balance_of_selector(), &[encode_address(owner)])
     }
 
     /// Build `transfer(address,uint256)` call data.
     /// 构建 `transfer(address,uint256)` 调用数据。
-    pub fn transfer_call(to: &Address, amount: u64) -> Vec<u8> {
+    pub fn transfer_call(to: &Address, amount: u64) -> Vec<u8>
+    {
         build_call_data(&Self::transfer_selector(), &[encode_address(to), encode_uint256(amount)])
     }
 
     /// Build `approve(address,uint256)` call data.
     /// 构建 `approve(address,uint256)` 调用数据。
-    pub fn approve_call(spender: &Address, amount: u64) -> Vec<u8> {
-        build_call_data(
-            &Self::approve_selector(),
-            &[encode_address(spender), encode_uint256(amount)],
-        )
+    pub fn approve_call(spender: &Address, amount: u64) -> Vec<u8>
+    {
+        build_call_data(&Self::approve_selector(), &[
+            encode_address(spender),
+            encode_uint256(amount),
+        ])
     }
 
     /// Build `allowance(address,address)` call data.
     /// 构建 `allowance(address,address)` 调用数据。
-    pub fn allowance_call(owner: &Address, spender: &Address) -> Vec<u8> {
-        build_call_data(
-            &Self::allowance_selector(),
-            &[encode_address(owner), encode_address(spender)],
-        )
+    pub fn allowance_call(owner: &Address, spender: &Address) -> Vec<u8>
+    {
+        build_call_data(&Self::allowance_selector(), &[
+            encode_address(owner),
+            encode_address(spender),
+        ])
     }
 
     /// Build `totalSupply()` call data.
     /// 构建 `totalSupply()` 调用数据。
-    pub fn total_supply_call() -> Vec<u8> {
+    pub fn total_supply_call() -> Vec<u8>
+    {
         build_call_data(&Self::total_supply_selector(), &[])
     }
 
     /// Build `decimals()` call data.
     /// 构建 `decimals()` 调用数据。
-    pub fn decimals_call() -> Vec<u8> {
+    pub fn decimals_call() -> Vec<u8>
+    {
         build_call_data(&Self::decimals_selector(), &[])
     }
 
     /// Build `name()` call data.
     /// 构建 `name()` 调用数据。
-    pub fn name_call() -> Vec<u8> {
+    pub fn name_call() -> Vec<u8>
+    {
         build_call_data(&Self::name_selector(), &[])
     }
 
     /// Build `symbol()` call data.
     /// 构建 `symbol()` 调用数据。
-    pub fn symbol_call() -> Vec<u8> {
+    pub fn symbol_call() -> Vec<u8>
+    {
         build_call_data(&Self::symbol_selector(), &[])
     }
 
@@ -217,8 +242,10 @@ impl Erc20 {
 
     /// Decode a `balanceOf` response (uint256) into tokens with the given decimals.
     /// 将 `balanceOf` 响应（uint256）解码为具有给定精度的代币数量。
-    pub fn decode_balance(raw: &[u8], decimals: u8) -> f64 {
-        if raw.len() < 32 {
+    pub fn decode_balance(raw: &[u8], decimals: u8) -> f64
+    {
+        if raw.len() < 32
+        {
             return 0.0;
         }
         let val = decode_uint64(raw);
@@ -227,8 +254,10 @@ impl Erc20 {
 
     /// Decode a `decimals` response (uint8) from the raw return data.
     /// 从原始返回数据解码 `decimals` 响应（uint8）。
-    pub fn decode_decimals(raw: &[u8]) -> u8 {
-        if raw.len() < 32 {
+    pub fn decode_decimals(raw: &[u8]) -> u8
+    {
+        if raw.len() < 32
+        {
             return 18;
         }
         raw[31]
@@ -236,8 +265,10 @@ impl Erc20 {
 
     /// Decode a `totalSupply` response (uint256) into a u64.
     /// 将 `totalSupply` 响应（uint256）解码为u64。
-    pub fn decode_total_supply(raw: &[u8]) -> u64 {
-        if raw.len() < 32 {
+    pub fn decode_total_supply(raw: &[u8]) -> u64
+    {
+        if raw.len() < 32
+        {
             return 0;
         }
         decode_uint64(raw)
@@ -245,8 +276,10 @@ impl Erc20 {
 
     /// Decode a boolean response (`transfer`, `approve`) from raw return data.
     /// 从原始返回数据解码布尔响应（`transfer`、`approve`）。
-    pub fn decode_bool(raw: &[u8]) -> bool {
-        if raw.len() < 32 {
+    pub fn decode_bool(raw: &[u8]) -> bool
+    {
+        if raw.len() < 32
+        {
             return false;
         }
         raw[31] != 0
@@ -257,17 +290,21 @@ impl Erc20 {
     ///
     /// Handles the standard ABI encoding for dynamic `string` / `bytes`.
     /// 处理动态 `string` / `bytes` 的标准ABI编码。
-    pub fn decode_string(raw: &[u8]) -> Result<String, DeFiError> {
-        if raw.len() < 64 {
+    pub fn decode_string(raw: &[u8]) -> Result<String, DeFiError>
+    {
+        if raw.len() < 64
+        {
             return Err(DeFiError::DecodingError("Insufficient data for string".into()));
         }
         // offset of the dynamic data
         let offset = decode_uint64(&raw[0..32]) as usize;
-        if raw.len() < offset + 32 {
+        if raw.len() < offset + 32
+        {
             return Err(DeFiError::DecodingError("Invalid string offset".into()));
         }
         let len = decode_uint64(&raw[offset..offset + 32]) as usize;
-        if raw.len() < offset + 32 + len {
+        if raw.len() < offset + 32 + len
+        {
             return Err(DeFiError::DecodingError("String data truncated".into()));
         }
         String::from_utf8(raw[offset + 32..offset + 32 + len].to_vec())
@@ -287,22 +324,26 @@ impl Erc20 {
 ///
 /// 提供标准ERC-721 NFT操作的函数选择器和ABI编码调用构建器。
 #[derive(Debug, Clone)]
-pub struct Erc721 {
+pub struct Erc721
+{
     /// NFT contract address.
     /// NFT合约地址。
     address: Address,
 }
 
-impl Erc721 {
+impl Erc721
+{
     /// Create a new ERC-721 wrapper for the given contract address.
     /// 为给定的合约地址创建新的ERC-721包装器。
-    pub fn new(address: Address) -> Self {
+    pub fn new(address: Address) -> Self
+    {
         Self { address }
     }
 
     /// Get the NFT contract address.
     /// 获取NFT合约地址。
-    pub fn address(&self) -> Address {
+    pub fn address(&self) -> Address
+    {
         self.address
     }
 
@@ -310,37 +351,43 @@ impl Erc721 {
 
     /// Selector for `balanceOf(address)`.
     /// `balanceOf(address)` 的选择器。
-    pub fn balance_of_selector() -> FunctionSelector {
+    pub fn balance_of_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("balanceOf(address)")
     }
 
     /// Selector for `ownerOf(uint256)`.
     /// `ownerOf(uint256)` 的选择器。
-    pub fn owner_of_selector() -> FunctionSelector {
+    pub fn owner_of_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("ownerOf(uint256)")
     }
 
     /// Selector for `transferFrom(address,address,uint256)`.
     /// `transferFrom(address,address,uint256)` 的选择器。
-    pub fn transfer_from_selector() -> FunctionSelector {
+    pub fn transfer_from_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("transferFrom(address,address,uint256)")
     }
 
     /// Selector for `approve(address,uint256)`.
     /// `approve(address,uint256)` 的选择器。
-    pub fn approve_selector() -> FunctionSelector {
+    pub fn approve_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("approve(address,uint256)")
     }
 
     /// Selector for `tokenURI(uint256)`.
     /// `tokenURI(uint256)` 的选择器。
-    pub fn token_uri_selector() -> FunctionSelector {
+    pub fn token_uri_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("tokenURI(uint256)")
     }
 
     /// Selector for `mint(address,uint256)`.
     /// `mint(address,uint256)` 的选择器。
-    pub fn mint_selector() -> FunctionSelector {
+    pub fn mint_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("mint(address,uint256)")
     }
 
@@ -348,44 +395,47 @@ impl Erc721 {
 
     /// Build `balanceOf(address)` call data.
     /// 构建 `balanceOf(address)` 调用数据。
-    pub fn balance_of_call(owner: &Address) -> Vec<u8> {
+    pub fn balance_of_call(owner: &Address) -> Vec<u8>
+    {
         build_call_data(&Self::balance_of_selector(), &[encode_address(owner)])
     }
 
     /// Build `ownerOf(uint256)` call data.
     /// 构建 `ownerOf(uint256)` 调用数据。
-    pub fn owner_of_call(token_id: u64) -> Vec<u8> {
+    pub fn owner_of_call(token_id: u64) -> Vec<u8>
+    {
         build_call_data(&Self::owner_of_selector(), &[encode_uint256(token_id)])
     }
 
     /// Build `transferFrom(address,address,uint256)` call data.
     /// 构建 `transferFrom(address,address,uint256)` 调用数据。
-    pub fn transfer_from_call(from: &Address, to: &Address, token_id: u64) -> Vec<u8> {
-        build_call_data(
-            &Self::transfer_from_selector(),
-            &[
-                encode_address(from),
-                encode_address(to),
-                encode_uint256(token_id),
-            ],
-        )
+    pub fn transfer_from_call(from: &Address, to: &Address, token_id: u64) -> Vec<u8>
+    {
+        build_call_data(&Self::transfer_from_selector(), &[
+            encode_address(from),
+            encode_address(to),
+            encode_uint256(token_id),
+        ])
     }
 
     /// Build `approve(address,uint256)` call data.
     /// 构建 `approve(address,uint256)` 调用数据。
-    pub fn approve_call(to: &Address, token_id: u64) -> Vec<u8> {
+    pub fn approve_call(to: &Address, token_id: u64) -> Vec<u8>
+    {
         build_call_data(&Self::approve_selector(), &[encode_address(to), encode_uint256(token_id)])
     }
 
     /// Build `tokenURI(uint256)` call data.
     /// 构建 `tokenURI(uint256)` 调用数据。
-    pub fn token_uri_call(token_id: u64) -> Vec<u8> {
+    pub fn token_uri_call(token_id: u64) -> Vec<u8>
+    {
         build_call_data(&Self::token_uri_selector(), &[encode_uint256(token_id)])
     }
 
     /// Build `mint(address,uint256)` call data.
     /// 构建 `mint(address,uint256)` 调用数据。
-    pub fn mint_call(to: &Address, token_id: u64) -> Vec<u8> {
+    pub fn mint_call(to: &Address, token_id: u64) -> Vec<u8>
+    {
         build_call_data(&Self::mint_selector(), &[encode_address(to), encode_uint256(token_id)])
     }
 
@@ -393,8 +443,10 @@ impl Erc721 {
 
     /// Decode `ownerOf` response into an Address.
     /// 将 `ownerOf` 响应解码为地址。
-    pub fn decode_owner(raw: &[u8]) -> Result<Address, DeFiError> {
-        if raw.len() < 32 {
+    pub fn decode_owner(raw: &[u8]) -> Result<Address, DeFiError>
+    {
+        if raw.len() < 32
+        {
             return Err(DeFiError::DecodingError("Insufficient data for address".into()));
         }
         let mut addr = [0u8; 20];
@@ -404,8 +456,10 @@ impl Erc721 {
 
     /// Decode `balanceOf` response (uint256) into u64.
     /// 将 `balanceOf` 响应（uint256）解码为u64。
-    pub fn decode_balance(raw: &[u8]) -> u64 {
-        if raw.len() < 32 {
+    pub fn decode_balance(raw: &[u8]) -> u64
+    {
+        if raw.len() < 32
+        {
             return 0;
         }
         decode_uint64(raw)
@@ -413,7 +467,8 @@ impl Erc721 {
 
     /// Decode `tokenURI` response (string).
     /// 解码 `tokenURI` 响应（字符串）。
-    pub fn decode_token_uri(raw: &[u8]) -> Result<String, DeFiError> {
+    pub fn decode_token_uri(raw: &[u8]) -> Result<String, DeFiError>
+    {
         Erc20::decode_string(raw)
     }
 }
@@ -430,22 +485,26 @@ impl Erc721 {
 ///
 /// 提供标准ERC-1155多代币操作的函数选择器和ABI编码调用构建器。
 #[derive(Debug, Clone)]
-pub struct Erc1155 {
+pub struct Erc1155
+{
     /// Multi-token contract address.
     /// 多代币合约地址。
     address: Address,
 }
 
-impl Erc1155 {
+impl Erc1155
+{
     /// Create a new ERC-1155 wrapper for the given contract address.
     /// 为给定的合约地址创建新的ERC-1155包装器。
-    pub fn new(address: Address) -> Self {
+    pub fn new(address: Address) -> Self
+    {
         Self { address }
     }
 
     /// Get the multi-token contract address.
     /// 获取多代币合约地址。
-    pub fn address(&self) -> Address {
+    pub fn address(&self) -> Address
+    {
         self.address
     }
 
@@ -453,19 +512,22 @@ impl Erc1155 {
 
     /// Selector for `balanceOf(address,uint256)`.
     /// `balanceOf(address,uint256)` 的选择器。
-    pub fn balance_of_selector() -> FunctionSelector {
+    pub fn balance_of_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("balanceOf(address,uint256)")
     }
 
     /// Selector for `balanceOfBatch(address[],uint256[])`.
     /// `balanceOfBatch(address[],uint256[])` 的选择器。
-    pub fn balance_of_batch_selector() -> FunctionSelector {
+    pub fn balance_of_batch_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("balanceOfBatch(address[],uint256[])")
     }
 
     /// Selector for `safeTransferFrom(address,address,uint256,uint256,bytes)`.
     /// `safeTransferFrom(address,address,uint256,uint256,bytes)` 的选择器。
-    pub fn safe_transfer_from_selector() -> FunctionSelector {
+    pub fn safe_transfer_from_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("safeTransferFrom(address,address,uint256,uint256,bytes)")
     }
 
@@ -473,16 +535,18 @@ impl Erc1155 {
 
     /// Build `balanceOf(address,uint256)` call data.
     /// 构建 `balanceOf(address,uint256)` 调用数据。
-    pub fn balance_of_call(account: &Address, token_id: u64) -> Vec<u8> {
-        build_call_data(
-            &Self::balance_of_selector(),
-            &[encode_address(account), encode_uint256(token_id)],
-        )
+    pub fn balance_of_call(account: &Address, token_id: u64) -> Vec<u8>
+    {
+        build_call_data(&Self::balance_of_selector(), &[
+            encode_address(account),
+            encode_uint256(token_id),
+        ])
     }
 
     /// Build `balanceOfBatch(address[],uint256[])` call data.
     /// 构建 `balanceOfBatch(address[],uint256[])` 调用数据。
-    pub fn balance_of_batch_call(accounts: &[Address], token_ids: &[u64]) -> Vec<u8> {
+    pub fn balance_of_batch_call(accounts: &[Address], token_ids: &[u64]) -> Vec<u8>
+    {
         assert_eq!(
             accounts.len(),
             token_ids.len(),
@@ -499,17 +563,20 @@ impl Erc1155 {
         params.push(offset_accounts);
         params.push(offset_ids_enc);
         params.push(encode_uint256(n));
-        for acc in accounts {
+        for acc in accounts
+        {
             params.push(encode_address(acc));
         }
         params.push(encode_uint256(n));
-        for id in token_ids {
+        for id in token_ids
+        {
             params.push(encode_uint256(*id));
         }
 
         let mut data = Vec::with_capacity(4 + params.len() * 32);
         data.extend_from_slice(&Self::balance_of_batch_selector().0);
-        for p in &params {
+        for p in &params
+        {
             data.extend_from_slice(p);
         }
         data
@@ -525,7 +592,8 @@ impl Erc1155 {
         to: &Address,
         token_id: u64,
         amount: u64,
-    ) -> Vec<u8> {
+    ) -> Vec<u8>
+    {
         // Head: [from, to, id, amount, dataOffset]  = 5 words
         // dataOffset = 5 * 32 = 160 = 0xa0
         // dataLength = 0
@@ -544,8 +612,10 @@ impl Erc1155 {
 
     /// Decode `balanceOf` response (uint256) into u64.
     /// 将 `balanceOf` 响应（uint256）解码为u64。
-    pub fn decode_balance(raw: &[u8]) -> u64 {
-        if raw.len() < 32 {
+    pub fn decode_balance(raw: &[u8]) -> u64
+    {
+        if raw.len() < 32
+        {
             return 0;
         }
         decode_uint64(raw)
@@ -553,19 +623,24 @@ impl Erc1155 {
 
     /// Decode `balanceOfBatch` response (uint256[]) into a Vec of u64.
     /// 将 `balanceOfBatch` 响应（uint256[]）解码为u64向量。
-    pub fn decode_balance_batch(raw: &[u8]) -> Result<Vec<u64>, DeFiError> {
-        if raw.len() < 64 {
+    pub fn decode_balance_batch(raw: &[u8]) -> Result<Vec<u64>, DeFiError>
+    {
+        if raw.len() < 64
+        {
             return Err(DeFiError::DecodingError("Insufficient data for batch".into()));
         }
         let offset = decode_uint64(&raw[0..32]) as usize;
-        if raw.len() < offset + 32 {
+        if raw.len() < offset + 32
+        {
             return Err(DeFiError::DecodingError("Invalid batch offset".into()));
         }
         let count = decode_uint64(&raw[offset..offset + 32]) as usize;
         let mut result = Vec::with_capacity(count);
-        for i in 0..count {
+        for i in 0..count
+        {
             let start = offset + 32 + i * 32;
-            if raw.len() < start + 32 {
+            if raw.len() < start + 32
+            {
                 return Err(DeFiError::DecodingError("Batch data truncated".into()));
             }
             result.push(decode_uint64(&raw[start..start + 32]));
@@ -588,22 +663,26 @@ impl Erc1155 {
 /// 提供常见Uniswap V2 DEX操作的函数选择器和ABI编码调用构建器：
 /// 代币兑换、流动性添加/移除和输出数量查询。
 #[derive(Debug, Clone)]
-pub struct UniswapV2Router {
+pub struct UniswapV2Router
+{
     /// Router contract address.
     /// 路由器合约地址。
     address: Address,
 }
 
-impl UniswapV2Router {
+impl UniswapV2Router
+{
     /// Create a new Uniswap V2 Router wrapper for the given contract address.
     /// 为给定的合约地址创建新的Uniswap V2路由器包装器。
-    pub fn new(address: Address) -> Self {
+    pub fn new(address: Address) -> Self
+    {
         Self { address }
     }
 
     /// Get the router contract address.
     /// 获取路由器合约地址。
-    pub fn address(&self) -> Address {
+    pub fn address(&self) -> Address
+    {
         self.address
     }
 
@@ -611,13 +690,15 @@ impl UniswapV2Router {
 
     /// Selector for `getAmountsOut(uint256,address[])`.
     /// `getAmountsOut(uint256,address[])` 的选择器。
-    pub fn get_amounts_out_selector() -> FunctionSelector {
+    pub fn get_amounts_out_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("getAmountsOut(uint256,address[])")
     }
 
     /// Selector for `swapExactTokensForTokens(uint256,uint256,address[],address,uint256)`.
     /// `swapExactTokensForTokens(...)` 的选择器。
-    pub fn swap_exact_tokens_for_tokens_selector() -> FunctionSelector {
+    pub fn swap_exact_tokens_for_tokens_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature(
             "swapExactTokensForTokens(uint256,uint256,address[],address,uint256)",
         )
@@ -625,13 +706,15 @@ impl UniswapV2Router {
 
     /// Selector for `swapExactETHForTokens(uint256,address[],address,uint256)`.
     /// `swapExactETHForTokens(...)` 的选择器。
-    pub fn swap_exact_eth_for_tokens_selector() -> FunctionSelector {
+    pub fn swap_exact_eth_for_tokens_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature("swapExactETHForTokens(uint256,address[],address,uint256)")
     }
 
     /// Selector for `swapExactTokensForETH(uint256,uint256,address[],address,uint256)`.
     /// `swapExactTokensForETH(...)` 的选择器。
-    pub fn swap_exact_tokens_for_eth_selector() -> FunctionSelector {
+    pub fn swap_exact_tokens_for_eth_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature(
             "swapExactTokensForETH(uint256,uint256,address[],address,uint256)",
         )
@@ -640,7 +723,8 @@ impl UniswapV2Router {
     /// Selector for
     /// `addLiquidity(address,address,uint256,uint256,uint256,uint256,address,uint256)`.
     /// `addLiquidity(...)` 的选择器。
-    pub fn add_liquidity_selector() -> FunctionSelector {
+    pub fn add_liquidity_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature(
             "addLiquidity(address,address,uint256,uint256,uint256,uint256,address,uint256)",
         )
@@ -648,7 +732,8 @@ impl UniswapV2Router {
 
     /// Selector for `removeLiquidity(address,address,uint256,uint256,uint256,address,uint256)`.
     /// `removeLiquidity(...)` 的选择器。
-    pub fn remove_liquidity_selector() -> FunctionSelector {
+    pub fn remove_liquidity_selector() -> FunctionSelector
+    {
         FunctionSelector::from_signature(
             "removeLiquidity(address,address,uint256,uint256,uint256,address,uint256)",
         )
@@ -658,20 +743,23 @@ impl UniswapV2Router {
 
     /// Build `getAmountsOut(uint256,address[])` call data.
     /// 构建 `getAmountsOut(uint256,address[])` 调用数据。
-    pub fn get_amounts_out_call(amount_in: u64, path: &[Address]) -> Vec<u8> {
+    pub fn get_amounts_out_call(amount_in: u64, path: &[Address]) -> Vec<u8>
+    {
         // Head: [amountIn, pathOffset]  = 2 words
         // pathOffset = 0x40
         // Dynamic array: [length, addr0, addr1, ...]
         let path_offset = encode_uint256(0x40);
         let len_enc = encode_uint256(path.len() as u64);
         let mut params = vec![encode_uint256(amount_in), path_offset, len_enc];
-        for addr in path {
+        for addr in path
+        {
             params.push(encode_address(addr));
         }
 
         let mut data = Vec::with_capacity(4 + params.len() * 32);
         data.extend_from_slice(&Self::get_amounts_out_selector().0);
-        for p in &params {
+        for p in &params
+        {
             data.extend_from_slice(p);
         }
         data
@@ -685,7 +773,8 @@ impl UniswapV2Router {
         path: &[Address],
         to: &Address,
         deadline: u64,
-    ) -> Vec<u8> {
+    ) -> Vec<u8>
+    {
         Self::build_swap_call(
             &Self::swap_exact_tokens_for_tokens_selector(),
             amount_in,
@@ -703,7 +792,8 @@ impl UniswapV2Router {
         path: &[Address],
         to: &Address,
         deadline: u64,
-    ) -> Vec<u8> {
+    ) -> Vec<u8>
+    {
         // Head: [amountOutMin, pathOffset, to, deadline]
         // pathOffset = 0x80 (4 words head)
         let path_offset = encode_uint256(0x80);
@@ -715,13 +805,15 @@ impl UniswapV2Router {
             encode_uint256(deadline),
             len_enc,
         ];
-        for addr in path {
+        for addr in path
+        {
             params.push(encode_address(addr));
         }
 
         let mut data = Vec::with_capacity(4 + params.len() * 32);
         data.extend_from_slice(&Self::swap_exact_eth_for_tokens_selector().0);
-        for p in &params {
+        for p in &params
+        {
             data.extend_from_slice(p);
         }
         data
@@ -735,7 +827,8 @@ impl UniswapV2Router {
         path: &[Address],
         to: &Address,
         deadline: u64,
-    ) -> Vec<u8> {
+    ) -> Vec<u8>
+    {
         Self::build_swap_call(
             &Self::swap_exact_tokens_for_eth_selector(),
             amount_in,
@@ -757,7 +850,8 @@ impl UniswapV2Router {
         amount_b_min: u64,
         to: &Address,
         deadline: u64,
-    ) -> Vec<u8> {
+    ) -> Vec<u8>
+    {
         let params: [[u8; 32]; 8] = [
             encode_address(token_a),
             encode_address(token_b),
@@ -781,7 +875,8 @@ impl UniswapV2Router {
         amount_b_min: u64,
         to: &Address,
         deadline: u64,
-    ) -> Vec<u8> {
+    ) -> Vec<u8>
+    {
         let params: [[u8; 32]; 7] = [
             encode_address(token_a),
             encode_address(token_b),
@@ -798,7 +893,8 @@ impl UniswapV2Router {
 
     /// Decode `getAmountsOut` response (uint256[]) into a Vec of u64.
     /// 将 `getAmountsOut` 响应（uint256[]）解码为u64向量。
-    pub fn decode_amounts(raw: &[u8]) -> Result<Vec<u64>, DeFiError> {
+    pub fn decode_amounts(raw: &[u8]) -> Result<Vec<u64>, DeFiError>
+    {
         Erc1155::decode_balance_batch(raw)
     }
 
@@ -814,7 +910,8 @@ impl UniswapV2Router {
         path: &[Address],
         to: &Address,
         deadline: u64,
-    ) -> Vec<u8> {
+    ) -> Vec<u8>
+    {
         // Head: [amountIn, amountOutMin, pathOffset, to, deadline] = 5 words
         // pathOffset = 5 * 32 = 0xa0
         let path_offset = encode_uint256(0xa0);
@@ -827,13 +924,15 @@ impl UniswapV2Router {
             encode_uint256(deadline),
             len_enc,
         ];
-        for addr in path {
+        for addr in path
+        {
             params.push(encode_address(addr));
         }
 
         let mut data = Vec::with_capacity(4 + params.len() * 32);
         data.extend_from_slice(&selector.0);
-        for p in &params {
+        for p in &params
+        {
             data.extend_from_slice(p);
         }
         data
@@ -847,7 +946,8 @@ impl UniswapV2Router {
 /// DeFi error type.
 /// DeFi错误类型。
 #[derive(Debug, Clone)]
-pub enum DeFiError {
+pub enum DeFiError
+{
     /// ABI encoding error.
     /// ABI编码错误。
     AbiError(String),
@@ -865,9 +965,12 @@ pub enum DeFiError {
     RpcError(String),
 }
 
-impl fmt::Display for DeFiError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for DeFiError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::AbiError(msg) => write!(f, "ABI encoding error: {}", msg),
             Self::DecodingError(msg) => write!(f, "ABI decoding error: {}", msg),
             Self::CallError(msg) => write!(f, "Contract call error: {}", msg),
@@ -878,9 +981,12 @@ impl fmt::Display for DeFiError {
 
 impl std::error::Error for DeFiError {}
 
-impl From<ContractError> for DeFiError {
-    fn from(err: ContractError) -> Self {
-        match err {
+impl From<ContractError> for DeFiError
+{
+    fn from(err: ContractError) -> Self
+    {
+        match err
+        {
             ContractError::AbiError(msg) => DeFiError::AbiError(msg),
             ContractError::DecodingError(msg) => DeFiError::DecodingError(msg),
             ContractError::CallError(msg) => DeFiError::CallError(msg),
@@ -901,11 +1007,13 @@ impl From<ContractError> for DeFiError {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_erc20_selectors() {
+    fn test_erc20_selectors()
+    {
         // Known Uniswap V2 selector for balanceOf(address)
         let sel = Erc20::balance_of_selector();
         assert_eq!(sel.0, [0x70, 0xa0, 0x82, 0x31]);
@@ -921,7 +1029,8 @@ mod tests {
     }
 
     #[test]
-    fn test_erc20_call_data_balance_of() {
+    fn test_erc20_call_data_balance_of()
+    {
         let owner = Address::from_hex("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045").unwrap();
         let data = Erc20::balance_of_call(&owner);
         assert_eq!(&data[0..4], &[0x70, 0xa0, 0x82, 0x31]);
@@ -931,7 +1040,8 @@ mod tests {
     }
 
     #[test]
-    fn test_erc20_call_data_transfer() {
+    fn test_erc20_call_data_transfer()
+    {
         let to = Address::from_hex("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045").unwrap();
         let data = Erc20::transfer_call(&to, 1000);
         assert_eq!(&data[0..4], &[0xa9, 0x05, 0x9c, 0xbb]);
@@ -941,7 +1051,8 @@ mod tests {
     }
 
     #[test]
-    fn test_erc20_decode_balance() {
+    fn test_erc20_decode_balance()
+    {
         let mut raw = [0u8; 32];
         raw[31] = 42;
         let bal = Erc20::decode_balance(&raw, 18);
@@ -949,14 +1060,16 @@ mod tests {
     }
 
     #[test]
-    fn test_erc20_decode_decimals() {
+    fn test_erc20_decode_decimals()
+    {
         let mut raw = [0u8; 32];
         raw[31] = 6;
         assert_eq!(Erc20::decode_decimals(&raw), 6);
     }
 
     #[test]
-    fn test_erc20_decode_bool() {
+    fn test_erc20_decode_bool()
+    {
         let mut raw = [0u8; 32];
         raw[31] = 1;
         assert!(Erc20::decode_bool(&raw));
@@ -966,7 +1079,8 @@ mod tests {
     }
 
     #[test]
-    fn test_erc20_decode_string() {
+    fn test_erc20_decode_string()
+    {
         // Manually ABI-encode "ETH" (offset=32, length=3, data="ETH" + pad)
         let mut raw = Vec::new();
         raw.extend_from_slice(&encode_uint256(32)); // offset
@@ -978,7 +1092,8 @@ mod tests {
     }
 
     #[test]
-    fn test_erc721_selectors() {
+    fn test_erc721_selectors()
+    {
         let sel = Erc721::owner_of_selector();
         assert_eq!(sel.0, [0x63, 0x52, 0x21, 0x1e]);
 
@@ -987,7 +1102,8 @@ mod tests {
     }
 
     #[test]
-    fn test_erc721_decode_owner() {
+    fn test_erc721_decode_owner()
+    {
         let addr = Address::from_hex("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045").unwrap();
         let mut raw = [0u8; 32];
         raw[12..32].copy_from_slice(&addr.0);
@@ -996,7 +1112,8 @@ mod tests {
     }
 
     #[test]
-    fn test_erc1155_balance_of_call() {
+    fn test_erc1155_balance_of_call()
+    {
         let account = Address::from_hex("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045").unwrap();
         let data = Erc1155::balance_of_call(&account, 42);
         // selector + address + token_id
@@ -1004,7 +1121,8 @@ mod tests {
     }
 
     #[test]
-    fn test_erc1155_safe_transfer_from_call() {
+    fn test_erc1155_safe_transfer_from_call()
+    {
         let from = Address::from_hex("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045").unwrap();
         let to = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let data = Erc1155::safe_transfer_from_call(&from, &to, 1, 100);
@@ -1013,7 +1131,8 @@ mod tests {
     }
 
     #[test]
-    fn test_erc1155_decode_balance_batch() {
+    fn test_erc1155_decode_balance_batch()
+    {
         // Encode: offset=32, count=2, [10, 20]
         let mut raw = Vec::new();
         raw.extend_from_slice(&encode_uint256(32));
@@ -1025,7 +1144,8 @@ mod tests {
     }
 
     #[test]
-    fn test_uniswap_v2_router_selectors() {
+    fn test_uniswap_v2_router_selectors()
+    {
         let sel = UniswapV2Router::get_amounts_out_selector();
         assert_eq!(sel.0.len(), 4);
 
@@ -1040,7 +1160,8 @@ mod tests {
     }
 
     #[test]
-    fn test_uniswap_v2_get_amounts_out_call() {
+    fn test_uniswap_v2_get_amounts_out_call()
+    {
         let token_a = Address::from_hex("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045").unwrap();
         let token_b = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let data = UniswapV2Router::get_amounts_out_call(1000, &[token_a, token_b]);
@@ -1049,7 +1170,8 @@ mod tests {
     }
 
     #[test]
-    fn test_uniswap_v2_add_liquidity_call() {
+    fn test_uniswap_v2_add_liquidity_call()
+    {
         let token_a = Address::from_hex("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045").unwrap();
         let token_b = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let to = Address::from_hex("0x0000000000000000000000000000000000000002").unwrap();
@@ -1061,7 +1183,8 @@ mod tests {
     }
 
     #[test]
-    fn test_encode_uint256() {
+    fn test_encode_uint256()
+    {
         let enc = encode_uint256(255);
         let mut expected = [0u8; 32];
         expected[31] = 255;
@@ -1075,7 +1198,8 @@ mod tests {
     }
 
     #[test]
-    fn test_encode_address() {
+    fn test_encode_address()
+    {
         let addr = Address::from_hex("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045").unwrap();
         let enc = encode_address(&addr);
         // First 12 bytes should be zero
@@ -1085,7 +1209,8 @@ mod tests {
     }
 
     #[test]
-    fn test_defi_error_display() {
+    fn test_defi_error_display()
+    {
         let err = DeFiError::AbiError("bad encoding".into());
         assert!(err.to_string().contains("ABI encoding error"));
 
@@ -1094,7 +1219,8 @@ mod tests {
     }
 
     #[test]
-    fn test_defi_error_from_contract_error() {
+    fn test_defi_error_from_contract_error()
+    {
         let contract_err = ContractError::AbiError("test".into());
         let defi_err: DeFiError = contract_err.into();
         assert!(matches!(defi_err, DeFiError::AbiError(_)));

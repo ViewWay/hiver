@@ -11,7 +11,8 @@ use std::collections::HashMap;
 /// Tracks the offset state for a topic-partition.
 /// 跟踪主题分区的偏移状态。
 #[derive(Clone, Debug)]
-struct PartitionOffsetState {
+struct PartitionOffsetState
+{
     /// Last committed offset.
     /// 最后提交的偏移。
     committed: i64,
@@ -28,7 +29,8 @@ struct PartitionOffsetState {
 /// Key for topic-partition lookup.
 /// 主题分区查找的键。
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-struct TopicPartitionKey {
+struct TopicPartitionKey
+{
     topic: String,
     partition: i32,
 }
@@ -51,16 +53,19 @@ struct TopicPartitionKey {
 /// consumer.position(new TopicPartition("topic", 0));
 /// ```
 #[derive(Clone)]
-pub struct OffsetManager {
+pub struct OffsetManager
+{
     /// Per-partition offset state.
     /// 每个分区的偏移状态。
     offsets: HashMap<TopicPartitionKey, PartitionOffsetState>,
 }
 
-impl OffsetManager {
+impl OffsetManager
+{
     /// Create a new offset manager.
     /// 创建新的偏移管理器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             offsets: HashMap::new(),
         }
@@ -73,12 +78,9 @@ impl OffsetManager {
     /// (i.e. last consumed offset + 1).
     ///
     /// `offset` 应该是下一个要消费的消息的偏移（即最后消费的偏移 + 1）。
-    pub fn commit_offset(
-        &mut self,
-        topic: &str,
-        partition: i32,
-        offset: i64,
-    ) -> Result<(), String> {
+    pub fn commit_offset(&mut self, topic: &str, partition: i32, offset: i64)
+    -> Result<(), String>
+    {
         tracing::debug!(
             "Committing offset: topic={}, partition={}, offset={}",
             topic,
@@ -109,7 +111,8 @@ impl OffsetManager {
     ///
     /// 如果该分区没有提交过偏移则返回 `None`。
     /// 否则返回已提交的偏移值。
-    pub fn committed_offset(&self, topic: &str, partition: i32) -> Result<Option<i64>, String> {
+    pub fn committed_offset(&self, topic: &str, partition: i32) -> Result<Option<i64>, String>
+    {
         tracing::debug!("Querying committed offset: topic={}, partition={}", topic, partition);
         let key = TopicPartitionKey {
             topic: topic.to_string(),
@@ -124,7 +127,8 @@ impl OffsetManager {
     /// After this call, the next `poll` will start from offset 0.
     ///
     /// 调用后，下一次 `poll` 将从偏移 0 开始。
-    pub fn seek_to_beginning(&mut self, topic: &str, partition: i32) -> Result<(), String> {
+    pub fn seek_to_beginning(&mut self, topic: &str, partition: i32) -> Result<(), String>
+    {
         tracing::debug!("Seeking to beginning: topic={}, partition={}", topic, partition);
         let key = TopicPartitionKey {
             topic: topic.to_string(),
@@ -148,7 +152,8 @@ impl OffsetManager {
     /// After this call, the next `poll` will only receive newly produced messages.
     ///
     /// 调用后，下一次 `poll` 只会接收新产生的消息。
-    pub fn seek_to_end(&mut self, topic: &str, partition: i32) -> Result<(), String> {
+    pub fn seek_to_end(&mut self, topic: &str, partition: i32) -> Result<(), String>
+    {
         tracing::debug!("Seeking to end: topic={}, partition={}", topic, partition);
         let key = TopicPartitionKey {
             topic: topic.to_string(),
@@ -180,7 +185,8 @@ impl OffsetManager {
         topic: &str,
         partition: i32,
         timestamp: i64,
-    ) -> Result<(), String> {
+    ) -> Result<(), String>
+    {
         tracing::debug!(
             "Seeking to timestamp: topic={}, partition={}, timestamp={}",
             topic,
@@ -215,7 +221,8 @@ impl OffsetManager {
     ///
     /// 位置是下一个要拉取的消息的偏移。
     /// 如果该分区不存在状态则返回 `None`。
-    pub fn position(&self, topic: &str, partition: i32) -> Result<Option<i64>, String> {
+    pub fn position(&self, topic: &str, partition: i32) -> Result<Option<i64>, String>
+    {
         tracing::debug!("Querying position: topic={}, partition={}", topic, partition);
         let key = TopicPartitionKey {
             topic: topic.to_string(),
@@ -226,7 +233,8 @@ impl OffsetManager {
 
     /// Set the end offset for a topic-partition (for testing / initialization).
     /// 设置主题分区的结束偏移（用于测试/初始化）。
-    pub fn set_end_offset(&mut self, topic: &str, partition: i32, end_offset: i64) {
+    pub fn set_end_offset(&mut self, topic: &str, partition: i32, end_offset: i64)
+    {
         let key = TopicPartitionKey {
             topic: topic.to_string(),
             partition,
@@ -251,24 +259,24 @@ impl OffsetManager {
         committed: i64,
         position: i64,
         end_offset: i64,
-    ) {
+    )
+    {
         let key = TopicPartitionKey {
             topic: topic.to_string(),
             partition,
         };
-        self.offsets.insert(
-            key,
-            PartitionOffsetState {
-                committed,
-                position,
-                end_offset,
-            },
-        );
+        self.offsets.insert(key, PartitionOffsetState {
+            committed,
+            position,
+            end_offset,
+        });
     }
 }
 
-impl Default for OffsetManager {
-    fn default() -> Self {
+impl Default for OffsetManager
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -281,13 +289,15 @@ impl Default for OffsetManager {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     /// Test committing and reading back offset.
     /// 测试提交并读回偏移。
     #[test]
-    fn test_commit_and_committed_offset() {
+    fn test_commit_and_committed_offset()
+    {
         let mut mgr = OffsetManager::new();
         mgr.init_partition("topic-a", 0, 10, 15, 100);
 
@@ -299,7 +309,8 @@ mod tests {
     /// Test committed_offset returns None for unknown partition.
     /// 测试未知分区 committed_offset 返回 None。
     #[test]
-    fn test_committed_offset_unknown_partition() {
+    fn test_committed_offset_unknown_partition()
+    {
         let mgr = OffsetManager::new();
         let result = mgr.committed_offset("unknown", 0).unwrap();
         assert!(result.is_none());
@@ -308,7 +319,8 @@ mod tests {
     /// Test seek_to_beginning resets position.
     /// 测试 seek_to_beginning 重置位置。
     #[test]
-    fn test_seek_to_beginning() {
+    fn test_seek_to_beginning()
+    {
         let mut mgr = OffsetManager::new();
         mgr.init_partition("topic-a", 0, 50, 75, 100);
 
@@ -320,7 +332,8 @@ mod tests {
     /// Test seek_to_end sets position to end_offset.
     /// 测试 seek_to_end 设置位置到 end_offset。
     #[test]
-    fn test_seek_to_end() {
+    fn test_seek_to_end()
+    {
         let mut mgr = OffsetManager::new();
         mgr.init_partition("topic-a", 0, 50, 75, 200);
 
@@ -332,7 +345,8 @@ mod tests {
     /// Test seek_to_timestamp sets position to end_offset (mock).
     /// 测试 seek_to_timestamp 设置位置到 end_offset（模拟）。
     #[test]
-    fn test_seek_to_timestamp() {
+    fn test_seek_to_timestamp()
+    {
         let mut mgr = OffsetManager::new();
         mgr.init_partition("topic-a", 0, 50, 75, 300);
 
@@ -344,7 +358,8 @@ mod tests {
     /// Test position returns None for unknown partition.
     /// 测试未知分区 position 返回 None。
     #[test]
-    fn test_position_unknown_partition() {
+    fn test_position_unknown_partition()
+    {
         let mgr = OffsetManager::new();
         let result = mgr.position("no-topic", 5).unwrap();
         assert!(result.is_none());
@@ -353,7 +368,8 @@ mod tests {
     /// Test position returns initialized value.
     /// 测试 position 返回初始化值。
     #[test]
-    fn test_position_initialized() {
+    fn test_position_initialized()
+    {
         let mut mgr = OffsetManager::new();
         mgr.init_partition("topic-x", 3, 100, 120, 500);
         let pos = mgr.position("topic-x", 3).unwrap();
@@ -363,7 +379,8 @@ mod tests {
     /// Test set_end_offset updates existing state.
     /// 测试 set_end_offset 更新现有状态。
     #[test]
-    fn test_set_end_offset() {
+    fn test_set_end_offset()
+    {
         let mut mgr = OffsetManager::new();
         mgr.init_partition("topic-a", 0, 10, 20, 100);
         mgr.set_end_offset("topic-a", 0, 150);
@@ -376,7 +393,8 @@ mod tests {
     /// Test committing offset creates state for new partition.
     /// 测试提交偏移为新分区创建状态。
     #[test]
-    fn test_commit_creates_state() {
+    fn test_commit_creates_state()
+    {
         let mut mgr = OffsetManager::new();
         mgr.commit_offset("new-topic", 2, 42).unwrap();
         assert_eq!(mgr.committed_offset("new-topic", 2).unwrap(), Some(42));
@@ -385,7 +403,8 @@ mod tests {
     /// Test Default trait implementation.
     /// 测试 Default trait 实现。
     #[test]
-    fn test_default() {
+    fn test_default()
+    {
         let mgr = OffsetManager::default();
         assert!(mgr.committed_offset("any", 0).unwrap().is_none());
     }
@@ -393,7 +412,8 @@ mod tests {
     /// Test multiple partitions independently.
     /// 测试多个分区独立操作。
     #[test]
-    fn test_multiple_partitions() {
+    fn test_multiple_partitions()
+    {
         let mut mgr = OffsetManager::new();
         mgr.init_partition("topic-a", 0, 10, 15, 100);
         mgr.init_partition("topic-a", 1, 20, 25, 200);

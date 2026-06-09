@@ -24,7 +24,8 @@ use crate::{Session, SessionConfig, SessionId, SessionStore};
 /// }
 /// ```
 #[derive(Clone)]
-pub struct SessionMiddleware<S> {
+pub struct SessionMiddleware<S>
+{
     /// Inner service (type parameter preserved for API compatibility).
     /// 内部服务（类型参数保留用于 API 兼容性）。
     _inner: std::marker::PhantomData<S>,
@@ -38,10 +39,12 @@ pub struct SessionMiddleware<S> {
     config: SessionConfig,
 }
 
-impl<S> SessionMiddleware<S> {
+impl<S> SessionMiddleware<S>
+{
     /// Create new session middleware
     /// 创建新的会话中间件
-    pub fn new(_inner: S, store: Arc<dyn SessionStore>, config: SessionConfig) -> Self {
+    pub fn new(_inner: S, store: Arc<dyn SessionStore>, config: SessionConfig) -> Self
+    {
         Self {
             _inner: std::marker::PhantomData,
             store,
@@ -51,13 +54,15 @@ impl<S> SessionMiddleware<S> {
 
     /// Get session store
     /// 获取会话存储
-    pub fn store(&self) -> &dyn SessionStore {
+    pub fn store(&self) -> &dyn SessionStore
+    {
         &*self.store
     }
 
     /// Get session config
     /// 获取会话配置
-    pub fn config(&self) -> &SessionConfig {
+    pub fn config(&self) -> &SessionConfig
+    {
         &self.config
     }
 }
@@ -65,7 +70,8 @@ impl<S> SessionMiddleware<S> {
 /// Session context
 /// 会话上下文
 #[derive(Clone)]
-pub struct SessionContext {
+pub struct SessionContext
+{
     /// Session
     /// 会话
     session: Option<Session>,
@@ -75,10 +81,12 @@ pub struct SessionContext {
     store: Arc<dyn SessionStore>,
 }
 
-impl SessionContext {
+impl SessionContext
+{
     /// Create new session context
     /// 创建新的会话上下文
-    pub fn new(store: Arc<dyn SessionStore>) -> Self {
+    pub fn new(store: Arc<dyn SessionStore>) -> Self
+    {
         Self {
             session: None,
             store,
@@ -87,19 +95,22 @@ impl SessionContext {
 
     /// Get session
     /// 获取会话
-    pub fn session(&self) -> Option<&Session> {
+    pub fn session(&self) -> Option<&Session>
+    {
         self.session.as_ref()
     }
 
     /// Set session
     /// 设置会话
-    pub fn set_session(&mut self, session: Session) {
+    pub fn set_session(&mut self, session: Session)
+    {
         self.session = Some(session);
     }
 
     /// Create new session
     /// 创建新会话
-    pub async fn create(&mut self) -> Result<Session, String> {
+    pub async fn create(&mut self) -> Result<Session, String>
+    {
         let session = self.store.create().await?;
         self.session = Some(session.clone());
         Ok(session)
@@ -107,8 +118,10 @@ impl SessionContext {
 
     /// Save current session
     /// 保存当前会话
-    pub async fn save(&self) -> Result<(), String> {
-        if let Some(ref session) = self.session {
+    pub async fn save(&self) -> Result<(), String>
+    {
+        if let Some(ref session) = self.session
+        {
             self.store.save(session).await?;
         }
         Ok(())
@@ -116,8 +129,10 @@ impl SessionContext {
 
     /// Invalidate current session
     /// 使当前会话失效
-    pub async fn invalidate(&mut self) -> Result<(), String> {
-        if let Some(ref session) = self.session {
+    pub async fn invalidate(&mut self) -> Result<(), String>
+    {
+        if let Some(ref session) = self.session
+        {
             self.store.delete(session.id()).await?;
             self.session = None;
         }
@@ -126,42 +141,51 @@ impl SessionContext {
 
     /// Check if session exists
     /// 检查会话是否存在
-    pub fn exists(&self) -> bool {
+    pub fn exists(&self) -> bool
+    {
         self.session.is_some()
     }
 
     /// Get session ID
     /// 获取会话ID
-    pub fn session_id(&self) -> Option<&SessionId> {
+    pub fn session_id(&self) -> Option<&SessionId>
+    {
         self.session.as_ref().map(Session::id)
     }
 
     /// Get attribute from session
     /// 从会话获取属性
-    pub async fn get<T: Clone + 'static>(&self, name: &str) -> Option<T> {
+    pub async fn get<T: Clone + 'static>(&self, name: &str) -> Option<T>
+    {
         self.session.as_ref()?.get(name).await
     }
 
     /// Set attribute in session
     /// 在会话中设置属性
-    pub async fn set<T: Send + Sync + 'static>(&self, name: impl Into<String>, value: T) {
-        if let Some(ref session) = self.session {
+    pub async fn set<T: Send + Sync + 'static>(&self, name: impl Into<String>, value: T)
+    {
+        if let Some(ref session) = self.session
+        {
             session.set(name, value).await;
         }
     }
 
     /// Remove attribute from session
     /// 从会话移除属性
-    pub async fn remove(&self, name: &str) {
-        if let Some(ref session) = self.session {
+    pub async fn remove(&self, name: &str)
+    {
+        if let Some(ref session) = self.session
+        {
             session.remove(name).await;
         }
     }
 
     /// Clear all attributes
     /// 清除所有属性
-    pub async fn clear(&self) {
-        if let Some(ref session) = self.session {
+    pub async fn clear(&self)
+    {
+        if let Some(ref session) = self.session
+        {
             session.clear().await;
         }
     }
@@ -173,7 +197,8 @@ impl SessionContext {
 /// Provides high-level session management operations.
 /// 提供高级会话管理操作。
 #[derive(Clone)]
-pub struct SessionManager {
+pub struct SessionManager
+{
     /// Session store
     /// 会话存储
     store: Arc<dyn SessionStore>,
@@ -183,60 +208,71 @@ pub struct SessionManager {
     config: SessionConfig,
 }
 
-impl SessionManager {
+impl SessionManager
+{
     /// Create new session manager
     /// 创建新的会话管理器
-    pub fn new(store: Arc<dyn SessionStore>, config: SessionConfig) -> Self {
+    pub fn new(store: Arc<dyn SessionStore>, config: SessionConfig) -> Self
+    {
         Self { store, config }
     }
 
     /// Get session store
     /// 获取会话存储
-    pub fn store(&self) -> &dyn SessionStore {
+    pub fn store(&self) -> &dyn SessionStore
+    {
         &*self.store
     }
 
     /// Get session config
     /// 获取会话配置
-    pub fn config(&self) -> &SessionConfig {
+    pub fn config(&self) -> &SessionConfig
+    {
         &self.config
     }
 
     /// Load session from cookie
     /// 从Cookie加载会话
-    pub async fn load_from_cookie(&self, cookie_value: &str) -> Result<Option<Session>, String> {
+    pub async fn load_from_cookie(&self, cookie_value: &str) -> Result<Option<Session>, String>
+    {
         let session_id = SessionId::from_string(cookie_value.to_string());
         self.store.get(&session_id).await
     }
 
     /// Create new session
     /// 创建新会话
-    pub async fn create(&self) -> Result<Session, String> {
+    pub async fn create(&self) -> Result<Session, String>
+    {
         self.store.create().await
     }
 
     /// Save session
     /// 保存会话
-    pub async fn save(&self, session: &Session) -> Result<(), String> {
+    pub async fn save(&self, session: &Session) -> Result<(), String>
+    {
         self.store.save(session).await
     }
 
     /// Delete session
     /// 删除会话
-    pub async fn delete(&self, session: &Session) -> Result<(), String> {
+    pub async fn delete(&self, session: &Session) -> Result<(), String>
+    {
         self.store.delete(session.id()).await
     }
 
     /// Refresh session (create new ID, keep attributes)
     /// 刷新会话（创建新ID，保留属性）
-    pub async fn refresh(&self, session: &Session) -> Result<Session, String> {
+    pub async fn refresh(&self, session: &Session) -> Result<Session, String>
+    {
         // Create new session
         let new_session = self.store.create().await?;
 
         // Copy attributes from old session
         let names = session.attribute_names().await;
-        for name in names {
-            if let Some(value) = session.get::<String>(&name).await {
+        for name in names
+        {
+            if let Some(value) = session.get::<String>(&name).await
+            {
                 new_session.set(&name, value).await;
             }
         }
@@ -249,7 +285,8 @@ impl SessionManager {
 
     /// Clean up expired sessions
     /// 清理过期会话
-    pub async fn cleanup_expired(&self) -> Result<usize, String> {
+    pub async fn cleanup_expired(&self) -> Result<usize, String>
+    {
         self.store.cleanup_expired().await
     }
 }
@@ -266,28 +303,33 @@ impl SessionManager {
 /// }
 /// ```
 #[derive(Clone)]
-pub struct SessionExtractor {
+pub struct SessionExtractor
+{
     /// Session context
     /// 会话上下文
     context: SessionContext,
 }
 
-impl SessionExtractor {
+impl SessionExtractor
+{
     /// Create new session extractor
     /// 创建新的会话提取器
-    pub fn new(context: SessionContext) -> Self {
+    pub fn new(context: SessionContext) -> Self
+    {
         Self { context }
     }
 
     /// Get session
     /// 获取会话
-    pub fn session(&self) -> Option<&Session> {
+    pub fn session(&self) -> Option<&Session>
+    {
         self.context.session()
     }
 
     /// Require session (returns error if no session)
     /// 需要会话（如果没有会话则返回错误）
-    pub fn require_session(&self) -> Result<&Session, String> {
+    pub fn require_session(&self) -> Result<&Session, String>
+    {
         self.context
             .session()
             .ok_or_else(|| "No session found".to_string())
@@ -295,7 +337,8 @@ impl SessionExtractor {
 
     /// Get session attribute
     /// 获取会话属性
-    pub async fn get<T: Clone + 'static>(&self, name: &str) -> Result<T, String> {
+    pub async fn get<T: Clone + 'static>(&self, name: &str) -> Result<T, String>
+    {
         self.context
             .get(name)
             .await
@@ -304,7 +347,8 @@ impl SessionExtractor {
 
     /// Get session attribute or default
     /// 获取会话属性或默认值
-    pub async fn get_or_default<T: Clone + Default + 'static>(&self, name: &str) -> T {
+    pub async fn get_or_default<T: Clone + Default + 'static>(&self, name: &str) -> T
+    {
         self.context.get(name).await.unwrap_or_default()
     }
 }
@@ -317,12 +361,14 @@ impl SessionExtractor {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::MemorySessionStore;
 
     #[tokio::test]
-    async fn test_session_context() {
+    async fn test_session_context()
+    {
         let store = Arc::new(MemorySessionStore::new()) as Arc<dyn SessionStore>;
         let mut context = SessionContext::new(store.clone());
 
@@ -346,7 +392,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_session_manager() {
+    async fn test_session_manager()
+    {
         let store = Arc::new(MemorySessionStore::new()) as Arc<dyn SessionStore>;
         let config = SessionConfig::default();
         let manager = SessionManager::new(store.clone(), config);

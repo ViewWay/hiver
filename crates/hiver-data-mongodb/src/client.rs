@@ -3,28 +3,31 @@
 
 use std::sync::Arc;
 
+use futures_util::StreamExt;
 use mongodb::{Client, Database};
 
 use crate::{MongoError, MongoResult};
-use futures_util::StreamExt;
 
 /// MongoDB client wrapper / MongoDB 客户端包装器
 #[derive(Debug, Clone)]
-pub struct MongoClient {
+pub struct MongoClient
+{
     /// Inner MongoDB client / 内部 MongoDB 客户端
     client: Arc<Client>,
     /// Database name / 数据库名称
     database_name: Arc<String>,
 }
 
-impl MongoClient {
+impl MongoClient
+{
     /// Create a new MongoDB client / 创建新的 MongoDB 客户端
     ///
     /// # Arguments / 参数
     ///
     /// * `connection_string` - MongoDB connection string / MongoDB 连接字符串
     /// * `database_name` - Default database name / 默认数据库名称
-    pub async fn new(connection_string: &str, database_name: &str) -> MongoResult<Self> {
+    pub async fn new(connection_string: &str, database_name: &str) -> MongoResult<Self>
+    {
         let client = Client::with_uri_str(connection_string).await?;
 
         Ok(Self {
@@ -34,7 +37,8 @@ impl MongoClient {
     }
 
     /// Create from existing MongoDB client / 从现有的 MongoDB 客户端创建
-    pub fn from_client(client: Client, database_name: &str) -> Self {
+    pub fn from_client(client: Client, database_name: &str) -> Self
+    {
         Self {
             client: Arc::new(client),
             database_name: Arc::new(database_name.to_string()),
@@ -42,27 +46,32 @@ impl MongoClient {
     }
 
     /// Get the inner client / 获取内部客户端
-    pub fn inner(&self) -> &Client {
+    pub fn inner(&self) -> &Client
+    {
         &self.client
     }
 
     /// Get the database name / 获取数据库名称
-    pub fn database_name(&self) -> &str {
+    pub fn database_name(&self) -> &str
+    {
         &self.database_name
     }
 
     /// Get a database / 获取数据库
-    pub fn database(&self) -> Database {
+    pub fn database(&self) -> Database
+    {
         self.client.database(&self.database_name)
     }
 
     /// Get a collection / 获取集合
-    pub fn collection<T: Send + Sync>(&self, name: &str) -> mongodb::Collection<T> {
+    pub fn collection<T: Send + Sync>(&self, name: &str) -> mongodb::Collection<T>
+    {
         self.database().collection(name)
     }
 
     /// Ping the database / 检查数据库连接
-    pub async fn ping(&self) -> MongoResult<()> {
+    pub async fn ping(&self) -> MongoResult<()>
+    {
         self.database()
             .run_command(mongodb::bson::doc! {"ping": 1})
             .await
@@ -71,7 +80,8 @@ impl MongoClient {
     }
 
     /// List all collections in the database / 列出数据库中的所有集合
-    pub async fn list_collection_names(&self) -> MongoResult<Vec<String>> {
+    pub async fn list_collection_names(&self) -> MongoResult<Vec<String>>
+    {
         self.database()
             .list_collection_names()
             .await
@@ -79,7 +89,8 @@ impl MongoClient {
     }
 
     /// Drop a collection / 删除集合
-    pub async fn drop_collection(&self, name: &str) -> MongoResult<()> {
+    pub async fn drop_collection(&self, name: &str) -> MongoResult<()>
+    {
         self.database()
             .collection::<mongodb::bson::Document>(name)
             .drop()
@@ -88,7 +99,8 @@ impl MongoClient {
     }
 
     /// Create a collection / 创建集合
-    pub async fn create_collection(&self, name: &str) -> MongoResult<()> {
+    pub async fn create_collection(&self, name: &str) -> MongoResult<()>
+    {
         self.database()
             .create_collection(name)
             .await
@@ -102,7 +114,8 @@ impl MongoClient {
         database: &str,
         collection: &str,
         doc: serde_json::Value,
-    ) -> MongoResult<mongodb::results::InsertOneResult> {
+    ) -> MongoResult<mongodb::results::InsertOneResult>
+    {
         let bson_doc = mongodb::bson::to_document(&doc).map_err(|e| {
             MongoError::data_conversion(format!("Failed to convert to BSON: {}", e))
         })?;
@@ -121,7 +134,8 @@ impl MongoClient {
         database: &str,
         collection: &str,
         filter: serde_json::Value,
-    ) -> MongoResult<Option<serde_json::Value>> {
+    ) -> MongoResult<Option<serde_json::Value>>
+    {
         let bson_filter = mongodb::bson::to_document(&filter).map_err(|e| {
             MongoError::data_conversion(format!("Failed to convert filter to BSON: {}", e))
         })?;
@@ -132,7 +146,8 @@ impl MongoClient {
             .find_one(bson_filter)
             .await
             .map_err(MongoError::from)?;
-        match result {
+        match result
+        {
             Some(doc) => mongodb::bson::from_document::<serde_json::Value>(doc)
                 .map(Some)
                 .map_err(|e| {
@@ -149,7 +164,8 @@ impl MongoClient {
         database: &str,
         collection: &str,
         filter: serde_json::Value,
-    ) -> MongoResult<mongodb::results::DeleteResult> {
+    ) -> MongoResult<mongodb::results::DeleteResult>
+    {
         let bson_filter = mongodb::bson::to_document(&filter).map_err(|e| {
             MongoError::data_conversion(format!("Failed to convert filter to BSON: {}", e))
         })?;
@@ -168,7 +184,8 @@ impl MongoClient {
         database: &str,
         collection: &str,
         filter: serde_json::Value,
-    ) -> MongoResult<Vec<serde_json::Value>> {
+    ) -> MongoResult<Vec<serde_json::Value>>
+    {
         let bson_filter = mongodb::bson::to_document(&filter).map_err(|e| {
             MongoError::data_conversion(format!("Failed to convert filter to BSON: {}", e))
         })?;
@@ -180,7 +197,8 @@ impl MongoClient {
             .await
             .map_err(MongoError::from)?;
         let mut results = Vec::new();
-        while let Some(doc) = cursor.next().await {
+        while let Some(doc) = cursor.next().await
+        {
             let doc = doc.map_err(MongoError::from)?;
             let json: serde_json::Value = mongodb::bson::from_document(doc).map_err(|e| {
                 MongoError::data_conversion(format!("Failed to convert from BSON: {}", e))
@@ -199,11 +217,13 @@ impl MongoClient {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[tokio::test]
-    async fn test_client_creation() {
+    async fn test_client_creation()
+    {
         let client = Client::with_uri_str("mongodb://localhost:27017")
             .await
             .unwrap();

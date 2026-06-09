@@ -43,7 +43,8 @@ use crate::chain::Block;
 /// RPC error
 /// RPC错误
 #[derive(Debug, Clone)]
-pub enum RpcError {
+pub enum RpcError
+{
     /// HTTP error
     /// HTTP错误
     HttpError(u16),
@@ -65,9 +66,12 @@ pub enum RpcError {
     HttpClientError(String),
 }
 
-impl fmt::Display for RpcError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for RpcError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::HttpError(code) => write!(f, "HTTP error: {}", code),
             Self::NetworkError(msg) => write!(f, "Network error: {}", msg),
             Self::ParseError(msg) => write!(f, "Parse error: {}", msg),
@@ -89,7 +93,8 @@ impl std::error::Error for RpcError {}
 /// 仅当启用`rpc`功能时可用。
 #[cfg(feature = "rpc")]
 #[derive(Clone)]
-pub struct RpcClient {
+pub struct RpcClient
+{
     /// RPC endpoint URL
     /// RPC端点URL
     url: String,
@@ -104,18 +109,18 @@ use std::sync::Arc;
 
 #[cfg(feature = "rpc")]
 use crate::chain::BlockNumber;
-
 #[cfg(feature = "rpc")]
 use crate::tx::TxHash;
-
 #[cfg(feature = "rpc")]
 use crate::wallet::Address;
 
 #[cfg(feature = "rpc")]
-impl RpcClient {
+impl RpcClient
+{
     /// Create a new RPC client
     /// 创建新的RPC客户端
-    pub fn new(url: impl Into<String>) -> Result<Self, RpcError> {
+    pub fn new(url: impl Into<String>) -> Result<Self, RpcError>
+    {
         let url = url.into();
         let client = Arc::new(
             reqwest::Client::builder()
@@ -129,7 +134,8 @@ impl RpcClient {
 
     /// Create with custom timeout
     /// 使用自定义超时创建
-    pub fn with_timeout(url: impl Into<String>, timeout_secs: u64) -> Result<Self, RpcError> {
+    pub fn with_timeout(url: impl Into<String>, timeout_secs: u64) -> Result<Self, RpcError>
+    {
         let url = url.into();
         let client = Arc::new(
             reqwest::Client::builder()
@@ -143,15 +149,18 @@ impl RpcClient {
 
     /// Get the latest block number
     /// 获取最新区块号
-    pub async fn get_block_number(&self) -> Result<u64, RpcError> {
+    pub async fn get_block_number(&self) -> Result<u64, RpcError>
+    {
         let response: JsonRpcResponse<u64> = self.call("eth_blockNumber", &[]).await?;
         Ok(response.result)
     }
 
     /// Get block by number
     /// 根据区块号获取区块
-    pub async fn get_block(&self, number: BlockNumber) -> Result<Block, RpcError> {
-        let param = match number {
+    pub async fn get_block(&self, number: BlockNumber) -> Result<Block, RpcError>
+    {
+        let param = match number
+        {
             BlockNumber::Latest => serde_json::json!("latest"),
             BlockNumber::Pending => serde_json::json!("pending"),
             BlockNumber::Number(n) => serde_json::json!(format!("0x{:x}", n)),
@@ -168,21 +177,20 @@ impl RpcClient {
         &self,
         address: &Address,
         block: BlockNumber,
-    ) -> Result<String, RpcError> {
-        let block_param = match block {
+    ) -> Result<String, RpcError>
+    {
+        let block_param = match block
+        {
             BlockNumber::Latest => "latest".to_string(),
             BlockNumber::Pending => "pending".to_string(),
             BlockNumber::Number(n) => format!("0x{:x}", n),
         };
 
         let response: JsonRpcResponse<String> = self
-            .call(
-                "eth_getBalance",
-                &[
-                    serde_json::json!(address.to_hex()),
-                    serde_json::json!(block_param),
-                ],
-            )
+            .call("eth_getBalance", &[
+                serde_json::json!(address.to_hex()),
+                serde_json::json!(block_param),
+            ])
             .await?;
         Ok(response.result)
     }
@@ -193,21 +201,20 @@ impl RpcClient {
         &self,
         address: &Address,
         block: BlockNumber,
-    ) -> Result<u64, RpcError> {
-        let block_param = match block {
+    ) -> Result<u64, RpcError>
+    {
+        let block_param = match block
+        {
             BlockNumber::Latest => "latest".to_string(),
             BlockNumber::Pending => "pending".to_string(),
             BlockNumber::Number(n) => format!("0x{:x}", n),
         };
 
         let response: JsonRpcResponse<String> = self
-            .call(
-                "eth_getTransactionCount",
-                &[
-                    serde_json::json!(address.to_hex()),
-                    serde_json::json!(block_param),
-                ],
-            )
+            .call("eth_getTransactionCount", &[
+                serde_json::json!(address.to_hex()),
+                serde_json::json!(block_param),
+            ])
             .await?;
 
         // Parse hex string to u64
@@ -220,7 +227,8 @@ impl RpcClient {
 
     /// Get transaction by hash
     /// 根据哈希获取交易
-    pub async fn get_transaction(&self, hash: &TxHash) -> Result<RpcTransaction, RpcError> {
+    pub async fn get_transaction(&self, hash: &TxHash) -> Result<RpcTransaction, RpcError>
+    {
         let response: JsonRpcResponse<RpcTransaction> = self
             .call("eth_getTransactionByHash", &[serde_json::json!(hash.to_hex())])
             .await?;
@@ -229,7 +237,8 @@ impl RpcClient {
 
     /// Send raw transaction
     /// 发送原始交易
-    pub async fn send_raw_transaction(&self, bytes: &[u8]) -> Result<TxHash, RpcError> {
+    pub async fn send_raw_transaction(&self, bytes: &[u8]) -> Result<TxHash, RpcError>
+    {
         let hex = format!("0x{}", hex::encode(bytes));
         let response: JsonRpcResponse<String> = self
             .call("eth_sendRawTransaction", &[serde_json::json!(hex)])
@@ -244,8 +253,10 @@ impl RpcClient {
         to: &Address,
         data: &[u8],
         block: BlockNumber,
-    ) -> Result<String, RpcError> {
-        let block_param = match block {
+    ) -> Result<String, RpcError>
+    {
+        let block_param = match block
+        {
             BlockNumber::Latest => "latest".to_string(),
             BlockNumber::Pending => "pending".to_string(),
             BlockNumber::Number(n) => format!("0x{:x}", n),
@@ -253,16 +264,13 @@ impl RpcClient {
 
         let hex_data = format!("0x{}", hex::encode(data));
         let response: JsonRpcResponse<String> = self
-            .call(
-                "eth_call",
-                &[
-                    serde_json::json!({
-                        "to": to.to_hex(),
-                        "data": hex_data
-                    }),
-                    serde_json::json!(block_param),
-                ],
-            )
+            .call("eth_call", &[
+                serde_json::json!({
+                    "to": to.to_hex(),
+                    "data": hex_data
+                }),
+                serde_json::json!(block_param),
+            ])
             .await?;
         Ok(response.result)
     }
@@ -275,19 +283,24 @@ impl RpcClient {
         from: Option<&Address>,
         value: Option<&str>,
         data: Option<&[u8]>,
-    ) -> Result<u64, RpcError> {
+    ) -> Result<u64, RpcError>
+    {
         let mut call_data = serde_json::Map::new();
 
-        if let Some(to) = to {
+        if let Some(to) = to
+        {
             call_data.insert("to".to_string(), serde_json::json!(to.to_hex()));
         }
-        if let Some(from) = from {
+        if let Some(from) = from
+        {
             call_data.insert("from".to_string(), serde_json::json!(from.to_hex()));
         }
-        if let Some(value) = value {
+        if let Some(value) = value
+        {
             call_data.insert("value".to_string(), serde_json::json!(value));
         }
-        if let Some(data) = data {
+        if let Some(data) = data
+        {
             call_data
                 .insert("data".to_string(), serde_json::json!(format!("0x{}", hex::encode(data))));
         }
@@ -306,14 +319,16 @@ impl RpcClient {
 
     /// Get gas price
     /// 获取Gas价格
-    pub async fn get_gas_price(&self) -> Result<String, RpcError> {
+    pub async fn get_gas_price(&self) -> Result<String, RpcError>
+    {
         let response: JsonRpcResponse<String> = self.call("eth_gasPrice", &[]).await?;
         Ok(response.result)
     }
 
     /// Get chain ID
     /// 获取链ID
-    pub async fn get_chain_id(&self) -> Result<u64, RpcError> {
+    pub async fn get_chain_id(&self) -> Result<u64, RpcError>
+    {
         let response: JsonRpcResponse<String> = self.call("eth_chainId", &[]).await?;
 
         let hex = response
@@ -330,7 +345,8 @@ impl RpcClient {
         &self,
         method: &str,
         params: &[serde_json::Value],
-    ) -> Result<JsonRpcResponse<T>, RpcError> {
+    ) -> Result<JsonRpcResponse<T>, RpcError>
+    {
         let request = JsonRpcRequest {
             jsonrpc: "2.0",
             id: 1,
@@ -347,7 +363,8 @@ impl RpcClient {
             .await
             .map_err(|e| RpcError::NetworkError(e.to_string()))?;
 
-        if !resp.status().is_success() {
+        if !resp.status().is_success()
+        {
             return Err(RpcError::HttpError(resp.status().as_u16()));
         }
 
@@ -356,7 +373,8 @@ impl RpcClient {
             .await
             .map_err(|e| RpcError::ParseError(e.to_string()))?;
 
-        if let Some(error) = response.error {
+        if let Some(error) = response.error
+        {
             return Err(RpcError::RpcError(error.message.unwrap_or_default()));
         }
 
@@ -369,8 +387,10 @@ impl RpcClient {
 }
 
 #[cfg(feature = "rpc")]
-impl fmt::Debug for RpcClient {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Debug for RpcClient
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.debug_struct("RpcClient").field("url", &self.url).finish()
     }
 }
@@ -378,7 +398,8 @@ impl fmt::Debug for RpcClient {
 /// RPC request
 /// RPC请求
 #[derive(Debug, Serialize)]
-struct JsonRpcRequest<'a> {
+struct JsonRpcRequest<'a>
+{
     /// JSON-RPC version
     jsonrpc: &'a str,
     /// Request ID
@@ -392,7 +413,8 @@ struct JsonRpcRequest<'a> {
 /// Raw RPC response
 /// 原始RPC响应
 #[derive(Debug, Deserialize)]
-struct JsonRpcResponseRaw {
+struct JsonRpcResponseRaw
+{
     /// Error (if any)
     #[serde(default)]
     error: Option<RpcErrorObject>,
@@ -403,7 +425,8 @@ struct JsonRpcResponseRaw {
 /// RPC response
 /// RPC响应
 #[derive(Debug)]
-pub struct JsonRpcResponse<T> {
+pub struct JsonRpcResponse<T>
+{
     /// Result data
     pub result: T,
 }
@@ -411,7 +434,8 @@ pub struct JsonRpcResponse<T> {
 /// RPC error object
 /// RPC错误对象
 #[derive(Debug, Deserialize)]
-struct RpcErrorObject {
+struct RpcErrorObject
+{
     /// Error code
     code: i64,
     /// Error message
@@ -422,7 +446,8 @@ struct RpcErrorObject {
 /// `RPC区块（来自eth_getBlockByNumber`）
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct RpcBlock {
+struct RpcBlock
+{
     /// Block hash
     hash: Option<String>,
     /// Parent hash
@@ -439,8 +464,10 @@ struct RpcBlock {
     transaction_count: Option<String>,
 }
 
-impl From<RpcBlock> for Block {
-    fn from(block: RpcBlock) -> Self {
+impl From<RpcBlock> for Block
+{
+    fn from(block: RpcBlock) -> Self
+    {
         Self {
             hash: block.hash.unwrap_or_default(),
             parent_hash: block.parent_hash,
@@ -481,7 +508,8 @@ impl From<RpcBlock> for Block {
 /// `RPC交易（来自eth_getTransactionByHash`）
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct RpcTransaction {
+pub struct RpcTransaction
+{
     /// Transaction hash
     pub hash: String,
     /// From address
@@ -516,11 +544,13 @@ pub struct RpcTransaction {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_rpc_error_display() {
+    fn test_rpc_error_display()
+    {
         let err = RpcError::HttpError(404);
         assert_eq!(err.to_string(), "HTTP error: 404");
 
@@ -530,14 +560,16 @@ mod tests {
 
     #[cfg(feature = "rpc")]
     #[test]
-    fn test_rpc_client_new() {
+    fn test_rpc_client_new()
+    {
         let client = RpcClient::new("https://eth.llamarpc.com");
         assert!(client.is_ok());
     }
 
     #[cfg(feature = "rpc")]
     #[test]
-    fn test_rpc_client_debug() {
+    fn test_rpc_client_debug()
+    {
         let client = RpcClient::new("https://eth.llamarpc.com").unwrap();
         let debug_str = format!("{:?}", client);
         assert!(debug_str.contains("RpcClient"));

@@ -14,20 +14,24 @@ use std::collections::HashMap;
 /// Equivalent to Spring's `@TestPropertySource`.
 /// 等价于 Spring 的 `@TestPropertySource`。
 #[derive(Debug, Clone, Default)]
-pub struct TestPropertySource {
+pub struct TestPropertySource
+{
     properties: HashMap<String, String>,
 }
 
-impl TestPropertySource {
+impl TestPropertySource
+{
     /// Create an empty property source.
     /// 创建空属性源。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Create from key-value pairs.
     /// 从键值对创建。
-    pub fn from_pairs(pairs: Vec<(&str, &str)>) -> Self {
+    pub fn from_pairs(pairs: Vec<(&str, &str)>) -> Self
+    {
         Self {
             properties: pairs
                 .into_iter()
@@ -38,27 +42,32 @@ impl TestPropertySource {
 
     /// Add a property override.
     /// 添加属性覆盖。
-    pub fn property(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn property(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
+    {
         self.properties.insert(key.into(), value.into());
         self
     }
 
     /// Get a property value.
     /// 获取属性值。
-    pub fn get(&self, key: &str) -> Option<&str> {
+    pub fn get(&self, key: &str) -> Option<&str>
+    {
         self.properties.get(key).map(String::as_str)
     }
 
     /// Get all properties.
     /// 获取所有属性。
-    pub fn properties(&self) -> &HashMap<String, String> {
+    pub fn properties(&self) -> &HashMap<String, String>
+    {
         &self.properties
     }
 
     /// Merge another source, taking its values for conflicts.
     /// 合并另一个源，冲突时取其值。
-    pub fn merge(mut self, other: &TestPropertySource) -> Self {
-        for (k, v) in &other.properties {
+    pub fn merge(mut self, other: &TestPropertySource) -> Self
+    {
+        for (k, v) in &other.properties
+        {
             self.properties.insert(k.clone(), v.clone());
         }
         self
@@ -66,13 +75,15 @@ impl TestPropertySource {
 
     /// Number of properties.
     /// 属性数量。
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.properties.len()
     }
 
     /// Check if empty.
     /// 检查是否为空。
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.properties.is_empty()
     }
 }
@@ -85,18 +96,21 @@ impl TestPropertySource {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_empty_source() {
+    fn test_empty_source()
+    {
         let src = TestPropertySource::new();
         assert!(src.is_empty());
         assert_eq!(src.len(), 0);
     }
 
     #[test]
-    fn test_from_pairs() {
+    fn test_from_pairs()
+    {
         let src = TestPropertySource::from_pairs(vec![
             ("server.port", "0"),
             ("spring.datasource.url", "jdbc:test://localhost/test"),
@@ -106,7 +120,8 @@ mod tests {
     }
 
     #[test]
-    fn test_builder_pattern() {
+    fn test_builder_pattern()
+    {
         let src = TestPropertySource::new()
             .property("db.host", "localhost")
             .property("db.port", "5432")
@@ -118,7 +133,8 @@ mod tests {
     }
 
     #[test]
-    fn test_merge() {
+    fn test_merge()
+    {
         let base = TestPropertySource::new()
             .property("a", "1")
             .property("b", "2");

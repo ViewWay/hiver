@@ -44,7 +44,8 @@ use std::fmt;
 /// Derived from the method name prefix (find, read, get, query, etc.).
 /// 从方法名前缀派生（find、read、get、query 等）。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Subject {
+pub enum Subject
+{
     /// find...By / find...By
     Find,
     /// read...By / read...By
@@ -63,35 +64,43 @@ pub enum Subject {
     Stream,
 }
 
-impl Subject {
+impl Subject
+{
     /// Returns true if this subject is a counting query.
     /// 返回此主体是否为计数查询。
-    pub fn is_count_projection(&self) -> bool {
+    pub fn is_count_projection(&self) -> bool
+    {
         matches!(self, Subject::Count)
     }
 
     /// Returns true if this subject is an existence check.
     /// 返回此主体是否为存在性检查。
-    pub fn is_exists_projection(&self) -> bool {
+    pub fn is_exists_projection(&self) -> bool
+    {
         matches!(self, Subject::Exists)
     }
 
     /// Returns true if this subject is a delete operation.
     /// 返回此主体是否为删除操作。
-    pub fn is_delete(&self) -> bool {
+    pub fn is_delete(&self) -> bool
+    {
         matches!(self, Subject::Delete)
     }
 
     /// Returns true if this subject returns a collection.
     /// 返回此主体是否返回集合。
-    pub fn is_collection_returning(&self) -> bool {
+    pub fn is_collection_returning(&self) -> bool
+    {
         matches!(self, Subject::Find | Subject::Read | Subject::Query | Subject::Stream)
     }
 }
 
-impl fmt::Display for Subject {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for Subject
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::Find => write!(f, "FIND"),
             Self::Read => write!(f, "READ"),
             Self::Get => write!(f, "GET"),
@@ -107,7 +116,8 @@ impl fmt::Display for Subject {
 /// Keywords that modify the query behavior (Distinct, First, Top).
 /// 修改查询行为的关键字（Distinct、First、Top）。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Keyword {
+pub enum Keyword
+{
     /// DISTINCT modifier / DISTINCT 修饰符
     Distinct,
     /// First<N> limit / First<N> 限制
@@ -116,9 +126,12 @@ pub enum Keyword {
     Top(u32),
 }
 
-impl fmt::Display for Keyword {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for Keyword
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::Distinct => write!(f, "DISTINCT"),
             Self::First(n) => write!(f, "FIRST {}", n),
             Self::Top(n) => write!(f, "TOP {}", n),
@@ -132,7 +145,8 @@ impl fmt::Display for Keyword {
 /// Based on Spring Data's `Part.Type` enum.
 /// 基于 Spring Data 的 `Part.Type` 枚举。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum PartType {
+pub enum PartType
+{
     /// Simple equality (Is, Equals) / 简单相等
     Is,
     /// Not equal (IsNot, Not) / 不等
@@ -189,10 +203,12 @@ pub enum PartType {
     SimpleProperty,
 }
 
-impl PartType {
+impl PartType
+{
     /// Check if this part type requires a single argument.
     /// 检查此部件类型是否需要单个参数。
-    pub fn needs_single_argument(&self) -> bool {
+    pub fn needs_single_argument(&self) -> bool
+    {
         matches!(
             self,
             PartType::Is
@@ -218,26 +234,32 @@ impl PartType {
 
     /// Check if this part type requires no arguments.
     /// 检查此部件类型是否不需要参数。
-    pub fn needs_no_argument(&self) -> bool {
+    pub fn needs_no_argument(&self) -> bool
+    {
         matches!(self, PartType::IsNull | PartType::IsNotNull | PartType::True | PartType::False)
     }
 
     /// Check if this part type requires two arguments.
     /// 检查此部件类型是否需要两个参数。
-    pub fn needs_two_arguments(&self) -> bool {
+    pub fn needs_two_arguments(&self) -> bool
+    {
         matches!(self, PartType::Between)
     }
 
     /// Check if this part type requires a variable number of arguments.
     /// 检查此部件类型是否需要可变数量的参数。
-    pub fn needs_variable_arguments(&self) -> bool {
+    pub fn needs_variable_arguments(&self) -> bool
+    {
         matches!(self, PartType::In | PartType::NotIn)
     }
 }
 
-impl fmt::Display for PartType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for PartType
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::Is => write!(f, "IS"),
             Self::IsNot => write!(f, "IS_NOT"),
             Self::Like => write!(f, "LIKE"),
@@ -272,7 +294,8 @@ impl fmt::Display for PartType {
 /// A single parsed part of the method name (property + operator).
 /// 方法名的单个解析部件（属性 + 运算符）。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Part {
+pub struct Part
+{
     /// Property path (e.g., "age") / 属性路径
     pub property_path: String,
     /// The type of comparison / 比较类型
@@ -281,10 +304,12 @@ pub struct Part {
     pub ignore_case: bool,
 }
 
-impl Part {
+impl Part
+{
     /// Create a new part.
     /// 创建新的部件。
-    pub fn new(property_path: impl Into<String>, part_type: PartType) -> Self {
+    pub fn new(property_path: impl Into<String>, part_type: PartType) -> Self
+    {
         Self {
             property_path: property_path.into(),
             part_type,
@@ -298,7 +323,8 @@ impl Part {
         property_path: impl Into<String>,
         part_type: PartType,
         ignore_case: bool,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             property_path: property_path.into(),
             part_type,
@@ -307,8 +333,10 @@ impl Part {
     }
 }
 
-impl fmt::Display for Part {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for Part
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         write!(f, "{} {}", self.property_path, self.part_type)
     }
 }
@@ -316,17 +344,20 @@ impl fmt::Display for Part {
 /// Order-by clause parsed from the method name.
 /// 从方法名解析的排序子句。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct OrderBy {
+pub struct OrderBy
+{
     /// Property to sort by / 排序属性
     pub property: String,
     /// Sort direction / 排序方向
     pub direction: OrderDirection,
 }
 
-impl OrderBy {
+impl OrderBy
+{
     /// Create a new order-by clause.
     /// 创建新的排序子句。
-    pub fn new(property: impl Into<String>, direction: OrderDirection) -> Self {
+    pub fn new(property: impl Into<String>, direction: OrderDirection) -> Self
+    {
         Self {
             property: property.into(),
             direction,
@@ -334,8 +365,10 @@ impl OrderBy {
     }
 }
 
-impl fmt::Display for OrderBy {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for OrderBy
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         write!(f, "{} {}", self.property, self.direction)
     }
 }
@@ -343,16 +376,20 @@ impl fmt::Display for OrderBy {
 /// Sort direction.
 /// 排序方向。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum OrderDirection {
+pub enum OrderDirection
+{
     /// Ascending / 升序
     Asc,
     /// Descending / 降序
     Desc,
 }
 
-impl fmt::Display for OrderDirection {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for OrderDirection
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::Asc => write!(f, "ASC"),
             Self::Desc => write!(f, "DESC"),
         }
@@ -362,7 +399,8 @@ impl fmt::Display for OrderDirection {
 /// AndOr node combining parts with logical operators.
 /// 使用逻辑运算符组合部件的 AndOr 节点。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum AndOr {
+pub enum AndOr
+{
     /// A single part (leaf node) / 单个部件（叶子节点）
     Part(Part),
     /// AND combination of two nodes / 两个节点的 AND 组合
@@ -371,36 +409,44 @@ pub enum AndOr {
     Or(Box<AndOr>, Box<AndOr>),
 }
 
-impl AndOr {
+impl AndOr
+{
     /// Create a leaf part node.
     /// 创建叶子部件节点。
-    pub fn part(part: Part) -> Self {
+    pub fn part(part: Part) -> Self
+    {
         Self::Part(part)
     }
 
     /// Create an AND node from two children.
     /// 从两个子节点创建 AND 节点。
-    pub fn and(left: AndOr, right: AndOr) -> Self {
+    pub fn and(left: AndOr, right: AndOr) -> Self
+    {
         Self::And(Box::new(left), Box::new(right))
     }
 
     /// Create an OR node from two children.
     /// 从两个子节点创建 OR 节点。
-    pub fn or(left: AndOr, right: AndOr) -> Self {
+    pub fn or(left: AndOr, right: AndOr) -> Self
+    {
         Self::Or(Box::new(left), Box::new(right))
     }
 
     /// Collect all parts from this tree in order.
     /// 按顺序从此树中收集所有部件。
-    pub fn all_parts(&self) -> Vec<&Part> {
-        match self {
+    pub fn all_parts(&self) -> Vec<&Part>
+    {
+        match self
+        {
             Self::Part(p) => vec![p],
-            Self::And(l, r) => {
+            Self::And(l, r) =>
+            {
                 let mut parts = l.all_parts();
                 parts.extend(r.all_parts());
                 parts
             },
-            Self::Or(l, r) => {
+            Self::Or(l, r) =>
+            {
                 let mut parts = l.all_parts();
                 parts.extend(r.all_parts());
                 parts
@@ -431,7 +477,8 @@ impl AndOr {
 /// assert_eq!(tree.order_by().len(), 1);
 /// ```
 #[derive(Debug, Clone)]
-pub struct PartTree {
+pub struct PartTree
+{
     /// The query subject (Find, Read, Get, etc.)
     /// 查询主体（Find、Read、Get 等）
     subject: Subject,
@@ -449,7 +496,8 @@ pub struct PartTree {
     order_by: Vec<OrderBy>,
 }
 
-impl PartTree {
+impl PartTree
+{
     /// Parse a method name into a PartTree.
     /// 将方法名解析为 PartTree。
     ///
@@ -461,9 +509,11 @@ impl PartTree {
     ///
     /// Returns an error if the method name cannot be parsed.
     /// 如果方法名无法解析，返回错误。
-    pub fn parse(source: &str) -> Result<Self, String> {
+    pub fn parse(source: &str) -> Result<Self, String>
+    {
         let source = source.trim();
-        if source.is_empty() {
+        if source.is_empty()
+        {
             return Err("Method name must not be empty".to_string());
         }
 
@@ -473,26 +523,31 @@ impl PartTree {
 
     /// Get the subject of this query.
     /// 获取此查询的主体。
-    pub fn subject(&self) -> Subject {
+    pub fn subject(&self) -> Subject
+    {
         self.subject
     }
 
     /// Check if the query has a DISTINCT modifier.
     /// 检查查询是否具有 DISTINCT 修饰符。
-    pub fn is_distinct(&self) -> bool {
+    pub fn is_distinct(&self) -> bool
+    {
         self.distinct
     }
 
     /// Get the limit from First/Top keywords, if any.
     /// 获取 First/Top 关键字的限制值（如果有）。
-    pub fn limit(&self) -> Option<u32> {
+    pub fn limit(&self) -> Option<u32>
+    {
         self.max_results
     }
 
     /// Get all parts flattened from the AND/OR tree.
     /// 获取从 AND/OR 树中展平的所有部件。
-    pub fn parts(&self) -> Vec<&Part> {
-        match &self.tree {
+    pub fn parts(&self) -> Vec<&Part>
+    {
+        match &self.tree
+        {
             Some(tree) => tree.all_parts(),
             None => Vec::new(),
         }
@@ -500,44 +555,51 @@ impl PartTree {
 
     /// Get the AND/OR tree.
     /// 获取 AND/OR 树。
-    pub fn tree(&self) -> Option<&AndOr> {
+    pub fn tree(&self) -> Option<&AndOr>
+    {
         self.tree.as_ref()
     }
 
     /// Get the order-by clauses.
     /// 获取排序子句。
-    pub fn order_by(&self) -> &[OrderBy] {
+    pub fn order_by(&self) -> &[OrderBy]
+    {
         &self.order_by
     }
 
     /// Check if this is a count projection.
     /// 检查是否为计数投影。
-    pub fn is_count_projection(&self) -> bool {
+    pub fn is_count_projection(&self) -> bool
+    {
         self.subject.is_count_projection()
     }
 
     /// Check if this is an exists projection.
     /// 检查是否为存在性投影。
-    pub fn is_exists_projection(&self) -> bool {
+    pub fn is_exists_projection(&self) -> bool
+    {
         self.subject.is_exists_projection()
     }
 
     /// Check if this is a delete operation.
     /// 检查是否为删除操作。
-    pub fn is_delete(&self) -> bool {
+    pub fn is_delete(&self) -> bool
+    {
         self.subject.is_delete()
     }
 
     /// Check if this returns a collection.
     /// 检查是否返回集合。
-    pub fn is_collection_returning(&self) -> bool {
+    pub fn is_collection_returning(&self) -> bool
+    {
         self.subject.is_collection_returning()
     }
 }
 
 /// Internal parser state for PartTree parsing.
 /// PartTree 解析的内部解析器状态。
-struct PartTreeParser {
+struct PartTreeParser
+{
     /// Remaining characters to parse.
     /// 剩余要解析的字符。
     remaining: String,
@@ -552,8 +614,10 @@ struct PartTreeParser {
     max_results: Option<u32>,
 }
 
-impl PartTreeParser {
-    fn new(source: &str) -> Self {
+impl PartTreeParser
+{
+    fn new(source: &str) -> Self
+    {
         Self {
             remaining: source.to_string(),
             subject: Subject::Find,
@@ -562,7 +626,8 @@ impl PartTreeParser {
         }
     }
 
-    fn parse(mut self) -> Result<PartTree, String> {
+    fn parse(mut self) -> Result<PartTree, String>
+    {
         // Step 1: Extract subject
         self.extract_subject()?;
 
@@ -579,10 +644,13 @@ impl PartTreeParser {
         let condition_part = self.split_order_by();
 
         // Step 6: Parse conditions into AndOr tree
-        let tree = if condition_part.is_empty() {
+        let tree = if condition_part.is_empty()
+        {
             // "findBy" with nothing after "By" is an error
             return Err("No conditions found after 'By'".to_string());
-        } else {
+        }
+        else
+        {
             Some(parse_conditions(&condition_part)?)
         };
 
@@ -597,7 +665,8 @@ impl PartTreeParser {
         })
     }
 
-    fn extract_subject(&mut self) -> Result<(), String> {
+    fn extract_subject(&mut self) -> Result<(), String>
+    {
         let lower = self.remaining.to_lowercase();
 
         let subjects: &[(&str, Subject, usize)] = &[
@@ -611,8 +680,10 @@ impl PartTreeParser {
             ("stream", Subject::Stream, 6),
         ];
 
-        for &(prefix, subject, len) in subjects {
-            if lower.starts_with(prefix) {
+        for &(prefix, subject, len) in subjects
+        {
+            if lower.starts_with(prefix)
+            {
                 let after = &self.remaining[len..];
                 // Must be followed by uppercase, keyword, or nothing meaningful
                 if after.is_empty()
@@ -636,10 +707,12 @@ impl PartTreeParser {
         ))
     }
 
-    fn extract_first_top(&mut self) {
+    fn extract_first_top(&mut self)
+    {
         let lower = self.remaining.to_lowercase();
 
-        if let Some(rest) = lower.strip_prefix("first") {
+        if let Some(rest) = lower.strip_prefix("first")
+        {
             let (digits, _after) = take_digits(rest);
             let num = digits.parse::<u32>().unwrap_or(1);
             self.max_results = Some(num);
@@ -647,7 +720,8 @@ impl PartTreeParser {
             return;
         }
 
-        if let Some(rest) = lower.strip_prefix("top") {
+        if let Some(rest) = lower.strip_prefix("top")
+        {
             let (digits, _after) = take_digits(rest);
             let num = digits.parse::<u32>().unwrap_or(1);
             self.max_results = Some(num);
@@ -655,20 +729,26 @@ impl PartTreeParser {
         }
     }
 
-    fn extract_distinct(&mut self) {
+    fn extract_distinct(&mut self)
+    {
         let lower = self.remaining.to_lowercase();
-        if lower.starts_with("distinct") {
+        if lower.starts_with("distinct")
+        {
             self.distinct = true;
             self.remaining = self.remaining[8..].to_string();
         }
     }
 
-    fn extract_by(&mut self) -> Result<(), String> {
+    fn extract_by(&mut self) -> Result<(), String>
+    {
         let lower = self.remaining.to_lowercase();
-        if lower.starts_with("by") {
+        if lower.starts_with("by")
+        {
             self.remaining = self.remaining[2..].to_string();
             Ok(())
-        } else {
+        }
+        else
+        {
             Err(format!(
                 "Method name must contain 'By' keyword after subject, got: '{}'",
                 self.remaining
@@ -676,13 +756,17 @@ impl PartTreeParser {
         }
     }
 
-    fn split_order_by(&mut self) -> String {
+    fn split_order_by(&mut self) -> String
+    {
         let lower = self.remaining.to_lowercase();
-        if let Some(pos) = lower.rfind("orderby") {
+        if let Some(pos) = lower.rfind("orderby")
+        {
             let condition_part = self.remaining[..pos].to_string();
             self.remaining = self.remaining[pos + 7..].to_string();
             condition_part
-        } else {
+        }
+        else
+        {
             let condition_part = self.remaining.clone();
             self.remaining.clear();
             condition_part
@@ -693,7 +777,8 @@ impl PartTreeParser {
 /// Connector between parts (And or Or).
 /// 部件之间的连接符（And 或 Or）。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Connector {
+enum Connector
+{
     And,
     Or,
 }
@@ -708,14 +793,17 @@ enum Connector {
 ///
 /// 使用贪心关键字匹配分词器扫描字符串，在驼峰边界处匹配关键字。
 /// "And"/"Or" 仅在完整的属性+关键字组合之后出现在有效边界时才被视为连接符。
-fn parse_conditions(input: &str) -> Result<AndOr, String> {
-    if input.is_empty() {
+fn parse_conditions(input: &str) -> Result<AndOr, String>
+{
+    if input.is_empty()
+    {
         return Err("No conditions found after 'By'".to_string());
     }
 
     let (segments, connectors) = tokenize_into_segments(input)?;
 
-    if segments.is_empty() {
+    if segments.is_empty()
+    {
         return Err("No conditions found after 'By'".to_string());
     }
 
@@ -723,11 +811,13 @@ fn parse_conditions(input: &str) -> Result<AndOr, String> {
     let mut parts: Vec<Part> = Vec::new();
     let mut part_connectors: Vec<Connector> = Vec::new();
 
-    for (i, segment) in segments.iter().enumerate() {
+    for (i, segment) in segments.iter().enumerate()
+    {
         let part = parse_single_segment(segment)?;
         parts.push(part);
 
-        if i < connectors.len() {
+        if i < connectors.len()
+        {
             part_connectors.push(connectors[i]);
         }
     }
@@ -747,7 +837,8 @@ fn parse_conditions(input: &str) -> Result<AndOr, String> {
 /// 在接受连接符之前，验证前面的文本以已识别的关键字结尾。
 /// 这可以防止 "GreaterThan" 中的 "Or" 或 "ContainingAnd" 中的 "And"
 /// 等误报。
-fn tokenize_into_segments(input: &str) -> Result<(Vec<&str>, Vec<Connector>), String> {
+fn tokenize_into_segments(input: &str) -> Result<(Vec<&str>, Vec<Connector>), String>
+{
     let mut segments: Vec<&str> = Vec::new();
     let mut connectors: Vec<Connector> = Vec::new();
 
@@ -755,22 +846,27 @@ fn tokenize_into_segments(input: &str) -> Result<(Vec<&str>, Vec<Connector>), St
     let mut segment_start = 0;
     let mut i = 0;
 
-    while i < bytes.len() {
+    while i < bytes.len()
+    {
         let c = bytes[i] as char;
 
         // Look for "And" or "Or" at word boundaries:
         // preceded by a lowercase letter and followed by an uppercase letter.
-        if c.is_uppercase() && i > segment_start {
+        if c.is_uppercase() && i > segment_start
+        {
             let rest = &input[i..];
             let rest_lower = rest.to_lowercase();
 
             // Try "And" connector: "And" followed by an uppercase letter
-            if rest_lower.starts_with("and") && rest.len() > 3 {
+            if rest_lower.starts_with("and") && rest.len() > 3
+            {
                 let next = rest.as_bytes()[3] as char;
-                if next.is_uppercase() {
+                if next.is_uppercase()
+                {
                     // Check that the preceding text ends with a valid keyword
                     let before = &input[segment_start..i];
-                    if ends_with_keyword(before) {
+                    if ends_with_keyword(before)
+                    {
                         segments.push(before);
                         connectors.push(Connector::And);
                         i += 3; // skip "And"
@@ -781,12 +877,15 @@ fn tokenize_into_segments(input: &str) -> Result<(Vec<&str>, Vec<Connector>), St
             }
 
             // Try "Or" connector: "Or" followed by an uppercase letter
-            if rest_lower.starts_with("or") && rest.len() > 2 {
+            if rest_lower.starts_with("or") && rest.len() > 2
+            {
                 let next = rest.as_bytes()[2] as char;
-                if next.is_uppercase() {
+                if next.is_uppercase()
+                {
                     // Check that the preceding text ends with a valid keyword
                     let before = &input[segment_start..i];
-                    if ends_with_keyword(before) {
+                    if ends_with_keyword(before)
+                    {
                         segments.push(before);
                         connectors.push(Connector::Or);
                         i += 2; // skip "Or"
@@ -801,7 +900,8 @@ fn tokenize_into_segments(input: &str) -> Result<(Vec<&str>, Vec<Connector>), St
     }
 
     // Push the last segment
-    if segment_start < input.len() {
+    if segment_start < input.len()
+    {
         segments.push(&input[segment_start..]);
     }
 
@@ -818,8 +918,10 @@ fn tokenize_into_segments(input: &str) -> Result<(Vec<&str>, Vec<Connector>), St
 /// - "NameContaining" -> true (ends with "Containing" keyword)
 ///
 /// 此函数对于正确识别连接符 "And"/"Or" 至关重要。
-fn ends_with_keyword(text: &str) -> bool {
-    if text.is_empty() {
+fn ends_with_keyword(text: &str) -> bool
+{
+    if text.is_empty()
+    {
         return false;
     }
 
@@ -827,17 +929,21 @@ fn ends_with_keyword(text: &str) -> bool {
     let bytes = text.as_bytes();
     let mut last_boundary = None;
 
-    for i in 1..bytes.len() {
+    for i in 1..bytes.len()
+    {
         let prev = bytes[i - 1] as char;
         let curr = bytes[i] as char;
-        if curr.is_uppercase() && prev.is_lowercase() {
+        if curr.is_uppercase() && prev.is_lowercase()
+        {
             last_boundary = Some(i);
         }
     }
 
-    if let Some(pos) = last_boundary {
+    if let Some(pos) = last_boundary
+    {
         // Try to match a keyword starting at the last camelCase boundary
-        if let Some((_pt, consumed)) = find_keyword(&text[pos..]) {
+        if let Some((_pt, consumed)) = find_keyword(&text[pos..])
+        {
             // The keyword must consume exactly the remaining text
             return pos + consumed == text.len();
         }
@@ -863,7 +969,8 @@ fn ends_with_keyword(text: &str) -> bool {
 ///
 /// Keywords are ordered longest-first to prevent prefix matches.
 /// 关键字按最长优先排序以防止前缀匹配。
-fn find_keyword(text: &str) -> Option<(PartType, usize)> {
+fn find_keyword(text: &str) -> Option<(PartType, usize)>
+{
     let lower = text.to_lowercase();
 
     let keywords: &[(&str, PartType)] = &[
@@ -897,11 +1004,14 @@ fn find_keyword(text: &str) -> Option<(PartType, usize)> {
         ("within", PartType::Within),
     ];
 
-    for (keyword, pt) in keywords {
-        if lower.starts_with(keyword) {
+    for (keyword, pt) in keywords
+    {
+        if lower.starts_with(keyword)
+        {
             let consumed = keyword.len();
             // Verify word boundary: what follows must be end-of-string or an uppercase letter
-            if text.len() == consumed {
+            if text.len() == consumed
+            {
                 return Some((*pt, consumed));
             }
             let next = text
@@ -909,7 +1019,8 @@ fn find_keyword(text: &str) -> Option<(PartType, usize)> {
                 .get(consumed)
                 .map(|&b| b as char)
                 .unwrap_or('\0');
-            if next.is_uppercase() {
+            if next.is_uppercase()
+            {
                 return Some((*pt, consumed));
             }
         }
@@ -920,8 +1031,10 @@ fn find_keyword(text: &str) -> Option<(PartType, usize)> {
 
 /// Parse a single segment (property + keyword) into a Part.
 /// 将单个段（属性 + 关键字）解析为 Part。
-fn parse_single_segment(text: &str) -> Result<Part, String> {
-    if text.is_empty() {
+fn parse_single_segment(text: &str) -> Result<Part, String>
+{
+    if text.is_empty()
+    {
         return Err("Empty segment".to_string());
     }
 
@@ -930,15 +1043,19 @@ fn parse_single_segment(text: &str) -> Result<Part, String> {
     // Try all possible split positions (each uppercase letter after lowercase)
     // and check if the remainder starts with a recognized keyword.
     // Pick the longest valid property+keyword combination.
-    for i in 1..bytes.len() {
+    for i in 1..bytes.len()
+    {
         let prev = bytes[i - 1] as char;
         let curr = bytes[i] as char;
-        if curr.is_uppercase() && prev.is_lowercase() {
+        if curr.is_uppercase() && prev.is_lowercase()
+        {
             let candidate_keyword = &text[i..];
 
-            if let Some((pt, consumed)) = find_keyword(candidate_keyword) {
+            if let Some((pt, consumed)) = find_keyword(candidate_keyword)
+            {
                 let remaining = &candidate_keyword[consumed..];
-                if remaining.is_empty() {
+                if remaining.is_empty()
+                {
                     let prop = first_char_to_lower(&text[..i]);
                     return Ok(Part::new(prop, pt));
                 }
@@ -953,12 +1070,15 @@ fn parse_single_segment(text: &str) -> Result<Part, String> {
 
 /// Build an AndOr tree from flat parts and connectors.
 /// 从扁平部件和连接符构建 AndOr 树。
-fn build_and_or_tree(parts: Vec<Part>, connectors: &[Connector]) -> Result<AndOr, String> {
-    if parts.is_empty() {
+fn build_and_or_tree(parts: Vec<Part>, connectors: &[Connector]) -> Result<AndOr, String>
+{
+    if parts.is_empty()
+    {
         return Err("No parts to build tree from".to_string());
     }
 
-    if parts.len() == 1 {
+    if parts.len() == 1
+    {
         return Ok(AndOr::part(parts.into_iter().next().unwrap()));
     }
 
@@ -970,10 +1090,12 @@ fn build_and_or_tree(parts: Vec<Part>, connectors: &[Connector]) -> Result<AndOr
     let mut iter = parts.into_iter();
     let mut current = AndOr::part(iter.next().unwrap());
 
-    for (i, part) in iter.enumerate() {
+    for (i, part) in iter.enumerate()
+    {
         let connector = connectors.get(i).copied().unwrap_or(Connector::And);
         let node = AndOr::part(part);
-        current = match connector {
+        current = match connector
+        {
             Connector::And => AndOr::and(current, node),
             Connector::Or => AndOr::or(current, node),
         };
@@ -984,15 +1106,18 @@ fn build_and_or_tree(parts: Vec<Part>, connectors: &[Connector]) -> Result<AndOr
 
 /// Take leading digits from a string, return digits portion.
 /// 从字符串开头获取数字部分。
-fn take_digits(s: &str) -> (&str, &str) {
+fn take_digits(s: &str) -> (&str, &str)
+{
     let end = s.chars().take_while(|c| c.is_ascii_digit()).count();
     (&s[..end], &s[end..])
 }
 
 /// Convert the first character to lowercase.
 /// 将第一个字符转换为小写。
-fn first_char_to_lower(s: &str) -> String {
-    if s.is_empty() {
+fn first_char_to_lower(s: &str) -> String
+{
+    if s.is_empty()
+    {
         return String::new();
     }
     let mut chars = s.chars();
@@ -1003,8 +1128,10 @@ fn first_char_to_lower(s: &str) -> String {
 
 /// Parse order-by clauses from the order-by portion of a method name.
 /// 从方法名的排序部分解析排序子句。
-fn parse_order_by_clauses(order_part: &str) -> Vec<OrderBy> {
-    if order_part.is_empty() {
+fn parse_order_by_clauses(order_part: &str) -> Vec<OrderBy>
+{
+    if order_part.is_empty()
+    {
         return Vec::new();
     }
 
@@ -1012,12 +1139,15 @@ fn parse_order_by_clauses(order_part: &str) -> Vec<OrderBy> {
     let mut current = String::new();
     let mut chars = order_part.chars().peekable();
 
-    while let Some(c) = chars.next() {
-        if c.is_uppercase() && !current.is_empty() {
+    while let Some(c) = chars.next()
+    {
+        if c.is_uppercase() && !current.is_empty()
+        {
             let rest: String = std::iter::once(c).chain(chars.clone()).collect();
             let rest_lower = rest.to_lowercase();
 
-            if rest_lower.starts_with("asc") {
+            if rest_lower.starts_with("asc")
+            {
                 let field = first_char_to_lower(&current);
                 orders.push(OrderBy::new(field, OrderDirection::Asc));
                 current.clear();
@@ -1026,7 +1156,8 @@ fn parse_order_by_clauses(order_part: &str) -> Vec<OrderBy> {
                 continue;
             }
 
-            if rest_lower.starts_with("desc") {
+            if rest_lower.starts_with("desc")
+            {
                 let field = first_char_to_lower(&current);
                 orders.push(OrderBy::new(field, OrderDirection::Desc));
                 current.clear();
@@ -1039,7 +1170,8 @@ fn parse_order_by_clauses(order_part: &str) -> Vec<OrderBy> {
         current.push(c);
     }
 
-    if !current.is_empty() {
+    if !current.is_empty()
+    {
         let field = first_char_to_lower(&current);
         orders.push(OrderBy::new(field, OrderDirection::Asc));
     }
@@ -1055,17 +1187,20 @@ fn parse_order_by_clauses(order_part: &str) -> Vec<OrderBy> {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
-    fn parse(source: &str) -> PartTree {
+    fn parse(source: &str) -> PartTree
+    {
         PartTree::parse(source).unwrap_or_else(|e| panic!("Failed to parse '{}': {}", source, e))
     }
 
     // === Basic parsing tests / 基础解析测试 ===
 
     #[test]
-    fn test_simple_find_by() {
+    fn test_simple_find_by()
+    {
         let tree = parse("findByName");
         assert_eq!(tree.subject(), Subject::Find);
         let parts = tree.parts();
@@ -1075,7 +1210,8 @@ mod tests {
     }
 
     #[test]
-    fn test_find_by_with_keyword() {
+    fn test_find_by_with_keyword()
+    {
         let tree = parse("findByNameLike");
         assert_eq!(tree.parts()[0].part_type, PartType::Like);
 
@@ -1096,7 +1232,8 @@ mod tests {
     }
 
     #[test]
-    fn test_find_by_and() {
+    fn test_find_by_and()
+    {
         let tree = parse("findByNameAndAge");
         let parts = tree.parts();
         assert_eq!(parts.len(), 2);
@@ -1105,7 +1242,8 @@ mod tests {
     }
 
     #[test]
-    fn test_find_by_or() {
+    fn test_find_by_or()
+    {
         let tree = parse("findByNameOrEmail");
         let parts = tree.parts();
         assert_eq!(parts.len(), 2);
@@ -1114,7 +1252,8 @@ mod tests {
     }
 
     #[test]
-    fn test_complex_and_or() {
+    fn test_complex_and_or()
+    {
         // "findByNameAndAgeGreaterThanOrEmailLike"
         // Should parse as: name AND (age > ?) OR (email LIKE ?)
         let tree = parse("findByNameAndAgeGreaterThanOrEmailLike");
@@ -1129,7 +1268,8 @@ mod tests {
     }
 
     #[test]
-    fn test_order_by() {
+    fn test_order_by()
+    {
         let tree = parse("findByNameOrderByAgeAsc");
         assert_eq!(tree.order_by().len(), 1);
         assert_eq!(tree.order_by()[0].property, "age");
@@ -1146,13 +1286,15 @@ mod tests {
     }
 
     #[test]
-    fn test_distinct() {
+    fn test_distinct()
+    {
         let tree = parse("findDistinctByName");
         assert!(tree.is_distinct());
     }
 
     #[test]
-    fn test_first_top() {
+    fn test_first_top()
+    {
         let tree = parse("findFirst10ByName");
         assert_eq!(tree.limit(), Some(10));
 
@@ -1164,7 +1306,8 @@ mod tests {
     }
 
     #[test]
-    fn test_subjects() {
+    fn test_subjects()
+    {
         assert_eq!(parse("readByName").subject(), Subject::Read);
         assert_eq!(parse("getByName").subject(), Subject::Get);
         assert_eq!(parse("queryByName").subject(), Subject::Query);
@@ -1175,7 +1318,8 @@ mod tests {
     }
 
     #[test]
-    fn test_null_keywords() {
+    fn test_null_keywords()
+    {
         let tree = parse("findByDeletedIsNull");
         assert_eq!(tree.parts()[0].part_type, PartType::IsNull);
 
@@ -1187,7 +1331,8 @@ mod tests {
     }
 
     #[test]
-    fn test_between_in() {
+    fn test_between_in()
+    {
         let tree = parse("findByAgeBetween");
         assert_eq!(tree.parts()[0].part_type, PartType::Between);
 
@@ -1199,7 +1344,8 @@ mod tests {
     }
 
     #[test]
-    fn test_starting_ending_containing() {
+    fn test_starting_ending_containing()
+    {
         let tree = parse("findByNameStartingWith");
         assert_eq!(tree.parts()[0].part_type, PartType::StartingWith);
 
@@ -1214,7 +1360,8 @@ mod tests {
     }
 
     #[test]
-    fn test_is_and_is_not() {
+    fn test_is_and_is_not()
+    {
         let tree = parse("findByNameIs");
         assert_eq!(tree.parts()[0].part_type, PartType::Is);
 
@@ -1223,7 +1370,8 @@ mod tests {
     }
 
     #[test]
-    fn test_before_after() {
+    fn test_before_after()
+    {
         let tree = parse("findByCreatedBefore");
         assert_eq!(tree.parts()[0].part_type, PartType::Before);
 
@@ -1232,7 +1380,8 @@ mod tests {
     }
 
     #[test]
-    fn test_and_or_tree() {
+    fn test_and_or_tree()
+    {
         let tree = parse("findByNameAndAgeOrEmail");
         let tree_node = tree.tree().unwrap();
         let all_parts = tree_node.all_parts();
@@ -1240,7 +1389,8 @@ mod tests {
     }
 
     #[test]
-    fn test_collection_returning() {
+    fn test_collection_returning()
+    {
         assert!(parse("findByName").is_collection_returning());
         assert!(parse("readByName").is_collection_returning());
         assert!(parse("queryByName").is_collection_returning());
@@ -1250,7 +1400,8 @@ mod tests {
     }
 
     #[test]
-    fn test_part_type_argument_counts() {
+    fn test_part_type_argument_counts()
+    {
         assert!(PartType::SimpleProperty.needs_single_argument());
         assert!(PartType::LessThan.needs_single_argument());
         assert!(PartType::Like.needs_single_argument());
@@ -1261,19 +1412,22 @@ mod tests {
     }
 
     #[test]
-    fn test_part_display() {
+    fn test_part_display()
+    {
         let part = Part::new("age", PartType::GreaterThan);
         assert_eq!(part.to_string(), "age GREATER_THAN");
     }
 
     #[test]
-    fn test_order_by_display() {
+    fn test_order_by_display()
+    {
         let ob = OrderBy::new("name", OrderDirection::Desc);
         assert_eq!(ob.to_string(), "name DESC");
     }
 
     #[test]
-    fn test_invalid_names() {
+    fn test_invalid_names()
+    {
         assert!(PartTree::parse("").is_err());
         assert!(PartTree::parse("doSomething").is_err());
         assert!(PartTree::parse("find").is_err());
@@ -1281,14 +1435,16 @@ mod tests {
     }
 
     #[test]
-    fn test_subject_display() {
+    fn test_subject_display()
+    {
         assert_eq!(Subject::Find.to_string(), "FIND");
         assert_eq!(Subject::Count.to_string(), "COUNT");
         assert_eq!(Subject::Delete.to_string(), "DELETE");
     }
 
     #[test]
-    fn test_keyword_display() {
+    fn test_keyword_display()
+    {
         assert_eq!(Keyword::Distinct.to_string(), "DISTINCT");
         assert_eq!(Keyword::First(10).to_string(), "FIRST 10");
         assert_eq!(Keyword::Top(5).to_string(), "TOP 5");
@@ -1297,7 +1453,8 @@ mod tests {
     // === Complex real-world tests / 复杂真实场景测试 ===
 
     #[test]
-    fn test_count_by_status_in() {
+    fn test_count_by_status_in()
+    {
         let tree = parse("countByStatusIn");
         assert!(tree.is_count_projection());
         assert_eq!(tree.parts().len(), 1);
@@ -1306,7 +1463,8 @@ mod tests {
     }
 
     #[test]
-    fn test_find_top_10_by_created_at_after_order_by_name_asc() {
+    fn test_find_top_10_by_created_at_after_order_by_name_asc()
+    {
         let tree = parse("findTop10ByCreatedAtAfterOrderByNameAsc");
         assert_eq!(tree.limit(), Some(10));
         assert_eq!(tree.parts().len(), 1);
@@ -1318,7 +1476,8 @@ mod tests {
     }
 
     #[test]
-    fn test_find_distinct_by_name_and_age_order_by_name_desc() {
+    fn test_find_distinct_by_name_and_age_order_by_name_desc()
+    {
         let tree = parse("findDistinctByNameAndAgeOrderByNameDesc");
         assert!(tree.is_distinct());
         assert_eq!(tree.parts().len(), 2);
@@ -1329,7 +1488,8 @@ mod tests {
     }
 
     #[test]
-    fn test_delete_by_active_false() {
+    fn test_delete_by_active_false()
+    {
         let tree = parse("deleteByActiveFalse");
         assert!(tree.is_delete());
         assert_eq!(tree.parts().len(), 1);
@@ -1338,7 +1498,8 @@ mod tests {
     }
 
     #[test]
-    fn test_exists_by_email_and_active_true() {
+    fn test_exists_by_email_and_active_true()
+    {
         let tree = parse("existsByEmailAndActiveTrue");
         assert!(tree.is_exists_projection());
         assert_eq!(tree.parts().len(), 2);
@@ -1348,7 +1509,8 @@ mod tests {
     }
 
     #[test]
-    fn test_find_by_age_between_and_name_containing() {
+    fn test_find_by_age_between_and_name_containing()
+    {
         let tree = parse("findByAgeBetweenAndNameContaining");
         let parts = tree.parts();
         assert_eq!(parts.len(), 2);
@@ -1359,7 +1521,8 @@ mod tests {
     }
 
     #[test]
-    fn test_find_by_name_starting_with_and_email_ending_with() {
+    fn test_find_by_name_starting_with_and_email_ending_with()
+    {
         let tree = parse("findByNameStartingWithAndEmailEndingWith");
         let parts = tree.parts();
         assert_eq!(parts.len(), 2);
@@ -1370,7 +1533,8 @@ mod tests {
     }
 
     #[test]
-    fn test_find_by_status_is_not_null_and_name_not_like() {
+    fn test_find_by_status_is_not_null_and_name_not_like()
+    {
         let tree = parse("findByStatusIsNotNullAndNameNotLike");
         let parts = tree.parts();
         assert_eq!(parts.len(), 2);
@@ -1381,7 +1545,8 @@ mod tests {
     }
 
     #[test]
-    fn test_find_by_name_or_email_or_phone() {
+    fn test_find_by_name_or_email_or_phone()
+    {
         let tree = parse("findByNameOrEmailOrPhone");
         let parts = tree.parts();
         assert_eq!(parts.len(), 3);
@@ -1391,7 +1556,8 @@ mod tests {
     }
 
     #[test]
-    fn test_part_with_ignore_case() {
+    fn test_part_with_ignore_case()
+    {
         let part = Part::with_ignore_case("name", PartType::Like, true);
         assert!(part.ignore_case);
         assert_eq!(part.property_path, "name");
@@ -1401,7 +1567,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multiple_order_by() {
+    fn test_multiple_order_by()
+    {
         let tree = parse("findByActiveTrueOrderByLastNameAscFirstNameAscAgeDesc");
         assert_eq!(tree.order_by().len(), 3);
         assert_eq!(tree.order_by()[0].property, "lastName");
@@ -1413,7 +1580,8 @@ mod tests {
     }
 
     #[test]
-    fn test_camel_case_property() {
+    fn test_camel_case_property()
+    {
         let tree = parse("findByFirstNameAndLastName");
         let parts = tree.parts();
         assert_eq!(parts.len(), 2);
@@ -1422,7 +1590,8 @@ mod tests {
     }
 
     #[test]
-    fn test_camel_case_property_with_keyword() {
+    fn test_camel_case_property_with_keyword()
+    {
         let tree = parse("findByFirstNameStartingWithAndLastNameContaining");
         let parts = tree.parts();
         assert_eq!(parts.len(), 2);
@@ -1433,20 +1602,23 @@ mod tests {
     }
 
     #[test]
-    fn test_empty_method_name() {
+    fn test_empty_method_name()
+    {
         assert!(PartTree::parse("").is_err());
         assert!(PartTree::parse("   ").is_err());
     }
 
     #[test]
-    fn test_whitespace_trimmed() {
+    fn test_whitespace_trimmed()
+    {
         let tree = parse("  findByName  ");
         assert_eq!(tree.subject(), Subject::Find);
         assert_eq!(tree.parts().len(), 1);
     }
 
     #[test]
-    fn test_less_than_vs_less_than_equal() {
+    fn test_less_than_vs_less_than_equal()
+    {
         // Verify that LessThanEqual is correctly distinguished from LessThan
         let tree = parse("findByAgeLessThan");
         assert_eq!(tree.parts()[0].part_type, PartType::LessThan);
@@ -1456,7 +1628,8 @@ mod tests {
     }
 
     #[test]
-    fn test_greater_than_or_with_keyword() {
+    fn test_greater_than_or_with_keyword()
+    {
         // "GreaterThan" followed by "Or" should NOT split at "Or" within "GreaterThanOr"
         // when "Or" is followed by a property. But in "AgeGreaterThanOrEmail",
         // "Or" IS a connector because "AgeGreaterThan" is a valid combination.

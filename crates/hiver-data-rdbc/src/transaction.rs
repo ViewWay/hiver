@@ -19,7 +19,8 @@ use crate::{
 
 /// Transaction isolation level
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum IsolationLevel {
+pub enum IsolationLevel
+{
     /// Read uncommitted isolation level
     ReadUncommitted,
     /// Read committed isolation level
@@ -30,10 +31,13 @@ pub enum IsolationLevel {
     Serializable,
 }
 
-impl IsolationLevel {
+impl IsolationLevel
+{
     /// Returns the SQL string for this isolation level
-    pub fn as_sql(&self) -> &str {
-        match self {
+    pub fn as_sql(&self) -> &str
+    {
+        match self
+        {
             IsolationLevel::ReadUncommitted => "READ UNCOMMITTED",
             IsolationLevel::ReadCommitted => "READ COMMITTED",
             IsolationLevel::RepeatableRead => "REPEATABLE READ",
@@ -43,7 +47,8 @@ impl IsolationLevel {
 }
 
 /// Internal trait for transaction operations
-pub(crate) trait TransactionInner: Send + Sync {
+pub(crate) trait TransactionInner: Send + Sync
+{
     fn execute(
         &self,
         sql: &str,
@@ -69,14 +74,17 @@ pub(crate) trait TransactionInner: Send + Sync {
 }
 
 /// Transaction
-pub struct Transaction {
+pub struct Transaction
+{
     inner: Arc<dyn TransactionInner>,
     committed: bool,
     rolled_back: bool,
 }
 
-impl Clone for Transaction {
-    fn clone(&self) -> Self {
+impl Clone for Transaction
+{
+    fn clone(&self) -> Self
+    {
         Self {
             inner: self.inner.clone(),
             committed: self.committed,
@@ -85,10 +93,12 @@ impl Clone for Transaction {
     }
 }
 
-impl Transaction {
+impl Transaction
+{
     /// Creates a new transaction wrapping the given inner implementation
     #[allow(private_interfaces)]
-    pub fn new(inner: Arc<dyn TransactionInner>) -> Self {
+    pub fn new(inner: Arc<dyn TransactionInner>) -> Self
+    {
         Self {
             inner,
             committed: false,
@@ -97,7 +107,8 @@ impl Transaction {
     }
 
     /// Returns true if the transaction is still active
-    pub fn is_active(&self) -> bool {
+    pub fn is_active(&self) -> bool
+    {
         !self.committed
             && !self.rolled_back
             && !self.inner.is_committed()
@@ -105,23 +116,28 @@ impl Transaction {
     }
 
     /// Returns true if the transaction has been committed
-    pub fn is_committed(&self) -> bool {
+    pub fn is_committed(&self) -> bool
+    {
         self.committed || self.inner.is_committed()
     }
 
     /// Returns true if the transaction has been rolled back
-    pub fn is_rolled_back(&self) -> bool {
+    pub fn is_rolled_back(&self) -> bool
+    {
         self.rolled_back || self.inner.is_rolled_back()
     }
 
     /// Returns the isolation level of this transaction
-    pub fn isolation_level(&self) -> IsolationLevel {
+    pub fn isolation_level(&self) -> IsolationLevel
+    {
         self.inner.isolation_level()
     }
 
     /// Executes a SQL statement within this transaction
-    pub async fn execute(&self, sql: &str) -> Result<u64> {
-        if !self.is_active() {
+    pub async fn execute(&self, sql: &str) -> Result<u64>
+    {
+        if !self.is_active()
+        {
             return Err(Error::Transaction("Transaction is not active".into()));
         }
         self.inner
@@ -131,8 +147,10 @@ impl Transaction {
     }
 
     /// Fetches all rows matching the given SQL query within this transaction
-    pub async fn fetch_all(&self, sql: &str) -> Result<Vec<Row>> {
-        if !self.is_active() {
+    pub async fn fetch_all(&self, sql: &str) -> Result<Vec<Row>>
+    {
+        if !self.is_active()
+        {
             return Err(Error::Transaction("Transaction is not active".into()));
         }
         self.inner
@@ -142,8 +160,10 @@ impl Transaction {
     }
 
     /// Fetches a single row matching the given SQL query within this transaction
-    pub async fn fetch_one(&self, sql: &str) -> Result<Option<Row>> {
-        if !self.is_active() {
+    pub async fn fetch_one(&self, sql: &str) -> Result<Option<Row>>
+    {
+        if !self.is_active()
+        {
             return Err(Error::Transaction("Transaction is not active".into()));
         }
         self.inner
@@ -153,8 +173,10 @@ impl Transaction {
     }
 
     /// Commits this transaction
-    pub async fn commit(&self) -> Result<()> {
-        if !self.is_active() {
+    pub async fn commit(&self) -> Result<()>
+    {
+        if !self.is_active()
+        {
             return Err(Error::Transaction("Transaction is not active".into()));
         }
         self.inner
@@ -164,8 +186,10 @@ impl Transaction {
     }
 
     /// Rolls back this transaction
-    pub async fn rollback(&self) -> Result<()> {
-        if !self.is_active() {
+    pub async fn rollback(&self) -> Result<()>
+    {
+        if !self.is_active()
+        {
             return Err(Error::Transaction("Transaction is not active".into()));
         }
         self.inner
@@ -175,9 +199,12 @@ impl Transaction {
     }
 }
 
-impl Drop for Transaction {
-    fn drop(&mut self) {
-        if self.is_active() {
+impl Drop for Transaction
+{
+    fn drop(&mut self)
+    {
+        if self.is_active()
+        {
             self.committed = true;
             // The underlying sqlx transaction will be rolled back on drop automatically.
         }
@@ -187,9 +214,11 @@ impl Drop for Transaction {
 /// Transaction manager
 pub struct TransactionManager;
 
-impl TransactionManager {
+impl TransactionManager
+{
     /// Creates a new transaction manager
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self
     }
 
@@ -206,12 +235,15 @@ impl TransactionManager {
     {
         let tx = client.begin_transaction().await?;
         let result = f(&tx).await;
-        match result {
-            Ok(val) => {
+        match result
+        {
+            Ok(val) =>
+            {
                 tx.commit().await?;
                 Ok(val)
             },
-            Err(e) => {
+            Err(e) =>
+            {
                 let _ = tx.rollback().await;
                 Err(e)
             },
@@ -219,8 +251,10 @@ impl TransactionManager {
     }
 }
 
-impl Default for TransactionManager {
-    fn default() -> Self {
+impl Default for TransactionManager
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -233,11 +267,13 @@ impl Default for TransactionManager {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_isolation_level_sql() {
+    fn test_isolation_level_sql()
+    {
         assert_eq!(IsolationLevel::ReadCommitted.as_sql(), "READ COMMITTED");
         assert_eq!(IsolationLevel::Serializable.as_sql(), "SERIALIZABLE");
     }

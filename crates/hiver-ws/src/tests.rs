@@ -7,9 +7,11 @@
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     #[test]
-    fn smoke_test() {
+    fn smoke_test()
+    {
         assert!(true, "hiver-ws test infrastructure working");
     }
 }

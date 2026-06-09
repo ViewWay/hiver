@@ -38,7 +38,8 @@ use hiver_router::{Middleware, Next};
 ///     .get("/", handler);
 /// ```
 #[derive(Clone)]
-pub struct LoggerMiddleware {
+pub struct LoggerMiddleware
+{
     /// Log request headers
     /// 记录请求headers
     pub log_headers: bool,
@@ -59,7 +60,8 @@ pub struct LoggerMiddleware {
 /// Log level for middleware output
 /// 中间件输出的日志级别
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum LogLevel {
+pub enum LogLevel
+{
     /// Debug level
     /// DEBUG 级别
     Debug,
@@ -71,10 +73,12 @@ pub enum LogLevel {
     Warn,
 }
 
-impl LoggerMiddleware {
+impl LoggerMiddleware
+{
     /// Create a new logger middleware
     /// 创建新的日志中间件
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             log_headers: false,
             include_query: true,
@@ -85,35 +89,41 @@ impl LoggerMiddleware {
 
     /// Enable header logging
     /// 启用header日志
-    pub fn log_headers(mut self, log: bool) -> Self {
+    pub fn log_headers(mut self, log: bool) -> Self
+    {
         self.log_headers = log;
         self
     }
 
     /// Include query string in path
     /// 路径中包含查询字符串
-    pub fn include_query(mut self, include: bool) -> Self {
+    pub fn include_query(mut self, include: bool) -> Self
+    {
         self.include_query = include;
         self
     }
 
     /// Set log level for successful requests
     /// 设置成功请求的日志级别
-    pub fn success_level(mut self, level: LogLevel) -> Self {
+    pub fn success_level(mut self, level: LogLevel) -> Self
+    {
         self.success_level = level;
         self
     }
 
     /// Set log level for failed requests
     /// 设置失败请求的日志级别
-    pub fn error_level(mut self, level: LogLevel) -> Self {
+    pub fn error_level(mut self, level: LogLevel) -> Self
+    {
         self.error_level = level;
         self
     }
 }
 
-impl Default for LoggerMiddleware {
-    fn default() -> Self {
+impl Default for LoggerMiddleware
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -127,7 +137,8 @@ where
         req: Request,
         state: Arc<S>,
         next: Next<S>,
-    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>> {
+    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>>
+    {
         let log_headers = self.log_headers;
         let include_query = self.include_query;
         let success_level = self.success_level;
@@ -135,9 +146,12 @@ where
 
         Box::pin(async move {
             let method = req.method();
-            let path = if include_query {
+            let path = if include_query
+            {
                 req.uri().to_string()
-            } else {
+            }
+            else
+            {
                 req.path().to_string()
             };
 
@@ -153,7 +167,8 @@ where
 
             // Log request with structured fields
             // 使用结构化字段记录请求
-            if log_headers {
+            if log_headers
+            {
                 tracing::info!(
                     target: "hiver.middleware.http",
                     method = %method,
@@ -162,7 +177,9 @@ where
                     headers = ?req.headers(),
                     "Request started"
                 );
-            } else {
+            }
+            else
+            {
                 tracing::info!(
                     target: "hiver.middleware.http",
                     method = %method,
@@ -178,10 +195,13 @@ where
 
             // Log response with status and timing
             // 记录响应状态和时间
-            match &response {
-                Ok(resp) => {
+            match &response
+            {
+                Ok(resp) =>
+                {
                     let status = resp.status().as_u16();
-                    let level = match success_level {
+                    let level = match success_level
+                    {
                         LogLevel::Debug => tracing::Level::DEBUG,
                         LogLevel::Info => tracing::Level::INFO,
                         LogLevel::Warn => tracing::Level::WARN,
@@ -189,7 +209,8 @@ where
 
                     // Color-coded logging based on status code
                     // 根据状态码进行颜色编码的日志记录
-                    if status >= 500 {
+                    if status >= 500
+                    {
                         tracing::error!(
                             target: "hiver.middleware.http",
                             method = %method,
@@ -199,7 +220,9 @@ where
                             client = ?client_ip,
                             "Server error"
                         );
-                    } else if status >= 400 {
+                    }
+                    else if status >= 400
+                    {
                         tracing::warn!(
                             target: "hiver.middleware.http",
                             method = %method,
@@ -209,9 +232,13 @@ where
                             client = ?client_ip,
                             "Client error"
                         );
-                    } else {
-                        match level {
-                            tracing::Level::DEBUG => {
+                    }
+                    else
+                    {
+                        match level
+                        {
+                            tracing::Level::DEBUG =>
+                            {
                                 tracing::debug!(
                                     target: "hiver.middleware.http",
                                     method = %method,
@@ -221,7 +248,8 @@ where
                                     "Completed"
                                 );
                             },
-                            tracing::Level::INFO => {
+                            tracing::Level::INFO =>
+                            {
                                 tracing::info!(
                                     target: "hiver.middleware.http",
                                     method = %method,
@@ -231,7 +259,8 @@ where
                                     "Completed"
                                 );
                             },
-                            tracing::Level::WARN => {
+                            tracing::Level::WARN =>
+                            {
                                 tracing::warn!(
                                     target: "hiver.middleware.http",
                                     method = %method,
@@ -241,19 +270,24 @@ where
                                     "Completed"
                                 );
                             },
-                            _ => {},
+                            _ =>
+                            {},
                         }
                     }
                 },
-                Err(e) => {
-                    let level = match error_level {
+                Err(e) =>
+                {
+                    let level = match error_level
+                    {
                         LogLevel::Debug => tracing::Level::DEBUG,
                         LogLevel::Info => tracing::Level::INFO,
                         LogLevel::Warn => tracing::Level::WARN,
                     };
 
-                    match level {
-                        tracing::Level::DEBUG => {
+                    match level
+                    {
+                        tracing::Level::DEBUG =>
+                        {
                             tracing::debug!(
                                 target: "hiver.middleware.http",
                                 method = %method,
@@ -264,7 +298,8 @@ where
                                 "Failed"
                             );
                         },
-                        tracing::Level::INFO => {
+                        tracing::Level::INFO =>
+                        {
                             tracing::info!(
                                 target: "hiver.middleware.http",
                                 method = %method,
@@ -275,7 +310,8 @@ where
                                 "Failed"
                             );
                         },
-                        tracing::Level::WARN => {
+                        tracing::Level::WARN =>
+                        {
                             tracing::warn!(
                                 target: "hiver.middleware.http",
                                 method = %method,
@@ -286,7 +322,8 @@ where
                                 "Failed"
                             );
                         },
-                        _ => {},
+                        _ =>
+                        {},
                     }
                 },
             }
@@ -331,7 +368,8 @@ tokio::task_local! {
     static MDC_MAP: std::cell::RefCell<HashMap<String, String>>;
 }
 
-impl Mdc {
+impl Mdc
+{
     /// Put a value into MDC.
     /// The value will be visible in log output for the current async task.
     /// 向MDC中放入值。该值将显示在当前异步任务的日志输出中。
@@ -339,7 +377,8 @@ impl Mdc {
     /// This is a no-op if called outside a tokio task context (e.g., before
     /// the async runtime has started).
     /// 如果在 tokio 任务上下文之外调用（例如异步运行时启动前），则为空操作。
-    pub fn put(key: impl Into<String>, value: impl Into<String>) {
+    pub fn put(key: impl Into<String>, value: impl Into<String>)
+    {
         let key = key.into();
         let value = value.into();
         MDC_MAP
@@ -352,7 +391,8 @@ impl Mdc {
     /// Get a value from MDC by key.
     /// Returns `None` if the key does not exist or if called outside a task context.
     /// 按键从MDC中获取值。如果键不存在或在任务上下文之外调用，则返回 `None`。
-    pub fn get(key: &str) -> Option<String> {
+    pub fn get(key: &str) -> Option<String>
+    {
         MDC_MAP
             .try_with(|cell| cell.borrow().get(key).cloned())
             .ok()
@@ -361,7 +401,8 @@ impl Mdc {
 
     /// Remove a value from MDC by key.
     /// 按键从MDC中移除值。
-    pub fn remove(key: &str) {
+    pub fn remove(key: &str)
+    {
         MDC_MAP
             .try_with(|cell| {
                 cell.borrow_mut().remove(key);
@@ -371,7 +412,8 @@ impl Mdc {
 
     /// Clear all MDC values for the current async task.
     /// 清除当前异步任务的所有MDC值。
-    pub fn clear() {
+    pub fn clear()
+    {
         MDC_MAP
             .try_with(|cell| {
                 cell.borrow_mut().clear();
@@ -385,7 +427,8 @@ impl Mdc {
     /// 为当前异步任务初始化 MDC 上下文。
     /// 必须在需要使用 MDC 的异步任务开始时调用。
     /// 如果上下文尚不存在，则创建一个空上下文。
-    pub async fn init() {
+    pub async fn init()
+    {
         MDC_MAP
             .scope(std::cell::RefCell::new(HashMap::new()), async { /* context is now available */
             })
@@ -420,7 +463,8 @@ impl Mdc {
 
     /// Check if the MDC has a value for the given key.
     /// 检查 MDC 是否存在给定键的值。
-    pub fn has(key: &str) -> bool {
+    pub fn has(key: &str) -> bool
+    {
         MDC_MAP
             .try_with(|cell| cell.borrow().contains_key(key))
             .ok()
@@ -429,7 +473,8 @@ impl Mdc {
 
     /// Return the number of entries in the current MDC context.
     /// 返回当前 MDC 上下文中的条目数。
-    pub fn len() -> usize {
+    pub fn len() -> usize
+    {
         MDC_MAP
             .try_with(|cell| cell.borrow().len())
             .ok()
@@ -438,7 +483,8 @@ impl Mdc {
 
     /// Return all entries as a snapshot HashMap.
     /// 返回所有条目的快照 HashMap。
-    pub fn snapshot() -> HashMap<String, String> {
+    pub fn snapshot() -> HashMap<String, String>
+    {
         MDC_MAP
             .try_with(|cell| cell.borrow().clone())
             .ok()
@@ -447,7 +493,8 @@ impl Mdc {
 
     /// Check if the MDC context is empty.
     /// 检查 MDC 上下文是否为空。
-    pub fn is_empty() -> bool {
+    pub fn is_empty() -> bool
+    {
         Self::len() == 0
     }
 }
@@ -460,18 +507,21 @@ impl Mdc {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_logger_creation() {
+    fn test_logger_creation()
+    {
         let logger = LoggerMiddleware::new();
         assert!(!logger.log_headers);
         assert!(logger.include_query);
     }
 
     #[test]
-    fn test_logger_builder() {
+    fn test_logger_builder()
+    {
         let logger = LoggerMiddleware::new()
             .log_headers(true)
             .include_query(false)
@@ -483,13 +533,15 @@ mod tests {
     }
 
     #[test]
-    fn test_log_level() {
+    fn test_log_level()
+    {
         assert_eq!(LoggerMiddleware::new().success_level, LogLevel::Info);
         assert_eq!(LoggerMiddleware::new().error_level, LogLevel::Warn);
     }
 
     #[tokio::test]
-    async fn test_mdc_put_get() {
+    async fn test_mdc_put_get()
+    {
         Mdc::with_scope(async {
             Mdc::put("key1", "value1");
             assert_eq!(Mdc::get("key1"), Some("value1".to_string()));
@@ -501,7 +553,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_mdc_remove() {
+    async fn test_mdc_remove()
+    {
         Mdc::with_scope(async {
             Mdc::put("key1", "value1");
             assert!(Mdc::has("key1"));
@@ -514,7 +567,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_mdc_clear() {
+    async fn test_mdc_clear()
+    {
         Mdc::with_scope(async {
             Mdc::put("a", "1");
             Mdc::put("b", "2");
@@ -526,7 +580,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_mdc_snapshot() {
+    async fn test_mdc_snapshot()
+    {
         Mdc::with_scope(async {
             Mdc::put("x", "10");
             Mdc::put("y", "20");
@@ -539,7 +594,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_mdc_isolation_between_scopes() {
+    async fn test_mdc_isolation_between_scopes()
+    {
         Mdc::with_scope(async {
             Mdc::put("scope1_key", "scope1_val");
             assert_eq!(Mdc::get("scope1_key"), Some("scope1_val".to_string()));
@@ -555,7 +611,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_mdc_with_initial_values() {
+    async fn test_mdc_with_initial_values()
+    {
         let mut initial = HashMap::new();
         initial.insert("pre_set".to_string(), "value".to_string());
 
@@ -568,7 +625,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_mdc_persists_across_await() {
+    async fn test_mdc_persists_across_await()
+    {
         Mdc::with_scope(async {
             Mdc::put("persist_key", "persist_value");
             // Simulate an await point
@@ -579,7 +637,8 @@ mod tests {
     }
 
     #[test]
-    fn test_mdc_outside_task_context() {
+    fn test_mdc_outside_task_context()
+    {
         // Calling MDC methods outside of a tokio task context should not panic
         Mdc::put("key", "value");
         assert_eq!(Mdc::get("key"), None);

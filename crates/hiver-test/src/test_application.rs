@@ -53,7 +53,8 @@ use crate::{test_config::TestConfig, test_context::TestApplicationContext};
 /// Errors that can occur when starting or managing a test application.
 /// 启动或管理测试应用时可能发生的错误。
 #[derive(Debug, Error)]
-pub enum TestApplicationError {
+pub enum TestApplicationError
+{
     /// The application failed to start.
     /// 应用启动失败。
     #[error("failed to start test application: {0}")]
@@ -98,7 +99,8 @@ pub type TestAppResult<T> = Result<T, TestApplicationError>;
 ///     @LocalServerPort private int port;
 /// }
 /// ```
-pub struct TestApplication {
+pub struct TestApplication
+{
     /// Test application context holding beans and config.
     /// 持有bean和配置的测试应用上下文。
     context: TestApplicationContext,
@@ -129,7 +131,8 @@ pub struct TestApplication {
     pre_registered: Vec<(String, Arc<dyn Any + Send + Sync>)>,
 }
 
-impl TestApplication {
+impl TestApplication
+{
     /// Create a new default test application builder.
     /// 创建新的默认测试应用构建器。
     ///
@@ -141,7 +144,8 @@ impl TestApplication {
     ///     .start()
     ///     .await?;
     /// ```
-    pub fn builder() -> TestApplicationBuilder {
+    pub fn builder() -> TestApplicationBuilder
+    {
         TestApplicationBuilder::new()
     }
 
@@ -150,7 +154,8 @@ impl TestApplication {
     ///
     /// Equivalent to `@SpringBootTest` with no customisation.
     /// 等价于没有自定义的 `@SpringBootTest`。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             context: TestApplicationContext::new(),
             config: TestConfig::new(),
@@ -164,7 +169,8 @@ impl TestApplication {
 
     /// Build the application with the given configuration.
     /// 使用给定配置构建应用。
-    pub fn with_config(mut self, config: TestConfig) -> Self {
+    pub fn with_config(mut self, config: TestConfig) -> Self
+    {
         self.config = config;
         self
     }
@@ -174,7 +180,8 @@ impl TestApplication {
     ///
     /// Equivalent to `@ActiveProfiles("test")`.
     /// 等价于 `@ActiveProfiles("test")`。
-    pub fn with_profile(mut self, profile: impl Into<String>) -> Self {
+    pub fn with_profile(mut self, profile: impl Into<String>) -> Self
+    {
         self.config.profiles.push(profile.into());
         self
     }
@@ -184,11 +191,9 @@ impl TestApplication {
     ///
     /// Equivalent to `@TestConfiguration @Bean`.
     /// 等价于 `@TestConfiguration @Bean`。
-    pub fn with_bean<T: Any + Send + Sync + 'static>(
-        self,
-        name: impl Into<String>,
-        bean: T,
-    ) -> Self {
+    pub fn with_bean<T: Any + Send + Sync + 'static>(self, name: impl Into<String>, bean: T)
+    -> Self
+    {
         let rt = tokio::runtime::Handle::current();
         let name = name.into();
         rt.block_on(self.context.register_bean(name.as_str(), bean));
@@ -202,8 +207,10 @@ impl TestApplication {
     /// and marks the application as running.
     ///
     /// 初始化应用上下文，注册所有bean工厂，并将应用标记为运行中。
-    pub async fn start(mut self) -> TestAppResult<Self> {
-        if self.shut_down {
+    pub async fn start(mut self) -> TestAppResult<Self>
+    {
+        if self.shut_down
+        {
             return Err(TestApplicationError::ShutDown);
         }
 
@@ -219,7 +226,8 @@ impl TestApplication {
         // 应用通过构建器注册的bean工厂。
         {
             let factories = self.bean_factories.read().await;
-            for (name, factory) in factories.iter() {
+            for (name, factory) in factories.iter()
+            {
                 let bean = factory();
                 self.context.register_boxed_bean(name.as_str(), bean).await;
             }
@@ -228,7 +236,8 @@ impl TestApplication {
         // Apply pre-registered bean instances.
         // 应用预注册的bean实例。
         {
-            for (name, bean) in self.pre_registered.drain(..) {
+            for (name, bean) in self.pre_registered.drain(..)
+            {
                 let mut beans = self.context.beans_mut().await;
                 beans.insert(name, bean);
             }
@@ -257,8 +266,10 @@ impl TestApplication {
     ///
     /// Equivalent to Spring context close.
     /// 等价于Spring上下文关闭。
-    pub async fn shutdown(&mut self) {
-        if !self.shut_down {
+    pub async fn shutdown(&mut self)
+    {
+        if !self.shut_down
+        {
             self.context.clear_beans().await;
             self.context.clear_config().await;
             self.started = false;
@@ -272,19 +283,22 @@ impl TestApplication {
     ///
     /// Equivalent to `@LocalServerPort`.
     /// 等价于 `@LocalServerPort`。
-    pub fn port(&self) -> u16 {
+    pub fn port(&self) -> u16
+    {
         self.port
     }
 
     /// Returns a reference to the underlying test application context.
     /// 返回底层测试应用上下文的引用。
-    pub fn context(&self) -> &TestApplicationContext {
+    pub fn context(&self) -> &TestApplicationContext
+    {
         &self.context
     }
 
     /// Returns whether the application has been started.
     /// 返回应用是否已启动。
-    pub fn is_started(&self) -> bool {
+    pub fn is_started(&self) -> bool
+    {
         self.started && !self.shut_down
     }
 
@@ -295,7 +309,8 @@ impl TestApplication {
     ///
     /// Returns [`TestApplicationError::BeanNotFound`] if no bean of the
     /// requested type is registered.
-    pub async fn get_bean<T: 'static + Send + Sync + Clone>(&self) -> TestAppResult<T> {
+    pub async fn get_bean<T: 'static + Send + Sync + Clone>(&self) -> TestAppResult<T>
+    {
         self.context.get_bean::<T>().await.ok_or_else(|| {
             TestApplicationError::BeanNotFound(std::any::type_name::<T>().to_string())
         })
@@ -311,7 +326,8 @@ impl TestApplication {
     pub async fn get_bean_by_name<T: 'static + Send + Sync + Clone>(
         &self,
         name: &str,
-    ) -> TestAppResult<T> {
+    ) -> TestAppResult<T>
+    {
         self.context
             .get_bean_by_name::<T>(name)
             .await
@@ -320,38 +336,47 @@ impl TestApplication {
 
     /// Get a configuration property.
     /// 获取配置属性。
-    pub async fn get_property(&self, key: &str) -> Option<String> {
+    pub async fn get_property(&self, key: &str) -> Option<String>
+    {
         self.context.get_property(key).await
     }
 
     /// Set a configuration property at runtime.
     /// 在运行时设置配置属性。
-    pub async fn set_property(&self, key: impl Into<String>, value: impl Into<String>) {
+    pub async fn set_property(&self, key: impl Into<String>, value: impl Into<String>)
+    {
         self.context.set_property(key, value).await;
     }
 
     /// Get the active profiles.
     /// 获取活动配置文件。
-    pub fn profiles(&self) -> &[String] {
+    pub fn profiles(&self) -> &[String]
+    {
         &self.config.profiles
     }
 
     /// Get the test mode.
     /// 获取测试模式。
-    pub fn test_mode(&self) -> crate::test_config::TestMode {
+    pub fn test_mode(&self) -> crate::test_config::TestMode
+    {
         self.config.test_mode
     }
 }
 
-impl Default for TestApplication {
-    fn default() -> Self {
+impl Default for TestApplication
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl Drop for TestApplication {
-    fn drop(&mut self) {
-        if self.started && !self.shut_down {
+impl Drop for TestApplication
+{
+    fn drop(&mut self)
+    {
+        if self.started && !self.shut_down
+        {
             // Spawn a task to perform async cleanup.
             // 生成一个任务来执行异步清理。
             let context = self.context.clone();
@@ -392,7 +417,8 @@ impl Drop for TestApplication {
 ///     .start()
 ///     .await?;
 /// ```
-pub struct TestApplicationBuilder {
+pub struct TestApplicationBuilder
+{
     /// Resolved configuration for this build.
     /// 本次构建的解析配置。
     config: TestConfig,
@@ -406,10 +432,12 @@ pub struct TestApplicationBuilder {
     pre_registered: Vec<(String, Arc<dyn Any + Send + Sync>)>,
 }
 
-impl TestApplicationBuilder {
+impl TestApplicationBuilder
+{
     /// Create a new builder with default test configuration.
     /// 使用默认测试配置创建新的构建器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             config: TestConfig::new(),
             bean_factories: HashMap::new(),
@@ -419,7 +447,8 @@ impl TestApplicationBuilder {
 
     /// Set the test configuration directly.
     /// 直接设置测试配置。
-    pub fn with_config(mut self, config: TestConfig) -> Self {
+    pub fn with_config(mut self, config: TestConfig) -> Self
+    {
         self.config = config;
         self
     }
@@ -429,14 +458,16 @@ impl TestApplicationBuilder {
     ///
     /// Equivalent to `@ActiveProfiles({ "test", "security" })`.
     /// 等价于 `@ActiveProfiles({ "test", "security" })`。
-    pub fn with_profile(mut self, profile: impl Into<String>) -> Self {
+    pub fn with_profile(mut self, profile: impl Into<String>) -> Self
+    {
         self.config.profiles.push(profile.into());
         self
     }
 
     /// Set the test mode (unit, integration, e2e).
     /// 设置测试模式（unit、integration、e2e）。
-    pub fn with_test_mode(mut self, mode: crate::test_config::TestMode) -> Self {
+    pub fn with_test_mode(mut self, mode: crate::test_config::TestMode) -> Self
+    {
         self.config.test_mode = mode;
         self
     }
@@ -446,7 +477,8 @@ impl TestApplicationBuilder {
     ///
     /// Equivalent to `@TestPropertySource(properties = "...")`.
     /// 等价于 `@TestPropertySource(properties = "...")`。
-    pub fn with_property(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn with_property(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
+    {
         self.config.properties.insert(key.into(), value.into());
         self
     }
@@ -460,7 +492,8 @@ impl TestApplicationBuilder {
         mut self,
         name: impl Into<String>,
         bean: T,
-    ) -> Self {
+    ) -> Self
+    {
         self.pre_registered.push((name.into(), Arc::new(bean)));
         self
     }
@@ -484,14 +517,16 @@ impl TestApplicationBuilder {
 
     /// Set the server port (0 for random).
     /// 设置服务器端口（0表示随机）。
-    pub fn with_port(mut self, port: u16) -> Self {
+    pub fn with_port(mut self, port: u16) -> Self
+    {
         self.config.server.port = port;
         self
     }
 
     /// Set the database URL.
     /// 设置数据库URL。
-    pub fn with_database_url(mut self, url: impl Into<String>) -> Self {
+    pub fn with_database_url(mut self, url: impl Into<String>) -> Self
+    {
         self.config.database.url = Some(url.into());
         self.config.database.in_memory = false;
         self
@@ -499,7 +534,8 @@ impl TestApplicationBuilder {
 
     /// Use an in-memory database.
     /// 使用内存数据库。
-    pub fn with_in_memory_db(mut self) -> Self {
+    pub fn with_in_memory_db(mut self) -> Self
+    {
         self.config.database.in_memory = true;
         self.config.database.url = None;
         self
@@ -510,14 +546,16 @@ impl TestApplicationBuilder {
     ///
     /// Call [`TestApplication::start()`] to boot the application.
     /// 调用 [`TestApplication::start()`] 启动应用。
-    pub fn build(self) -> TestAppResult<TestApplication> {
+    pub fn build(self) -> TestAppResult<TestApplication>
+    {
         let mut app = TestApplication::new().with_config(self.config);
 
         // Store pre-registered beans directly on the app for later registration during start().
         // 将预注册的bean直接存储在app上，以便在start()期间注册。
         app.pre_registered = self.pre_registered;
 
-        for (name, factory) in self.bean_factories {
+        for (name, factory) in self.bean_factories
+        {
             app.bean_factories
                 .try_write()
                 .map_err(|_| {
@@ -531,14 +569,17 @@ impl TestApplicationBuilder {
 
     /// Build and immediately start the test application.
     /// 构建并立即启动测试应用。
-    pub async fn start(self) -> TestAppResult<TestApplication> {
+    pub async fn start(self) -> TestAppResult<TestApplication>
+    {
         let app = self.build()?;
         app.start().await
     }
 }
 
-impl Default for TestApplicationBuilder {
-    fn default() -> Self {
+impl Default for TestApplicationBuilder
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -555,11 +596,13 @@ impl Default for TestApplicationBuilder {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[tokio::test]
-    async fn test_default_builder_creates_app() {
+    async fn test_default_builder_creates_app()
+    {
         let app = TestApplicationBuilder::new()
             .build()
             .expect("build should succeed");
@@ -568,7 +611,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_builder_with_profile() {
+    async fn test_builder_with_profile()
+    {
         let app = TestApplicationBuilder::new()
             .with_profile("integration")
             .build()
@@ -577,7 +621,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_builder_with_properties() {
+    async fn test_builder_with_properties()
+    {
         let app = TestApplicationBuilder::new()
             .with_property("custom.key", "custom-value")
             .build()
@@ -586,7 +631,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_start_and_shutdown() {
+    async fn test_start_and_shutdown()
+    {
         let app = TestApplicationBuilder::new()
             .with_port(0)
             .start()
@@ -600,7 +646,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_with_bean_factory() {
+    async fn test_with_bean_factory()
+    {
         let app = TestApplicationBuilder::new()
             .with_bean_factory("counter", || 42_i32)
             .start()
@@ -615,7 +662,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_get_bean_not_found() {
+    async fn test_get_bean_not_found()
+    {
         let app = TestApplicationBuilder::new()
             .start()
             .await
@@ -626,7 +674,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_multiple_profiles() {
+    async fn test_multiple_profiles()
+    {
         let app = TestApplicationBuilder::new()
             .with_profile("test")
             .with_profile("security")
@@ -639,7 +688,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_with_test_mode() {
+    async fn test_with_test_mode()
+    {
         let app = TestApplicationBuilder::new()
             .with_test_mode(crate::test_config::TestMode::Integration)
             .build()
@@ -649,7 +699,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_set_and_get_property_at_runtime() {
+    async fn test_set_and_get_property_at_runtime()
+    {
         let app = TestApplicationBuilder::new()
             .start()
             .await
@@ -661,7 +712,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_builder_with_database_url() {
+    async fn test_builder_with_database_url()
+    {
         let app = TestApplicationBuilder::new()
             .with_database_url("jdbc:h2:mem:testdb")
             .build()
@@ -672,7 +724,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_drop_triggers_cleanup() {
+    async fn test_drop_triggers_cleanup()
+    {
         {
             let _app = TestApplicationBuilder::new()
                 .start()
@@ -687,7 +740,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_with_bean_instance() {
+    async fn test_with_bean_instance()
+    {
         let app = TestApplicationBuilder::new()
             .with_bean("greeting", String::from("hello, world"))
             .start()
@@ -702,7 +756,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_builder_with_in_memory_db() {
+    async fn test_builder_with_in_memory_db()
+    {
         let app = TestApplicationBuilder::new()
             .with_in_memory_db()
             .build()

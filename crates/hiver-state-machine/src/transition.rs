@@ -53,7 +53,8 @@ where
 {
     /// Create a new transition
     /// 创建新转换
-    pub fn new(source: S, target: S) -> Self {
+    pub fn new(source: S, target: S) -> Self
+    {
         Self {
             source,
             target,
@@ -65,13 +66,15 @@ where
 
     /// Create a transition builder
     /// 创建转换构建器
-    pub fn builder() -> TransitionBuilder<S, E> {
+    pub fn builder() -> TransitionBuilder<S, E>
+    {
         TransitionBuilder::new()
     }
 
     /// Set the event that triggers this transition
     /// 设置触发此转换的事件
-    pub fn with_event(mut self, event: E) -> Self {
+    pub fn with_event(mut self, event: E) -> Self
+    {
         self.event = Some(event);
         self
     }
@@ -81,7 +84,8 @@ where
     pub fn with_guard(
         mut self,
         guard: impl Fn(&StateContext<'_, S, E>) -> StateMachineResult<bool> + Send + Sync + 'static,
-    ) -> Self {
+    ) -> Self
+    {
         self.guard = Some(std::sync::Arc::new(guard));
         self
     }
@@ -91,19 +95,23 @@ where
     pub fn with_action(
         mut self,
         action: impl Fn(&StateContext<'_, S, E>) -> StateMachineResult<()> + Send + Sync + 'static,
-    ) -> Self {
+    ) -> Self
+    {
         self.action = Some(std::sync::Arc::new(action));
         self
     }
 
     /// Check if this transition matches the given state and event
     /// 检查此转换是否匹配给定的状态和事件
-    pub fn matches(&self, state: &S, event: &E) -> bool {
-        if &self.source != state {
+    pub fn matches(&self, state: &S, event: &E) -> bool
+    {
+        if &self.source != state
+        {
             return false;
         }
 
-        match &self.event {
+        match &self.event
+        {
             Some(transition_event) => transition_event == event,
             None => true, // Wildcard - matches any event
         }
@@ -115,7 +123,8 @@ where
     S: State + Clone + PartialEq + Eq + Debug,
     E: Event + Clone + Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("Transition")
             .field("source", &self.source)
             .field("target", &self.target)
@@ -145,7 +154,8 @@ where
 {
     /// Create a new transition builder
     /// 创建新转换构建器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             source: None,
             target: None,
@@ -157,21 +167,24 @@ where
 
     /// Set the source state
     /// 设置源状态
-    pub fn source(mut self, source: S) -> Self {
+    pub fn source(mut self, source: S) -> Self
+    {
         self.source = Some(source);
         self
     }
 
     /// Set the target state
     /// 设置目标状态
-    pub fn target(mut self, target: S) -> Self {
+    pub fn target(mut self, target: S) -> Self
+    {
         self.target = Some(target);
         self
     }
 
     /// Set the event
     /// 设置事件
-    pub fn event(mut self, event: E) -> Self {
+    pub fn event(mut self, event: E) -> Self
+    {
         self.event = Some(event);
         self
     }
@@ -181,7 +194,8 @@ where
     pub fn guard(
         mut self,
         guard: impl Fn(&StateContext<'_, S, E>) -> StateMachineResult<bool> + Send + Sync + 'static,
-    ) -> Self {
+    ) -> Self
+    {
         self.guard = Some(std::sync::Arc::new(guard));
         self
     }
@@ -191,14 +205,16 @@ where
     pub fn action(
         mut self,
         action: impl Fn(&StateContext<'_, S, E>) -> StateMachineResult<()> + Send + Sync + 'static,
-    ) -> Self {
+    ) -> Self
+    {
         self.action = Some(std::sync::Arc::new(action));
         self
     }
 
     /// Build the transition
     /// 构建转换
-    pub fn build(self) -> StateMachineResult<Transition<S, E>> {
+    pub fn build(self) -> StateMachineResult<Transition<S, E>>
+    {
         let source = self.source.ok_or_else(|| {
             StateMachineError::InvalidConfiguration("Source state not set".to_string())
         })?;
@@ -221,7 +237,8 @@ where
     S: State + Clone + PartialEq + Eq,
     E: Event + Clone,
 {
-    fn default() -> Self {
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -234,11 +251,13 @@ where
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    enum TestState {
+    enum TestState
+    {
         A,
         B,
     }
@@ -246,14 +265,16 @@ mod tests {
     impl State for TestState {}
 
     #[derive(Debug, Clone, PartialEq, Eq)]
-    enum TestEvent {
+    enum TestEvent
+    {
         Go,
     }
 
     impl Event for TestEvent {}
 
     #[test]
-    fn test_transition_builder() {
+    fn test_transition_builder()
+    {
         let transition = Transition::builder()
             .source(TestState::A)
             .target(TestState::B)
@@ -267,7 +288,8 @@ mod tests {
     }
 
     #[test]
-    fn test_transition_matches() {
+    fn test_transition_matches()
+    {
         let transition = Transition::builder()
             .source(TestState::A)
             .target(TestState::B)
@@ -280,7 +302,8 @@ mod tests {
     }
 
     #[test]
-    fn test_transition_with_guard() {
+    fn test_transition_with_guard()
+    {
         let transition = Transition::builder()
             .source(TestState::A)
             .target(TestState::B)
@@ -293,7 +316,8 @@ mod tests {
     }
 
     #[test]
-    fn test_transition_with_action() {
+    fn test_transition_with_action()
+    {
         let transition = Transition::builder()
             .source(TestState::A)
             .target(TestState::B)
@@ -306,7 +330,8 @@ mod tests {
     }
 
     #[test]
-    fn test_transition_builder_missing_source() {
+    fn test_transition_builder_missing_source()
+    {
         let result = Transition::<TestState, TestEvent>::builder()
             .target(TestState::B)
             .build();
@@ -314,7 +339,8 @@ mod tests {
     }
 
     #[test]
-    fn test_transition_builder_missing_target() {
+    fn test_transition_builder_missing_target()
+    {
         let result = Transition::<TestState, TestEvent>::builder()
             .source(TestState::A)
             .build();

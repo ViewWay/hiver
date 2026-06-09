@@ -42,7 +42,8 @@ use crate::{StatusCode, body::Body, response::Response};
 /// }
 /// ```
 #[derive(Debug, Clone, Serialize)]
-pub struct ControllerErrorResponse {
+pub struct ControllerErrorResponse
+{
     /// HTTP status code
     /// HTTP 状态码
     pub status: u16,
@@ -65,10 +66,12 @@ pub struct ControllerErrorResponse {
     pub timestamp: u64,
 }
 
-impl ControllerErrorResponse {
+impl ControllerErrorResponse
+{
     /// Create a new error response.
     /// 创建新的错误响应。
-    pub fn new(status: u16, message: impl Into<String>) -> Self {
+    pub fn new(status: u16, message: impl Into<String>) -> Self
+    {
         let status_code = StatusCode::from_u16(status);
         Self {
             status,
@@ -84,14 +87,16 @@ impl ControllerErrorResponse {
 
     /// Set the request path.
     /// 设置请求路径。
-    pub fn path(mut self, path: impl Into<String>) -> Self {
+    pub fn path(mut self, path: impl Into<String>) -> Self
+    {
         self.path = Some(path.into());
         self
     }
 
     /// Convert to an HTTP `Response`.
     /// 转换为 HTTP `Response`。
-    pub fn to_response(&self) -> Response {
+    pub fn to_response(&self) -> Response
+    {
         let json = serde_json::to_string(self).unwrap_or_default();
         Response::builder()
             .status(StatusCode::from_u16(self.status))
@@ -103,7 +108,8 @@ impl ControllerErrorResponse {
 
 /// Current unix timestamp in seconds.
 /// 当前 Unix 时间戳（秒）。
-fn current_timestamp() -> u64 {
+fn current_timestamp() -> u64
+{
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_or(0, |d| d.as_secs())
@@ -120,7 +126,8 @@ fn current_timestamp() -> u64 {
 /// `can_handle`, then produces an `ErrorResponse` via `handle`.
 ///
 /// 等价于 Spring 的 `@ExceptionHandler` 方法。
-pub trait ExceptionHandler: Send + Sync {
+pub trait ExceptionHandler: Send + Sync
+{
     /// Return `true` if this handler can process the given error.
     /// 如果此处理器能处理给定错误，返回 `true`。
     fn can_handle(&self, error: &dyn std::error::Error) -> bool;
@@ -138,28 +145,35 @@ pub trait ExceptionHandler: Send + Sync {
 /// 处理 404 Not Found 错误。
 pub struct NotFoundHandler;
 
-impl NotFoundHandler {
+impl NotFoundHandler
+{
     /// Create a new handler.
     /// 创建新处理器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self
     }
 }
 
-impl ExceptionHandler for NotFoundHandler {
-    fn can_handle(&self, error: &dyn std::error::Error) -> bool {
+impl ExceptionHandler for NotFoundHandler
+{
+    fn can_handle(&self, error: &dyn std::error::Error) -> bool
+    {
         // Match our own Error::NotFound variant and ResponseStatusException with 404
         let msg = error.to_string();
         msg.contains("Not Found") || msg.contains("not found") || msg.starts_with("404")
     }
 
-    fn handle(&self, error: &dyn std::error::Error) -> ControllerErrorResponse {
+    fn handle(&self, error: &dyn std::error::Error) -> ControllerErrorResponse
+    {
         ControllerErrorResponse::new(404, error.to_string())
     }
 }
 
-impl Default for NotFoundHandler {
-    fn default() -> Self {
+impl Default for NotFoundHandler
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -168,27 +182,34 @@ impl Default for NotFoundHandler {
 /// 处理 401 Unauthorized 错误。
 pub struct UnauthorizedHandler;
 
-impl UnauthorizedHandler {
+impl UnauthorizedHandler
+{
     /// Create a new handler.
     /// 创建新处理器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self
     }
 }
 
-impl ExceptionHandler for UnauthorizedHandler {
-    fn can_handle(&self, error: &dyn std::error::Error) -> bool {
+impl ExceptionHandler for UnauthorizedHandler
+{
+    fn can_handle(&self, error: &dyn std::error::Error) -> bool
+    {
         let msg = error.to_string();
         msg.contains("Unauthorized") || msg.starts_with("401")
     }
 
-    fn handle(&self, error: &dyn std::error::Error) -> ControllerErrorResponse {
+    fn handle(&self, error: &dyn std::error::Error) -> ControllerErrorResponse
+    {
         ControllerErrorResponse::new(401, error.to_string())
     }
 }
 
-impl Default for UnauthorizedHandler {
-    fn default() -> Self {
+impl Default for UnauthorizedHandler
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -197,27 +218,34 @@ impl Default for UnauthorizedHandler {
 /// 处理 403 Forbidden 错误。
 pub struct ForbiddenHandler;
 
-impl ForbiddenHandler {
+impl ForbiddenHandler
+{
     /// Create a new handler.
     /// 创建新处理器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self
     }
 }
 
-impl ExceptionHandler for ForbiddenHandler {
-    fn can_handle(&self, error: &dyn std::error::Error) -> bool {
+impl ExceptionHandler for ForbiddenHandler
+{
+    fn can_handle(&self, error: &dyn std::error::Error) -> bool
+    {
         let msg = error.to_string();
         msg.contains("Forbidden") || msg.starts_with("403")
     }
 
-    fn handle(&self, error: &dyn std::error::Error) -> ControllerErrorResponse {
+    fn handle(&self, error: &dyn std::error::Error) -> ControllerErrorResponse
+    {
         ControllerErrorResponse::new(403, error.to_string())
     }
 }
 
-impl Default for ForbiddenHandler {
-    fn default() -> Self {
+impl Default for ForbiddenHandler
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -226,27 +254,34 @@ impl Default for ForbiddenHandler {
 /// 处理 400 Bad Request / 验证错误。
 pub struct ValidationHandler;
 
-impl ValidationHandler {
+impl ValidationHandler
+{
     /// Create a new handler.
     /// 创建新处理器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self
     }
 }
 
-impl ExceptionHandler for ValidationHandler {
-    fn can_handle(&self, error: &dyn std::error::Error) -> bool {
+impl ExceptionHandler for ValidationHandler
+{
+    fn can_handle(&self, error: &dyn std::error::Error) -> bool
+    {
         let msg = error.to_string();
         msg.contains("Bad Request") || msg.contains("Validation") || msg.starts_with("400")
     }
 
-    fn handle(&self, error: &dyn std::error::Error) -> ControllerErrorResponse {
+    fn handle(&self, error: &dyn std::error::Error) -> ControllerErrorResponse
+    {
         ControllerErrorResponse::new(400, error.to_string())
     }
 }
 
-impl Default for ValidationHandler {
-    fn default() -> Self {
+impl Default for ValidationHandler
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -255,28 +290,35 @@ impl Default for ValidationHandler {
 /// 处理 500 Internal Server Error（兜底处理器）。
 pub struct InternalErrorHandler;
 
-impl InternalErrorHandler {
+impl InternalErrorHandler
+{
     /// Create a new handler.
     /// 创建新处理器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self
     }
 }
 
-impl ExceptionHandler for InternalErrorHandler {
-    fn can_handle(&self, _error: &dyn std::error::Error) -> bool {
+impl ExceptionHandler for InternalErrorHandler
+{
+    fn can_handle(&self, _error: &dyn std::error::Error) -> bool
+    {
         // Always matches -- used as fallback
         // 始终匹配 -- 用作兜底
         true
     }
 
-    fn handle(&self, error: &dyn std::error::Error) -> ControllerErrorResponse {
+    fn handle(&self, error: &dyn std::error::Error) -> ControllerErrorResponse
+    {
         ControllerErrorResponse::new(500, error.to_string())
     }
 }
 
-impl Default for InternalErrorHandler {
-    fn default() -> Self {
+impl Default for InternalErrorHandler
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -295,11 +337,13 @@ impl Default for InternalErrorHandler {
 /// 维护一个有序的 `ExceptionHandler` 实现列表。
 /// 第一个 `can_handle` 返回 `true` 的处理器将被使用。
 /// 如果没有处理器匹配，返回简单的 500 响应。
-pub struct ControllerAdvice {
+pub struct ControllerAdvice
+{
     handlers: Vec<Box<dyn ExceptionHandler>>,
 }
 
-impl ControllerAdvice {
+impl ControllerAdvice
+{
     /// Create a new advice with default handlers.
     /// 创建带默认处理器的新通知器。
     ///
@@ -309,7 +353,8 @@ impl ControllerAdvice {
     /// 3. `ForbiddenHandler`
     /// 4. `ValidationHandler`
     /// 5. `InternalErrorHandler` (fallback)
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             handlers: vec![
                 Box::new(NotFoundHandler::new()),
@@ -323,9 +368,12 @@ impl ControllerAdvice {
 
     /// Handle an error and produce an HTTP `Response`.
     /// 处理错误并产生 HTTP `Response`。
-    pub fn handle<E: std::error::Error + 'static>(&self, error: &E) -> Response {
-        for handler in &self.handlers {
-            if handler.can_handle(error) {
+    pub fn handle<E: std::error::Error + 'static>(&self, error: &E) -> Response
+    {
+        for handler in &self.handlers
+        {
+            if handler.can_handle(error)
+            {
                 let resp = handler.handle(error);
                 return resp.to_response();
             }
@@ -343,9 +391,12 @@ impl ControllerAdvice {
         &self,
         error: &E,
         path: impl Into<String>,
-    ) -> Response {
-        for handler in &self.handlers {
-            if handler.can_handle(error) {
+    ) -> Response
+    {
+        for handler in &self.handlers
+        {
+            if handler.can_handle(error)
+            {
                 let resp = handler.handle(error).path(path);
                 return resp.to_response();
             }
@@ -358,13 +409,16 @@ impl ControllerAdvice {
 
     /// Create a builder for fluent configuration.
     /// 创建用于流畅配置的构建器。
-    pub fn builder() -> ControllerAdviceBuilder {
+    pub fn builder() -> ControllerAdviceBuilder
+    {
         ControllerAdviceBuilder::new()
     }
 }
 
-impl Default for ControllerAdvice {
-    fn default() -> Self {
+impl Default for ControllerAdvice
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -387,15 +441,18 @@ impl Default for ControllerAdvice {
 ///     .default_handler(InternalErrorHandler::new())
 ///     .build();
 /// ```
-pub struct ControllerAdviceBuilder {
+pub struct ControllerAdviceBuilder
+{
     handlers: Vec<Box<dyn ExceptionHandler>>,
     has_fallback: bool,
 }
 
-impl ControllerAdviceBuilder {
+impl ControllerAdviceBuilder
+{
     /// Create a new builder.
     /// 创建新构建器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             handlers: Vec::new(),
             has_fallback: false,
@@ -404,7 +461,8 @@ impl ControllerAdviceBuilder {
 
     /// Add a handler to the chain.
     /// 向链中添加处理器。
-    pub fn handler<H: ExceptionHandler + 'static>(mut self, handler: H) -> Self {
+    pub fn handler<H: ExceptionHandler + 'static>(mut self, handler: H) -> Self
+    {
         self.handlers.push(Box::new(handler));
         self
     }
@@ -414,7 +472,8 @@ impl ControllerAdviceBuilder {
     ///
     /// This handler's `can_handle` should always return `true`.
     /// 此处理器的 `can_handle` 应始终返回 `true`。
-    pub fn default_handler<H: ExceptionHandler + 'static>(mut self, handler: H) -> Self {
+    pub fn default_handler<H: ExceptionHandler + 'static>(mut self, handler: H) -> Self
+    {
         // Remove any previous InternalErrorHandler-like fallback
         self.has_fallback = true;
         self.handlers.push(Box::new(handler));
@@ -426,17 +485,21 @@ impl ControllerAdviceBuilder {
     ///
     /// If no fallback handler was registered via `default_handler`,
     /// `InternalErrorHandler` is appended automatically.
-    pub fn build(self) -> ControllerAdvice {
+    pub fn build(self) -> ControllerAdvice
+    {
         let mut handlers = self.handlers;
-        if !self.has_fallback {
+        if !self.has_fallback
+        {
             handlers.push(Box::new(InternalErrorHandler::new()));
         }
         ControllerAdvice { handlers }
     }
 }
 
-impl Default for ControllerAdviceBuilder {
-    fn default() -> Self {
+impl Default for ControllerAdviceBuilder
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -445,8 +508,10 @@ impl Default for ControllerAdviceBuilder {
 // IntoResponse integration / IntoResponse 集成
 // ============================================================================
 
-impl crate::IntoResponse for ControllerErrorResponse {
-    fn into_response(self) -> Response {
+impl crate::IntoResponse for ControllerErrorResponse
+{
+    fn into_response(self) -> Response
+    {
         self.to_response()
     }
 }
@@ -463,12 +528,14 @@ impl crate::IntoResponse for ControllerErrorResponse {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::{IntoResponse, body::HttpBody, error::Error};
 
     #[test]
-    fn test_error_response_basic() {
+    fn test_error_response_basic()
+    {
         let resp = ControllerErrorResponse::new(404, "Not found");
         assert_eq!(resp.status, 404);
         assert_eq!(resp.error, "Not Found");
@@ -477,13 +544,15 @@ mod tests {
     }
 
     #[test]
-    fn test_error_response_with_path() {
+    fn test_error_response_with_path()
+    {
         let resp = ControllerErrorResponse::new(400, "Bad input").path("/api/users");
         assert_eq!(resp.path, Some("/api/users".to_string()));
     }
 
     #[test]
-    fn test_error_response_serialization() {
+    fn test_error_response_serialization()
+    {
         let resp = ControllerErrorResponse::new(404, "User not found").path("/api/users/123");
         let json = serde_json::to_string(&resp).unwrap();
         assert!(json.contains("\"status\":404"));
@@ -492,7 +561,8 @@ mod tests {
     }
 
     #[test]
-    fn test_not_found_handler() {
+    fn test_not_found_handler()
+    {
         let handler = NotFoundHandler::new();
         let err = Error::not_found("User");
         assert!(handler.can_handle(&err));
@@ -501,7 +571,8 @@ mod tests {
     }
 
     #[test]
-    fn test_unauthorized_handler() {
+    fn test_unauthorized_handler()
+    {
         let handler = UnauthorizedHandler::new();
         let err = Error::unauthorized();
         assert!(handler.can_handle(&err));
@@ -510,7 +581,8 @@ mod tests {
     }
 
     #[test]
-    fn test_forbidden_handler() {
+    fn test_forbidden_handler()
+    {
         let handler = ForbiddenHandler::new();
         let err = Error::forbidden();
         assert!(handler.can_handle(&err));
@@ -519,7 +591,8 @@ mod tests {
     }
 
     #[test]
-    fn test_validation_handler() {
+    fn test_validation_handler()
+    {
         let handler = ValidationHandler::new();
         let err = Error::bad_request("Invalid input");
         assert!(handler.can_handle(&err));
@@ -528,7 +601,8 @@ mod tests {
     }
 
     #[test]
-    fn test_internal_error_handler_always_matches() {
+    fn test_internal_error_handler_always_matches()
+    {
         let handler = InternalErrorHandler::new();
         let err = Error::internal("DB down");
         assert!(handler.can_handle(&err));
@@ -537,7 +611,8 @@ mod tests {
     }
 
     #[test]
-    fn test_controller_advice_default() {
+    fn test_controller_advice_default()
+    {
         let advice = ControllerAdvice::new();
 
         // Not found
@@ -558,7 +633,8 @@ mod tests {
     }
 
     #[test]
-    fn test_controller_advice_with_path() {
+    fn test_controller_advice_with_path()
+    {
         let advice = ControllerAdvice::new();
         let resp = advice.handle_with_path(&Error::not_found("User"), "/api/users/42");
         assert_eq!(resp.status().as_u16(), 404);
@@ -569,7 +645,8 @@ mod tests {
     }
 
     #[test]
-    fn test_controller_advice_builder() {
+    fn test_controller_advice_builder()
+    {
         let advice = ControllerAdvice::builder()
             .handler(NotFoundHandler::new())
             .handler(ValidationHandler::new())
@@ -590,7 +667,8 @@ mod tests {
     }
 
     #[test]
-    fn test_controller_advice_builder_auto_fallback() {
+    fn test_controller_advice_builder_auto_fallback()
+    {
         // Builder without explicit fallback should auto-add InternalErrorHandler
         let advice = ControllerAdvice::builder()
             .handler(NotFoundHandler::new())
@@ -601,15 +679,19 @@ mod tests {
     }
 
     #[test]
-    fn test_custom_handler() {
+    fn test_custom_handler()
+    {
         struct ConflictHandler;
 
-        impl ExceptionHandler for ConflictHandler {
-            fn can_handle(&self, error: &dyn std::error::Error) -> bool {
+        impl ExceptionHandler for ConflictHandler
+        {
+            fn can_handle(&self, error: &dyn std::error::Error) -> bool
+            {
                 error.to_string().contains("Conflict")
             }
 
-            fn handle(&self, error: &dyn std::error::Error) -> ControllerErrorResponse {
+            fn handle(&self, error: &dyn std::error::Error) -> ControllerErrorResponse
+            {
                 ControllerErrorResponse::new(409, error.to_string())
             }
         }
@@ -625,7 +707,8 @@ mod tests {
     }
 
     #[test]
-    fn test_error_response_to_response() {
+    fn test_error_response_to_response()
+    {
         let resp = ControllerErrorResponse::new(404, "Not found").into_response();
         assert_eq!(resp.status().as_u16(), 404);
     }

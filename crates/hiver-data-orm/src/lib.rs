@@ -99,18 +99,18 @@ pub mod sqlx;
 // Re-export the Model derive macro
 pub use active_record::{ActiveRecord, Count, Delete, OptimisticLock, Refresh, Save};
 pub use error::{Error, OrmError, OrmResult, Result};
+// Direct re-exports from split modules
+pub use executor::{AnnotatedQueryExecutor, QueryExecutor};
 pub use hiver_data_commons::ToSql;
 pub use hiver_data_macros::Model;
 pub use hiver_data_rdbc::QueryParam;
+pub use mapper::{
+    BeanRowMapper, FirstRowExtractor, MappingResultSetExtractor, ResultSetExtractor, RowMapper,
+};
 pub use migrations::{Migration, MigrationDirection, Migrator, Schema};
 pub use mock_connection::Connection;
 pub use model::{Column, ColumnType, Model, ModelMeta, SqlDialect};
 pub use query::{Limit, OrderBy, QueryBuilder, WhereClause};
-// Direct re-exports from split modules
-pub use executor::{AnnotatedQueryExecutor, QueryExecutor};
-pub use mapper::{
-    BeanRowMapper, FirstRowExtractor, MappingResultSetExtractor, ResultSetExtractor, RowMapper,
-};
 pub use query_metadata::{ParamStyle, QueryMetadata, QueryType};
 pub use relationships::{
     BelongsTo, BelongsToMany, EagerLoad, EagerQueryBuilder, HasMany, HasOne, OnDelete, Relation,
@@ -122,7 +122,8 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude {
+pub mod prelude
+{
     #[cfg(feature = "diesel")]
     pub use super::diesel::{DieselColumnType, DieselQuery, DieselSchema, OrderDirection};
     #[cfg(feature = "sqlx")]

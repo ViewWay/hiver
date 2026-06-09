@@ -3,7 +3,8 @@ use thiserror::Error;
 
 /// LDAP error types / LDAP错误类型
 #[derive(Error, Debug)]
-pub enum LdapError {
+pub enum LdapError
+{
     /// Connection error / 连接错误
     #[error("LDAP connection error: {0}")]
     Connection(String),

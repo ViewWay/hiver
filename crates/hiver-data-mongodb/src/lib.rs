@@ -98,7 +98,8 @@ pub use template::MongoTemplate;
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Re-exports of commonly used types / 常用类型预导入
-pub mod prelude {
+pub mod prelude
+{
     pub use super::{
         Aggregation, AggregationResults, BulkOperations, BulkWriteResult, FieldProjection,
         IndexBuilder, IndexDirection, IndexOperations, MongoClient, MongoError, MongoFilter,

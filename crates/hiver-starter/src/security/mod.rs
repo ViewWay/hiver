@@ -46,7 +46,8 @@ use crate::core::{ApplicationContext, AutoConfiguration};
 /// 参考 Spring Boot 的 `SecurityAutoConfiguration`。
 /// Based on Spring Boot's `SecurityAutoConfiguration`.
 #[derive(Debug)]
-pub struct SecurityAutoConfiguration {
+pub struct SecurityAutoConfiguration
+{
     /// 是否启用安全
     pub enabled: bool,
 
@@ -57,9 +58,11 @@ pub struct SecurityAutoConfiguration {
     pub jwt_expiration: u64,
 }
 
-impl SecurityAutoConfiguration {
+impl SecurityAutoConfiguration
+{
     /// 创建新的安全自动配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             enabled: true,
             jwt_secret: None,
@@ -68,7 +71,8 @@ impl SecurityAutoConfiguration {
     }
 
     /// 从配置创建
-    pub fn from_config(ctx: &ApplicationContext) -> Self {
+    pub fn from_config(ctx: &ApplicationContext) -> Self
+    {
         Self {
             enabled: ctx
                 .get_property("security.enabled")
@@ -83,26 +87,33 @@ impl SecurityAutoConfiguration {
     }
 }
 
-impl Default for SecurityAutoConfiguration {
-    fn default() -> Self {
+impl Default for SecurityAutoConfiguration
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl AutoConfiguration for SecurityAutoConfiguration {
-    fn name(&self) -> &'static str {
+impl AutoConfiguration for SecurityAutoConfiguration
+{
+    fn name(&self) -> &'static str
+    {
         "SecurityAutoConfiguration"
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         50 // 在服务器配置之后
     }
 
-    fn condition(&self) -> bool {
+    fn condition(&self) -> bool
+    {
         self.enabled
     }
 
-    fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()> {
+    fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()>
+    {
         tracing::info!("Configuring Security");
 
         // Create JwtTokenProvider with configured settings
@@ -136,16 +147,20 @@ impl AutoConfiguration for SecurityAutoConfiguration {
 #[derive(Debug)]
 pub struct JwtAutoConfiguration;
 
-impl AutoConfiguration for JwtAutoConfiguration {
-    fn name(&self) -> &'static str {
+impl AutoConfiguration for JwtAutoConfiguration
+{
+    fn name(&self) -> &'static str
+    {
         "JwtAutoConfiguration"
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         60 // 在 SecurityAutoConfiguration 之后
     }
 
-    fn configure(&self, _ctx: &mut ApplicationContext) -> anyhow::Result<()> {
+    fn configure(&self, _ctx: &mut ApplicationContext) -> anyhow::Result<()>
+    {
         // JWT is configured in SecurityAutoConfiguration
         // This is a placeholder for additional JWT-specific configuration
         // JWT 在 SecurityAutoConfiguration 中配置
@@ -167,11 +182,13 @@ impl AutoConfiguration for JwtAutoConfiguration {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_security_auto_config() {
+    fn test_security_auto_config()
+    {
         let config = SecurityAutoConfiguration::new();
         assert!(config.enabled);
         assert_eq!(config.jwt_expiration, 3600);
@@ -179,7 +196,8 @@ mod tests {
     }
 
     #[test]
-    fn test_security_auto_config_with_secret() {
+    fn test_security_auto_config_with_secret()
+    {
         let config = SecurityAutoConfiguration {
             enabled: true,
             jwt_secret: Some("my-secret-key".to_string()),
@@ -190,7 +208,8 @@ mod tests {
     }
 
     #[test]
-    fn test_security_auto_config_registers_provider() {
+    fn test_security_auto_config_registers_provider()
+    {
         let config = SecurityAutoConfiguration {
             enabled: true,
             jwt_secret: Some("test-secret".to_string()),
@@ -206,7 +225,8 @@ mod tests {
     }
 
     #[test]
-    fn test_security_auto_config_with_default_secret() {
+    fn test_security_auto_config_with_default_secret()
+    {
         let config = SecurityAutoConfiguration {
             enabled: true,
             jwt_secret: None,

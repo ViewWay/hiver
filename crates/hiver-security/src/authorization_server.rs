@@ -59,7 +59,8 @@ use crate::{
 /// OAuth2 授权类型。
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum GrantType {
+pub enum GrantType
+{
     /// Authorization Code (+ PKCE).
     AuthorizationCode,
     /// Client Credentials.
@@ -73,7 +74,8 @@ pub enum GrantType {
 /// A registered OAuth2 client.
 /// 已注册的 OAuth2 客户端。
 #[derive(Debug, Clone)]
-pub struct RegisteredClient {
+pub struct RegisteredClient
+{
     /// Unique client identifier.
     /// 唯一客户端标识符。
     pub client_id: String,
@@ -97,10 +99,12 @@ pub struct RegisteredClient {
     pub refresh_token_ttl: Duration,
 }
 
-impl RegisteredClient {
+impl RegisteredClient
+{
     /// Create a new public client (no secret).
     /// 创建新的公开客户端（无密钥）。
-    pub fn new(client_id: impl Into<String>) -> Self {
+    pub fn new(client_id: impl Into<String>) -> Self
+    {
         Self {
             client_id: client_id.into(),
             client_secret_hash: None,
@@ -114,7 +118,8 @@ impl RegisteredClient {
 
     /// Set the client secret (stored as SHA-256 hash).
     /// 设置客户端密钥（以 SHA-256 哈希存储）。
-    pub fn secret(mut self, secret: &str) -> Self {
+    pub fn secret(mut self, secret: &str) -> Self
+    {
         let hash = format!("{:x}", Sha256::digest(secret.as_bytes()));
         self.client_secret_hash = Some(hash);
         self
@@ -122,38 +127,45 @@ impl RegisteredClient {
 
     /// Add an allowed redirect URI.
     /// 添加允许的重定向 URI。
-    pub fn redirect_uri(mut self, uri: impl Into<String>) -> Self {
+    pub fn redirect_uri(mut self, uri: impl Into<String>) -> Self
+    {
         self.redirect_uris.push(uri.into());
         self
     }
 
     /// Add an allowed scope.
     /// 添加允许的作用域。
-    pub fn scope(mut self, scope: impl Into<String>) -> Self {
+    pub fn scope(mut self, scope: impl Into<String>) -> Self
+    {
         self.scopes.push(scope.into());
         self
     }
 
     /// Add an allowed grant type.
     /// 添加允许的授权类型。
-    pub fn grant_type(mut self, gt: GrantType) -> Self {
+    pub fn grant_type(mut self, gt: GrantType) -> Self
+    {
         self.grant_types.push(gt);
         self
     }
 
     /// Set access token TTL.
     /// 设置访问令牌有效期。
-    pub fn access_token_ttl(mut self, d: Duration) -> Self {
+    pub fn access_token_ttl(mut self, d: Duration) -> Self
+    {
         self.access_token_ttl = d;
         self
     }
 
     /// Verify whether `secret` matches the stored hash.
     /// 验证 secret 是否与存储的哈希匹配。
-    pub fn verify_secret(&self, secret: &str) -> bool {
-        match &self.client_secret_hash {
+    pub fn verify_secret(&self, secret: &str) -> bool
+    {
+        match &self.client_secret_hash
+        {
             None => true,
-            Some(hash) => {
+            Some(hash) =>
+            {
                 let provided_hash = format!("{:x}", Sha256::digest(secret.as_bytes()));
                 provided_hash == *hash
             },
@@ -166,7 +178,8 @@ impl RegisteredClient {
 // ─────────────────────────────────────────────────────────────────────────────
 
 #[derive(Debug, Clone)]
-struct PendingCode {
+struct PendingCode
+{
     client_id: String,
     redirect_uri: String,
     scope: String,
@@ -176,8 +189,10 @@ struct PendingCode {
     issued_at: Instant,
     ttl: Duration,
 }
-impl PendingCode {
-    fn is_expired(&self) -> bool {
+impl PendingCode
+{
+    fn is_expired(&self) -> bool
+    {
         self.issued_at.elapsed() > self.ttl
     }
 }
@@ -185,7 +200,8 @@ impl PendingCode {
 /// Status of a device authorization request.
 /// 设备授权请求的状态。
 #[derive(Debug, Clone, PartialEq)]
-pub enum DeviceCodeStatus {
+pub enum DeviceCodeStatus
+{
     /// Waiting for user to authorize.
     Pending,
     /// User approved; access token is ready.
@@ -197,7 +213,8 @@ pub enum DeviceCodeStatus {
 }
 
 #[derive(Debug, Clone)]
-struct DeviceCodeEntry {
+struct DeviceCodeEntry
+{
     device_code: String,
     user_code: String,
     client_id: String,
@@ -215,7 +232,8 @@ struct DeviceCodeEntry {
 /// Response from the device authorization endpoint (RFC 8628 §3.2).
 /// 设备授权端点的响应（RFC 8628 §3.2）。
 #[derive(Debug, Clone, Serialize)]
-pub struct DeviceAuthorizationResponse {
+pub struct DeviceAuthorizationResponse
+{
     /// Unique device code (opaque to the user).
     pub device_code: String,
     /// Short user code shown to the user.
@@ -233,7 +251,8 @@ pub struct DeviceAuthorizationResponse {
 /// Issued token response.
 /// 签发的令牌响应。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct IssuedTokenResponse {
+pub struct IssuedTokenResponse
+{
     /// Bearer access token.
     pub access_token: String,
     /// Token type (always "Bearer").
@@ -253,7 +272,8 @@ pub struct IssuedTokenResponse {
 /// Token introspection result (RFC 7662).
 /// 令牌自省结果（RFC 7662）。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct IntrospectionResult {
+pub struct IntrospectionResult
+{
     /// Whether the token is active.
     pub active: bool,
     /// Subject.
@@ -282,7 +302,8 @@ pub struct IntrospectionResult {
 ///
 /// Equivalent to Spring Authorization Server.
 /// 等价于 Spring Authorization Server。
-pub struct AuthorizationServer {
+pub struct AuthorizationServer
+{
     issuer: String,
     clients: Arc<RwLock<HashMap<String, RegisteredClient>>>,
     codes: Arc<RwLock<HashMap<String, PendingCode>>>,
@@ -291,10 +312,12 @@ pub struct AuthorizationServer {
     jwt_provider: JwtTokenProvider,
 }
 
-impl AuthorizationServer {
+impl AuthorizationServer
+{
     /// Create a builder.
     /// 创建构建器。
-    pub fn builder() -> AuthorizationServerBuilder {
+    pub fn builder() -> AuthorizationServerBuilder
+    {
         AuthorizationServerBuilder::default()
     }
 
@@ -310,15 +333,18 @@ impl AuthorizationServer {
         subject: &str,
         code_challenge: Option<&str>,
         code_challenge_method: Option<&str>,
-    ) -> SecurityResult<String> {
+    ) -> SecurityResult<String>
+    {
         let clients = self.clients.read().await;
         let client = clients.get(client_id).ok_or_else(|| {
             SecurityError::AuthenticationFailed(format!("unknown client: {client_id}"))
         })?;
-        if !client.redirect_uris.contains(&redirect_uri.to_string()) {
+        if !client.redirect_uris.contains(&redirect_uri.to_string())
+        {
             return Err(SecurityError::AccessDenied("redirect_uri mismatch".into()));
         }
-        if !client.grant_types.contains(&GrantType::AuthorizationCode) {
+        if !client.grant_types.contains(&GrantType::AuthorizationCode)
+        {
             return Err(SecurityError::AccessDenied(
                 "client does not support authorization_code grant".into(),
             ));
@@ -326,19 +352,16 @@ impl AuthorizationServer {
         drop(clients);
 
         let code = random_token(32);
-        self.codes.write().await.insert(
-            code.clone(),
-            PendingCode {
-                client_id: client_id.to_string(),
-                redirect_uri: redirect_uri.to_string(),
-                scope: scope.to_string(),
-                subject: subject.to_string(),
-                code_challenge: code_challenge.map(str::to_string),
-                code_challenge_method: code_challenge_method.map(str::to_string),
-                issued_at: Instant::now(),
-                ttl: Duration::from_secs(600),
-            },
-        );
+        self.codes.write().await.insert(code.clone(), PendingCode {
+            client_id: client_id.to_string(),
+            redirect_uri: redirect_uri.to_string(),
+            scope: scope.to_string(),
+            subject: subject.to_string(),
+            code_challenge: code_challenge.map(str::to_string),
+            code_challenge_method: code_challenge_method.map(str::to_string),
+            issued_at: Instant::now(),
+            ttl: Duration::from_secs(600),
+        });
         debug!(client_id, subject, "authorization code issued");
         Ok(code)
     }
@@ -354,17 +377,21 @@ impl AuthorizationServer {
         client_secret: Option<&str>,
         redirect_uri: &str,
         code_verifier: Option<&str>,
-    ) -> SecurityResult<IssuedTokenResponse> {
+    ) -> SecurityResult<IssuedTokenResponse>
+    {
         let entry = self.codes.write().await.remove(code).ok_or_else(|| {
             SecurityError::AuthenticationFailed("invalid or expired authorization code".into())
         })?;
-        if entry.is_expired() {
+        if entry.is_expired()
+        {
             return Err(SecurityError::AuthenticationFailed("authorization code expired".into()));
         }
-        if entry.client_id != client_id || entry.redirect_uri != redirect_uri {
+        if entry.client_id != client_id || entry.redirect_uri != redirect_uri
+        {
             return Err(SecurityError::AccessDenied("client_id or redirect_uri mismatch".into()));
         }
-        if let Some(challenge) = &entry.code_challenge {
+        if let Some(challenge) = &entry.code_challenge
+        {
             let verifier = code_verifier.ok_or_else(|| {
                 SecurityError::AccessDenied("code_verifier required (PKCE)".into())
             })?;
@@ -399,7 +426,8 @@ impl AuthorizationServer {
         client_id: &str,
         client_secret: &str,
         scope: &str,
-    ) -> SecurityResult<IssuedTokenResponse> {
+    ) -> SecurityResult<IssuedTokenResponse>
+    {
         let client = self
             .clients
             .read()
@@ -409,12 +437,14 @@ impl AuthorizationServer {
             .ok_or_else(|| {
                 SecurityError::AuthenticationFailed(format!("unknown client: {client_id}"))
             })?;
-        if !client.grant_types.contains(&GrantType::ClientCredentials) {
+        if !client.grant_types.contains(&GrantType::ClientCredentials)
+        {
             return Err(SecurityError::AccessDenied(
                 "client does not support client_credentials grant".into(),
             ));
         }
-        if !client.verify_secret(client_secret) {
+        if !client.verify_secret(client_secret)
+        {
             return Err(SecurityError::AuthenticationFailed("invalid client_secret".into()));
         }
         self.issue_tokens(client_id, client_id, scope, &client)
@@ -427,14 +457,16 @@ impl AuthorizationServer {
         &self,
         refresh_token: &str,
         client_id: &str,
-    ) -> SecurityResult<IssuedTokenResponse> {
+    ) -> SecurityResult<IssuedTokenResponse>
+    {
         let (stored_client_id, subject, scope) = self
             .refresh_tokens
             .write()
             .await
             .remove(refresh_token)
             .ok_or_else(|| SecurityError::AuthenticationFailed("invalid refresh token".into()))?;
-        if stored_client_id != client_id {
+        if stored_client_id != client_id
+        {
             return Err(SecurityError::AccessDenied("client_id mismatch".into()));
         }
         let client = self
@@ -458,7 +490,8 @@ impl AuthorizationServer {
         &self,
         client_id: &str,
         scope: &str,
-    ) -> SecurityResult<DeviceAuthorizationResponse> {
+    ) -> SecurityResult<DeviceAuthorizationResponse>
+    {
         let client = self
             .clients
             .read()
@@ -468,7 +501,8 @@ impl AuthorizationServer {
             .ok_or_else(|| {
                 SecurityError::AuthenticationFailed(format!("unknown client: {client_id}"))
             })?;
-        if !client.grant_types.contains(&GrantType::DeviceCode) {
+        if !client.grant_types.contains(&GrantType::DeviceCode)
+        {
             return Err(SecurityError::AccessDenied(
                 "client does not support device_code grant".into(),
             ));
@@ -476,9 +510,10 @@ impl AuthorizationServer {
         let device_code = random_token(32);
         let user_code = random_user_code();
         let ttl = Duration::from_secs(1800);
-        self.device_codes.write().await.insert(
-            device_code.clone(),
-            DeviceCodeEntry {
+        self.device_codes
+            .write()
+            .await
+            .insert(device_code.clone(), DeviceCodeEntry {
                 device_code: device_code.clone(),
                 user_code: user_code.clone(),
                 client_id: client_id.to_string(),
@@ -487,8 +522,7 @@ impl AuthorizationServer {
                 subject: None,
                 issued_at: Instant::now(),
                 ttl,
-            },
-        );
+            });
         let verification_uri = format!("{}/device", self.issuer);
         let verification_uri_complete = format!("{verification_uri}?user_code={user_code}");
         info!(client_id, "device authorization initiated");
@@ -504,13 +538,15 @@ impl AuthorizationServer {
 
     /// Approve a device code on behalf of a user (called by the authorization UI).
     /// 代表用户批准设备码（由授权界面调用）。
-    pub async fn device_approve(&self, user_code: &str, subject: &str) -> SecurityResult<()> {
+    pub async fn device_approve(&self, user_code: &str, subject: &str) -> SecurityResult<()>
+    {
         let mut codes = self.device_codes.write().await;
         let entry = codes
             .values_mut()
             .find(|e| e.user_code == user_code)
             .ok_or_else(|| SecurityError::AuthenticationFailed("unknown user_code".into()))?;
-        if entry.issued_at.elapsed() > entry.ttl {
+        if entry.issued_at.elapsed() > entry.ttl
+        {
             entry.status = DeviceCodeStatus::Expired;
             return Err(SecurityError::AuthenticationFailed("device code expired".into()));
         }
@@ -526,7 +562,8 @@ impl AuthorizationServer {
         &self,
         device_code: &str,
         client_id: &str,
-    ) -> SecurityResult<IssuedTokenResponse> {
+    ) -> SecurityResult<IssuedTokenResponse>
+    {
         let entry = self
             .device_codes
             .read()
@@ -534,21 +571,27 @@ impl AuthorizationServer {
             .get(device_code)
             .cloned()
             .ok_or_else(|| SecurityError::AuthenticationFailed("invalid device_code".into()))?;
-        if entry.client_id != client_id {
+        if entry.client_id != client_id
+        {
             return Err(SecurityError::AccessDenied("client_id mismatch".into()));
         }
-        if entry.issued_at.elapsed() > entry.ttl {
+        if entry.issued_at.elapsed() > entry.ttl
+        {
             return Err(SecurityError::AuthenticationFailed("device code expired".into()));
         }
-        match entry.status {
-            DeviceCodeStatus::Pending => {
+        match entry.status
+        {
+            DeviceCodeStatus::Pending =>
+            {
                 Err(SecurityError::AccessDenied("authorization_pending".into()))
             },
             DeviceCodeStatus::Denied => Err(SecurityError::AccessDenied("access_denied".into())),
-            DeviceCodeStatus::Expired => {
+            DeviceCodeStatus::Expired =>
+            {
                 Err(SecurityError::AuthenticationFailed("expired_token".into()))
             },
-            DeviceCodeStatus::Approved => {
+            DeviceCodeStatus::Approved =>
+            {
                 let subject = entry.subject.as_deref().unwrap_or(client_id);
                 let client = self
                     .clients
@@ -573,11 +616,15 @@ impl AuthorizationServer {
     ///
     /// Validates signature and expiry without strict audience checking.
     /// 验证签名和过期时间，不强制检查受众。
-    pub fn introspect(&self, token: &str) -> IntrospectionResult {
-        match self.jwt_provider.decode_without_validation(token) {
-            Ok(claims) => {
+    pub fn introspect(&self, token: &str) -> IntrospectionResult
+    {
+        match self.jwt_provider.decode_without_validation(token)
+        {
+            Ok(claims) =>
+            {
                 let now = chrono::Utc::now().timestamp();
-                if claims.exp < now {
+                if claims.exp < now
+                {
                     return IntrospectionResult {
                         active: false,
                         sub: None,
@@ -587,7 +634,8 @@ impl AuthorizationServer {
                         client_id: None,
                     };
                 }
-                let aud = match &claims.aud {
+                let aud = match &claims.aud
+                {
                     Some(serde_json::Value::Array(arr)) => Some(
                         arr.iter()
                             .filter_map(|v| v.as_str().map(str::to_string))
@@ -634,7 +682,8 @@ impl AuthorizationServer {
         client_id: &str,
         scope: &str,
         client: &RegisteredClient,
-    ) -> SecurityResult<IssuedTokenResponse> {
+    ) -> SecurityResult<IssuedTokenResponse>
+    {
         let access_token = self.jwt_provider.generate_oauth2_token(
             subject,
             client_id,
@@ -646,9 +695,12 @@ impl AuthorizationServer {
             refresh_token.clone(),
             (client_id.to_string(), subject.to_string(), scope.to_string()),
         );
-        let id_token = if scope.contains("openid") {
+        let id_token = if scope.contains("openid")
+        {
             Some(self.jwt_provider.generate_id_token(subject, client_id)?)
-        } else {
+        }
+        else
+        {
             None
         };
         info!(subject, client_id, "tokens issued");
@@ -670,40 +722,49 @@ impl AuthorizationServer {
 /// Builder for `AuthorizationServer`.
 /// AuthorizationServer 的构建器。
 #[derive(Default)]
-pub struct AuthorizationServerBuilder {
+pub struct AuthorizationServerBuilder
+{
     issuer: String,
     clients: Vec<RegisteredClient>,
     jwt_secret: Option<String>,
 }
 
-impl AuthorizationServerBuilder {
+impl AuthorizationServerBuilder
+{
     /// Set the issuer URL.
     /// 设置签发方 URL。
-    pub fn issuer(mut self, issuer: impl Into<String>) -> Self {
+    pub fn issuer(mut self, issuer: impl Into<String>) -> Self
+    {
         self.issuer = issuer.into();
         self
     }
 
     /// Register an OAuth2 client.
     /// 注册 OAuth2 客户端。
-    pub fn register_client(mut self, client: RegisteredClient) -> Self {
+    pub fn register_client(mut self, client: RegisteredClient) -> Self
+    {
         self.clients.push(client);
         self
     }
 
     /// Set the HMAC-SHA256 secret for JWT signing.
     /// 设置 JWT 签名的 HMAC-SHA256 密钥。
-    pub fn jwt_secret(mut self, secret: impl Into<String>) -> Self {
+    pub fn jwt_secret(mut self, secret: impl Into<String>) -> Self
+    {
         self.jwt_secret = Some(secret.into());
         self
     }
 
     /// Build the `AuthorizationServer`.
     /// 构建 AuthorizationServer。
-    pub fn build(self) -> AuthorizationServer {
-        let issuer = if self.issuer.is_empty() {
+    pub fn build(self) -> AuthorizationServer
+    {
+        let issuer = if self.issuer.is_empty()
+        {
             "https://localhost".to_string()
-        } else {
+        }
+        else
+        {
             self.issuer
         };
         let secret = self.jwt_secret.unwrap_or_else(|| random_token(32));
@@ -728,12 +789,14 @@ impl AuthorizationServerBuilder {
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
-fn random_token(byte_count: usize) -> String {
+fn random_token(byte_count: usize) -> String
+{
     let bytes: Vec<u8> = (0..byte_count).map(|_| rand::random::<u8>()).collect();
     base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(&bytes)
 }
 
-fn random_user_code() -> String {
+fn random_user_code() -> String
+{
     let chars: Vec<char> = "BCDFGHJKLMNPQRSTVWXZ".chars().collect();
     let n = chars.len();
     let part1: String = (0..4)
@@ -745,21 +808,31 @@ fn random_user_code() -> String {
     format!("{part1}-{part2}")
 }
 
-fn verify_pkce(verifier: &str, challenge: &str, method: &str) -> SecurityResult<()> {
-    match method {
-        "S256" => {
+fn verify_pkce(verifier: &str, challenge: &str, method: &str) -> SecurityResult<()>
+{
+    match method
+    {
+        "S256" =>
+        {
             let digest = Sha256::digest(verifier.as_bytes());
             let expected = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(digest);
-            if expected == challenge {
+            if expected == challenge
+            {
                 Ok(())
-            } else {
+            }
+            else
+            {
                 Err(SecurityError::AccessDenied("PKCE verification failed".into()))
             }
         },
-        "plain" => {
-            if verifier == challenge {
+        "plain" =>
+        {
+            if verifier == challenge
+            {
                 Ok(())
-            } else {
+            }
+            else
+            {
                 Err(SecurityError::AccessDenied("PKCE verification failed".into()))
             }
         },
@@ -779,12 +852,14 @@ fn verify_pkce(verifier: &str, challenge: &str, method: &str) -> SecurityResult<
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     // ── Helpers / 辅助函数 ──
 
-    fn make_server() -> AuthorizationServer {
+    fn make_server() -> AuthorizationServer
+    {
         AuthorizationServer::builder()
             .issuer("https://auth.test")
             .jwt_secret("test-secret-key-32-bytes-long-abc")
@@ -806,7 +881,8 @@ mod tests {
 
     /// Server with a public client (no secret).
     /// 使用公开客户端（无密钥）的服务器。
-    fn make_server_with_public_client() -> AuthorizationServer {
+    fn make_server_with_public_client() -> AuthorizationServer
+    {
         AuthorizationServer::builder()
             .issuer("https://auth.test")
             .jwt_secret("test-secret-key-32-bytes-long-abc")
@@ -820,14 +896,16 @@ mod tests {
 
     /// Server with no clients registered.
     /// 没有注册客户端的服务器。
-    fn make_empty_server() -> AuthorizationServer {
+    fn make_empty_server() -> AuthorizationServer
+    {
         AuthorizationServer::builder()
             .issuer("https://auth.test")
             .jwt_secret("test-secret-key-32-bytes-long-abc")
             .build()
     }
 
-    fn compute_pkce_challenge(verifier: &str) -> String {
+    fn compute_pkce_challenge(verifier: &str) -> String
+    {
         let d = Sha256::digest(verifier.as_bytes());
         base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(d)
     }
@@ -837,7 +915,8 @@ mod tests {
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[test]
-    fn test_registered_client_new_defaults() {
+    fn test_registered_client_new_defaults()
+    {
         let client = RegisteredClient::new("my-client");
         assert_eq!(client.client_id, "my-client");
         assert!(client.client_secret_hash.is_none());
@@ -849,7 +928,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registered_client_secret_hashed() {
+    fn test_registered_client_secret_hashed()
+    {
         let client = RegisteredClient::new("c").secret("hunter2");
         assert!(client.client_secret_hash.is_some());
         // The hash should be SHA-256 of "hunter2"
@@ -858,19 +938,22 @@ mod tests {
     }
 
     #[test]
-    fn test_registered_client_verify_secret_correct() {
+    fn test_registered_client_verify_secret_correct()
+    {
         let client = RegisteredClient::new("c").secret("pass123");
         assert!(client.verify_secret("pass123"));
     }
 
     #[test]
-    fn test_registered_client_verify_secret_wrong() {
+    fn test_registered_client_verify_secret_wrong()
+    {
         let client = RegisteredClient::new("c").secret("pass123");
         assert!(!client.verify_secret("wrong"));
     }
 
     #[test]
-    fn test_registered_client_verify_secret_public_client() {
+    fn test_registered_client_verify_secret_public_client()
+    {
         // Public client (no secret) always verifies true
         let client = RegisteredClient::new("c");
         assert!(client.verify_secret("anything"));
@@ -878,7 +961,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registered_client_builder_chain() {
+    fn test_registered_client_builder_chain()
+    {
         let client = RegisteredClient::new("c")
             .secret("s")
             .redirect_uri("https://a.com/cb")
@@ -900,14 +984,16 @@ mod tests {
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[test]
-    fn test_grant_type_equality() {
+    fn test_grant_type_equality()
+    {
         assert_eq!(GrantType::AuthorizationCode, GrantType::AuthorizationCode);
         assert_ne!(GrantType::AuthorizationCode, GrantType::ClientCredentials);
         assert_ne!(GrantType::DeviceCode, GrantType::RefreshToken);
     }
 
     #[test]
-    fn test_grant_type_serialization() {
+    fn test_grant_type_serialization()
+    {
         let json = serde_json::to_string(&GrantType::AuthorizationCode).unwrap();
         assert_eq!(json, "\"authorization_code\"");
         let json = serde_json::to_string(&GrantType::ClientCredentials).unwrap();
@@ -919,7 +1005,8 @@ mod tests {
     }
 
     #[test]
-    fn test_grant_type_deserialization() {
+    fn test_grant_type_deserialization()
+    {
         let gt: GrantType = serde_json::from_str("\"authorization_code\"").unwrap();
         assert_eq!(gt, GrantType::AuthorizationCode);
         let gt: GrantType = serde_json::from_str("\"device_code\"").unwrap();
@@ -931,7 +1018,8 @@ mod tests {
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[test]
-    fn test_device_code_status_equality() {
+    fn test_device_code_status_equality()
+    {
         assert_eq!(DeviceCodeStatus::Pending, DeviceCodeStatus::Pending);
         assert_ne!(DeviceCodeStatus::Pending, DeviceCodeStatus::Approved);
         assert_ne!(DeviceCodeStatus::Denied, DeviceCodeStatus::Expired);
@@ -942,7 +1030,8 @@ mod tests {
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[test]
-    fn test_builder_default_issuer() {
+    fn test_builder_default_issuer()
+    {
         let _server = AuthorizationServerBuilder::default()
             .jwt_secret("secret")
             .build();
@@ -951,7 +1040,8 @@ mod tests {
     }
 
     #[test]
-    fn test_builder_custom_issuer() {
+    fn test_builder_custom_issuer()
+    {
         let _server = AuthorizationServer::builder()
             .issuer("https://my-auth.example.com")
             .jwt_secret("key")
@@ -960,7 +1050,8 @@ mod tests {
     }
 
     #[test]
-    fn test_builder_auto_generates_jwt_secret() {
+    fn test_builder_auto_generates_jwt_secret()
+    {
         let _server = AuthorizationServerBuilder::default()
             .issuer("https://test")
             .build();
@@ -968,7 +1059,8 @@ mod tests {
     }
 
     #[test]
-    fn test_builder_registers_multiple_clients() {
+    fn test_builder_registers_multiple_clients()
+    {
         let _server = AuthorizationServer::builder()
             .issuer("https://test")
             .jwt_secret("key")
@@ -983,7 +1075,8 @@ mod tests {
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_auth_code_basic_flow() {
+    async fn test_auth_code_basic_flow()
+    {
         let server = make_server();
         let code = server
             .authorize("app", "https://app.test/cb", "openid", "user1", None, None)
@@ -1004,7 +1097,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_auth_code_without_openid_scope_no_id_token() {
+    async fn test_auth_code_without_openid_scope_no_id_token()
+    {
         let server = make_server();
         let code = server
             .authorize("app", "https://app.test/cb", "read", "user1", None, None)
@@ -1020,7 +1114,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_auth_code_alternate_redirect_uri() {
+    async fn test_auth_code_alternate_redirect_uri()
+    {
         let server = make_server();
         let code = server
             .authorize("app", "https://app.test/cb2", "openid", "user1", None, None)
@@ -1036,7 +1131,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_auth_code_public_client_no_secret() {
+    async fn test_auth_code_public_client_no_secret()
+    {
         let server = make_server_with_public_client();
         let code = server
             .authorize("public-app", "https://public.test/cb", "openid", "anon", None, None)
@@ -1057,7 +1153,8 @@ mod tests {
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_authorize_unknown_client_rejected() {
+    async fn test_authorize_unknown_client_rejected()
+    {
         let server = make_server();
         let result = server
             .authorize("unknown", "https://app.test/cb", "openid", "u", None, None)
@@ -1068,7 +1165,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_authorize_bad_redirect_uri_rejected() {
+    async fn test_authorize_bad_redirect_uri_rejected()
+    {
         let server = make_server();
         let result = server
             .authorize("app", "https://evil.com/callback", "openid", "u", None, None)
@@ -1080,7 +1178,8 @@ mod tests {
 
     #[tokio::test]
     #[ignore = "pre-existing: assertion changed after async-to-sync refactoring"]
-    async fn test_authorize_client_missing_code_grant_type() {
+    async fn test_authorize_client_missing_code_grant_type()
+    {
         let server = AuthorizationServer::builder()
             .issuer("https://auth.test")
             .jwt_secret("key")
@@ -1100,7 +1199,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_token_from_code_invalid_code_rejected() {
+    async fn test_token_from_code_invalid_code_rejected()
+    {
         let server = make_server();
         let result = server
             .token_from_code("nonexistent-code", "app", Some("s3cr3t"), "https://app.test/cb", None)
@@ -1111,7 +1211,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_token_from_code_client_id_mismatch() {
+    async fn test_token_from_code_client_id_mismatch()
+    {
         let server = make_server();
         let code = server
             .authorize("app", "https://app.test/cb", "openid", "u", None, None)
@@ -1127,7 +1228,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_token_from_code_redirect_uri_mismatch() {
+    async fn test_token_from_code_redirect_uri_mismatch()
+    {
         let server = make_server();
         let code = server
             .authorize("app", "https://app.test/cb", "openid", "u", None, None)
@@ -1141,7 +1243,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_token_from_code_wrong_secret() {
+    async fn test_token_from_code_wrong_secret()
+    {
         let server = make_server();
         let code = server
             .authorize("app", "https://app.test/cb", "openid", "u", None, None)
@@ -1157,7 +1260,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_token_from_code_already_used_rejected() {
+    async fn test_token_from_code_already_used_rejected()
+    {
         let server = make_server();
         let code = server
             .authorize("app", "https://app.test/cb", "openid", "u", None, None)
@@ -1182,7 +1286,8 @@ mod tests {
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_pkce_s256_success() {
+    async fn test_pkce_s256_success()
+    {
         let server = make_server();
         let verifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
         let challenge = compute_pkce_challenge(verifier);
@@ -1201,7 +1306,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_pkce_wrong_verifier_rejected() {
+    async fn test_pkce_wrong_verifier_rejected()
+    {
         let server = make_server();
         let verifier = "correct_verifier_value";
         let challenge = compute_pkce_challenge(verifier);
@@ -1226,7 +1332,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_pkce_missing_verifier_rejected() {
+    async fn test_pkce_missing_verifier_rejected()
+    {
         let server = make_server();
         let verifier = "some_value";
         let challenge = compute_pkce_challenge(verifier);
@@ -1246,7 +1353,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_pkce_plain_method_success() {
+    async fn test_pkce_plain_method_success()
+    {
         let server = make_server();
         let verifier = "plain_verifier_abc";
 
@@ -1264,7 +1372,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_pkce_plain_method_wrong_verifier() {
+    async fn test_pkce_plain_method_wrong_verifier()
+    {
         let server = make_server();
         let verifier = "correct_plain";
 
@@ -1280,7 +1389,8 @@ mod tests {
     }
 
     #[test]
-    fn test_verify_pkce_unsupported_method() {
+    fn test_verify_pkce_unsupported_method()
+    {
         let result = verify_pkce("v", "c", "S512");
         assert!(result.is_err());
         let err = result.unwrap_err().to_string();
@@ -1292,7 +1402,8 @@ mod tests {
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_client_credentials_success() {
+    async fn test_client_credentials_success()
+    {
         let server = make_server();
         let token = server
             .token_from_client_credentials("app", "s3cr3t", "openid profile")
@@ -1306,7 +1417,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_client_credentials_no_openid_no_id_token() {
+    async fn test_client_credentials_no_openid_no_id_token()
+    {
         let server = make_server();
         let token = server
             .token_from_client_credentials("app", "s3cr3t", "read write")
@@ -1317,7 +1429,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_client_credentials_unknown_client() {
+    async fn test_client_credentials_unknown_client()
+    {
         let server = make_server();
         let result = server
             .token_from_client_credentials("nonexistent", "secret", "openid")
@@ -1328,7 +1441,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_client_credentials_wrong_secret() {
+    async fn test_client_credentials_wrong_secret()
+    {
         let server = make_server();
         let result = server
             .token_from_client_credentials("app", "wrong-secret", "openid")
@@ -1339,7 +1453,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_client_credentials_grant_type_not_allowed() {
+    async fn test_client_credentials_grant_type_not_allowed()
+    {
         let server = AuthorizationServer::builder()
             .issuer("https://auth.test")
             .jwt_secret("key")
@@ -1359,7 +1474,8 @@ mod tests {
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_refresh_token_success() {
+    async fn test_refresh_token_success()
+    {
         let server = make_server();
         let first = server
             .token_from_client_credentials("app", "s3cr3t", "openid")
@@ -1374,7 +1490,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_refresh_token_invalid_token() {
+    async fn test_refresh_token_invalid_token()
+    {
         let server = make_server();
         let result = server.token_from_refresh("bogus-token", "app").await;
         assert!(result.is_err());
@@ -1383,7 +1500,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_refresh_token_client_id_mismatch() {
+    async fn test_refresh_token_client_id_mismatch()
+    {
         let server = make_server();
         let first = server
             .token_from_client_credentials("app", "s3cr3t", "openid")
@@ -1398,7 +1516,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_refresh_token_single_use() {
+    async fn test_refresh_token_single_use()
+    {
         let server = make_server();
         let first = server
             .token_from_client_credentials("app", "s3cr3t", "openid")
@@ -1416,7 +1535,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_refresh_from_auth_code_flow() {
+    async fn test_refresh_from_auth_code_flow()
+    {
         let server = make_server();
         let code = server
             .authorize("app", "https://app.test/cb", "openid", "user1", None, None)
@@ -1438,7 +1558,8 @@ mod tests {
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_device_authorize_response_format() {
+    async fn test_device_authorize_response_format()
+    {
         let server = make_server();
         let resp = server.device_authorize("app", "openid").await.unwrap();
 
@@ -1452,7 +1573,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_device_flow_full_lifecycle() {
+    async fn test_device_flow_full_lifecycle()
+    {
         let server = make_server();
         let resp = server.device_authorize("app", "read").await.unwrap();
 
@@ -1480,7 +1602,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_device_flow_approved_token_contains_refresh() {
+    async fn test_device_flow_approved_token_contains_refresh()
+    {
         let server = make_server();
         let resp = server.device_authorize("app", "openid").await.unwrap();
         server.device_approve(&resp.user_code, "bob").await.unwrap();
@@ -1495,7 +1618,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_device_flow_code_consumed_after_approval() {
+    async fn test_device_flow_code_consumed_after_approval()
+    {
         let server = make_server();
         let resp = server.device_authorize("app", "openid").await.unwrap();
         server
@@ -1520,7 +1644,8 @@ mod tests {
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_device_authorize_unknown_client() {
+    async fn test_device_authorize_unknown_client()
+    {
         let server = make_server();
         let result = server.device_authorize("ghost", "openid").await;
         assert!(result.is_err());
@@ -1529,7 +1654,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_device_authorize_grant_type_not_supported() {
+    async fn test_device_authorize_grant_type_not_supported()
+    {
         let server = AuthorizationServer::builder()
             .issuer("https://test")
             .jwt_secret("key")
@@ -1547,7 +1673,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_device_approve_unknown_user_code() {
+    async fn test_device_approve_unknown_user_code()
+    {
         let server = make_server();
         let result = server.device_approve("BAD-CODE", "alice").await;
         assert!(result.is_err());
@@ -1556,7 +1683,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_device_token_invalid_device_code() {
+    async fn test_device_token_invalid_device_code()
+    {
         let server = make_server();
         let result = server.token_from_device_code("invalid-code", "app").await;
         assert!(result.is_err());
@@ -1565,7 +1693,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_device_token_client_id_mismatch() {
+    async fn test_device_token_client_id_mismatch()
+    {
         let server = make_server();
         let resp = server.device_authorize("app", "openid").await.unwrap();
 
@@ -1578,14 +1707,16 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_device_flow_denied_status() {
+    async fn test_device_flow_denied_status()
+    {
         let server = make_server();
         let resp = server.device_authorize("app", "openid").await.unwrap();
 
         // Simulate denial by directly modifying status
         {
             let mut codes = server.device_codes.write().await;
-            if let Some(entry) = codes.get_mut(&resp.device_code) {
+            if let Some(entry) = codes.get_mut(&resp.device_code)
+            {
                 entry.status = DeviceCodeStatus::Denied;
             }
         }
@@ -1603,7 +1734,8 @@ mod tests {
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_introspect_active_token() {
+    async fn test_introspect_active_token()
+    {
         let server = make_server();
         let token = server
             .token_from_client_credentials("app", "s3cr3t", "read")
@@ -1619,7 +1751,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_introspect_active_token_has_client_id() {
+    async fn test_introspect_active_token_has_client_id()
+    {
         let server = make_server();
         let token = server
             .token_from_client_credentials("app", "s3cr3t", "openid")
@@ -1632,7 +1765,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_introspect_garbage_token_inactive() {
+    async fn test_introspect_garbage_token_inactive()
+    {
         let server = make_server();
         let result = server.introspect("not-a-valid-jwt");
         assert!(!result.active);
@@ -1641,14 +1775,16 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_introspect_empty_string_inactive() {
+    async fn test_introspect_empty_string_inactive()
+    {
         let server = make_server();
         let result = server.introspect("");
         assert!(!result.active);
     }
 
     #[tokio::test]
-    async fn test_introspect_openid_scope_includes_id_token_fields() {
+    async fn test_introspect_openid_scope_includes_id_token_fields()
+    {
         let server = make_server();
         let code = server
             .authorize("app", "https://app.test/cb", "openid", "introspect-user", None, None)
@@ -1669,7 +1805,8 @@ mod tests {
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[test]
-    fn test_issued_token_response_serialization() {
+    fn test_issued_token_response_serialization()
+    {
         let resp = IssuedTokenResponse {
             access_token: "at123".to_string(),
             token_type: "Bearer".to_string(),
@@ -1687,7 +1824,8 @@ mod tests {
     }
 
     #[test]
-    fn test_issued_token_response_with_id_token_serialization() {
+    fn test_issued_token_response_with_id_token_serialization()
+    {
         let resp = IssuedTokenResponse {
             access_token: "at".to_string(),
             token_type: "Bearer".to_string(),
@@ -1702,7 +1840,8 @@ mod tests {
     }
 
     #[test]
-    fn test_introspection_result_serialization() {
+    fn test_introspection_result_serialization()
+    {
         let result = IntrospectionResult {
             active: true,
             sub: Some("user1".to_string()),
@@ -1728,7 +1867,8 @@ mod tests {
     }
 
     #[test]
-    fn test_device_authorization_response_serialization() {
+    fn test_device_authorization_response_serialization()
+    {
         let resp = DeviceAuthorizationResponse {
             device_code: "dc".to_string(),
             user_code: "ABCD-EFGH".to_string(),
@@ -1748,7 +1888,8 @@ mod tests {
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[test]
-    fn test_random_token_uniqueness() {
+    fn test_random_token_uniqueness()
+    {
         let a = random_token(32);
         let b = random_token(32);
         assert_ne!(a, b);
@@ -1756,22 +1897,28 @@ mod tests {
     }
 
     #[test]
-    fn test_random_user_code_format() {
+    fn test_random_user_code_format()
+    {
         let code = random_user_code();
         assert_eq!(code.len(), 9); // "XXXX-XXXX"
         assert!(code.chars().nth(4) == Some('-'));
         // All chars should be uppercase consonants (no vowels to avoid real words)
-        for (i, c) in code.chars().enumerate() {
-            if i == 4 {
+        for (i, c) in code.chars().enumerate()
+        {
+            if i == 4
+            {
                 assert_eq!(c, '-');
-            } else {
+            }
+            else
+            {
                 assert!("BCDFGHJKLMNPQRSTVWXZ".contains(c));
             }
         }
     }
 
     #[test]
-    fn test_random_user_codes_differ() {
+    fn test_random_user_codes_differ()
+    {
         let codes: std::collections::HashSet<String> =
             (0..10).map(|_| random_user_code()).collect();
         // 10 random codes should produce at least 9 unique values
@@ -1783,7 +1930,8 @@ mod tests {
     // ═══════════════════════════════════════════════════════════════════════════
 
     #[tokio::test]
-    async fn test_multiple_flows_same_server() {
+    async fn test_multiple_flows_same_server()
+    {
         let server = make_server();
 
         // Authorization code flow
@@ -1824,7 +1972,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_refresh_after_each_flow() {
+    async fn test_refresh_after_each_flow()
+    {
         let server = make_server();
 
         // Authorization code -> refresh
@@ -1855,7 +2004,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_empty_server_rejects_all_requests() {
+    async fn test_empty_server_rejects_all_requests()
+    {
         let server = make_empty_server();
 
         assert!(

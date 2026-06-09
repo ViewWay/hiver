@@ -23,7 +23,8 @@ use crate::core::{ApplicationContext, AutoConfiguration};
 /// 参考 Spring Boot 的 `CacheAutoConfiguration`。
 /// Based on Spring Boot's `CacheAutoConfiguration`.
 #[derive(Debug)]
-pub struct CacheAutoConfiguration {
+pub struct CacheAutoConfiguration
+{
     /// 是否启用缓存
     pub enabled: bool,
 
@@ -34,9 +35,11 @@ pub struct CacheAutoConfiguration {
     pub max_size: usize,
 }
 
-impl CacheAutoConfiguration {
+impl CacheAutoConfiguration
+{
     /// 创建新的缓存自动配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             enabled: false,
             ttl: 600,
@@ -45,7 +48,8 @@ impl CacheAutoConfiguration {
     }
 
     /// 从配置创建
-    pub fn from_config(ctx: &ApplicationContext) -> Self {
+    pub fn from_config(ctx: &ApplicationContext) -> Self
+    {
         Self {
             enabled: ctx
                 .get_property("cache.enabled")
@@ -63,26 +67,33 @@ impl CacheAutoConfiguration {
     }
 }
 
-impl Default for CacheAutoConfiguration {
-    fn default() -> Self {
+impl Default for CacheAutoConfiguration
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl AutoConfiguration for CacheAutoConfiguration {
-    fn name(&self) -> &'static str {
+impl AutoConfiguration for CacheAutoConfiguration
+{
+    fn name(&self) -> &'static str
+    {
         "CacheAutoConfiguration"
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         100 // 在核心配置之后
     }
 
-    fn condition(&self) -> bool {
+    fn condition(&self) -> bool
+    {
         self.enabled
     }
 
-    fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()> {
+    fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()>
+    {
         tracing::info!("Configuring Cache (TTL: {}s, Max size: {})", self.ttl, self.max_size);
 
         // Create CacheManager with configured settings
@@ -111,11 +122,13 @@ impl AutoConfiguration for CacheAutoConfiguration {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_cache_auto_config() {
+    fn test_cache_auto_config()
+    {
         let config = CacheAutoConfiguration::new();
         assert!(!config.enabled);
         assert_eq!(config.ttl, 600);
@@ -123,7 +136,8 @@ mod tests {
     }
 
     #[test]
-    fn test_cache_auto_config_registers_manager() {
+    fn test_cache_auto_config_registers_manager()
+    {
         let config = CacheAutoConfiguration {
             enabled: true,
             ttl: 300,

@@ -20,7 +20,8 @@ use crate::{Authority, SecurityContext};
 /// @PreAuthorize("#userId == authentication.principal.id")
 /// ```
 #[derive(Debug, Clone)]
-pub enum SecurityExpression {
+pub enum SecurityExpression
+{
     /// Has role
     /// 有角色
     HasRole(String),
@@ -50,30 +51,38 @@ pub enum SecurityExpression {
     Custom(String),
 }
 
-impl SecurityExpression {
+impl SecurityExpression
+{
     /// Evaluate the expression
     /// 评估表达式
-    pub async fn evaluate(&self, context: &SecurityContext) -> bool {
-        match self {
+    pub async fn evaluate(&self, context: &SecurityContext) -> bool
+    {
+        match self
+        {
             SecurityExpression::IsAuthenticated => context.is_authenticated().await,
             SecurityExpression::IsAnonymous => !context.is_authenticated().await,
-            SecurityExpression::IsFullyAuthenticated => {
+            SecurityExpression::IsFullyAuthenticated =>
+            {
                 // For now, same as authenticated
                 context.is_authenticated().await
             },
-            SecurityExpression::HasRole(role) => {
+            SecurityExpression::HasRole(role) =>
+            {
                 let role = crate::Role::from_str(role);
                 context.has_role(&role).await
             },
-            SecurityExpression::HasAuthority(auth) => {
+            SecurityExpression::HasAuthority(auth) =>
+            {
                 let authority = Authority::Permission(auth.clone());
                 context.has_authority(&authority).await
             },
-            SecurityExpression::HasPermission(target, permission) => {
+            SecurityExpression::HasPermission(target, permission) =>
+            {
                 let auth = Authority::Permission(format!("{}:{}", target, permission));
                 context.has_authority(&auth).await
             },
-            SecurityExpression::Custom(expr) => {
+            SecurityExpression::Custom(expr) =>
+            {
                 // Custom expressions would need a full expression parser
                 // For now, return false
                 tracing::warn!("Custom security expression not implemented: {}", expr);
@@ -84,20 +93,25 @@ impl SecurityExpression {
 
     /// Parse expression from string
     /// 从字符串解析表达式
-    pub fn parse(input: &str) -> Vec<Self> {
+    pub fn parse(input: &str) -> Vec<Self>
+    {
         let mut expressions = Vec::new();
 
         // Simple parser for common patterns
         // In a full implementation, this would use a proper expression language
 
         // Try hasRole with single quotes first, then double quotes
-        if input.contains("hasRole(") {
-            if let Some(start) = input.find("hasRole('") {
-                if let Some(end) = input[start..].find("')") {
+        if input.contains("hasRole(")
+        {
+            if let Some(start) = input.find("hasRole('")
+            {
+                if let Some(end) = input[start..].find("')")
+                {
                     let role = &input[start + 9..start + end];
                     expressions.push(SecurityExpression::HasRole(role.to_string()));
                 }
-            } else if let Some(start) = input.find("hasRole(\"")
+            }
+            else if let Some(start) = input.find("hasRole(\"")
                 && let Some(end) = input[start..].find("\")")
             {
                 let role = &input[start + 9..start + end];
@@ -106,13 +120,17 @@ impl SecurityExpression {
         }
 
         // Try hasAuthority with single quotes first, then double quotes
-        if input.contains("hasAuthority(") {
-            if let Some(start) = input.find("hasAuthority('") {
-                if let Some(end) = input[start..].find("')") {
+        if input.contains("hasAuthority(")
+        {
+            if let Some(start) = input.find("hasAuthority('")
+            {
+                if let Some(end) = input[start..].find("')")
+                {
                     let auth = &input[start + 14..start + end];
                     expressions.push(SecurityExpression::HasAuthority(auth.to_string()));
                 }
-            } else if let Some(start) = input.find("hasAuthority(\"")
+            }
+            else if let Some(start) = input.find("hasAuthority(\"")
                 && let Some(end) = input[start..].find("\")")
             {
                 let auth = &input[start + 14..start + end];
@@ -120,15 +138,18 @@ impl SecurityExpression {
             }
         }
 
-        if input.contains("isAuthenticated()") {
+        if input.contains("isAuthenticated()")
+        {
             expressions.push(SecurityExpression::IsAuthenticated);
         }
 
-        if input.contains("isAnonymous()") {
+        if input.contains("isAnonymous()")
+        {
             expressions.push(SecurityExpression::IsAnonymous);
         }
 
-        if expressions.is_empty() {
+        if expressions.is_empty()
+        {
             expressions.push(SecurityExpression::Custom(input.to_string()));
         }
 
@@ -151,7 +172,8 @@ impl SecurityExpression {
 /// @PreAuthorize("hasAuthority('USER:WRITE') and #userId == authentication.principal.id")
 /// public void updateUserProfile(Long userId, Profile profile) { }
 /// ```
-pub trait PreAuthorize {
+pub trait PreAuthorize
+{
     /// Check if access should be granted
     /// 检查是否应授予访问
     fn check_authorization(
@@ -163,7 +185,8 @@ pub trait PreAuthorize {
 /// `PreAuthorize` options
 /// `PreAuthorize选项`
 #[derive(Debug, Clone)]
-pub struct PreAuthorizeOptions {
+pub struct PreAuthorizeOptions
+{
     /// Security expressions
     /// 安全表达式
     pub expressions: Vec<SecurityExpression>,
@@ -173,10 +196,12 @@ pub struct PreAuthorizeOptions {
     pub require_all: bool,
 }
 
-impl PreAuthorizeOptions {
+impl PreAuthorizeOptions
+{
     /// Create new options
     /// 创建新选项
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             expressions: Vec::new(),
             require_all: true,
@@ -185,14 +210,16 @@ impl PreAuthorizeOptions {
 
     /// Add expression
     /// 添加表达式
-    pub fn add_expression(mut self, expr: SecurityExpression) -> Self {
+    pub fn add_expression(mut self, expr: SecurityExpression) -> Self
+    {
         self.expressions.push(expr);
         self
     }
 
     /// Parse and add expression string
     /// 解析并添加表达式字符串
-    pub fn add_expression_string(mut self, expr: impl Into<String>) -> Self {
+    pub fn add_expression_string(mut self, expr: impl Into<String>) -> Self
+    {
         let parsed = SecurityExpression::parse(&expr.into());
         self.expressions.extend(parsed);
         self
@@ -200,30 +227,40 @@ impl PreAuthorizeOptions {
 
     /// Set require all (AND) or require any (OR)
     /// 设置需要全部（AND）或需要任一（OR）
-    pub fn require_all(mut self, require_all: bool) -> Self {
+    pub fn require_all(mut self, require_all: bool) -> Self
+    {
         self.require_all = require_all;
         self
     }
 
     /// Evaluate all expressions
     /// 评估所有表达式
-    pub async fn evaluate(&self, context: &SecurityContext) -> bool {
-        if self.expressions.is_empty() {
+    pub async fn evaluate(&self, context: &SecurityContext) -> bool
+    {
+        if self.expressions.is_empty()
+        {
             return true;
         }
 
-        if self.require_all {
+        if self.require_all
+        {
             // All must pass
-            for expr in &self.expressions {
-                if !expr.evaluate(context).await {
+            for expr in &self.expressions
+            {
+                if !expr.evaluate(context).await
+                {
                     return false;
                 }
             }
             true
-        } else {
+        }
+        else
+        {
             // Any can pass
-            for expr in &self.expressions {
-                if expr.evaluate(context).await {
+            for expr in &self.expressions
+            {
+                if expr.evaluate(context).await
+                {
                     return true;
                 }
             }
@@ -232,8 +269,10 @@ impl PreAuthorizeOptions {
     }
 }
 
-impl Default for PreAuthorizeOptions {
-    fn default() -> Self {
+impl Default for PreAuthorizeOptions
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -243,7 +282,8 @@ impl Default for PreAuthorizeOptions {
 pub async fn check_pre_authorize(
     context: &SecurityContext,
     expression: &str,
-) -> Result<bool, crate::SecurityError> {
+) -> Result<bool, crate::SecurityError>
+{
     let options = PreAuthorizeOptions::new().add_expression_string(expression);
     Ok(options.evaluate(context).await)
 }
@@ -252,28 +292,33 @@ pub async fn check_pre_authorize(
 /// 常用安全表达式
 pub struct Expressions;
 
-impl Expressions {
+impl Expressions
+{
     /// Has role expression
     /// 有角色表达式
-    pub fn has_role(role: impl Into<String>) -> SecurityExpression {
+    pub fn has_role(role: impl Into<String>) -> SecurityExpression
+    {
         SecurityExpression::HasRole(role.into())
     }
 
     /// Has authority expression
     /// 有权限表达式
-    pub fn has_authority(auth: impl Into<String>) -> SecurityExpression {
+    pub fn has_authority(auth: impl Into<String>) -> SecurityExpression
+    {
         SecurityExpression::HasAuthority(auth.into())
     }
 
     /// Is authenticated expression
     /// 已认证表达式
-    pub fn is_authenticated() -> SecurityExpression {
+    pub fn is_authenticated() -> SecurityExpression
+    {
         SecurityExpression::IsAuthenticated
     }
 
     /// Is anonymous expression
     /// 是匿名表达式
-    pub fn is_anonymous() -> SecurityExpression {
+    pub fn is_anonymous() -> SecurityExpression
+    {
         SecurityExpression::IsAnonymous
     }
 
@@ -282,7 +327,8 @@ impl Expressions {
     pub fn has_permission(
         target: impl Into<String>,
         permission: impl Into<String>,
-    ) -> SecurityExpression {
+    ) -> SecurityExpression
+    {
         SecurityExpression::HasPermission(target.into(), permission.into())
     }
 }
@@ -295,21 +341,25 @@ impl Expressions {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_security_expression_parse() {
+    fn test_security_expression_parse()
+    {
         let exprs = SecurityExpression::parse("hasRole('ADMIN')");
         assert_eq!(exprs.len(), 1);
-        match &exprs[0] {
+        match &exprs[0]
+        {
             SecurityExpression::HasRole(role) => assert_eq!(role, "ADMIN"),
             _ => panic!("Expected HasRole"),
         }
     }
 
     #[tokio::test]
-    async fn test_pre_authorize_options() {
+    async fn test_pre_authorize_options()
+    {
         let context = SecurityContext::new();
 
         let options = PreAuthorizeOptions::new()

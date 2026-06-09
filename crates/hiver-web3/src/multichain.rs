@@ -42,7 +42,8 @@ use crate::{chain::ChainConfig, wallet::Address};
 ///
 /// 以EIP-155链ID为键存储链配置，并支持按链ID或名称查找。
 #[derive(Debug, Clone)]
-pub struct ChainRegistry {
+pub struct ChainRegistry
+{
     /// Chain configurations keyed by chain ID.
     /// 以链ID为键的链配置。
     chains: HashMap<u64, ChainEntry>,
@@ -51,7 +52,8 @@ pub struct ChainRegistry {
 /// A single chain entry in the registry.
 /// 注册表中的单条链记录。
 #[derive(Debug, Clone)]
-pub struct ChainEntry {
+pub struct ChainEntry
+{
     /// Chain configuration.
     /// 链配置。
     pub config: ChainConfig,
@@ -66,7 +68,8 @@ pub struct ChainEntry {
 /// Predefined chain identifiers.
 /// 预定义的链标识符。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Chain {
+pub enum Chain
+{
     /// Ethereum Mainnet.
     /// 以太坊主网。
     Ethereum,
@@ -93,9 +96,12 @@ pub enum Chain {
     ZkSync,
 }
 
-impl fmt::Display for Chain {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for Chain
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::Ethereum => write!(f, "Ethereum"),
             Self::Polygon => write!(f, "Polygon"),
             Self::Bsc => write!(f, "BSC"),
@@ -111,7 +117,8 @@ impl fmt::Display for Chain {
 /// Native currency descriptor.
 /// 原生货币描述符。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct NativeCurrency {
+pub struct NativeCurrency
+{
     /// Symbol (e.g. "ETH").
     /// 符号（例如"ETH"）。
     pub symbol: &'static str,
@@ -123,11 +130,14 @@ pub struct NativeCurrency {
     pub name: &'static str,
 }
 
-impl Chain {
+impl Chain
+{
     /// Get the EIP-155 chain ID for this chain.
     /// 获取此链的EIP-155链ID。
-    pub const fn chain_id(self) -> u64 {
-        match self {
+    pub const fn chain_id(self) -> u64
+    {
+        match self
+        {
             Self::Ethereum => 1,
             Self::Polygon => 137,
             Self::Bsc => 56,
@@ -141,9 +151,12 @@ impl Chain {
 
     /// Get the native currency for this chain.
     /// 获取此链的原生货币。
-    pub const fn native_currency(self) -> NativeCurrency {
-        match self {
-            Self::Ethereum | Self::Arbitrum | Self::Optimism | Self::Base | Self::ZkSync => {
+    pub const fn native_currency(self) -> NativeCurrency
+    {
+        match self
+        {
+            Self::Ethereum | Self::Arbitrum | Self::Optimism | Self::Base | Self::ZkSync =>
+            {
                 NativeCurrency {
                     symbol: "ETH",
                     decimals: 18,
@@ -170,8 +183,10 @@ impl Chain {
 
     /// Get the default RPC URL for this chain.
     /// 获取此链的默认RPC URL。
-    pub const fn default_rpc_url(self) -> &'static str {
-        match self {
+    pub const fn default_rpc_url(self) -> &'static str
+    {
+        match self
+        {
             Self::Ethereum => "https://eth.llamarpc.com",
             Self::Polygon => "https://polygon-rpc.com",
             Self::Bsc => "https://bsc-dataseed.binance.org",
@@ -185,8 +200,10 @@ impl Chain {
 
     /// Get the block explorer base URL for this chain.
     /// 获取此链的区块浏览器基础URL。
-    pub const fn block_explorer_url(self) -> &'static str {
-        match self {
+    pub const fn block_explorer_url(self) -> &'static str
+    {
+        match self
+        {
             Self::Ethereum => "https://etherscan.io",
             Self::Polygon => "https://polygonscan.com",
             Self::Bsc => "https://bscscan.com",
@@ -199,10 +216,12 @@ impl Chain {
     }
 }
 
-impl ChainRegistry {
+impl ChainRegistry
+{
     /// Create an empty registry.
     /// 创建空的注册表。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             chains: HashMap::new(),
         }
@@ -210,7 +229,8 @@ impl ChainRegistry {
 
     /// Create a registry pre-populated with all supported chains.
     /// 创建预填充所有支持链的注册表。
-    pub fn with_defaults() -> Self {
+    pub fn with_defaults() -> Self
+    {
         let mut registry = Self::new();
         registry.register_defaults();
         registry
@@ -218,7 +238,8 @@ impl ChainRegistry {
 
     /// Register all pre-configured chains.
     /// 注册所有预配置链。
-    pub fn register_defaults(&mut self) {
+    pub fn register_defaults(&mut self)
+    {
         self.register_chain(Chain::Ethereum);
         self.register_chain(Chain::Polygon);
         self.register_chain(Chain::Bsc);
@@ -231,7 +252,8 @@ impl ChainRegistry {
 
     /// Register a predefined chain.
     /// 注册预定义链。
-    pub fn register_chain(&mut self, chain: Chain) {
+    pub fn register_chain(&mut self, chain: Chain)
+    {
         let id = chain.chain_id();
         let currency = chain.native_currency();
         let explorer = chain.block_explorer_url();
@@ -240,7 +262,8 @@ impl ChainRegistry {
             .with_rpc_url(chain.default_rpc_url())
             .with_explorer(explorer)
             .with_native_currency(currency.symbol, currency.decimals, currency.name)
-            .with_block_time(match chain {
+            .with_block_time(match chain
+            {
                 Chain::Ethereum => 12,
                 Chain::Polygon | Chain::Optimism | Chain::Avalanche | Chain::Base => 2,
                 Chain::Bsc => 3,
@@ -257,7 +280,8 @@ impl ChainRegistry {
 
     /// Register a custom chain configuration.
     /// 注册自定义链配置。
-    pub fn register_custom(&mut self, config: ChainConfig, explorer_tx_url: impl Into<String>) {
+    pub fn register_custom(&mut self, config: ChainConfig, explorer_tx_url: impl Into<String>)
+    {
         let id = config.chain_id.as_u64();
         let entry = ChainEntry {
             config,
@@ -269,19 +293,22 @@ impl ChainRegistry {
 
     /// Look up a chain entry by its EIP-155 chain ID.
     /// 根据EIP-155链ID查找链记录。
-    pub fn get_by_chain_id(&self, chain_id: u64) -> Option<&ChainEntry> {
+    pub fn get_by_chain_id(&self, chain_id: u64) -> Option<&ChainEntry>
+    {
         self.chains.get(&chain_id)
     }
 
     /// Look up a chain entry by its predefined identifier.
     /// 根据预定义标识符查找链记录。
-    pub fn get(&self, chain: Chain) -> Option<&ChainEntry> {
+    pub fn get(&self, chain: Chain) -> Option<&ChainEntry>
+    {
         self.chains.get(&chain.chain_id())
     }
 
     /// Get all registered chain IDs.
     /// 获取所有已注册的链ID。
-    pub fn chain_ids(&self) -> Vec<u64> {
+    pub fn chain_ids(&self) -> Vec<u64>
+    {
         let mut ids: Vec<u64> = self.chains.keys().copied().collect();
         ids.sort_unstable();
         ids
@@ -289,19 +316,23 @@ impl ChainRegistry {
 
     /// Get the number of registered chains.
     /// 获取已注册链的数量。
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.chains.len()
     }
 
     /// Check if the registry is empty.
     /// 检查注册表是否为空。
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.chains.is_empty()
     }
 }
 
-impl Default for ChainRegistry {
-    fn default() -> Self {
+impl Default for ChainRegistry
+{
+    fn default() -> Self
+    {
         Self::with_defaults()
     }
 }
@@ -313,7 +344,8 @@ impl Default for ChainRegistry {
 /// Cross-chain bridge status.
 /// 跨链桥状态。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum BridgeStatus {
+pub enum BridgeStatus
+{
     /// Transaction has been submitted to the source chain.
     /// 交易已提交到源链。
     Pending,
@@ -334,9 +366,12 @@ pub enum BridgeStatus {
     Failed(String),
 }
 
-impl fmt::Display for BridgeStatus {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for BridgeStatus
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::Pending => write!(f, "Pending"),
             Self::SourceConfirmed => write!(f, "SourceConfirmed"),
             Self::Locked => write!(f, "Locked"),
@@ -350,7 +385,8 @@ impl fmt::Display for BridgeStatus {
 /// Bridge fee estimate.
 /// 桥接费用估算。
 #[derive(Debug, Clone)]
-pub struct BridgeFeeEstimate {
+pub struct BridgeFeeEstimate
+{
     /// Fee in native token (wei).
     /// 原生代币费用（wei）。
     pub fee_wei: u64,
@@ -365,7 +401,8 @@ pub struct BridgeFeeEstimate {
 /// Bridge transaction request.
 /// 桥接交易请求。
 #[derive(Debug, Clone)]
-pub struct BridgeRequest {
+pub struct BridgeRequest
+{
     /// Source chain ID.
     /// 源链ID。
     pub from_chain_id: u64,
@@ -383,7 +420,8 @@ pub struct BridgeRequest {
     pub recipient: Address,
 }
 
-impl BridgeRequest {
+impl BridgeRequest
+{
     /// Create a new bridge request.
     /// 创建新的桥接请求。
     pub fn new(
@@ -392,7 +430,8 @@ impl BridgeRequest {
         token: Address,
         amount: u64,
         recipient: Address,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             from_chain_id,
             to_chain_id,
@@ -406,7 +445,8 @@ impl BridgeRequest {
 /// Bridge transaction result.
 /// 桥接交易结果。
 #[derive(Debug, Clone)]
-pub struct BridgeTransaction {
+pub struct BridgeTransaction
+{
     /// Transaction hash on the source chain.
     /// 源链上的交易哈希。
     pub tx_hash: String,
@@ -424,7 +464,8 @@ pub struct BridgeTransaction {
 ///
 /// 定义跨链代币桥接操作的接口。
 /// 各个桥接实现（例如 across chain、Stargate）应实现此trait。
-pub trait Bridge: Send + Sync {
+pub trait Bridge: Send + Sync
+{
     /// Estimate the fee for a bridge transfer.
     /// 估算桥接转账的费用。
     fn estimate_fee(&self, request: &BridgeRequest) -> Result<BridgeFeeEstimate, BridgeError>;
@@ -449,7 +490,8 @@ pub trait Bridge: Send + Sync {
 /// Bridge error.
 /// 桥接错误。
 #[derive(Debug, Clone)]
-pub enum BridgeError {
+pub enum BridgeError
+{
     /// Unsupported route (chain pair not supported).
     /// 不支持的路由（不支持该链对）。
     UnsupportedRoute(u64, u64),
@@ -479,10 +521,14 @@ pub enum BridgeError {
     Timeout,
 }
 
-impl fmt::Display for BridgeError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::UnsupportedRoute(from, to) => {
+impl fmt::Display for BridgeError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
+            Self::UnsupportedRoute(from, to) =>
+            {
                 write!(f, "Unsupported bridge route: chain {} -> {}", from, to)
             },
             Self::InsufficientLiquidity => write!(f, "Insufficient bridge liquidity"),
@@ -504,7 +550,8 @@ impl std::error::Error for BridgeError {}
 /// EIP-1559 gas fee components.
 /// EIP-1559 Gas费用组成。
 #[derive(Debug, Clone)]
-pub struct GasFeeEstimate {
+pub struct GasFeeEstimate
+{
     /// Suggested base fee (wei).
     /// 建议的基础费用（wei）。
     pub base_fee: u64,
@@ -522,10 +569,12 @@ pub struct GasFeeEstimate {
     pub estimated_cost: u64,
 }
 
-impl GasFeeEstimate {
+impl GasFeeEstimate
+{
     /// Create a new gas fee estimate.
     /// 创建新的Gas费用估算。
-    pub fn new(base_fee: u64, priority_fee: u64, gas_limit: u64) -> Self {
+    pub fn new(base_fee: u64, priority_fee: u64, gas_limit: u64) -> Self
+    {
         let max_fee_per_gas = base_fee * 2 + priority_fee;
         let estimated_cost = max_fee_per_gas * gas_limit;
         Self {
@@ -540,14 +589,16 @@ impl GasFeeEstimate {
     /// Get the max fee per gas as a Gwei float.
     /// 获取最大费用每单位Gas的Gwei浮点数。
     #[allow(clippy::cast_precision_loss)]
-    pub fn max_fee_gwei(&self) -> f64 {
+    pub fn max_fee_gwei(&self) -> f64
+    {
         self.max_fee_per_gas as f64 / 1e9
     }
 
     /// Get the base fee as a Gwei float.
     /// 获取基础费用的Gwei浮点数。
     #[allow(clippy::cast_precision_loss)]
-    pub fn base_fee_gwei(&self) -> f64 {
+    pub fn base_fee_gwei(&self) -> f64
+    {
         self.base_fee as f64 / 1e9
     }
 }
@@ -560,7 +611,8 @@ impl GasFeeEstimate {
 ///
 /// 根据基础费用和优先费用组件计算Gas费用估算，遵循EIP-1559费用市场模型。
 #[derive(Debug, Clone)]
-pub struct GasOracle {
+pub struct GasOracle
+{
     /// Chain ID this oracle is configured for.
     /// 此预言机配置的链ID。
     chain_id: u64,
@@ -575,10 +627,12 @@ pub struct GasOracle {
     max_fee_cap: u64,
 }
 
-impl GasOracle {
+impl GasOracle
+{
     /// Create a new gas oracle for the given chain.
     /// 为给定链创建新的Gas预言机。
-    pub fn new(chain_id: u64) -> Self {
+    pub fn new(chain_id: u64) -> Self
+    {
         Self {
             chain_id,
             default_priority_fee: 1_500_000_000, // 1.5 Gwei
@@ -589,34 +643,39 @@ impl GasOracle {
 
     /// Set the default priority fee.
     /// 设置默认优先费用。
-    pub fn with_default_priority_fee(mut self, fee: u64) -> Self {
+    pub fn with_default_priority_fee(mut self, fee: u64) -> Self
+    {
         self.default_priority_fee = fee;
         self
     }
 
     /// Set the default gas limit.
     /// 设置默认Gas限制。
-    pub fn with_default_gas_limit(mut self, limit: u64) -> Self {
+    pub fn with_default_gas_limit(mut self, limit: u64) -> Self
+    {
         self.default_gas_limit = limit;
         self
     }
 
     /// Set the maximum fee cap.
     /// 设置最大费用上限。
-    pub fn with_max_fee_cap(mut self, cap: u64) -> Self {
+    pub fn with_max_fee_cap(mut self, cap: u64) -> Self
+    {
         self.max_fee_cap = cap;
         self
     }
 
     /// Get the chain ID.
     /// 获取链ID。
-    pub fn chain_id(&self) -> u64 {
+    pub fn chain_id(&self) -> u64
+    {
         self.chain_id
     }
 
     /// Estimate gas fees given the current base fee.
     /// 根据当前基础费用估算Gas费用。
-    pub fn estimate(&self, base_fee: u64) -> GasFeeEstimate {
+    pub fn estimate(&self, base_fee: u64) -> GasFeeEstimate
+    {
         let priority_fee = self.default_priority_fee;
         let max_fee = (base_fee * 2 + priority_fee).min(self.max_fee_cap);
         let gas_limit = self.default_gas_limit;
@@ -631,7 +690,8 @@ impl GasOracle {
 
     /// Estimate gas fees with a custom priority fee.
     /// 使用自定义优先费用估算Gas费用。
-    pub fn estimate_with_priority(&self, base_fee: u64, priority_fee: u64) -> GasFeeEstimate {
+    pub fn estimate_with_priority(&self, base_fee: u64, priority_fee: u64) -> GasFeeEstimate
+    {
         let max_fee = (base_fee * 2 + priority_fee).min(self.max_fee_cap);
         let gas_limit = self.default_gas_limit;
         GasFeeEstimate {
@@ -645,7 +705,8 @@ impl GasOracle {
 
     /// Estimate gas fees for a contract call with a custom gas limit.
     /// 使用自定义Gas限制估算合约调用的Gas费用。
-    pub fn estimate_for_gas_limit(&self, base_fee: u64, gas_limit: u64) -> GasFeeEstimate {
+    pub fn estimate_for_gas_limit(&self, base_fee: u64, gas_limit: u64) -> GasFeeEstimate
+    {
         let priority_fee = self.default_priority_fee;
         let max_fee = (base_fee * 2 + priority_fee).min(self.max_fee_cap);
         GasFeeEstimate {
@@ -670,20 +731,23 @@ impl GasOracle {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     // -- ChainRegistry tests --
 
     #[test]
-    fn test_registry_with_defaults() {
+    fn test_registry_with_defaults()
+    {
         let registry = ChainRegistry::with_defaults();
         assert_eq!(registry.len(), 8);
         assert!(!registry.is_empty());
     }
 
     #[test]
-    fn test_registry_get_by_chain_id() {
+    fn test_registry_get_by_chain_id()
+    {
         let registry = ChainRegistry::with_defaults();
 
         let eth = registry.get_by_chain_id(1).unwrap();
@@ -700,7 +764,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registry_get_by_chain_enum() {
+    fn test_registry_get_by_chain_enum()
+    {
         let registry = ChainRegistry::with_defaults();
 
         let arb = registry.get(Chain::Arbitrum).unwrap();
@@ -711,7 +776,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registry_chain_ids() {
+    fn test_registry_chain_ids()
+    {
         let registry = ChainRegistry::with_defaults();
         let ids = registry.chain_ids();
         assert!(ids.contains(&1));
@@ -725,13 +791,15 @@ mod tests {
     }
 
     #[test]
-    fn test_registry_missing_chain() {
+    fn test_registry_missing_chain()
+    {
         let registry = ChainRegistry::with_defaults();
         assert!(registry.get_by_chain_id(99999).is_none());
     }
 
     #[test]
-    fn test_registry_custom_chain() {
+    fn test_registry_custom_chain()
+    {
         let mut registry = ChainRegistry::new();
         let config = ChainConfig::new(12345u64, "My Custom Chain")
             .with_rpc_url("https://rpc.example.com")
@@ -744,7 +812,8 @@ mod tests {
     }
 
     #[test]
-    fn test_registry_default() {
+    fn test_registry_default()
+    {
         let registry = ChainRegistry::default();
         assert_eq!(registry.len(), 8);
     }
@@ -752,7 +821,8 @@ mod tests {
     // -- Chain enum tests --
 
     #[test]
-    fn test_chain_chain_ids() {
+    fn test_chain_chain_ids()
+    {
         assert_eq!(Chain::Ethereum.chain_id(), 1);
         assert_eq!(Chain::Polygon.chain_id(), 137);
         assert_eq!(Chain::Bsc.chain_id(), 56);
@@ -764,7 +834,8 @@ mod tests {
     }
 
     #[test]
-    fn test_chain_native_currency() {
+    fn test_chain_native_currency()
+    {
         let eth_currency = Chain::Ethereum.native_currency();
         assert_eq!(eth_currency.symbol, "ETH");
         assert_eq!(eth_currency.decimals, 18);
@@ -777,21 +848,24 @@ mod tests {
     }
 
     #[test]
-    fn test_chain_display() {
+    fn test_chain_display()
+    {
         assert_eq!(Chain::Ethereum.to_string(), "Ethereum");
         assert_eq!(Chain::Bsc.to_string(), "BSC");
         assert_eq!(Chain::ZkSync.to_string(), "zkSync");
     }
 
     #[test]
-    fn test_chain_block_explorer() {
+    fn test_chain_block_explorer()
+    {
         assert_eq!(Chain::Ethereum.block_explorer_url(), "https://etherscan.io");
         assert_eq!(Chain::Polygon.block_explorer_url(), "https://polygonscan.com");
         assert_eq!(Chain::Base.block_explorer_url(), "https://basescan.org");
     }
 
     #[test]
-    fn test_chain_default_rpc() {
+    fn test_chain_default_rpc()
+    {
         assert!(Chain::Ethereum.default_rpc_url().starts_with("https://"));
         assert!(Chain::Bsc.default_rpc_url().starts_with("https://"));
     }
@@ -799,7 +873,8 @@ mod tests {
     // -- Bridge tests --
 
     #[test]
-    fn test_bridge_request_new() {
+    fn test_bridge_request_new()
+    {
         let from = Address::zero();
         let recipient = Address::from_hex("0x0000000000000000000000000000000000000001").unwrap();
         let req = BridgeRequest::new(1, 137, from, 1000, recipient);
@@ -809,7 +884,8 @@ mod tests {
     }
 
     #[test]
-    fn test_bridge_status_display() {
+    fn test_bridge_status_display()
+    {
         assert_eq!(BridgeStatus::Pending.to_string(), "Pending");
         assert_eq!(BridgeStatus::Completed.to_string(), "Completed");
         assert!(
@@ -820,7 +896,8 @@ mod tests {
     }
 
     #[test]
-    fn test_bridge_error_display() {
+    fn test_bridge_error_display()
+    {
         let err = BridgeError::UnsupportedRoute(1, 137);
         assert!(err.to_string().contains("Unsupported bridge route"));
 
@@ -831,7 +908,8 @@ mod tests {
     // -- GasOracle tests --
 
     #[test]
-    fn test_gas_oracle_estimate() {
+    fn test_gas_oracle_estimate()
+    {
         let oracle = GasOracle::new(1);
         // base_fee = 20 Gwei
         let base_fee = 20_000_000_000u64;
@@ -847,7 +925,8 @@ mod tests {
     }
 
     #[test]
-    fn test_gas_oracle_estimate_gwei() {
+    fn test_gas_oracle_estimate_gwei()
+    {
         let oracle = GasOracle::new(1);
         let base_fee = 10_000_000_000u64; // 10 Gwei
         let estimate = oracle.estimate(base_fee);
@@ -858,7 +937,8 @@ mod tests {
     }
 
     #[test]
-    fn test_gas_oracle_with_priority() {
+    fn test_gas_oracle_with_priority()
+    {
         let oracle = GasOracle::new(1);
         let base_fee = 10_000_000_000u64;
         let estimate = oracle.estimate_with_priority(base_fee, 3_000_000_000);
@@ -869,7 +949,8 @@ mod tests {
     }
 
     #[test]
-    fn test_gas_oracle_custom_gas_limit() {
+    fn test_gas_oracle_custom_gas_limit()
+    {
         let oracle = GasOracle::new(1);
         let base_fee = 10_000_000_000u64;
         let estimate = oracle.estimate_for_gas_limit(base_fee, 200_000);
@@ -878,7 +959,8 @@ mod tests {
     }
 
     #[test]
-    fn test_gas_oracle_fee_cap() {
+    fn test_gas_oracle_fee_cap()
+    {
         let oracle = GasOracle::new(1).with_max_fee_cap(100_000_000_000u64); // 100 Gwei cap
         let base_fee = 200_000_000_000u64; // 200 Gwei base fee (very high)
         let estimate = oracle.estimate(base_fee);
@@ -888,7 +970,8 @@ mod tests {
     }
 
     #[test]
-    fn test_gas_oracle_builder() {
+    fn test_gas_oracle_builder()
+    {
         let oracle = GasOracle::new(137)
             .with_default_priority_fee(2_000_000_000)
             .with_default_gas_limit(50_000)
@@ -898,7 +981,8 @@ mod tests {
     }
 
     #[test]
-    fn test_gas_fee_estimate_new() {
+    fn test_gas_fee_estimate_new()
+    {
         let estimate = GasFeeEstimate::new(10_000_000_000, 1_500_000_000, 21_000);
         let expected_max = 10_000_000_000 * 2 + 1_500_000_000;
         assert_eq!(estimate.max_fee_per_gas, expected_max);

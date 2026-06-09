@@ -20,7 +20,8 @@ use crate::{Authority, Role, SecurityContext};
 /// public void updateUserProfile(Long id, Profile profile) { }
 /// ```
 #[derive(Debug, Clone)]
-pub struct SecurityMetadata {
+pub struct SecurityMetadata
+{
     /// Required roles
     /// 所需角色
     pub roles: Vec<Role>,
@@ -34,10 +35,12 @@ pub struct SecurityMetadata {
     pub require_all: bool,
 }
 
-impl SecurityMetadata {
+impl SecurityMetadata
+{
     /// Create new metadata
     /// 创建新元数据
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             roles: Vec::new(),
             authorities: Vec::new(),
@@ -47,41 +50,48 @@ impl SecurityMetadata {
 
     /// Add role
     /// 添加角色
-    pub fn add_role(mut self, role: Role) -> Self {
+    pub fn add_role(mut self, role: Role) -> Self
+    {
         self.roles.push(role);
         self
     }
 
     /// Add roles
     /// 添加角色
-    pub fn add_roles(mut self, roles: Vec<Role>) -> Self {
+    pub fn add_roles(mut self, roles: Vec<Role>) -> Self
+    {
         self.roles.extend(roles);
         self
     }
 
     /// Add authority
     /// 添加权限
-    pub fn add_authority(mut self, authority: Authority) -> Self {
+    pub fn add_authority(mut self, authority: Authority) -> Self
+    {
         self.authorities.push(authority);
         self
     }
 
     /// Set require all
     /// 设置需要全部
-    pub fn require_all(mut self, require_all: bool) -> Self {
+    pub fn require_all(mut self, require_all: bool) -> Self
+    {
         self.require_all = require_all;
         self
     }
 
     /// Check if security requirements are met
     /// 检查是否满足安全要求
-    pub async fn check(&self, context: &SecurityContext) -> Result<(), crate::SecurityError> {
+    pub async fn check(&self, context: &SecurityContext) -> Result<(), crate::SecurityError>
+    {
         let has_roles = self.check_roles(context).await;
         let has_authorities = self.check_authorities(context).await;
 
-        if self.require_all {
+        if self.require_all
+        {
             // Must have both required roles AND authorities
-            if !self.roles.is_empty() && !has_roles {
+            if !self.roles.is_empty() && !has_roles
+            {
                 return Err(crate::SecurityError::InsufficientPermissions {
                     required: self
                         .roles
@@ -92,7 +102,8 @@ impl SecurityMetadata {
                     has: "none".to_string(),
                 });
             }
-            if !self.authorities.is_empty() && !has_authorities {
+            if !self.authorities.is_empty() && !has_authorities
+            {
                 return Err(crate::SecurityError::InsufficientPermissions {
                     required: self
                         .authorities
@@ -103,7 +114,9 @@ impl SecurityMetadata {
                     has: "none".to_string(),
                 });
             }
-        } else {
+        }
+        else
+        {
             // Must have at least one of roles OR authorities
             if !has_roles
                 && !has_authorities
@@ -120,23 +133,32 @@ impl SecurityMetadata {
 
     /// Check if user has required roles
     /// 检查用户是否有所需角色
-    async fn check_roles(&self, context: &SecurityContext) -> bool {
-        if self.roles.is_empty() {
+    async fn check_roles(&self, context: &SecurityContext) -> bool
+    {
+        if self.roles.is_empty()
+        {
             return true;
         }
 
-        if self.require_all {
+        if self.require_all
+        {
             // Must have all roles
-            for role in &self.roles {
-                if !context.has_role(role).await {
+            for role in &self.roles
+            {
+                if !context.has_role(role).await
+                {
                     return false;
                 }
             }
             true
-        } else {
+        }
+        else
+        {
             // Must have at least one role
-            for role in &self.roles {
-                if context.has_role(role).await {
+            for role in &self.roles
+            {
+                if context.has_role(role).await
+                {
                     return true;
                 }
             }
@@ -146,23 +168,32 @@ impl SecurityMetadata {
 
     /// Check if user has required authorities
     /// 检查用户是否有所需权限
-    async fn check_authorities(&self, context: &SecurityContext) -> bool {
-        if self.authorities.is_empty() {
+    async fn check_authorities(&self, context: &SecurityContext) -> bool
+    {
+        if self.authorities.is_empty()
+        {
             return true;
         }
 
-        if self.require_all {
+        if self.require_all
+        {
             // Must have all authorities
-            for auth in &self.authorities {
-                if !context.has_authority(auth).await {
+            for auth in &self.authorities
+            {
+                if !context.has_authority(auth).await
+                {
                     return false;
                 }
             }
             true
-        } else {
+        }
+        else
+        {
             // Must have at least one authority
-            for auth in &self.authorities {
-                if context.has_authority(auth).await {
+            for auth in &self.authorities
+            {
+                if context.has_authority(auth).await
+                {
                     return true;
                 }
             }
@@ -171,8 +202,10 @@ impl SecurityMetadata {
     }
 }
 
-impl Default for SecurityMetadata {
-    fn default() -> Self {
+impl Default for SecurityMetadata
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -185,10 +218,12 @@ impl Default for SecurityMetadata {
 ///
 /// Equivalent to Spring's @Secured annotation.
 /// 等价于Spring的@Secured注解。
-pub trait Secured {
+pub trait Secured
+{
     /// Get security metadata
     /// 获取安全元数据
-    fn security_metadata(&self) -> SecurityMetadata {
+    fn security_metadata(&self) -> SecurityMetadata
+    {
         SecurityMetadata::new()
     }
 }
@@ -212,18 +247,22 @@ impl<T> Secured for T where T: ?Sized {}
 /// ```
 pub struct SecuredHelper;
 
-impl SecuredHelper {
+impl SecuredHelper
+{
     /// Create metadata with roles
     /// 使用角色创建元数据
-    pub fn with_roles(roles: &[&str]) -> SecurityMetadata {
+    pub fn with_roles(roles: &[&str]) -> SecurityMetadata
+    {
         SecurityMetadata::new().add_roles(roles.iter().map(|r| Role::from_str(r)).collect())
     }
 
     /// Create metadata with authorities
     /// 使用权限创建元数据
-    pub fn with_authorities(authorities: &[Authority]) -> SecurityMetadata {
+    pub fn with_authorities(authorities: &[Authority]) -> SecurityMetadata
+    {
         let mut metadata = SecurityMetadata::new();
-        for auth in authorities {
+        for auth in authorities
+        {
             metadata = metadata.add_authority(auth.clone());
         }
         metadata
@@ -234,7 +273,8 @@ impl SecuredHelper {
     pub async fn check_access(
         context: &SecurityContext,
         metadata: &SecurityMetadata,
-    ) -> Result<(), crate::SecurityError> {
+    ) -> Result<(), crate::SecurityError>
+    {
         metadata.check(context).await
     }
 }
@@ -243,16 +283,19 @@ impl SecuredHelper {
 /// 常用安全约束
 pub struct Constraints;
 
-impl Constraints {
+impl Constraints
+{
     /// Admin only
     /// 仅管理员
-    pub fn admin_only() -> SecurityMetadata {
+    pub fn admin_only() -> SecurityMetadata
+    {
         SecurityMetadata::new().add_role(Role::Admin)
     }
 
     /// User or admin
     /// 用户或管理员
-    pub fn user_or_admin() -> SecurityMetadata {
+    pub fn user_or_admin() -> SecurityMetadata
+    {
         SecurityMetadata::new()
             .add_roles(vec![Role::User, Role::Admin])
             .require_all(false)
@@ -260,19 +303,22 @@ impl Constraints {
 
     /// Authenticated
     /// 已认证
-    pub fn authenticated() -> SecurityMetadata {
+    pub fn authenticated() -> SecurityMetadata
+    {
         SecurityMetadata::new()
     }
 
     /// Permit all (no constraints)
     /// 允许所有（无约束）
-    pub fn permit_all() -> SecurityMetadata {
+    pub fn permit_all() -> SecurityMetadata
+    {
         SecurityMetadata::new()
     }
 
     /// Deny all (never permits access)
     /// 拒绝所有（从不允许访问）
-    pub fn deny_all() -> SecurityMetadata {
+    pub fn deny_all() -> SecurityMetadata
+    {
         SecurityMetadata::new()
             .add_role(Role::Custom("IMPOSSIBLE_ROLE_TO_HAVE".to_string()))
             .require_all(true)
@@ -287,11 +333,13 @@ impl Constraints {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_security_metadata() {
+    fn test_security_metadata()
+    {
         let metadata = SecurityMetadata::new()
             .add_role(Role::Admin)
             .add_role(Role::User)
@@ -302,7 +350,8 @@ mod tests {
     }
 
     #[test]
-    fn test_constraints() {
+    fn test_constraints()
+    {
         let admin = Constraints::admin_only();
         assert_eq!(admin.roles.len(), 1);
         assert!(admin.roles.contains(&Role::Admin));

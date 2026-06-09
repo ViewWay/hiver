@@ -8,7 +8,8 @@ use super::container::ApplicationContext;
 /// Bean lifecycle scope.
 /// Bean 生命周期作用域。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum BeanScope {
+pub enum BeanScope
+{
     /// Single shared instance for the application.
     /// 应用内单例。
     #[default]
@@ -27,13 +28,15 @@ pub type BeanConditionFn = fn(&ApplicationContext) -> bool;
 
 /// Always-true condition used as default.
 /// 默认始终为真的条件。
-pub fn always_true(_ctx: &ApplicationContext) -> bool {
+pub fn always_true(_ctx: &ApplicationContext) -> bool
+{
     true
 }
 
 /// Compile-time bean descriptor submitted by `#[service]` / `#[component]` macros.
 /// 由 `#[service]` / `#[component]` 宏在编译期提交的 Bean 描述符。
-pub struct BeanDescriptor {
+pub struct BeanDescriptor
+{
     /// Bean name (camelCase type name by default).
     /// Bean 名称（默认为类型的 camelCase 名称）。
     pub name: &'static str,
@@ -63,7 +66,8 @@ inventory::collect!(BeanDescriptor);
 
 /// Trait for beans that need initialization after all dependencies are wired.
 /// 所有依赖注入完成后需要初始化的 Bean 实现此 trait。
-pub trait PostConstruct: Send + Sync {
+pub trait PostConstruct: Send + Sync
+{
     /// Called once after the bean is fully constructed.
     /// Bean 完全构造后调用一次。
     fn post_construct(&self);
@@ -71,7 +75,8 @@ pub trait PostConstruct: Send + Sync {
 
 /// Trait for beans that need cleanup on shutdown.
 /// 关闭时需要清理的 Bean 实现此 trait。
-pub trait PreDestroy: Send + Sync {
+pub trait PreDestroy: Send + Sync
+{
     /// Called before the application context shuts down.
     /// 应用上下文关闭前调用。
     fn pre_destroy(&self);
@@ -79,9 +84,11 @@ pub trait PreDestroy: Send + Sync {
 
 /// Convert a PascalCase ident to camelCase bean name.
 /// 将 PascalCase 标识符转换为 camelCase Bean 名称。
-pub fn to_bean_name(type_name: &str) -> String {
+pub fn to_bean_name(type_name: &str) -> String
+{
     let mut chars = type_name.chars();
-    match chars.next() {
+    match chars.next()
+    {
         Some(c) => c.to_ascii_lowercase().to_string() + chars.as_str(),
         None => String::new(),
     }
@@ -91,25 +98,32 @@ pub fn to_bean_name(type_name: &str) -> String {
 /// 对 Bean 描述符进行拓扑排序；检测循环依赖。
 pub fn topological_sort<'a>(
     descriptors: &[&'a BeanDescriptor],
-) -> Result<Vec<&'a BeanDescriptor>, String> {
+) -> Result<Vec<&'a BeanDescriptor>, String>
+{
     let n = descriptors.len();
-    if n == 0 {
+    if n == 0
+    {
         return Ok(Vec::new());
     }
 
     let mut providers: std::collections::HashMap<TypeId, usize> = std::collections::HashMap::new();
-    for (idx, desc) in descriptors.iter().enumerate() {
+    for (idx, desc) in descriptors.iter().enumerate()
+    {
         providers.insert((desc.type_id)(), idx);
     }
 
     let mut in_degree = vec![0usize; n];
     let mut dependents: Vec<Vec<usize>> = vec![Vec::new(); n];
 
-    for (idx, desc) in descriptors.iter().enumerate() {
-        for dep_fn in desc.dep_type_ids {
+    for (idx, desc) in descriptors.iter().enumerate()
+    {
+        for dep_fn in desc.dep_type_ids
+        {
             let dep_id = dep_fn();
-            if let Some(&provider_idx) = providers.get(&dep_id) {
-                if provider_idx != idx {
+            if let Some(&provider_idx) = providers.get(&dep_id)
+            {
+                if provider_idx != idx
+                {
                     in_degree[idx] += 1;
                     dependents[provider_idx].push(idx);
                 }
@@ -121,17 +135,21 @@ pub fn topological_sort<'a>(
         (0..n).filter(|&i| in_degree[i] == 0).collect();
 
     let mut sorted = Vec::with_capacity(n);
-    while let Some(idx) = queue.pop_front() {
+    while let Some(idx) = queue.pop_front()
+    {
         sorted.push(descriptors[idx]);
-        for &dep in &dependents[idx] {
+        for &dep in &dependents[idx]
+        {
             in_degree[dep] -= 1;
-            if in_degree[dep] == 0 {
+            if in_degree[dep] == 0
+            {
                 queue.push_back(dep);
             }
         }
     }
 
-    if sorted.len() != n {
+    if sorted.len() != n
+    {
         return Err("Circular dependency detected among beans; cannot initialize \
                     ApplicationContext"
             .to_string());
@@ -148,20 +166,24 @@ pub fn topological_sort<'a>(
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
-    fn dummy_factory(_ctx: &ApplicationContext) -> Box<dyn Any + Send + Sync> {
+    fn dummy_factory(_ctx: &ApplicationContext) -> Box<dyn Any + Send + Sync>
+    {
         Box::new(0i32)
     }
 
     #[test]
-    fn test_to_bean_name() {
+    fn test_to_bean_name()
+    {
         assert_eq!(to_bean_name("UserService"), "userService");
     }
 
     #[test]
-    fn test_topological_sort_empty() {
+    fn test_topological_sort_empty()
+    {
         let sorted = topological_sort(&[]).unwrap();
         assert!(sorted.is_empty());
     }

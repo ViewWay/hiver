@@ -11,12 +11,15 @@ use syn::{
 
 /// Parses arguments from @Query annotation
 /// 解析 @Query 注解的参数
-struct QueryArgs {
+struct QueryArgs
+{
     query: String,
 }
 
-impl Parse for QueryArgs {
-    fn parse(input: ParseStream) -> SynResult<Self> {
+impl Parse for QueryArgs
+{
+    fn parse(input: ParseStream) -> SynResult<Self>
+    {
         // Try to parse a string literal
         // 尝试解析字符串字面量
         let query_lit: LitStr = input.parse()?;
@@ -44,7 +47,8 @@ impl Parse for QueryArgs {
 ///     async fn find_by_username(&self, username: &str) -> Result<Option<User>, Error>;
 /// }
 /// ```
-pub(crate) fn impl_query(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_query(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 
@@ -87,7 +91,8 @@ pub(crate) fn impl_query(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///     async fn insert_user(&self, username: &str, email: &str) -> Result<u64, Error>;
 /// }
 /// ```
-pub(crate) fn impl_insert(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_insert(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 
@@ -130,7 +135,8 @@ pub(crate) fn impl_insert(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///     async fn update_email(&self, id: i64, email: &str) -> Result<u64, Error>;
 /// }
 /// ```
-pub(crate) fn impl_update(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_update(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 
@@ -173,7 +179,8 @@ pub(crate) fn impl_update(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///     async fn delete_by_id(&self, id: i64) -> Result<u64, Error>;
 /// }
 /// ```
-pub(crate) fn impl_delete(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub(crate) fn impl_delete(attr: TokenStream, item: TokenStream) -> TokenStream
+{
     let input = parse_macro_input!(item as ItemFn);
     let func_name = &input.sig.ident;
 

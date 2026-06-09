@@ -6,7 +6,8 @@ use serde::{Deserialize, Serialize};
 /// Queue type
 /// 队列类型
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
-pub enum QueueType {
+pub enum QueueType
+{
     /// Classic queue
     /// 经典队列
     #[default]
@@ -37,7 +38,8 @@ pub enum QueueType {
 /// @Queue(value = "my_queue", durable = true)
 /// ```
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Queue {
+pub struct Queue
+{
     /// Queue name
     /// 队列名称
     pub name: String,
@@ -68,10 +70,12 @@ pub struct Queue {
     pub arguments: std::collections::HashMap<String, serde_json::Value>,
 }
 
-impl Queue {
+impl Queue
+{
     /// Create new queue
     /// 创建新队列
-    pub fn new(name: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>) -> Self
+    {
         Self {
             name: name.into(),
             durable: true,
@@ -84,46 +88,53 @@ impl Queue {
 
     /// Create durable queue
     /// 创建持久化队列
-    pub fn durable(name: impl Into<String>) -> Self {
+    pub fn durable(name: impl Into<String>) -> Self
+    {
         Self::new(name).with_durable(true)
     }
 
     /// Create temporary queue (non-durable, auto-delete)
     /// 创建临时队列（非持久化，自动删除）
-    pub fn temporary(name: impl Into<String>) -> Self {
+    pub fn temporary(name: impl Into<String>) -> Self
+    {
         Self::new(name).with_durable(false).with_auto_delete(true)
     }
 
     /// Create exclusive queue
     /// 创建独占队列
-    pub fn exclusive(name: impl Into<String>) -> Self {
+    pub fn exclusive(name: impl Into<String>) -> Self
+    {
         Self::new(name).with_exclusive(true)
     }
 
     /// Set durable
     /// 设置持久化
-    pub fn with_durable(mut self, durable: bool) -> Self {
+    pub fn with_durable(mut self, durable: bool) -> Self
+    {
         self.durable = durable;
         self
     }
 
     /// Set exclusive
     /// 设置独占
-    pub fn with_exclusive(mut self, exclusive: bool) -> Self {
+    pub fn with_exclusive(mut self, exclusive: bool) -> Self
+    {
         self.exclusive = exclusive;
         self
     }
 
     /// Set auto-delete
     /// 设置自动删除
-    pub fn with_auto_delete(mut self, auto_delete: bool) -> Self {
+    pub fn with_auto_delete(mut self, auto_delete: bool) -> Self
+    {
         self.auto_delete = auto_delete;
         self
     }
 
     /// Set queue type
     /// 设置队列类型
-    pub fn with_queue_type(mut self, queue_type: QueueType) -> Self {
+    pub fn with_queue_type(mut self, queue_type: QueueType) -> Self
+    {
         self.queue_type = queue_type;
         self
     }
@@ -134,14 +145,16 @@ impl Queue {
         mut self,
         key: impl Into<String>,
         value: impl Into<serde_json::Value>,
-    ) -> Self {
+    ) -> Self
+    {
         self.arguments.insert(key.into(), value.into());
         self
     }
 
     /// Set max length
     /// 设置最大长度
-    pub fn with_max_length(mut self, length: u32) -> Self {
+    pub fn with_max_length(mut self, length: u32) -> Self
+    {
         self.arguments
             .insert("x-max-length".to_string(), serde_json::json!(length));
         self
@@ -149,7 +162,8 @@ impl Queue {
 
     /// Set message TTL (milliseconds)
     /// 设置消息TTL（毫秒）
-    pub fn with_message_ttl(mut self, ttl: u32) -> Self {
+    pub fn with_message_ttl(mut self, ttl: u32) -> Self
+    {
         self.arguments
             .insert("x-message-ttl".to_string(), serde_json::json!(ttl));
         self
@@ -157,7 +171,8 @@ impl Queue {
 
     /// Set queue TTL (milliseconds)
     /// 设置队列TTL（毫秒）
-    pub fn with_queue_ttl(mut self, ttl: u32) -> Self {
+    pub fn with_queue_ttl(mut self, ttl: u32) -> Self
+    {
         self.arguments
             .insert("x-expires".to_string(), serde_json::json!(ttl));
         self
@@ -165,7 +180,8 @@ impl Queue {
 
     /// Set dead letter exchange
     /// 设置死信交换机
-    pub fn with_dead_letter_exchange(mut self, exchange: impl Into<String>) -> Self {
+    pub fn with_dead_letter_exchange(mut self, exchange: impl Into<String>) -> Self
+    {
         self.arguments
             .insert("x-dead-letter-exchange".to_string(), serde_json::json!(exchange.into()));
         self
@@ -173,7 +189,8 @@ impl Queue {
 
     /// Set dead letter routing key
     /// 设置死信路由键
-    pub fn with_dead_letter_routing_key(mut self, key: impl Into<String>) -> Self {
+    pub fn with_dead_letter_routing_key(mut self, key: impl Into<String>) -> Self
+    {
         self.arguments
             .insert("x-dead-letter-routing-key".to_string(), serde_json::json!(key.into()));
         self
@@ -181,7 +198,8 @@ impl Queue {
 
     /// Set max priority
     /// 设置最大优先级
-    pub fn with_max_priority(mut self, priority: u8) -> Self {
+    pub fn with_max_priority(mut self, priority: u8) -> Self
+    {
         self.arguments
             .insert("x-max-priority".to_string(), serde_json::json!(priority));
         self
@@ -199,14 +217,17 @@ impl Queue {
 ///     .withArgument("x-max-length", 10000)
 ///     .build();
 /// ```
-pub struct QueueBuilder {
+pub struct QueueBuilder
+{
     queue: Queue,
 }
 
-impl QueueBuilder {
+impl QueueBuilder
+{
     /// Create durable queue
     /// 创建持久化队列
-    pub fn durable(name: impl Into<String>) -> Self {
+    pub fn durable(name: impl Into<String>) -> Self
+    {
         Self {
             queue: Queue::new(name).with_durable(true),
         }
@@ -214,7 +235,8 @@ impl QueueBuilder {
 
     /// Create non-durable queue
     /// 创建非持久化队列
-    pub fn non_durable(name: impl Into<String>) -> Self {
+    pub fn non_durable(name: impl Into<String>) -> Self
+    {
         Self {
             queue: Queue::new(name).with_durable(false),
         }
@@ -222,21 +244,24 @@ impl QueueBuilder {
 
     /// Set exclusive
     /// 设置独占
-    pub fn exclusive(mut self) -> Self {
+    pub fn exclusive(mut self) -> Self
+    {
         self.queue = self.queue.with_exclusive(true);
         self
     }
 
     /// Set auto-delete
     /// 设置自动删除
-    pub fn auto_delete(mut self) -> Self {
+    pub fn auto_delete(mut self) -> Self
+    {
         self.queue = self.queue.with_auto_delete(true);
         self
     }
 
     /// Set queue type
     /// 设置队列类型
-    pub fn with_type(mut self, queue_type: QueueType) -> Self {
+    pub fn with_type(mut self, queue_type: QueueType) -> Self
+    {
         self.queue = self.queue.with_queue_type(queue_type);
         self
     }
@@ -247,14 +272,16 @@ impl QueueBuilder {
         mut self,
         key: impl Into<String>,
         value: impl Into<serde_json::Value>,
-    ) -> Self {
+    ) -> Self
+    {
         self.queue = self.queue.with_argument(key, value);
         self
     }
 
     /// Build the queue
     /// 构建队列
-    pub fn build(self) -> Queue {
+    pub fn build(self) -> Queue
+    {
         self.queue
     }
 }
@@ -267,12 +294,14 @@ impl QueueBuilder {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     /// Test Queue::new sets correct defaults / 测试 Queue::new 设置正确的默认值
     #[test]
-    fn test_queue_new_defaults() {
+    fn test_queue_new_defaults()
+    {
         let q = Queue::new("test_queue");
         assert_eq!(q.name, "test_queue");
         assert!(q.durable);
@@ -284,13 +313,15 @@ mod tests {
 
     /// Test QueueType default is Classic / 测试 QueueType 默认为 Classic
     #[test]
-    fn test_queue_type_default() {
+    fn test_queue_type_default()
+    {
         assert_eq!(QueueType::default(), QueueType::Classic);
     }
 
     /// Test Queue::durable creates a durable queue / 测试 Queue::durable 创建持久化队列
     #[test]
-    fn test_queue_durable_constructor() {
+    fn test_queue_durable_constructor()
+    {
         let q = Queue::durable("my_queue");
         assert!(q.durable);
     }
@@ -298,7 +329,8 @@ mod tests {
     /// Test Queue::temporary creates non-durable, auto-delete queue / 测试 Queue::temporary
     /// 创建非持久化自动删除队列
     #[test]
-    fn test_queue_temporary_constructor() {
+    fn test_queue_temporary_constructor()
+    {
         let q = Queue::temporary("tmp_queue");
         assert!(!q.durable);
         assert!(q.auto_delete);
@@ -306,14 +338,16 @@ mod tests {
 
     /// Test Queue::exclusive sets exclusive flag / 测试 Queue::exclusive 设置独占标志
     #[test]
-    fn test_queue_exclusive_constructor() {
+    fn test_queue_exclusive_constructor()
+    {
         let q = Queue::exclusive("ex_queue");
         assert!(q.exclusive);
     }
 
     /// Test Queue builder chain with arguments / 测试队列构建器链式调用带参数
     #[test]
-    fn test_queue_builder_chain_with_arguments() {
+    fn test_queue_builder_chain_with_arguments()
+    {
         let q = Queue::new("orders")
             .with_durable(true)
             .with_queue_type(QueueType::Quorum)
@@ -340,7 +374,8 @@ mod tests {
 
     /// Test QueueBuilder produces correct queue / 测试 QueueBuilder 生成正确的队列
     #[test]
-    fn test_queue_builder() {
+    fn test_queue_builder()
+    {
         let q = QueueBuilder::durable("built_queue")
             .exclusive()
             .auto_delete()
@@ -358,14 +393,16 @@ mod tests {
 
     /// Test QueueBuilder::non_durable / 测试 QueueBuilder::non_durable
     #[test]
-    fn test_queue_builder_non_durable() {
+    fn test_queue_builder_non_durable()
+    {
         let q = QueueBuilder::non_durable("temp").build();
         assert!(!q.durable);
     }
 
     /// Test Queue serialization round-trip / 测试 Queue 序列化往返
     #[test]
-    fn test_queue_serde_roundtrip() {
+    fn test_queue_serde_roundtrip()
+    {
         let q = Queue::durable("orders")
             .with_max_length(500)
             .with_queue_type(QueueType::Quorum);

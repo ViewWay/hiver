@@ -12,7 +12,8 @@
 ///
 /// 定义事务方法在已有事务上下文中被调用时应该如何表现。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Propagation {
+pub enum Propagation
+{
     /// Support a current transaction; create a new one if none exists.
     /// 支持当前事务；如果不存在则创建新事务。
     #[default]
@@ -46,7 +47,8 @@ pub enum Propagation {
 /// Transaction isolation level.
 /// 事务隔离级别。
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Isolation {
+pub enum Isolation
+{
     /// Use the default isolation level of the underlying datastore.
     /// 使用底层数据存储的默认隔离级别。
     #[default]
@@ -72,7 +74,8 @@ pub enum Isolation {
 /// Transaction definition combining propagation and isolation.
 /// 事务定义，结合传播和隔离。
 #[derive(Debug, Clone, Copy)]
-pub struct TransactionDefinition {
+pub struct TransactionDefinition
+{
     /// Propagation behavior.
     /// 传播行为。
     pub propagation: Propagation,
@@ -90,8 +93,10 @@ pub struct TransactionDefinition {
     pub read_only: bool,
 }
 
-impl Default for TransactionDefinition {
-    fn default() -> Self {
+impl Default for TransactionDefinition
+{
+    fn default() -> Self
+    {
         Self {
             propagation: Propagation::Required,
             isolation: Isolation::Default,
@@ -101,37 +106,43 @@ impl Default for TransactionDefinition {
     }
 }
 
-impl TransactionDefinition {
+impl TransactionDefinition
+{
     /// Create a new transaction definition with defaults.
     /// 创建带默认值的事务定义。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set the propagation behavior.
     /// 设置传播行为。
-    pub fn propagation(mut self, propagation: Propagation) -> Self {
+    pub fn propagation(mut self, propagation: Propagation) -> Self
+    {
         self.propagation = propagation;
         self
     }
 
     /// Set the isolation level.
     /// 设置隔离级别。
-    pub fn isolation(mut self, isolation: Isolation) -> Self {
+    pub fn isolation(mut self, isolation: Isolation) -> Self
+    {
         self.isolation = isolation;
         self
     }
 
     /// Set the timeout in seconds.
     /// 设置超时时间（秒）。
-    pub fn timeout_secs(mut self, secs: u32) -> Self {
+    pub fn timeout_secs(mut self, secs: u32) -> Self
+    {
         self.timeout_secs = secs;
         self
     }
 
     /// Set the read-only flag.
     /// 设置只读标志。
-    pub fn read_only(mut self) -> Self {
+    pub fn read_only(mut self) -> Self
+    {
         self.read_only = true;
         self
     }
@@ -145,16 +156,19 @@ impl TransactionDefinition {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_propagation_default() {
+    fn test_propagation_default()
+    {
         assert_eq!(Propagation::default(), Propagation::Required);
     }
 
     #[test]
-    fn test_transaction_definition_builder() {
+    fn test_transaction_definition_builder()
+    {
         let def = TransactionDefinition::new()
             .propagation(Propagation::RequiresNew)
             .isolation(Isolation::ReadCommitted)

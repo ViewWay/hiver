@@ -51,7 +51,8 @@ use crate::core::{ApplicationContext, AutoConfiguration};
 ///     }
 /// }
 /// ```
-pub struct ScheduledMethodDescriptor {
+pub struct ScheduledMethodDescriptor
+{
     /// Method name for logging and identification.
     /// 方法名称，用于日志和标识。
     pub name: &'static str,
@@ -87,7 +88,8 @@ inventory::collect!(ScheduledMethodDescriptor);
 /// - `FixedRate`: fixed interval from start-to-start, e.g. `"5s"`, `"5000ms"`
 /// - `FixedDelay`: fixed delay from end-to-start, e.g. `"10s"`
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum ScheduleConfig {
+pub enum ScheduleConfig
+{
     /// Cron expression, e.g. `"0 0 * * *"`.
     /// Cron 表达式。
     Cron(&'static str),
@@ -108,22 +110,26 @@ pub enum ScheduleConfig {
 /// Parsed duration result with millisecond precision.
 /// 解析后的时长结果，精度为毫秒。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct ParsedDuration {
+pub struct ParsedDuration
+{
     /// Duration in milliseconds.
     /// 时长（毫秒）。
     pub millis: u64,
 }
 
-impl ParsedDuration {
+impl ParsedDuration
+{
     /// Create a new parsed duration from milliseconds.
     /// 从毫秒创建解析后的时长。
-    pub fn from_millis(millis: u64) -> Self {
+    pub fn from_millis(millis: u64) -> Self
+    {
         Self { millis }
     }
 
     /// Create a new parsed duration from seconds.
     /// 从秒创建解析后的时长。
-    pub fn from_secs(secs: u64) -> Self {
+    pub fn from_secs(secs: u64) -> Self
+    {
         Self {
             millis: secs * 1000,
         }
@@ -131,7 +137,8 @@ impl ParsedDuration {
 
     /// Create a new parsed duration from minutes.
     /// 从分钟创建解析后的时长。
-    pub fn from_mins(mins: u64) -> Self {
+    pub fn from_mins(mins: u64) -> Self
+    {
         Self {
             millis: mins * 60 * 1000,
         }
@@ -154,10 +161,12 @@ impl ParsedDuration {
 ///
 /// Returns an error if the string cannot be parsed.
 /// 如果字符串无法解析则返回错误。
-pub fn parse_duration(input: &str) -> Result<ParsedDuration, ScheduleScanError> {
+pub fn parse_duration(input: &str) -> Result<ParsedDuration, ScheduleScanError>
+{
     let input = input.trim();
 
-    if input.is_empty() {
+    if input.is_empty()
+    {
         return Err(ScheduleScanError::InvalidConfig {
             detail: "duration string is empty".to_string(),
         });
@@ -165,7 +174,8 @@ pub fn parse_duration(input: &str) -> Result<ParsedDuration, ScheduleScanError> 
 
     // Try unit-suffix parsing first.
     // 首先尝试带单位后缀的解析。
-    if let Some(num_str) = input.strip_suffix("ms") {
+    if let Some(num_str) = input.strip_suffix("ms")
+    {
         let num: u64 = num_str
             .parse()
             .map_err(|_| ScheduleScanError::InvalidConfig {
@@ -174,7 +184,8 @@ pub fn parse_duration(input: &str) -> Result<ParsedDuration, ScheduleScanError> 
         return Ok(ParsedDuration::from_millis(num));
     }
 
-    if let Some(num_str) = input.strip_suffix('s') {
+    if let Some(num_str) = input.strip_suffix('s')
+    {
         let num: u64 = num_str
             .parse()
             .map_err(|_| ScheduleScanError::InvalidConfig {
@@ -183,7 +194,8 @@ pub fn parse_duration(input: &str) -> Result<ParsedDuration, ScheduleScanError> 
         return Ok(ParsedDuration::from_secs(num));
     }
 
-    if let Some(num_str) = input.strip_suffix('m') {
+    if let Some(num_str) = input.strip_suffix('m')
+    {
         let num: u64 = num_str
             .parse()
             .map_err(|_| ScheduleScanError::InvalidConfig {
@@ -192,7 +204,8 @@ pub fn parse_duration(input: &str) -> Result<ParsedDuration, ScheduleScanError> 
         return Ok(ParsedDuration::from_mins(num));
     }
 
-    if let Some(num_str) = input.strip_suffix('h') {
+    if let Some(num_str) = input.strip_suffix('h')
+    {
         let num: u64 = num_str
             .parse()
             .map_err(|_| ScheduleScanError::InvalidConfig {
@@ -229,7 +242,8 @@ pub fn parse_duration(input: &str) -> Result<ParsedDuration, ScheduleScanError> 
 /// | Month / 月          | 1-12                   | * , -                  |
 /// | Day of week / 星期  | 0-6 (0=Sun)            | * , -                  |
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct CronExpression {
+pub struct CronExpression
+{
     /// Minute field (0-59).
     /// 分钟字段。
     pub minute: CronField,
@@ -254,7 +268,8 @@ pub struct CronExpression {
 /// A single cron field representing a set of allowed values.
 /// 单个 cron 字段，表示一组允许的值。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum CronField {
+pub enum CronField
+{
     /// Wildcard — matches all values (`*`).
     /// 通配符 — 匹配所有值。
     All,
@@ -273,7 +288,8 @@ pub enum CronField {
 
     /// Step values, e.g. `*/5` or `0-30/5`.
     /// 步进值。
-    Step {
+    Step
+    {
         /// Base field (what to step from).
         /// 基础字段。
         base: Box<CronField>,
@@ -283,25 +299,33 @@ pub enum CronField {
     },
 }
 
-impl CronField {
+impl CronField
+{
     /// Check if a given value matches this field.
     /// 检查给定值是否匹配此字段。
-    pub fn matches(&self, value: u32) -> bool {
-        match self {
+    pub fn matches(&self, value: u32) -> bool
+    {
+        match self
+        {
             CronField::All => true,
             CronField::Exact(v) => *v == value,
             CronField::Range(start, end) => value >= *start && value <= *end,
             CronField::List(values) => values.contains(&value),
-            CronField::Step { base, step } => {
-                if !base.matches(value) {
+            CronField::Step { base, step } =>
+            {
+                if !base.matches(value)
+                {
                     return false;
                 }
                 // Check if value aligns with step.
                 // 检查值是否与步长对齐。
-                match base.as_ref() {
+                match base.as_ref()
+                {
                     CronField::All => value.is_multiple_of(*step),
-                    CronField::Range(start, _end) => {
-                        if value < *start {
+                    CronField::Range(start, _end) =>
+                    {
+                        if value < *start
+                        {
                             return false;
                         }
                         (value - start).is_multiple_of(*step)
@@ -314,8 +338,10 @@ impl CronField {
 
     /// Get a reference to the inner base, if this is a Step variant.
     /// 获取内部基础的引用。
-    fn as_ref(&self) -> &CronField {
-        match self {
+    fn as_ref(&self) -> &CronField
+    {
+        match self
+        {
             CronField::Step { base, .. } => base,
             other => other,
         }
@@ -325,10 +351,12 @@ impl CronField {
 /// Errors that can occur during schedule scanning and configuration.
 /// 调度扫描和配置过程中可能出现的错误。
 #[derive(Debug)]
-pub enum ScheduleScanError {
+pub enum ScheduleScanError
+{
     /// Invalid cron expression.
     /// 无效的 Cron 表达式。
-    InvalidCron {
+    InvalidCron
+    {
         /// Detail message.
         /// 详细消息。
         detail: String,
@@ -336,7 +364,8 @@ pub enum ScheduleScanError {
 
     /// Invalid scheduling configuration.
     /// 无效的调度配置。
-    InvalidConfig {
+    InvalidConfig
+    {
         /// Detail message.
         /// 详细消息。
         detail: String,
@@ -344,23 +373,30 @@ pub enum ScheduleScanError {
 
     /// Multiple conflicting schedule modes specified.
     /// 指定了多个冲突的调度模式。
-    ConflictingModes {
+    ConflictingModes
+    {
         /// The conflicting mode names.
         /// 冲突的模式名称。
         modes: Vec<&'static str>,
     },
 }
 
-impl std::fmt::Display for ScheduleScanError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::InvalidCron { detail } => {
+impl std::fmt::Display for ScheduleScanError
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        match self
+        {
+            Self::InvalidCron { detail } =>
+            {
                 write!(f, "invalid cron expression: {}", detail)
             },
-            Self::InvalidConfig { detail } => {
+            Self::InvalidConfig { detail } =>
+            {
                 write!(f, "invalid schedule config: {}", detail)
             },
-            Self::ConflictingModes { modes } => {
+            Self::ConflictingModes { modes } =>
+            {
                 write!(f, "conflicting schedule modes: {}", modes.join(", "))
             },
         }
@@ -369,7 +405,8 @@ impl std::fmt::Display for ScheduleScanError {
 
 impl std::error::Error for ScheduleScanError {}
 
-impl FromStr for CronExpression {
+impl FromStr for CronExpression
+{
     type Err = ScheduleScanError;
 
     /// Parse a 5-field cron expression.
@@ -382,11 +419,13 @@ impl FromStr for CronExpression {
     /// lists (`1,3,5`), and steps (`*/5`, `1-10/2`).
     ///
     /// 每个字段支持：`*`、具体值、范围（`1-5`）、列表（`1,3,5`）和步进（`*/5`、`1-10/2`）。
-    fn from_str(input: &str) -> Result<Self, Self::Err> {
+    fn from_str(input: &str) -> Result<Self, Self::Err>
+    {
         let input = input.trim();
         let fields: Vec<&str> = input.split_whitespace().collect();
 
-        if fields.len() != 5 {
+        if fields.len() != 5
+        {
             return Err(ScheduleScanError::InvalidCron {
                 detail: format!("expected 5 fields, got {}; expression: '{}'", fields.len(), input),
             });
@@ -409,12 +448,14 @@ fn parse_cron_field(
     min_val: u32,
     max_val: u32,
     field_name: &str,
-) -> Result<CronField, ScheduleScanError> {
+) -> Result<CronField, ScheduleScanError>
+{
     let input = input.trim();
 
     // Handle step syntax: base/step.
     // 处理步进语法：base/step。
-    if let Some(slash_pos) = input.find('/') {
+    if let Some(slash_pos) = input.find('/')
+    {
         let base_str = &input[..slash_pos];
         let step_str = &input[slash_pos + 1..];
 
@@ -424,15 +465,19 @@ fn parse_cron_field(
                 detail: format!("invalid step value '{}' in field '{}'", step_str, field_name),
             })?;
 
-        if step == 0 {
+        if step == 0
+        {
             return Err(ScheduleScanError::InvalidCron {
                 detail: format!("step value must be > 0 in field '{}'", field_name),
             });
         }
 
-        let base = if base_str == "*" {
+        let base = if base_str == "*"
+        {
             CronField::All
-        } else {
+        }
+        else
+        {
             parse_cron_atom(base_str, min_val, max_val, field_name)?
         };
 
@@ -444,9 +489,11 @@ fn parse_cron_field(
 
     // Handle list syntax: a,b,c.
     // 处理列表语法：a,b,c。
-    if input.contains(',') {
+    if input.contains(',')
+    {
         let mut values = Vec::new();
-        for part in input.split(',') {
+        for part in input.split(',')
+        {
             let v = parse_single_value(part.trim(), min_val, max_val, field_name)?;
             values.push(v);
         }
@@ -463,12 +510,15 @@ fn parse_cron_atom(
     min_val: u32,
     max_val: u32,
     field_name: &str,
-) -> Result<CronField, ScheduleScanError> {
-    if input == "*" {
+) -> Result<CronField, ScheduleScanError>
+{
+    if input == "*"
+    {
         return Ok(CronField::All);
     }
 
-    if let Some(dash_pos) = input.find('-') {
+    if let Some(dash_pos) = input.find('-')
+    {
         let start_str = &input[..dash_pos];
         let end_str = &input[dash_pos + 1..];
 
@@ -499,12 +549,14 @@ fn parse_single_value(
     min_val: u32,
     max_val: u32,
     field_name: &str,
-) -> Result<u32, ScheduleScanError> {
+) -> Result<u32, ScheduleScanError>
+{
     let v: u32 = input.parse().map_err(|_| ScheduleScanError::InvalidCron {
         detail: format!("invalid value '{}' in field '{}'", input, field_name),
     })?;
 
-    if v < min_val || v > max_val {
+    if v < min_val || v > max_val
+    {
         return Err(ScheduleScanError::InvalidCron {
             detail: format!(
                 "value {} out of range [{}, {}] in field '{}'",
@@ -524,14 +576,17 @@ fn validate_range(
     min_val: u32,
     max_val: u32,
     field_name: &str,
-) -> Result<(), ScheduleScanError> {
-    if start > end {
+) -> Result<(), ScheduleScanError>
+{
+    if start > end
+    {
         return Err(ScheduleScanError::InvalidCron {
             detail: format!("range start {} > end {} in field '{}'", start, end, field_name),
         });
     }
 
-    if start < min_val || end > max_val {
+    if start < min_val || end > max_val
+    {
         return Err(ScheduleScanError::InvalidCron {
             detail: format!(
                 "range [{}..{}] out of bounds [{}, {}] in field '{}'",
@@ -560,10 +615,12 @@ fn validate_range(
 /// 此扫描器在应用启动时收集它们。
 pub struct ScheduledMethodScanner;
 
-impl ScheduledMethodScanner {
+impl ScheduledMethodScanner
+{
     /// Create a new scanner.
     /// 创建新的扫描器。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self
     }
 
@@ -574,13 +631,15 @@ impl ScheduledMethodScanner {
     /// Returns a vector of (ScheduledTask, ScheduledFn) pairs ready for
     /// registration with the TaskScheduler.
     /// 返回一组 (ScheduledTask, ScheduledFn) 对，可直接注册到 TaskScheduler。
-    pub fn scan(&self) -> Result<Vec<DiscoveredScheduledMethod>, ScheduleScanError> {
+    pub fn scan(&self) -> Result<Vec<DiscoveredScheduledMethod>, ScheduleScanError>
+    {
         let descriptors: Vec<&ScheduledMethodDescriptor> =
             inventory::iter::<ScheduledMethodDescriptor>().collect();
 
         let mut discovered = Vec::with_capacity(descriptors.len());
 
-        for descriptor in descriptors {
+        for descriptor in descriptors
+        {
             tracing::info!(
                 "Discovered @Scheduled method: '{}' ({:?})",
                 descriptor.name,
@@ -603,17 +662,22 @@ impl ScheduledMethodScanner {
     fn build_task(
         &self,
         descriptor: &ScheduledMethodDescriptor,
-    ) -> Result<ScheduledTask, ScheduleScanError> {
-        match &descriptor.schedule_config {
-            ScheduleConfig::FixedRate(rate_str) => {
+    ) -> Result<ScheduledTask, ScheduleScanError>
+    {
+        match &descriptor.schedule_config
+        {
+            ScheduleConfig::FixedRate(rate_str) =>
+            {
                 let duration = parse_duration(rate_str)?;
                 Ok(ScheduledTask::fixed_rate(descriptor.name, duration.millis))
             },
-            ScheduleConfig::FixedDelay(delay_str) => {
+            ScheduleConfig::FixedDelay(delay_str) =>
+            {
                 let duration = parse_duration(delay_str)?;
                 Ok(ScheduledTask::fixed_delay(descriptor.name, duration.millis))
             },
-            ScheduleConfig::Cron(cron_str) => {
+            ScheduleConfig::Cron(cron_str) =>
+            {
                 // Validate the cron expression.
                 // 验证 cron 表达式。
                 let _expr: CronExpression = cron_str.parse()?;
@@ -623,15 +687,18 @@ impl ScheduledMethodScanner {
     }
 }
 
-impl Default for ScheduledMethodScanner {
-    fn default() -> Self {
+impl Default for ScheduledMethodScanner
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
 /// A discovered scheduled method ready for registration.
 /// 一个已发现的、准备注册的定时方法。
-pub struct DiscoveredScheduledMethod {
+pub struct DiscoveredScheduledMethod
+{
     /// The built scheduled task.
     /// 构建好的定时任务。
     pub task: ScheduledTask,
@@ -651,7 +718,8 @@ pub struct DiscoveredScheduledMethod {
 /// Reference: Spring Boot's `TaskSchedulingAutoConfiguration`.
 /// 参考 Spring Boot 的 `TaskSchedulingAutoConfiguration`。
 #[derive(Debug)]
-pub struct ScheduleAutoConfiguration {
+pub struct ScheduleAutoConfiguration
+{
     /// Whether scheduling is enabled.
     /// 是否启用定时任务。
     pub enabled: bool,
@@ -661,10 +729,12 @@ pub struct ScheduleAutoConfiguration {
     pub pool_size: usize,
 }
 
-impl ScheduleAutoConfiguration {
+impl ScheduleAutoConfiguration
+{
     /// Create a new schedule auto-configuration.
     /// 创建新的定时任务自动配置。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             enabled: false,
             pool_size: 4,
@@ -673,7 +743,8 @@ impl ScheduleAutoConfiguration {
 
     /// Create from application context configuration.
     /// 从应用上下文配置创建。
-    pub fn from_config(ctx: &ApplicationContext) -> Self {
+    pub fn from_config(ctx: &ApplicationContext) -> Self
+    {
         Self {
             enabled: ctx
                 .get_property("schedule.enabled")
@@ -687,26 +758,33 @@ impl ScheduleAutoConfiguration {
     }
 }
 
-impl Default for ScheduleAutoConfiguration {
-    fn default() -> Self {
+impl Default for ScheduleAutoConfiguration
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl AutoConfiguration for ScheduleAutoConfiguration {
-    fn name(&self) -> &'static str {
+impl AutoConfiguration for ScheduleAutoConfiguration
+{
+    fn name(&self) -> &'static str
+    {
         "ScheduleAutoConfiguration"
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         100 // After core configurations / 在核心配置之后
     }
 
-    fn condition(&self) -> bool {
+    fn condition(&self) -> bool
+    {
         self.enabled
     }
 
-    fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()> {
+    fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()>
+    {
         tracing::info!("Configuring Scheduled Tasks (Pool size: {})", self.pool_size);
 
         // Create and register TaskScheduler.
@@ -718,9 +796,12 @@ impl AutoConfiguration for ScheduleAutoConfiguration {
         // Scan for @Scheduled annotated methods.
         // 扫描 @Scheduled 注解的方法。
         let scanner = ScheduledMethodScanner::new();
-        match scanner.scan() {
-            Ok(discovered) => {
-                for method in discovered {
+        match scanner.scan()
+        {
+            Ok(discovered) =>
+            {
+                for method in discovered
+                {
                     tracing::info!(
                         "Registering scheduled task: '{}' ({:?})",
                         method.task.name,
@@ -732,7 +813,8 @@ impl AutoConfiguration for ScheduleAutoConfiguration {
                     );
                 }
             },
-            Err(e) => {
+            Err(e) =>
+            {
                 tracing::error!("Failed to scan @Scheduled methods: {}", e);
                 return Err(anyhow::anyhow!("Scheduled method scanning failed: {}", e));
             },
@@ -754,7 +836,8 @@ impl AutoConfiguration for ScheduleAutoConfiguration {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     // ========================================================================
@@ -762,7 +845,8 @@ mod tests {
     // ========================================================================
 
     #[test]
-    fn test_cron_parse_all_wildcards() {
+    fn test_cron_parse_all_wildcards()
+    {
         let expr: CronExpression = "* * * * *".parse().unwrap();
         assert_eq!(expr.minute, CronField::All);
         assert_eq!(expr.hour, CronField::All);
@@ -772,7 +856,8 @@ mod tests {
     }
 
     #[test]
-    fn test_cron_parse_exact_values() {
+    fn test_cron_parse_exact_values()
+    {
         let expr: CronExpression = "0 12 15 6 1".parse().unwrap();
         assert_eq!(expr.minute, CronField::Exact(0));
         assert_eq!(expr.hour, CronField::Exact(12));
@@ -782,7 +867,8 @@ mod tests {
     }
 
     #[test]
-    fn test_cron_parse_range() {
+    fn test_cron_parse_range()
+    {
         let expr: CronExpression = "1-5 0-23 1-31 1-12 0-6".parse().unwrap();
         assert_eq!(expr.minute, CronField::Range(1, 5));
         assert_eq!(expr.hour, CronField::Range(0, 23));
@@ -792,47 +878,42 @@ mod tests {
     }
 
     #[test]
-    fn test_cron_parse_list() {
+    fn test_cron_parse_list()
+    {
         let expr: CronExpression = "0,15,30,45 * * * *".parse().unwrap();
         assert_eq!(expr.minute, CronField::List(vec![0, 15, 30, 45]));
     }
 
     #[test]
-    fn test_cron_parse_step() {
+    fn test_cron_parse_step()
+    {
         let expr: CronExpression = "*/5 * * * *".parse().unwrap();
-        assert_eq!(
-            expr.minute,
-            CronField::Step {
-                base: Box::new(CronField::All),
-                step: 5,
-            }
-        );
+        assert_eq!(expr.minute, CronField::Step {
+            base: Box::new(CronField::All),
+            step: 5,
+        });
     }
 
     #[test]
-    fn test_cron_parse_range_with_step() {
+    fn test_cron_parse_range_with_step()
+    {
         let expr: CronExpression = "0-30/10 * * * *".parse().unwrap();
-        assert_eq!(
-            expr.minute,
-            CronField::Step {
-                base: Box::new(CronField::Range(0, 30)),
-                step: 10,
-            }
-        );
+        assert_eq!(expr.minute, CronField::Step {
+            base: Box::new(CronField::Range(0, 30)),
+            step: 10,
+        });
     }
 
     #[test]
-    fn test_cron_parse_mixed_expression() {
+    fn test_cron_parse_mixed_expression()
+    {
         // Every 15 minutes, during hours 9-17, on any day, any month, Mon-Fri
         // 每 15 分钟，9-17 点，任意日期，任意月份，周一到周五
         let expr: CronExpression = "*/15 9-17 * * 1-5".parse().unwrap();
-        assert_eq!(
-            expr.minute,
-            CronField::Step {
-                base: Box::new(CronField::All),
-                step: 15,
-            }
-        );
+        assert_eq!(expr.minute, CronField::Step {
+            base: Box::new(CronField::All),
+            step: 15,
+        });
         assert_eq!(expr.hour, CronField::Range(9, 17));
         assert_eq!(expr.day_of_month, CronField::All);
         assert_eq!(expr.month, CronField::All);
@@ -840,7 +921,8 @@ mod tests {
     }
 
     #[test]
-    fn test_cron_rejects_wrong_field_count() {
+    fn test_cron_rejects_wrong_field_count()
+    {
         // Too few fields.
         let result = "0 0 * *".parse::<CronExpression>();
         assert!(result.is_err());
@@ -852,7 +934,8 @@ mod tests {
     }
 
     #[test]
-    fn test_cron_rejects_out_of_range_values() {
+    fn test_cron_rejects_out_of_range_values()
+    {
         // Minute 60 is out of range.
         let result = "60 0 * * *".parse::<CronExpression>();
         assert!(result.is_err());
@@ -867,25 +950,29 @@ mod tests {
     }
 
     #[test]
-    fn test_cron_rejects_inverted_range() {
+    fn test_cron_rejects_inverted_range()
+    {
         let result = "5-1 0 * * *".parse::<CronExpression>();
         assert!(result.is_err());
     }
 
     #[test]
-    fn test_cron_rejects_zero_step() {
+    fn test_cron_rejects_zero_step()
+    {
         let result = "*/0 0 * * *".parse::<CronExpression>();
         assert!(result.is_err());
     }
 
     #[test]
-    fn test_cron_rejects_non_numeric() {
+    fn test_cron_rejects_non_numeric()
+    {
         let result = "abc 0 * * *".parse::<CronExpression>();
         assert!(result.is_err());
     }
 
     #[test]
-    fn test_cron_empty_string() {
+    fn test_cron_empty_string()
+    {
         let result = "".parse::<CronExpression>();
         assert!(result.is_err());
     }
@@ -895,7 +982,8 @@ mod tests {
     // ========================================================================
 
     #[test]
-    fn test_cron_field_matches_all() {
+    fn test_cron_field_matches_all()
+    {
         let field = CronField::All;
         assert!(field.matches(0));
         assert!(field.matches(30));
@@ -903,7 +991,8 @@ mod tests {
     }
 
     #[test]
-    fn test_cron_field_matches_exact() {
+    fn test_cron_field_matches_exact()
+    {
         let field = CronField::Exact(15);
         assert!(!field.matches(14));
         assert!(field.matches(15));
@@ -911,7 +1000,8 @@ mod tests {
     }
 
     #[test]
-    fn test_cron_field_matches_range() {
+    fn test_cron_field_matches_range()
+    {
         let field = CronField::Range(5, 10);
         assert!(!field.matches(4));
         assert!(field.matches(5));
@@ -921,7 +1011,8 @@ mod tests {
     }
 
     #[test]
-    fn test_cron_field_matches_list() {
+    fn test_cron_field_matches_list()
+    {
         let field = CronField::List(vec![1, 5, 10]);
         assert!(field.matches(1));
         assert!(!field.matches(2));
@@ -931,7 +1022,8 @@ mod tests {
     }
 
     #[test]
-    fn test_cron_field_matches_step_wildcard() {
+    fn test_cron_field_matches_step_wildcard()
+    {
         let field = CronField::Step {
             base: Box::new(CronField::All),
             step: 5,
@@ -945,7 +1037,8 @@ mod tests {
     }
 
     #[test]
-    fn test_cron_field_matches_step_range() {
+    fn test_cron_field_matches_step_range()
+    {
         let field = CronField::Step {
             base: Box::new(CronField::Range(0, 30)),
             step: 10,
@@ -963,55 +1056,64 @@ mod tests {
     // ========================================================================
 
     #[test]
-    fn test_parse_duration_milliseconds() {
+    fn test_parse_duration_milliseconds()
+    {
         let d = parse_duration("5000ms").unwrap();
         assert_eq!(d.millis, 5000);
     }
 
     #[test]
-    fn test_parse_duration_seconds() {
+    fn test_parse_duration_seconds()
+    {
         let d = parse_duration("5s").unwrap();
         assert_eq!(d.millis, 5000);
     }
 
     #[test]
-    fn test_parse_duration_minutes() {
+    fn test_parse_duration_minutes()
+    {
         let d = parse_duration("2m").unwrap();
         assert_eq!(d.millis, 120000);
     }
 
     #[test]
-    fn test_parse_duration_hours() {
+    fn test_parse_duration_hours()
+    {
         let d = parse_duration("1h").unwrap();
         assert_eq!(d.millis, 3600000);
     }
 
     #[test]
-    fn test_parse_duration_bare_number() {
+    fn test_parse_duration_bare_number()
+    {
         let d = parse_duration("3000").unwrap();
         assert_eq!(d.millis, 3000);
     }
 
     #[test]
-    fn test_parse_duration_rejects_empty() {
+    fn test_parse_duration_rejects_empty()
+    {
         assert!(parse_duration("").is_err());
     }
 
     #[test]
-    fn test_parse_duration_rejects_invalid() {
+    fn test_parse_duration_rejects_invalid()
+    {
         assert!(parse_duration("abc").is_err());
         assert!(parse_duration("abcms").is_err());
         assert!(parse_duration("abcs").is_err());
     }
 
     #[test]
-    fn test_parse_duration_with_whitespace() {
+    fn test_parse_duration_with_whitespace()
+    {
         let d = parse_duration("  5s  ").unwrap();
         assert_eq!(d.millis, 5000);
     }
 
     #[test]
-    fn test_parse_duration_zero() {
+    fn test_parse_duration_zero()
+    {
         let d = parse_duration("0s").unwrap();
         assert_eq!(d.millis, 0);
 
@@ -1024,19 +1126,22 @@ mod tests {
     // ========================================================================
 
     #[test]
-    fn test_parsed_duration_from_millis() {
+    fn test_parsed_duration_from_millis()
+    {
         let d = ParsedDuration::from_millis(100);
         assert_eq!(d.millis, 100);
     }
 
     #[test]
-    fn test_parsed_duration_from_secs() {
+    fn test_parsed_duration_from_secs()
+    {
         let d = ParsedDuration::from_secs(5);
         assert_eq!(d.millis, 5000);
     }
 
     #[test]
-    fn test_parsed_duration_from_mins() {
+    fn test_parsed_duration_from_mins()
+    {
         let d = ParsedDuration::from_mins(3);
         assert_eq!(d.millis, 180000);
     }
@@ -1046,14 +1151,16 @@ mod tests {
     // ========================================================================
 
     #[test]
-    fn test_schedule_config_equality() {
+    fn test_schedule_config_equality()
+    {
         assert_eq!(ScheduleConfig::FixedRate("5s"), ScheduleConfig::FixedRate("5s"));
         assert_eq!(ScheduleConfig::FixedDelay("10s"), ScheduleConfig::FixedDelay("10s"));
         assert_eq!(ScheduleConfig::Cron("0 0 * * *"), ScheduleConfig::Cron("0 0 * * *"));
     }
 
     #[test]
-    fn test_schedule_config_inequality() {
+    fn test_schedule_config_inequality()
+    {
         assert_ne!(ScheduleConfig::FixedRate("5s"), ScheduleConfig::FixedRate("10s"));
         assert_ne!(ScheduleConfig::FixedRate("5s"), ScheduleConfig::FixedDelay("5s"));
     }
@@ -1063,7 +1170,8 @@ mod tests {
     // ========================================================================
 
     #[test]
-    fn test_schedule_scan_error_display() {
+    fn test_schedule_scan_error_display()
+    {
         let err = ScheduleScanError::InvalidCron {
             detail: "bad expr".to_string(),
         };
@@ -1086,7 +1194,8 @@ mod tests {
     // ========================================================================
 
     #[test]
-    fn test_scanner_builds_fixed_rate_task() {
+    fn test_scanner_builds_fixed_rate_task()
+    {
         let scanner = ScheduledMethodScanner::new();
         let descriptor = ScheduledMethodDescriptor {
             name: "test_fixed_rate",
@@ -1100,7 +1209,8 @@ mod tests {
     }
 
     #[test]
-    fn test_scanner_builds_fixed_delay_task() {
+    fn test_scanner_builds_fixed_delay_task()
+    {
         let scanner = ScheduledMethodScanner::new();
         let descriptor = ScheduledMethodDescriptor {
             name: "test_fixed_delay",
@@ -1114,7 +1224,8 @@ mod tests {
     }
 
     #[test]
-    fn test_scanner_builds_cron_task() {
+    fn test_scanner_builds_cron_task()
+    {
         let scanner = ScheduledMethodScanner::new();
         let descriptor = ScheduledMethodDescriptor {
             name: "test_cron",
@@ -1128,7 +1239,8 @@ mod tests {
     }
 
     #[test]
-    fn test_scanner_rejects_invalid_cron() {
+    fn test_scanner_rejects_invalid_cron()
+    {
         let scanner = ScheduledMethodScanner::new();
         let descriptor = ScheduledMethodDescriptor {
             name: "bad_cron",
@@ -1141,7 +1253,8 @@ mod tests {
     }
 
     #[test]
-    fn test_scanner_rejects_invalid_duration() {
+    fn test_scanner_rejects_invalid_duration()
+    {
         let scanner = ScheduledMethodScanner::new();
         let descriptor = ScheduledMethodDescriptor {
             name: "bad_duration",
@@ -1158,28 +1271,32 @@ mod tests {
     // ========================================================================
 
     #[test]
-    fn test_schedule_auto_config_defaults() {
+    fn test_schedule_auto_config_defaults()
+    {
         let config = ScheduleAutoConfiguration::new();
         assert!(!config.enabled);
         assert_eq!(config.pool_size, 4);
     }
 
     #[test]
-    fn test_schedule_auto_config_default_trait() {
+    fn test_schedule_auto_config_default_trait()
+    {
         let config = ScheduleAutoConfiguration::default();
         assert!(!config.enabled);
         assert_eq!(config.pool_size, 4);
     }
 
     #[test]
-    fn test_schedule_auto_config_name_and_order() {
+    fn test_schedule_auto_config_name_and_order()
+    {
         let config = ScheduleAutoConfiguration::new();
         assert_eq!(config.name(), "ScheduleAutoConfiguration");
         assert_eq!(config.order(), 100);
     }
 
     #[test]
-    fn test_schedule_auto_config_condition() {
+    fn test_schedule_auto_config_condition()
+    {
         let config = ScheduleAutoConfiguration {
             enabled: true,
             pool_size: 8,
@@ -1194,7 +1311,8 @@ mod tests {
     }
 
     #[test]
-    fn test_schedule_auto_config_registers_scheduler() {
+    fn test_schedule_auto_config_registers_scheduler()
+    {
         let config = ScheduleAutoConfiguration {
             enabled: true,
             pool_size: 4,
@@ -1209,7 +1327,8 @@ mod tests {
     }
 
     #[test]
-    fn test_schedule_auto_config_from_context() {
+    fn test_schedule_auto_config_from_context()
+    {
         let ctx = ApplicationContext::new();
         let config = ScheduleAutoConfiguration::from_config(&ctx);
         // No properties set, so defaults apply.
@@ -1222,7 +1341,8 @@ mod tests {
     // ========================================================================
 
     #[test]
-    fn test_scan_with_no_registered_methods() {
+    fn test_scan_with_no_registered_methods()
+    {
         // When no methods have been submitted via inventory::submit!,
         // scan should return an empty vec.
         let scanner = ScheduledMethodScanner::new();

@@ -28,7 +28,8 @@ pub type TaskId = u64;
 /// Generate a new unique task ID
 /// 生成新的唯一任务ID
 #[must_use]
-pub fn gen_task_id() -> TaskId {
+pub fn gen_task_id() -> TaskId
+{
     use std::sync::atomic::{AtomicU64, Ordering};
     static COUNTER: AtomicU64 = AtomicU64::new(1);
     COUNTER.fetch_add(1, Ordering::Relaxed)

@@ -20,7 +20,8 @@ use crate::{
 /// A document stored in a vector store.
 /// 存储在向量存储中的文档。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Document {
+pub struct Document
+{
     /// Unique identifier for the document.
     /// 文档的唯一标识符。
     pub id: String,
@@ -37,11 +38,13 @@ pub struct Document {
     pub embedding: Option<Vec<f32>>,
 }
 
-impl Document {
+impl Document
+{
     /// Creates a new document with the given ID and content.
     /// 使用给定 ID 和内容创建新文档。
     #[must_use]
-    pub fn new(id: impl Into<String>, content: impl Into<String>) -> Self {
+    pub fn new(id: impl Into<String>, content: impl Into<String>) -> Self
+    {
         Self {
             id: id.into(),
             content: content.into(),
@@ -53,7 +56,8 @@ impl Document {
     /// Sets metadata for the document.
     /// 设置文档的元数据。
     #[must_use]
-    pub fn metadata(mut self, metadata: HashMap<String, String>) -> Self {
+    pub fn metadata(mut self, metadata: HashMap<String, String>) -> Self
+    {
         self.metadata = metadata;
         self
     }
@@ -61,7 +65,8 @@ impl Document {
     /// Adds a single metadata key-value pair.
     /// 添加单个元数据键值对。
     #[must_use]
-    pub fn with_metadata(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn with_metadata(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
+    {
         self.metadata.insert(key.into(), value.into());
         self
     }
@@ -69,7 +74,8 @@ impl Document {
     /// Sets the embedding vector for the document.
     /// 设置文档的嵌入向量。
     #[must_use]
-    pub fn embedding(mut self, embedding: Vec<f32>) -> Self {
+    pub fn embedding(mut self, embedding: Vec<f32>) -> Self
+    {
         self.embedding = Some(embedding);
         self
     }
@@ -78,7 +84,8 @@ impl Document {
 /// A search result from a vector store query.
 /// 向量存储查询的搜索结果。
 #[derive(Debug, Clone)]
-pub struct SearchResult {
+pub struct SearchResult
+{
     /// The matched document.
     /// 匹配的文档。
     pub document: Document,
@@ -87,11 +94,13 @@ pub struct SearchResult {
     pub score: f32,
 }
 
-impl SearchResult {
+impl SearchResult
+{
     /// Creates a new search result.
     /// 创建新的搜索结果。
     #[must_use]
-    pub fn new(document: Document, score: f32) -> Self {
+    pub fn new(document: Document, score: f32) -> Self
+    {
         Self { document, score }
     }
 }
@@ -105,7 +114,8 @@ impl SearchResult {
 /// 此 trait 定义了支持基于语义相似性存储、搜索、更新和删除文档的
 /// 向量数据库接口。
 #[async_trait::async_trait]
-pub trait VectorStore: Send + Sync {
+pub trait VectorStore: Send + Sync
+{
     /// Adds documents to the vector store.
     /// 将文档添加到向量存储中。
     async fn add(&self, documents: Vec<Document>) -> Result<(), ModelError>;
@@ -138,7 +148,8 @@ pub trait VectorStore: Send + Sync {
 /// 支持两种模式：
 /// - **带嵌入模型**：自动生成嵌入并执行余弦相似度搜索。
 /// - **无嵌入模型**：回退到关键字匹配进行搜索。
-pub struct InMemoryVectorStore {
+pub struct InMemoryVectorStore
+{
     /// Stored documents.
     /// 存储的文档。
     documents: tokio::sync::RwLock<Vec<Document>>,
@@ -147,8 +158,10 @@ pub struct InMemoryVectorStore {
     embedding_model: Option<Arc<dyn EmbeddingModel>>,
 }
 
-impl std::fmt::Debug for InMemoryVectorStore {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl std::fmt::Debug for InMemoryVectorStore
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
         f.debug_struct("InMemoryVectorStore")
             .field("documents", &"<RwLock>")
             .field(
@@ -162,20 +175,24 @@ impl std::fmt::Debug for InMemoryVectorStore {
     }
 }
 
-impl Default for InMemoryVectorStore {
-    fn default() -> Self {
+impl Default for InMemoryVectorStore
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl InMemoryVectorStore {
+impl InMemoryVectorStore
+{
     /// Creates a new empty in-memory vector store without embedding model.
     /// 创建新的空内存向量存储（不带嵌入模型）。
     ///
     /// Search will fall back to keyword matching.
     /// 搜索将回退到关键字匹配。
     #[must_use]
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             documents: tokio::sync::RwLock::new(Vec::new()),
             embedding_model: None,
@@ -192,7 +209,8 @@ impl InMemoryVectorStore {
     /// 当提供嵌入模型时：
     /// - `add()` 会为没有嵌入的文档自动生成嵌入。
     /// - `search()` 会对查询进行嵌入并执行真正的余弦相似度搜索。
-    pub fn with_embedding_model(model: Arc<dyn EmbeddingModel>) -> Self {
+    pub fn with_embedding_model(model: Arc<dyn EmbeddingModel>) -> Self
+    {
         Self {
             documents: tokio::sync::RwLock::new(Vec::new()),
             embedding_model: Some(model),
@@ -201,38 +219,49 @@ impl InMemoryVectorStore {
 }
 
 #[async_trait::async_trait]
-impl VectorStore for InMemoryVectorStore {
-    async fn add(&self, documents: Vec<Document>) -> Result<(), ModelError> {
+impl VectorStore for InMemoryVectorStore
+{
+    async fn add(&self, documents: Vec<Document>) -> Result<(), ModelError>
+    {
         let mut guard = self.documents.write().await;
 
         // If we have an embedding model, generate embeddings for documents that lack them
-        if let Some(ref model) = self.embedding_model {
+        if let Some(ref model) = self.embedding_model
+        {
             let mut enriched: Vec<Document> = Vec::new();
-            for mut doc in documents {
-                if doc.embedding.is_none() && !doc.content.is_empty() {
-                    if let Ok(embedding) = model.embed_text(&doc.content).await {
+            for mut doc in documents
+            {
+                if doc.embedding.is_none() && !doc.content.is_empty()
+                {
+                    if let Ok(embedding) = model.embed_text(&doc.content).await
+                    {
                         doc.embedding = Some(embedding);
                     }
                 }
                 enriched.push(doc);
             }
             guard.extend(enriched);
-        } else {
+        }
+        else
+        {
             guard.extend(documents);
         }
 
         Ok(())
     }
 
-    async fn search(&self, query: &str, k: usize) -> Result<Vec<SearchResult>, ModelError> {
+    async fn search(&self, query: &str, k: usize) -> Result<Vec<SearchResult>, ModelError>
+    {
         let guard = self.documents.read().await;
 
-        if guard.is_empty() || k == 0 {
+        if guard.is_empty() || k == 0
+        {
             return Ok(Vec::new());
         }
 
         // If we have an embedding model, use cosine similarity search
-        if let Some(ref model) = self.embedding_model {
+        if let Some(ref model) = self.embedding_model
+        {
             let query_embedding = model.embed_text(query).await?;
 
             let mut scored: Vec<SearchResult> = guard
@@ -264,24 +293,34 @@ impl VectorStore for InMemoryVectorStore {
             .iter()
             .map(|d| {
                 let content_lower = d.content.to_lowercase();
-                let score = if query_lower.is_empty() {
+                let score = if query_lower.is_empty()
+                {
                     0.0
-                } else if content_lower == query_lower {
+                }
+                else if content_lower == query_lower
+                {
                     // Exact match
                     1.0
-                } else if content_lower.contains(&query_lower) {
+                }
+                else if content_lower.contains(&query_lower)
+                {
                     // Substring match
                     0.8
-                } else {
+                }
+                else
+                {
                     // Word-level partial match: score proportional to matching words
                     let matched = query_words
                         .iter()
                         .filter(|w| content_lower.contains(*w))
                         .count();
-                    if query_words.is_empty() {
+                    if query_words.is_empty()
+                    {
                         #[allow(clippy::cast_precision_loss)]
                         0.0
-                    } else {
+                    }
+                    else
+                    {
                         (matched as f32) / (query_words.len() as f32) * 0.5
                     }
                 };
@@ -301,23 +340,28 @@ impl VectorStore for InMemoryVectorStore {
         Ok(scored)
     }
 
-    async fn delete(&self, ids: &[&str]) -> Result<(), ModelError> {
+    async fn delete(&self, ids: &[&str]) -> Result<(), ModelError>
+    {
         let id_set: std::collections::HashSet<&str> = ids.iter().copied().collect();
         let mut guard = self.documents.write().await;
         guard.retain(|d| !id_set.contains(d.id.as_str()));
         Ok(())
     }
 
-    async fn count(&self) -> Result<usize, ModelError> {
+    async fn count(&self) -> Result<usize, ModelError>
+    {
         let guard = self.documents.read().await;
         Ok(guard.len())
     }
 
-    async fn update(&self, documents: Vec<Document>) -> Result<(), ModelError> {
+    async fn update(&self, documents: Vec<Document>) -> Result<(), ModelError>
+    {
         let mut guard = self.documents.write().await;
 
-        for doc in documents {
-            if let Some(existing) = guard.iter_mut().find(|d| d.id == doc.id) {
+        for doc in documents
+        {
+            if let Some(existing) = guard.iter_mut().find(|d| d.id == doc.id)
+            {
                 *existing = doc;
             }
             // Documents with unknown IDs are silently ignored
@@ -335,7 +379,8 @@ impl VectorStore for InMemoryVectorStore {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::{chat_model::TokenUsage, embedding::EmbeddingRequest};
 
@@ -344,25 +389,30 @@ mod tests {
     struct MockEmbeddingModel;
 
     #[async_trait::async_trait]
-    impl EmbeddingModel for MockEmbeddingModel {
+    impl EmbeddingModel for MockEmbeddingModel
+    {
         async fn embed(
             &self,
             request: EmbeddingRequest,
-        ) -> Result<crate::embedding::EmbeddingResponse, ModelError> {
+        ) -> Result<crate::embedding::EmbeddingResponse, ModelError>
+        {
             let embeddings: Vec<Vec<f32>> = request
                 .inputs
                 .iter()
                 .map(|text| {
                     // Deterministic pseudo-embedding: hash characters to a 3-dimensional vector
                     let mut v = vec![0.0f32, 0.0f32, 0.0f32];
-                    for (i, ch) in text.chars().enumerate() {
+                    for (i, ch) in text.chars().enumerate()
+                    {
                         let idx = i % 3;
                         v[idx] += ch as u32 as f32;
                     }
                     // Normalize to unit length
                     let norm: f32 = v.iter().map(|x| x * x).sum::<f32>().sqrt();
-                    if norm > 0.0 {
-                        for x in &mut v {
+                    if norm > 0.0
+                    {
+                        for x in &mut v
+                        {
                             *x /= norm;
                         }
                     }
@@ -378,7 +428,8 @@ mod tests {
     // --- Document tests ---
 
     #[test]
-    fn test_document_new() {
+    fn test_document_new()
+    {
         let doc = Document::new("doc-1", "Hello world");
         assert_eq!(doc.id, "doc-1");
         assert_eq!(doc.content, "Hello world");
@@ -387,7 +438,8 @@ mod tests {
     }
 
     #[test]
-    fn test_document_with_metadata() {
+    fn test_document_with_metadata()
+    {
         let mut meta = HashMap::new();
         meta.insert("source".to_string(), "test".to_string());
 
@@ -396,7 +448,8 @@ mod tests {
     }
 
     #[test]
-    fn test_document_with_metadata_pair() {
+    fn test_document_with_metadata_pair()
+    {
         let doc = Document::new("doc-3", "Content")
             .with_metadata("key1", "value1")
             .with_metadata("key2", "value2");
@@ -406,13 +459,15 @@ mod tests {
     }
 
     #[test]
-    fn test_document_with_embedding() {
+    fn test_document_with_embedding()
+    {
         let doc = Document::new("doc-4", "Text").embedding(vec![0.1, 0.2, 0.3]);
         assert_eq!(doc.embedding.as_ref().unwrap().len(), 3);
     }
 
     #[test]
-    fn test_search_result() {
+    fn test_search_result()
+    {
         let doc = Document::new("1", "test");
         let result = SearchResult::new(doc, 0.95);
         assert_eq!(result.score, 0.95);
@@ -422,7 +477,8 @@ mod tests {
     // --- Cosine similarity with known vectors ---
 
     #[tokio::test]
-    async fn test_cosine_similarity_with_known_vectors() {
+    async fn test_cosine_similarity_with_known_vectors()
+    {
         // Verify cosine similarity directly via embedding module
         // Orthogonal vectors: similarity should be 0
         let sim_ortho = cosine_similarity(&[1.0, 0.0], &[0.0, 1.0]);
@@ -443,7 +499,8 @@ mod tests {
     // --- Search sorted by similarity ---
 
     #[tokio::test]
-    async fn test_search_sorted_by_similarity_with_embedding_model() {
+    async fn test_search_sorted_by_similarity_with_embedding_model()
+    {
         let model = Arc::new(MockEmbeddingModel);
         let store = InMemoryVectorStore::with_embedding_model(model);
 
@@ -472,7 +529,8 @@ mod tests {
             results[0].score
         );
         // Results should be sorted descending by score
-        for i in 1..results.len() {
+        for i in 1..results.len()
+        {
             assert!(
                 results[i - 1].score >= results[i].score,
                 "results not sorted: [{}] score {} < [{}] score {}",
@@ -487,7 +545,8 @@ mod tests {
     // --- Keyword fallback search ---
 
     #[tokio::test]
-    async fn test_keyword_fallback_exact_match() {
+    async fn test_keyword_fallback_exact_match()
+    {
         let store = InMemoryVectorStore::new();
 
         store
@@ -510,7 +569,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_keyword_fallback_substring_match() {
+    async fn test_keyword_fallback_substring_match()
+    {
         let store = InMemoryVectorStore::new();
 
         store
@@ -527,7 +587,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_keyword_fallback_word_partial_match() {
+    async fn test_keyword_fallback_word_partial_match()
+    {
         let store = InMemoryVectorStore::new();
 
         store
@@ -551,7 +612,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_keyword_fallback_no_match() {
+    async fn test_keyword_fallback_no_match()
+    {
         let store = InMemoryVectorStore::new();
 
         store
@@ -569,7 +631,8 @@ mod tests {
     // --- Add with auto-embedding ---
 
     #[tokio::test]
-    async fn test_add_with_auto_embedding() {
+    async fn test_add_with_auto_embedding()
+    {
         let model = Arc::new(MockEmbeddingModel);
         let store = InMemoryVectorStore::with_embedding_model(model);
 
@@ -584,7 +647,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_add_preserves_existing_embedding() {
+    async fn test_add_preserves_existing_embedding()
+    {
         let model = Arc::new(MockEmbeddingModel);
         let store = InMemoryVectorStore::with_embedding_model(model);
 
@@ -601,7 +665,8 @@ mod tests {
     // --- Delete and re-search ---
 
     #[tokio::test]
-    async fn test_delete_and_research() {
+    async fn test_delete_and_research()
+    {
         let store = InMemoryVectorStore::new();
 
         store
@@ -631,13 +696,15 @@ mod tests {
     // --- Empty store behavior ---
 
     #[tokio::test]
-    async fn test_empty_store_count() {
+    async fn test_empty_store_count()
+    {
         let store = InMemoryVectorStore::new();
         assert_eq!(store.count().await.unwrap(), 0);
     }
 
     #[tokio::test]
-    async fn test_empty_store_search() {
+    async fn test_empty_store_search()
+    {
         let store = InMemoryVectorStore::new();
         let results = store
             .search("test", 10)
@@ -647,7 +714,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_empty_store_delete() {
+    async fn test_empty_store_delete()
+    {
         let store = InMemoryVectorStore::new();
         store
             .delete(&["nonexistent"])
@@ -659,7 +727,8 @@ mod tests {
     // --- k=0 edge case ---
 
     #[tokio::test]
-    async fn test_search_k_zero() {
+    async fn test_search_k_zero()
+    {
         let store = InMemoryVectorStore::new();
         store
             .add(vec![Document::new("1", "test")])
@@ -676,11 +745,13 @@ mod tests {
     // --- Search limits k ---
 
     #[tokio::test]
-    async fn test_search_limits_k() {
+    async fn test_search_limits_k()
+    {
         let model = Arc::new(MockEmbeddingModel);
         let store = InMemoryVectorStore::with_embedding_model(model);
 
-        for i in 0..5 {
+        for i in 0..5
+        {
             store
                 .add(vec![Document::new(
                     format!("doc-{i}"),
@@ -700,7 +771,8 @@ mod tests {
     // --- Update ---
 
     #[tokio::test]
-    async fn test_update_existing_document() {
+    async fn test_update_existing_document()
+    {
         let store = InMemoryVectorStore::new();
 
         store
@@ -722,7 +794,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_update_nonexistent_document() {
+    async fn test_update_nonexistent_document()
+    {
         let store = InMemoryVectorStore::new();
 
         // Updating a non-existent ID should silently ignore
@@ -737,7 +810,8 @@ mod tests {
     // --- Serde roundtrip ---
 
     #[test]
-    fn test_document_serde_roundtrip() {
+    fn test_document_serde_roundtrip()
+    {
         let doc = Document::new("1", "test content")
             .with_metadata("key", "value")
             .embedding(vec![0.1, 0.2]);
@@ -752,7 +826,8 @@ mod tests {
     // --- Full integration: add, search, delete, re-search with embedding model ---
 
     #[tokio::test]
-    async fn test_full_lifecycle_with_embedding_model() {
+    async fn test_full_lifecycle_with_embedding_model()
+    {
         let model = Arc::new(MockEmbeddingModel);
         let store = InMemoryVectorStore::with_embedding_model(model);
 

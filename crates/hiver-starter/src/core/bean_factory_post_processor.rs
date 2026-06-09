@@ -63,16 +63,19 @@ use super::container::ApplicationContext;
 ///     }
 /// }
 /// ```
-pub trait BeanFactoryPostProcessor: Send + Sync {
+pub trait BeanFactoryPostProcessor: Send + Sync
+{
     /// 处理名称（用于日志和调试）
     /// Processor name (for logging and debugging)
-    fn name(&self) -> &str {
+    fn name(&self) -> &str
+    {
         std::any::type_name::<Self>()
     }
 
     /// 优先级（数字越小越先执行）
     /// Priority (lower number executes first)
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         0
     }
 
@@ -106,7 +109,8 @@ pub trait BeanFactoryPostProcessor: Send + Sync {
 /// let mut context = PostProcessorContext::new(&application_context);
 /// context.set_property("server.port".to_string(), "8080".to_string());
 /// ```
-pub struct PostProcessorContext<'a> {
+pub struct PostProcessorContext<'a>
+{
     /// 应用上下文引用（只读）
     /// Application context reference (read-only)
     app_context: &'a ApplicationContext,
@@ -116,14 +120,16 @@ pub struct PostProcessorContext<'a> {
     properties: HashMap<String, String>,
 }
 
-impl<'a> PostProcessorContext<'a> {
+impl<'a> PostProcessorContext<'a>
+{
     /// 创建新的后处理上下文
     /// Create a new post-processor context
     ///
     /// # 参数 / Parameters
     ///
     /// - `app_context`: 应用上下文引用 / Application context reference
-    pub fn new(app_context: &'a ApplicationContext) -> Self {
+    pub fn new(app_context: &'a ApplicationContext) -> Self
+    {
         // 从应用上下文复制所有属性
         // Copy all properties from application context
         let properties = app_context.config_loader().all().clone();
@@ -136,7 +142,8 @@ impl<'a> PostProcessorContext<'a> {
 
     /// 获取应用上下文引用
     /// Get application context reference
-    pub fn app_context(&self) -> &ApplicationContext {
+    pub fn app_context(&self) -> &ApplicationContext
+    {
         self.app_context
     }
 
@@ -146,7 +153,8 @@ impl<'a> PostProcessorContext<'a> {
     /// # 参数 / Parameters
     ///
     /// - `key`: 属性键 / Property key
-    pub fn get_property(&self, key: &str) -> Option<&str> {
+    pub fn get_property(&self, key: &str) -> Option<&str>
+    {
         self.properties.get(key).map(String::as_str)
     }
 
@@ -157,7 +165,8 @@ impl<'a> PostProcessorContext<'a> {
     ///
     /// - `key`: 属性键 / Property key
     /// - `value`: 属性值 / Property value
-    pub fn set_property(&mut self, key: String, value: String) {
+    pub fn set_property(&mut self, key: String, value: String)
+    {
         self.properties.insert(key, value);
     }
 
@@ -167,19 +176,22 @@ impl<'a> PostProcessorContext<'a> {
     /// # 参数 / Parameters
     ///
     /// - `key`: 属性键 / Property key
-    pub fn remove_property(&mut self, key: &str) -> Option<String> {
+    pub fn remove_property(&mut self, key: &str) -> Option<String>
+    {
         self.properties.remove(key)
     }
 
     /// 获取所有属性
     /// Get all properties
-    pub fn properties(&self) -> &HashMap<String, String> {
+    pub fn properties(&self) -> &HashMap<String, String>
+    {
         &self.properties
     }
 
     /// 获取所有属性（可变引用）
     /// Get all properties (mutable reference)
-    pub fn properties_mut(&mut self) -> &mut HashMap<String, String> {
+    pub fn properties_mut(&mut self) -> &mut HashMap<String, String>
+    {
         &mut self.properties
     }
 }
@@ -212,31 +224,37 @@ impl<'a> PostProcessorContext<'a> {
 /// assert_eq!(result, "Server running on localhost:8080");
 /// ```
 #[derive(Debug, Clone)]
-pub struct PropertyPlaceholderProcessor {
+pub struct PropertyPlaceholderProcessor
+{
     /// 值分隔符（用于默认值）
     /// Value separator (for default values)
     separator: char,
 }
 
-impl Default for PropertyPlaceholderProcessor {
-    fn default() -> Self {
+impl Default for PropertyPlaceholderProcessor
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl PropertyPlaceholderProcessor {
+impl PropertyPlaceholderProcessor
+{
     /// 创建新的属性占位符处理器
     /// Create a new property placeholder processor
     ///
     /// 默认使用 `${` 和 `}` 作为占位符分隔符，`:` 作为默认值分隔符。
     /// Uses `${` and `}` as placeholder delimiters, `:` as default separator.
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self { separator: ':' }
     }
 
     /// 设置默认值分隔符
     /// Set default value separator
-    pub fn with_separator(mut self, separator: char) -> Self {
+    pub fn with_separator(mut self, separator: char) -> Self
+    {
         self.separator = separator;
         self
     }
@@ -254,18 +272,21 @@ impl PropertyPlaceholderProcessor {
     ///
     /// - `input`: 包含占位符的字符串 / String containing placeholders
     /// - `properties`: 属性映射 / Property mapping
-    pub fn resolve(&self, input: &str, properties: &HashMap<String, String>) -> String {
+    pub fn resolve(&self, input: &str, properties: &HashMap<String, String>) -> String
+    {
         self.resolve_simple(input, properties)
     }
 
     /// 简单的占位符解析实现
     /// Simple placeholder resolution implementation
-    fn resolve_simple(&self, input: &str, properties: &HashMap<String, String>) -> String {
+    fn resolve_simple(&self, input: &str, properties: &HashMap<String, String>) -> String
+    {
         let mut result = input.to_string();
 
         // 循环替换所有占位符（最多 10 轮防止无限循环）
         // Loop to replace all placeholders (max 10 rounds to prevent infinite loops)
-        for _ in 0..10 {
+        for _ in 0..10
+        {
             let mut changed = false;
             let mut new_result = String::with_capacity(result.len());
 
@@ -274,7 +295,8 @@ impl PropertyPlaceholderProcessor {
             let prefix_str = "${";
             let suffix_str = "}";
 
-            while i < bytes.len() {
+            while i < bytes.len()
+            {
                 // 检查是否匹配前缀 "${
                 // Check if prefix "${" matches
                 if i + prefix_str.len() <= bytes.len()
@@ -282,28 +304,37 @@ impl PropertyPlaceholderProcessor {
                 {
                     // 寻找后缀 }
                     // Find suffix }
-                    if let Some(end) = result[i + prefix_str.len()..].find(suffix_str) {
+                    if let Some(end) = result[i + prefix_str.len()..].find(suffix_str)
+                    {
                         let content_start = i + prefix_str.len();
                         let content_end = content_start + end;
                         let content = &result[content_start..content_end];
 
                         // 解析 key 和默认值
                         // Parse key and default value
-                        let (key, default) = if let Some(sep_pos) = content.find(self.separator) {
+                        let (key, default) = if let Some(sep_pos) = content.find(self.separator)
+                        {
                             let k = &content[..sep_pos];
                             let d = &content[sep_pos + 1..];
                             (k, Some(d))
-                        } else {
+                        }
+                        else
+                        {
                             (content, None)
                         };
 
                         // 查找属性值
                         // Look up property value
-                        if let Some(value) = properties.get(key) {
+                        if let Some(value) = properties.get(key)
+                        {
                             new_result.push_str(value);
-                        } else if let Some(default_val) = default {
+                        }
+                        else if let Some(default_val) = default
+                        {
                             new_result.push_str(default_val);
-                        } else {
+                        }
+                        else
+                        {
                             // 无法解析，保持原样
                             // Cannot resolve, keep as-is
                             new_result.push_str(prefix_str);
@@ -322,7 +353,8 @@ impl PropertyPlaceholderProcessor {
             }
 
             result = new_result;
-            if !changed {
+            if !changed
+            {
                 break;
             }
         }
@@ -331,24 +363,29 @@ impl PropertyPlaceholderProcessor {
     }
 }
 
-impl BeanFactoryPostProcessor for PropertyPlaceholderProcessor {
-    fn name(&self) -> &'static str {
+impl BeanFactoryPostProcessor for PropertyPlaceholderProcessor
+{
+    fn name(&self) -> &'static str
+    {
         "PropertyPlaceholderProcessor"
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         // 最高优先级，在其他处理器之前执行
         // Highest priority, executes before other processors
         -100
     }
 
-    fn post_process(&self, context: &mut PostProcessorContext) -> Result<()> {
+    fn post_process(&self, context: &mut PostProcessorContext) -> Result<()>
+    {
         let properties = context.properties().clone();
 
         // 替换所有属性值中的占位符
         // Replace placeholders in all property values
         let mut resolved = HashMap::new();
-        for (key, value) in &properties {
+        for (key, value) in &properties
+        {
             let resolved_value = self.resolve_simple(value, &properties);
             resolved.insert(key.clone(), resolved_value);
         }
@@ -389,20 +426,23 @@ impl BeanFactoryPostProcessor for PropertyPlaceholderProcessor {
 /// let port = binder.bind::<u16>("port", &properties);
 /// ```
 #[derive(Debug, Clone)]
-pub struct ConfigurationPropertiesBinder {
+pub struct ConfigurationPropertiesBinder
+{
     /// 属性前缀
     /// Property prefix
     prefix: String,
 }
 
-impl ConfigurationPropertiesBinder {
+impl ConfigurationPropertiesBinder
+{
     /// 创建新的配置属性绑定器
     /// Create a new configuration properties binder
     ///
     /// # 参数 / Parameters
     ///
     /// - `prefix`: 属性前缀（如 "server"） / Property prefix (e.g. "server")
-    pub fn new(prefix: impl Into<String>) -> Self {
+    pub fn new(prefix: impl Into<String>) -> Self
+    {
         Self {
             prefix: prefix.into(),
         }
@@ -410,7 +450,8 @@ impl ConfigurationPropertiesBinder {
 
     /// 获取前缀
     /// Get prefix
-    pub fn prefix(&self) -> &str {
+    pub fn prefix(&self) -> &str
+    {
         &self.prefix
     }
 
@@ -428,10 +469,14 @@ impl ConfigurationPropertiesBinder {
         &self,
         key: &str,
         properties: &HashMap<String, String>,
-    ) -> Option<T> {
-        let full_key = if self.prefix.is_empty() {
+    ) -> Option<T>
+    {
+        let full_key = if self.prefix.is_empty()
+        {
             key.to_string()
-        } else {
+        }
+        else
+        {
             format!("{}.{}", self.prefix, key)
         };
 
@@ -451,7 +496,8 @@ impl ConfigurationPropertiesBinder {
         key: &str,
         default: T,
         properties: &HashMap<String, String>,
-    ) -> T {
+    ) -> T
+    {
         self.bind(key, properties).unwrap_or(default)
     }
 
@@ -464,15 +510,20 @@ impl ConfigurationPropertiesBinder {
     /// # 参数 / Parameters
     ///
     /// - `properties`: 完整属性映射 / Full property mapping
-    pub fn bind_all(&self, properties: &HashMap<String, String>) -> HashMap<String, String> {
+    pub fn bind_all(&self, properties: &HashMap<String, String>) -> HashMap<String, String>
+    {
         let prefix_with_dot = format!("{}.", self.prefix);
         let mut result = HashMap::new();
 
-        for (key, value) in properties {
-            if key.starts_with(&prefix_with_dot) {
+        for (key, value) in properties
+        {
+            if key.starts_with(&prefix_with_dot)
+            {
                 let stripped_key = &key[prefix_with_dot.len()..];
                 result.insert(stripped_key.to_string(), value.clone());
-            } else if self.prefix.is_empty() {
+            }
+            else if self.prefix.is_empty()
+            {
                 result.insert(key.clone(), value.clone());
             }
         }
@@ -481,18 +532,22 @@ impl ConfigurationPropertiesBinder {
     }
 }
 
-impl BeanFactoryPostProcessor for ConfigurationPropertiesBinder {
-    fn name(&self) -> &'static str {
+impl BeanFactoryPostProcessor for ConfigurationPropertiesBinder
+{
+    fn name(&self) -> &'static str
+    {
         "ConfigurationPropertiesBinder"
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         // 在占位符处理器之后执行
         // Executes after placeholder processor
         -50
     }
 
-    fn post_process(&self, context: &mut PostProcessorContext) -> Result<()> {
+    fn post_process(&self, context: &mut PostProcessorContext) -> Result<()>
+    {
         // 将前缀下的所有属性绑定到上下文
         // Bind all properties under the prefix to the context
         let bound = self.bind_all(context.properties());
@@ -519,22 +574,27 @@ impl BeanFactoryPostProcessor for ConfigurationPropertiesBinder {
 ///
 /// 处理器按 `order` 升序执行（数字越小越先执行）。
 /// Processors execute in ascending `order` (lower number executes first).
-pub struct PostProcessorChain {
+pub struct PostProcessorChain
+{
     /// 注册的处理器列表
     /// Registered processor list
     processors: Vec<Box<dyn BeanFactoryPostProcessor>>,
 }
 
-impl Default for PostProcessorChain {
-    fn default() -> Self {
+impl Default for PostProcessorChain
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl PostProcessorChain {
+impl PostProcessorChain
+{
     /// 创建空的后处理器链
     /// Create an empty post-processor chain
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             processors: Vec::new(),
         }
@@ -542,7 +602,8 @@ impl PostProcessorChain {
 
     /// 创建带默认处理器的链
     /// Create a chain with default processors
-    pub fn with_defaults() -> Self {
+    pub fn with_defaults() -> Self
+    {
         let mut chain = Self::new();
         chain.add(Box::new(PropertyPlaceholderProcessor::new()));
         chain
@@ -554,7 +615,8 @@ impl PostProcessorChain {
     /// # 参数 / Parameters
     ///
     /// - `processor`: 后处理器 / Post-processor
-    pub fn add(&mut self, processor: Box<dyn BeanFactoryPostProcessor>) {
+    pub fn add(&mut self, processor: Box<dyn BeanFactoryPostProcessor>)
+    {
         self.processors.push(processor);
     }
 
@@ -564,12 +626,14 @@ impl PostProcessorChain {
     /// # 参数 / Parameters
     ///
     /// - `context`: 后处理上下文 / Post-processor context
-    pub fn process(&mut self, context: &mut PostProcessorContext) -> Result<()> {
+    pub fn process(&mut self, context: &mut PostProcessorContext) -> Result<()>
+    {
         // 按 order 排序
         // Sort by order
         self.processors.sort_by_key(|p| p.order());
 
-        for processor in &self.processors {
+        for processor in &self.processors
+        {
             tracing::debug!("Running BeanFactoryPostProcessor: {}", processor.name());
             processor.post_process(context)?;
         }
@@ -579,13 +643,15 @@ impl PostProcessorChain {
 
     /// 获取处理器数量
     /// Get processor count
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    {
         self.processors.len()
     }
 
     /// 检查是否为空
     /// Check if empty
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    {
         self.processors.is_empty()
     }
 }
@@ -602,7 +668,8 @@ impl PostProcessorChain {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use std::sync::Arc;
 
     use super::*;
@@ -612,7 +679,8 @@ mod tests {
     // ----------------------------------------------------------------
 
     #[test]
-    fn test_post_processor_context_new() {
+    fn test_post_processor_context_new()
+    {
         let ctx = ApplicationContext::new();
         let pctx = PostProcessorContext::new(&ctx);
 
@@ -620,7 +688,8 @@ mod tests {
     }
 
     #[test]
-    fn test_post_processor_context_properties() {
+    fn test_post_processor_context_properties()
+    {
         let mut loader = crate::config::ConfigurationLoader::new();
         loader.set("server.port".to_string(), "8080".to_string());
         let ctx = ApplicationContext::with_config_loader(Arc::new(loader));
@@ -641,7 +710,8 @@ mod tests {
     // ----------------------------------------------------------------
 
     #[test]
-    fn test_resolve_simple_placeholder() {
+    fn test_resolve_simple_placeholder()
+    {
         let processor = PropertyPlaceholderProcessor::new();
         let properties = HashMap::from([
             ("host".to_string(), "localhost".to_string()),
@@ -653,7 +723,8 @@ mod tests {
     }
 
     #[test]
-    fn test_resolve_with_default() {
+    fn test_resolve_with_default()
+    {
         let processor = PropertyPlaceholderProcessor::new();
         let properties = HashMap::new();
 
@@ -662,7 +733,8 @@ mod tests {
     }
 
     #[test]
-    fn test_resolve_property_overrides_default() {
+    fn test_resolve_property_overrides_default()
+    {
         let processor = PropertyPlaceholderProcessor::new();
         let properties = HashMap::from([("port".to_string(), "8080".to_string())]);
 
@@ -671,7 +743,8 @@ mod tests {
     }
 
     #[test]
-    fn test_resolve_no_placeholders() {
+    fn test_resolve_no_placeholders()
+    {
         let processor = PropertyPlaceholderProcessor::new();
         let properties = HashMap::new();
 
@@ -680,7 +753,8 @@ mod tests {
     }
 
     #[test]
-    fn test_resolve_multiple_placeholders() {
+    fn test_resolve_multiple_placeholders()
+    {
         let processor = PropertyPlaceholderProcessor::new();
         let properties = HashMap::from([
             ("host".to_string(), "localhost".to_string()),
@@ -692,7 +766,8 @@ mod tests {
     }
 
     #[test]
-    fn test_resolve_missing_no_default() {
+    fn test_resolve_missing_no_default()
+    {
         let processor = PropertyPlaceholderProcessor::new();
         let properties = HashMap::new();
 
@@ -703,7 +778,8 @@ mod tests {
     }
 
     #[test]
-    fn test_resolve_empty_value() {
+    fn test_resolve_empty_value()
+    {
         let processor = PropertyPlaceholderProcessor::new();
         let properties = HashMap::from([("empty".to_string(), String::new())]);
 
@@ -712,7 +788,8 @@ mod tests {
     }
 
     #[test]
-    fn test_placeholder_processor_as_post_processor() {
+    fn test_placeholder_processor_as_post_processor()
+    {
         let mut loader = crate::config::ConfigurationLoader::new();
         loader.set("greeting".to_string(), "Hello".to_string());
         loader.set("message".to_string(), "${greeting} World".to_string());
@@ -727,7 +804,8 @@ mod tests {
     }
 
     #[test]
-    fn test_placeholder_processor_order() {
+    fn test_placeholder_processor_order()
+    {
         let processor = PropertyPlaceholderProcessor::new();
         assert_eq!(processor.order(), -100);
     }
@@ -737,7 +815,8 @@ mod tests {
     // ----------------------------------------------------------------
 
     #[test]
-    fn test_binder_simple() {
+    fn test_binder_simple()
+    {
         let binder = ConfigurationPropertiesBinder::new("server");
         let properties = HashMap::from([
             ("server.port".to_string(), "8080".to_string()),
@@ -758,7 +837,8 @@ mod tests {
     }
 
     #[test]
-    fn test_binder_with_default() {
+    fn test_binder_with_default()
+    {
         let binder = ConfigurationPropertiesBinder::new("server");
         let properties = HashMap::new();
 
@@ -767,7 +847,8 @@ mod tests {
     }
 
     #[test]
-    fn test_binder_bind_all() {
+    fn test_binder_bind_all()
+    {
         let binder = ConfigurationPropertiesBinder::new("server");
         let properties = HashMap::from([
             ("server.port".to_string(), "8080".to_string()),
@@ -785,7 +866,8 @@ mod tests {
     }
 
     #[test]
-    fn test_binder_empty_prefix() {
+    fn test_binder_empty_prefix()
+    {
         let binder = ConfigurationPropertiesBinder::new("");
         let properties = HashMap::from([("port".to_string(), "8080".to_string())]);
 
@@ -794,7 +876,8 @@ mod tests {
     }
 
     #[test]
-    fn test_binder_type_parsing() {
+    fn test_binder_type_parsing()
+    {
         let binder = ConfigurationPropertiesBinder::new("app");
         let properties = HashMap::from([
             ("app.enabled".to_string(), "true".to_string()),
@@ -813,7 +896,8 @@ mod tests {
     }
 
     #[test]
-    fn test_binder_as_post_processor() {
+    fn test_binder_as_post_processor()
+    {
         let mut loader = crate::config::ConfigurationLoader::new();
         loader.set("server.port".to_string(), "8080".to_string());
         let ctx = ApplicationContext::with_config_loader(Arc::new(loader));
@@ -828,7 +912,8 @@ mod tests {
     // ----------------------------------------------------------------
 
     #[test]
-    fn test_chain_empty() {
+    fn test_chain_empty()
+    {
         let mut chain = PostProcessorChain::new();
         let ctx = ApplicationContext::new();
         let mut pctx = PostProcessorContext::new(&ctx);
@@ -838,28 +923,35 @@ mod tests {
     }
 
     #[test]
-    fn test_chain_with_defaults() {
+    fn test_chain_with_defaults()
+    {
         let chain = PostProcessorChain::with_defaults();
         assert_eq!(chain.len(), 1);
     }
 
     #[test]
-    fn test_chain_ordering() {
-        struct OrderTracker {
+    fn test_chain_ordering()
+    {
+        struct OrderTracker
+        {
             name: String,
             order: i32,
         }
 
-        impl BeanFactoryPostProcessor for OrderTracker {
-            fn name(&self) -> &str {
+        impl BeanFactoryPostProcessor for OrderTracker
+        {
+            fn name(&self) -> &str
+            {
                 &self.name
             }
 
-            fn order(&self) -> i32 {
+            fn order(&self) -> i32
+            {
                 self.order
             }
 
-            fn post_process(&self, _context: &mut PostProcessorContext) -> Result<()> {
+            fn post_process(&self, _context: &mut PostProcessorContext) -> Result<()>
+            {
                 Ok(())
             }
         }
@@ -890,19 +982,24 @@ mod tests {
     // ----------------------------------------------------------------
 
     #[test]
-    fn test_custom_post_processor() {
+    fn test_custom_post_processor()
+    {
         struct TestPostProcessor;
 
-        impl BeanFactoryPostProcessor for TestPostProcessor {
-            fn name(&self) -> &'static str {
+        impl BeanFactoryPostProcessor for TestPostProcessor
+        {
+            fn name(&self) -> &'static str
+            {
                 "TestPostProcessor"
             }
 
-            fn order(&self) -> i32 {
+            fn order(&self) -> i32
+            {
                 50
             }
 
-            fn post_process(&self, context: &mut PostProcessorContext) -> Result<()> {
+            fn post_process(&self, context: &mut PostProcessorContext) -> Result<()>
+            {
                 context.set_property("test.added".to_string(), "true".to_string());
                 Ok(())
             }

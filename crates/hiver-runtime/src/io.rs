@@ -48,12 +48,14 @@ const DUMMY_ADDR: SocketAddr = SocketAddr::new(IpAddr::V4(Ipv4Addr::UNSPECIFIED)
 ///
 /// Provides async read/write operations with the underlying driver.
 /// 使用底层驱动提供异步读/写操作。
-pub struct TcpStream {
+pub struct TcpStream
+{
     /// The raw file descriptor / 原始文件描述符
     fd: std::os::fd::OwnedFd,
 }
 
-impl TcpStream {
+impl TcpStream
+{
     /// Create a new TcpStream from a raw file descriptor
     /// 从原始文件描述符创建新的TcpStream
     ///
@@ -61,16 +63,19 @@ impl TcpStream {
     ///
     /// The fd must be valid and owned by the caller.
     /// fd必须有效且由调用者拥有。
-    pub(crate) unsafe fn from_raw_fd(fd: RawFd) -> io::Result<Self> {
+    pub(crate) unsafe fn from_raw_fd(fd: RawFd) -> io::Result<Self>
+    {
         // Set non-blocking mode
         // 设置非阻塞模式
         #[cfg(unix)]
         unsafe {
             let flags = libc::fcntl(fd, libc::F_GETFL);
-            if flags < 0 {
+            if flags < 0
+            {
                 return Err(io::Error::last_os_error());
             }
-            if libc::fcntl(fd, libc::F_SETFL, flags | libc::O_NONBLOCK) < 0 {
+            if libc::fcntl(fd, libc::F_SETFL, flags | libc::O_NONBLOCK) < 0
+            {
                 return Err(io::Error::last_os_error());
             }
         }
@@ -95,8 +100,11 @@ impl TcpStream {
     ///     Ok(())
     /// }
     /// ```
-    pub fn connect(addr: &str) -> ConnectFuture {
-        let Ok(addr) = addr.parse::<SocketAddr>() else {
+    pub fn connect(addr: &str) -> ConnectFuture
+    {
+        let Ok(addr) = addr.parse::<SocketAddr>()
+        else
+        {
             // Try to resolve as hostname
             // For now, return error - DNS resolution will be added later
             return ConnectFuture::Error(io::Error::new(
@@ -117,7 +125,8 @@ impl TcpStream {
     ///
     /// Returns the number of bytes read. May return 0 if the stream is closed.
     /// 返回读取的字节数。如果流已关闭，可能返回0。
-    pub fn read<'a, 'b>(&'a mut self, buf: &'b mut [u8]) -> ReadFuture<'a, 'b> {
+    pub fn read<'a, 'b>(&'a mut self, buf: &'b mut [u8]) -> ReadFuture<'a, 'b>
+    {
         ReadFuture {
             stream: Some(self),
             buf,
@@ -130,7 +139,8 @@ impl TcpStream {
     ///
     /// This will keep writing until all bytes have been written or an error occurs.
     /// 将持续写入，直到所有字节都已写入或发生错误。
-    pub fn write_all<'a, 'b>(&'a mut self, buf: &'b [u8]) -> WriteAllFuture<'a, 'b> {
+    pub fn write_all<'a, 'b>(&'a mut self, buf: &'b [u8]) -> WriteAllFuture<'a, 'b>
+    {
         WriteAllFuture {
             stream: Some(self),
             buf,
@@ -151,7 +161,8 @@ impl TcpStream {
     /// underlying socket. The caller must coordinate read/write operations.
     /// 这是简化的 split 实现。两个半部引用同一个底层 socket。
     /// 调用者必须协调读/写操作。
-    pub fn split(&mut self) -> (ReadHalf<'_>, WriteHalf<'_>) {
+    pub fn split(&mut self) -> (ReadHalf<'_>, WriteHalf<'_>)
+    {
         // SAFETY: Both halves reference the same stream via raw pointer.
         // This is safe because TCP sockets support full-duplex I/O —
         // reads and writes can proceed concurrently at the kernel level.
@@ -168,15 +179,18 @@ impl TcpStream {
 
     /// Shutdown the stream
     /// 关闭流
-    pub fn shutdown(&self, how: Shutdown) -> io::Result<()> {
+    pub fn shutdown(&self, how: Shutdown) -> io::Result<()>
+    {
         #[cfg(unix)]
         unsafe {
-            let how = match how {
+            let how = match how
+            {
                 Shutdown::Read => libc::SHUT_RD,
                 Shutdown::Write => libc::SHUT_WR,
                 Shutdown::Both => libc::SHUT_RDWR,
             };
-            if libc::shutdown(self.as_raw_fd(), how) < 0 {
+            if libc::shutdown(self.as_raw_fd(), how) < 0
+            {
                 return Err(io::Error::last_os_error());
             }
         }
@@ -192,15 +206,18 @@ impl TcpStream {
     }
 }
 
-impl AsRawFd for TcpStream {
-    fn as_raw_fd(&self) -> RawFd {
+impl AsRawFd for TcpStream
+{
+    fn as_raw_fd(&self) -> RawFd
+    {
         self.fd.as_raw_fd()
     }
 }
 
 /// Future for connecting to a remote address
 /// 连接到远程地址的future
-pub enum ConnectFuture {
+pub enum ConnectFuture
+{
     /// Error state / 错误状态
     Error(io::Error),
     /// Connecting state / 连接中状态
@@ -210,31 +227,39 @@ pub enum ConnectFuture {
     Done,
 }
 
-struct ConnectingState {
+struct ConnectingState
+{
     addr: SocketAddr,
     fd: Option<RawFd>,
     started: bool,
 }
 
-impl Future for ConnectFuture {
+impl Future for ConnectFuture
+{
     type Output = io::Result<TcpStream>;
 
-    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        match &mut *self {
-            ConnectFuture::Error(e) => {
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>
+    {
+        match &mut *self
+        {
+            ConnectFuture::Error(e) =>
+            {
                 let e = std::mem::replace(e, io::Error::other(""));
                 Poll::Ready(Err(e))
             },
             ConnectFuture::Done => panic!("ConnectFuture polled after completion"),
-            ConnectFuture::Connecting(state) => {
-                if !state.started {
+            ConnectFuture::Connecting(state) =>
+            {
+                if !state.started
+                {
                     state.started = true;
 
                     // Create socket and start connect
                     // 创建套接字并启动connect
                     let fd: RawFd = create_socket(state.addr.is_ipv4());
 
-                    if fd < 0 {
+                    if fd < 0
+                    {
                         return Poll::Ready(Err(io::Error::last_os_error()));
                     }
 
@@ -242,9 +267,11 @@ impl Future for ConnectFuture {
                     // 启动 connect（create_socket 已设置非阻塞）
                     let result = do_connect(fd, state.addr);
 
-                    if result < 0 {
+                    if result < 0
+                    {
                         let err = io::Error::last_os_error();
-                        if err.kind() != io::ErrorKind::WouldBlock {
+                        if err.kind() != io::ErrorKind::WouldBlock
+                        {
                             unsafe { libc::close(fd) };
                             return Poll::Ready(Err(err));
                         }
@@ -261,7 +288,8 @@ impl Future for ConnectFuture {
 
                 // Check if async connect has completed using poll()
                 // 使用 poll() 检查异步连接是否完成
-                if let Some(fd) = state.fd {
+                if let Some(fd) = state.fd
+                {
                     let mut pfd = libc::pollfd {
                         fd,
                         events: libc::POLLOUT,
@@ -269,13 +297,15 @@ impl Future for ConnectFuture {
                     };
                     let ready = unsafe { libc::poll(&mut pfd, 1, 0) };
 
-                    if ready < 0 {
+                    if ready < 0
+                    {
                         let fd = state.fd.take().unwrap();
                         unsafe { libc::close(fd) };
                         return Poll::Ready(Err(io::Error::last_os_error()));
                     }
 
-                    if ready == 0 {
+                    if ready == 0
+                    {
                         // Not ready yet — register waker for future notification
                         // 尚未就绪 — 注册 waker 以便未来通知
                         cx.waker().wake_by_ref();
@@ -295,7 +325,8 @@ impl Future for ConnectFuture {
                             &mut err_len,
                         );
                     }
-                    if err_val != 0 {
+                    if err_val != 0
+                    {
                         let fd = state.fd.take().unwrap();
                         unsafe { libc::close(fd) };
                         return Poll::Ready(Err(io::Error::from_raw_os_error(err_val)));
@@ -304,13 +335,16 @@ impl Future for ConnectFuture {
                     // Connected successfully
                     // 连接成功
                     let fd = state.fd.take().unwrap();
-                    let stream = match unsafe { TcpStream::from_raw_fd(fd) } {
+                    let stream = match unsafe { TcpStream::from_raw_fd(fd) }
+                    {
                         Ok(s) => s,
                         Err(e) => return Poll::Ready(Err(e)),
                     };
                     *self = ConnectFuture::Done;
                     Poll::Ready(Ok(stream))
-                } else {
+                }
+                else
+                {
                     Poll::Pending
                 }
             },
@@ -321,7 +355,8 @@ impl Future for ConnectFuture {
 /// Helper to create a non-blocking socket
 /// 创建非阻塞套接字的辅助函数
 #[cfg(unix)]
-fn create_socket(ipv4: bool) -> RawFd {
+fn create_socket(ipv4: bool) -> RawFd
+{
     unsafe {
         let domain = if ipv4 { libc::AF_INET } else { libc::AF_INET6 };
 
@@ -331,14 +366,16 @@ fn create_socket(ipv4: bool) -> RawFd {
         #[cfg(not(target_os = "linux"))]
         let fd = libc::socket(domain, libc::SOCK_STREAM, 0);
 
-        if fd < 0 {
+        if fd < 0
+        {
             return fd;
         }
 
         #[cfg(not(target_os = "linux"))]
         {
             // Set close-on-exec for macOS/BSD
-            if libc::fcntl(fd, libc::F_SETFD, libc::FD_CLOEXEC) < 0 {
+            if libc::fcntl(fd, libc::F_SETFD, libc::FD_CLOEXEC) < 0
+            {
                 libc::close(fd);
                 return -1;
             }
@@ -346,7 +383,8 @@ fn create_socket(ipv4: bool) -> RawFd {
 
         // Set non-blocking
         let flags = libc::fcntl(fd, libc::F_GETFL);
-        if libc::fcntl(fd, libc::F_SETFL, flags | libc::O_NONBLOCK) < 0 {
+        if libc::fcntl(fd, libc::F_SETFL, flags | libc::O_NONBLOCK) < 0
+        {
             libc::close(fd);
             return -1;
         }
@@ -358,10 +396,13 @@ fn create_socket(ipv4: bool) -> RawFd {
 /// Helper to start a connect
 /// 启动connect的辅助函数
 #[cfg(unix)]
-fn do_connect(fd: RawFd, addr: SocketAddr) -> i32 {
+fn do_connect(fd: RawFd, addr: SocketAddr) -> i32
+{
     unsafe {
-        if addr.is_ipv4() {
-            if let SocketAddr::V4(v4) = addr {
+        if addr.is_ipv4()
+        {
+            if let SocketAddr::V4(v4) = addr
+            {
                 #[cfg(target_os = "linux")]
                 let sockaddr = libc::sockaddr_in {
                     sin_family: libc::AF_INET as u16,
@@ -388,11 +429,16 @@ fn do_connect(fd: RawFd, addr: SocketAddr) -> i32 {
                     &sockaddr as *const _ as *const libc::sockaddr,
                     size_of::<libc::sockaddr_in>() as libc::socklen_t,
                 )
-            } else {
+            }
+            else
+            {
                 -1
             }
-        } else {
-            if let SocketAddr::V6(v6) = addr {
+        }
+        else
+        {
+            if let SocketAddr::V6(v6) = addr
+            {
                 #[cfg(target_os = "linux")]
                 let sockaddr = libc::sockaddr_in6 {
                     sin6_family: libc::AF_INET6 as u16,
@@ -421,7 +467,9 @@ fn do_connect(fd: RawFd, addr: SocketAddr) -> i32 {
                     &sockaddr as *const _ as *const libc::sockaddr,
                     size_of::<libc::sockaddr_in6>() as libc::socklen_t,
                 )
-            } else {
+            }
+            else
+            {
                 -1
             }
         }
@@ -430,16 +478,19 @@ fn do_connect(fd: RawFd, addr: SocketAddr) -> i32 {
 
 /// Future for reading from a TcpStream
 /// 从TcpStream读取的future
-pub struct ReadFuture<'a, 'b> {
+pub struct ReadFuture<'a, 'b>
+{
     stream: Option<&'a mut TcpStream>,
     buf: &'b mut [u8],
     pos: usize,
 }
 
-impl Future for ReadFuture<'_, '_> {
+impl Future for ReadFuture<'_, '_>
+{
     type Output = io::Result<usize>;
 
-    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
+    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output>
+    {
         // Extract all needed values upfront to avoid borrow issues
         // 提前提取所有需要的值以避免借用问题
         let stream_fd;
@@ -458,9 +509,11 @@ impl Future for ReadFuture<'_, '_> {
         {
             let result = unsafe { libc::read(stream_fd, buf_ptr as *mut _, buf_len) };
 
-            if result < 0 {
+            if result < 0
+            {
                 let err = io::Error::last_os_error();
-                if err.kind() == io::ErrorKind::WouldBlock {
+                if err.kind() == io::ErrorKind::WouldBlock
+                {
                     // Would block - should register with driver
                     // 会阻塞 - 应该向驱动注册
                     // For now, just return Pending
@@ -471,7 +524,8 @@ impl Future for ReadFuture<'_, '_> {
             }
 
             let n = result as usize;
-            if n == 0 {
+            if n == 0
+            {
                 return Poll::Ready(Ok(0)); // EOF
             }
 
@@ -492,17 +546,21 @@ impl Future for ReadFuture<'_, '_> {
 
 /// Future for writing all bytes to a TcpStream
 /// 向TcpStream写入所有字节的future
-pub struct WriteAllFuture<'a, 'b> {
+pub struct WriteAllFuture<'a, 'b>
+{
     stream: Option<&'a mut TcpStream>,
     buf: &'b [u8],
     pos: usize,
 }
 
-impl Future for WriteAllFuture<'_, '_> {
+impl Future for WriteAllFuture<'_, '_>
+{
     type Output = io::Result<()>;
 
-    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
-        while self.pos < self.buf.len() {
+    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output>
+    {
+        while self.pos < self.buf.len()
+        {
             let stream = self.stream.as_mut().unwrap();
 
             #[cfg(unix)]
@@ -515,16 +573,19 @@ impl Future for WriteAllFuture<'_, '_> {
                     )
                 };
 
-                if result < 0 {
+                if result < 0
+                {
                     let err = io::Error::last_os_error();
-                    if err.kind() == io::ErrorKind::WouldBlock {
+                    if err.kind() == io::ErrorKind::WouldBlock
+                    {
                         return Poll::Pending;
                     }
                     return Poll::Ready(Err(err));
                 }
 
                 let n = result as usize;
-                if n == 0 {
+                if n == 0
+                {
                     return Poll::Ready(Err(io::Error::new(
                         io::ErrorKind::WriteZero,
                         "write zero byte",
@@ -550,13 +611,15 @@ impl Future for WriteAllFuture<'_, '_> {
 
 /// Read half of a TcpStream
 /// TcpStream的读半部
-pub struct ReadHalf<'a> {
+pub struct ReadHalf<'a>
+{
     _stream: &'a mut TcpStream,
 }
 
 /// Write half of a TcpStream
 /// TcpStream的写半部
-pub struct WriteHalf<'a> {
+pub struct WriteHalf<'a>
+{
     _stream: &'a mut TcpStream,
 }
 
@@ -565,12 +628,14 @@ pub struct WriteHalf<'a> {
 ///
 /// Listens for incoming connections on a specific address.
 /// 在特定地址上监听传入的连接。
-pub struct TcpListener {
+pub struct TcpListener
+{
     /// The raw file descriptor / 原始文件描述符
     fd: std::os::fd::OwnedFd,
 }
 
-impl TcpListener {
+impl TcpListener
+{
     /// Create a new TCP listener bound to the specified address
     /// 创建绑定到指定地址的新TCP监听器
     ///
@@ -585,8 +650,11 @@ impl TcpListener {
     ///     Ok(())
     /// }
     /// ```
-    pub fn bind(addr: &str) -> BindFuture {
-        let Ok(addr) = addr.parse::<SocketAddr>() else {
+    pub fn bind(addr: &str) -> BindFuture
+    {
+        let Ok(addr) = addr.parse::<SocketAddr>()
+        else
+        {
             return BindFuture::Error(io::Error::new(
                 io::ErrorKind::InvalidInput,
                 "Invalid address format, use IP:PORT",
@@ -598,13 +666,15 @@ impl TcpListener {
 
     /// Accept a new connection
     /// 接受新连接
-    pub fn accept(&mut self) -> AcceptFuture<'_> {
+    pub fn accept(&mut self) -> AcceptFuture<'_>
+    {
         AcceptFuture { listener: self }
     }
 
     /// Get the local address
     /// 获取本地地址
-    pub fn local_addr(&self) -> io::Result<SocketAddr> {
+    pub fn local_addr(&self) -> io::Result<SocketAddr>
+    {
         #[cfg(unix)]
         unsafe {
             let mut addr: libc::sockaddr_storage = std::mem::zeroed();
@@ -634,15 +704,18 @@ impl TcpListener {
     }
 }
 
-impl AsRawFd for TcpListener {
-    fn as_raw_fd(&self) -> RawFd {
+impl AsRawFd for TcpListener
+{
+    fn as_raw_fd(&self) -> RawFd
+    {
         self.fd.as_raw_fd()
     }
 }
 
 /// Future for binding a TCP listener
 /// 绑定TCP监听器的future
-pub enum BindFuture {
+pub enum BindFuture
+{
     /// Error state / 错误状态
     Error(io::Error),
     /// Binding state / 绑定中状态
@@ -651,26 +724,33 @@ pub enum BindFuture {
     Done,
 }
 
-struct BindingState {
+struct BindingState
+{
     addr: SocketAddr,
 }
 
-impl Future for BindFuture {
+impl Future for BindFuture
+{
     type Output = io::Result<TcpListener>;
 
-    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
-        match &mut *self {
-            BindFuture::Error(e) => {
+    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output>
+    {
+        match &mut *self
+        {
+            BindFuture::Error(e) =>
+            {
                 let e = std::mem::replace(e, io::Error::other(""));
                 Poll::Ready(Err(e))
             },
             BindFuture::Done => panic!("BindFuture polled after completion"),
-            BindFuture::Binding(state) => {
+            BindFuture::Binding(state) =>
+            {
                 // Create and bind socket
                 // 创建并绑定套接字
                 let fd = create_socket(state.addr.is_ipv4());
 
-                if fd < 0 {
+                if fd < 0
+                {
                     return Poll::Ready(Err(io::Error::last_os_error()));
                 }
 
@@ -694,7 +774,8 @@ impl Future for BindFuture {
                     // Bind
                     // 绑定
                     let result = do_bind(fd, state.addr);
-                    if result < 0 {
+                    if result < 0
+                    {
                         let err = io::Error::last_os_error();
                         libc::close(fd);
                         return Poll::Ready(Err(err));
@@ -702,7 +783,8 @@ impl Future for BindFuture {
 
                     // Listen
                     // 监听
-                    if libc::listen(fd, 128) < 0 {
+                    if libc::listen(fd, 128) < 0
+                    {
                         let err = io::Error::last_os_error();
                         libc::close(fd);
                         return Poll::Ready(Err(err));
@@ -732,10 +814,13 @@ impl Future for BindFuture {
 /// Helper to bind a socket to an address
 /// 将套接字绑定到地址的辅助函数
 #[cfg(unix)]
-fn do_bind(fd: RawFd, addr: SocketAddr) -> i32 {
+fn do_bind(fd: RawFd, addr: SocketAddr) -> i32
+{
     unsafe {
-        if addr.is_ipv4() {
-            if let SocketAddr::V4(v4) = addr {
+        if addr.is_ipv4()
+        {
+            if let SocketAddr::V4(v4) = addr
+            {
                 #[cfg(target_os = "linux")]
                 let sockaddr = libc::sockaddr_in {
                     sin_family: libc::AF_INET as u16,
@@ -762,11 +847,16 @@ fn do_bind(fd: RawFd, addr: SocketAddr) -> i32 {
                     &sockaddr as *const _ as *const libc::sockaddr,
                     size_of::<libc::sockaddr_in>() as libc::socklen_t,
                 )
-            } else {
+            }
+            else
+            {
                 -1
             }
-        } else {
-            if let SocketAddr::V6(v6) = addr {
+        }
+        else
+        {
+            if let SocketAddr::V6(v6) = addr
+            {
                 #[cfg(target_os = "linux")]
                 let sockaddr = libc::sockaddr_in6 {
                     sin6_family: libc::AF_INET6 as u16,
@@ -795,7 +885,9 @@ fn do_bind(fd: RawFd, addr: SocketAddr) -> i32 {
                     &sockaddr as *const _ as *const libc::sockaddr,
                     size_of::<libc::sockaddr_in6>() as libc::socklen_t,
                 )
-            } else {
+            }
+            else
+            {
                 -1
             }
         }
@@ -804,15 +896,18 @@ fn do_bind(fd: RawFd, addr: SocketAddr) -> i32 {
 
 /// Future for accepting a connection
 /// 接受连接的future
-pub struct AcceptFuture<'a> {
+pub struct AcceptFuture<'a>
+{
     listener: &'a mut TcpListener,
 }
 
-impl Future for AcceptFuture<'_> {
+impl Future for AcceptFuture<'_>
+{
     type Output = io::Result<(TcpStream, SocketAddr)>;
 
     #[allow(unused_mut)]
-    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
+    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output>
+    {
         #[cfg(unix)]
         {
             let mut addr: libc::sockaddr_storage = unsafe { std::mem::zeroed() };
@@ -838,16 +933,19 @@ impl Future for AcceptFuture<'_> {
                         &mut len,
                     );
 
-                    if fd >= 0 {
+                    if fd >= 0
+                    {
                         // Set close-on-exec
-                        if libc::fcntl(fd, libc::F_SETFD, libc::FD_CLOEXEC) < 0 {
+                        if libc::fcntl(fd, libc::F_SETFD, libc::FD_CLOEXEC) < 0
+                        {
                             libc::close(fd);
                             return Poll::Ready(Err(io::Error::last_os_error()));
                         }
 
                         // Set non-blocking
                         let flags = libc::fcntl(fd, libc::F_GETFL);
-                        if libc::fcntl(fd, libc::F_SETFL, flags | libc::O_NONBLOCK) < 0 {
+                        if libc::fcntl(fd, libc::F_SETFL, flags | libc::O_NONBLOCK) < 0
+                        {
                             libc::close(fd);
                             return Poll::Ready(Err(io::Error::last_os_error()));
                         }
@@ -857,22 +955,26 @@ impl Future for AcceptFuture<'_> {
                 }
             };
 
-            if fd < 0 {
+            if fd < 0
+            {
                 let err = io::Error::last_os_error();
-                if err.kind() == io::ErrorKind::WouldBlock {
+                if err.kind() == io::ErrorKind::WouldBlock
+                {
                     return Poll::Pending;
                 }
                 return Poll::Ready(Err(err));
             }
 
-            let stream = match unsafe { TcpStream::from_raw_fd(fd) } {
+            let stream = match unsafe { TcpStream::from_raw_fd(fd) }
+            {
                 Ok(s) => s,
                 Err(e) => return Poll::Ready(Err(e)),
             };
 
             // Parse peer address (simplified)
             // 解析对端地址（简化版）
-            let peer_addr = match self.listener.local_addr() {
+            let peer_addr = match self.listener.local_addr()
+            {
                 Ok(_) => DUMMY_ADDR,
                 Err(_) => return Poll::Ready(Err(io::Error::last_os_error())),
             };
@@ -911,12 +1013,14 @@ impl Future for AcceptFuture<'_> {
 ///     }
 /// }
 /// ```
-pub struct UdpSocket {
+pub struct UdpSocket
+{
     /// The raw file descriptor / 原始文件描述符
     fd: std::os::fd::OwnedFd,
 }
 
-impl UdpSocket {
+impl UdpSocket
+{
     /// Bind a new UDP socket to the specified address
     /// 将新的UDP套接字绑定到指定地址
     ///
@@ -930,8 +1034,11 @@ impl UdpSocket {
     ///     Ok(())
     /// }
     /// ```
-    pub fn bind(addr: &str) -> BindUdpFuture {
-        let Ok(addr) = addr.parse::<SocketAddr>() else {
+    pub fn bind(addr: &str) -> BindUdpFuture
+    {
+        let Ok(addr) = addr.parse::<SocketAddr>()
+        else
+        {
             return BindUdpFuture::Error(io::Error::new(
                 io::ErrorKind::InvalidInput,
                 "Invalid address format, use IP:PORT",
@@ -946,7 +1053,8 @@ impl UdpSocket {
     ///
     /// Returns the number of bytes received and the peer address.
     /// 返回接收的字节数和对端地址。
-    pub fn recv_from<'a, 'b>(&'a mut self, buf: &'b mut [u8]) -> RecvFromFuture<'a, 'b> {
+    pub fn recv_from<'a, 'b>(&'a mut self, buf: &'b mut [u8]) -> RecvFromFuture<'a, 'b>
+    {
         RecvFromFuture {
             stream: Some(self),
             buf,
@@ -958,7 +1066,8 @@ impl UdpSocket {
     ///
     /// Returns the number of bytes sent.
     /// 返回发送的字节数。
-    pub fn send_to<'a, 'b>(&'a mut self, buf: &'b [u8], addr: SocketAddr) -> SendToFuture<'a, 'b> {
+    pub fn send_to<'a, 'b>(&'a mut self, buf: &'b [u8], addr: SocketAddr) -> SendToFuture<'a, 'b>
+    {
         SendToFuture {
             stream: Some(self),
             buf,
@@ -971,7 +1080,8 @@ impl UdpSocket {
     ///
     /// This filters incoming datagrams to only receive from this address.
     /// 这会过滤传入的数据报，只接收来自此地址的数据。
-    pub fn connect(&mut self, addr: SocketAddr) -> ConnectUdpFuture {
+    pub fn connect(&mut self, addr: SocketAddr) -> ConnectUdpFuture
+    {
         ConnectUdpFuture {
             fd: self.fd.as_raw_fd(),
             addr,
@@ -980,15 +1090,18 @@ impl UdpSocket {
     }
 }
 
-impl AsRawFd for UdpSocket {
-    fn as_raw_fd(&self) -> RawFd {
+impl AsRawFd for UdpSocket
+{
+    fn as_raw_fd(&self) -> RawFd
+    {
         self.fd.as_raw_fd()
     }
 }
 
 /// Future for binding a UDP socket
 /// 绑定UDP套接字的future
-pub enum BindUdpFuture {
+pub enum BindUdpFuture
+{
     /// Error state / 错误状态
     Error(io::Error),
     /// Binding state / 绑定中状态
@@ -997,33 +1110,41 @@ pub enum BindUdpFuture {
     Done,
 }
 
-struct BindingUdpState {
+struct BindingUdpState
+{
     addr: SocketAddr,
 }
 
-impl Future for BindUdpFuture {
+impl Future for BindUdpFuture
+{
     type Output = io::Result<UdpSocket>;
 
-    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
-        match &mut *self {
-            BindUdpFuture::Error(e) => {
+    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output>
+    {
+        match &mut *self
+        {
+            BindUdpFuture::Error(e) =>
+            {
                 let e = std::mem::replace(e, io::Error::other(""));
                 Poll::Ready(Err(e))
             },
             BindUdpFuture::Done => panic!("BindUdpFuture polled after completion"),
-            BindUdpFuture::Binding(state) => {
+            BindUdpFuture::Binding(state) =>
+            {
                 // Create and bind UDP socket
                 // 创建并绑定UDP套接字
                 let fd = create_udp_socket(state.addr.is_ipv4());
 
-                if fd < 0 {
+                if fd < 0
+                {
                     return Poll::Ready(Err(io::Error::last_os_error()));
                 }
 
                 // Bind
                 // 绑定
                 let result = do_bind_udp(fd, state.addr);
-                if result < 0 {
+                if result < 0
+                {
                     let err = io::Error::last_os_error();
                     unsafe { libc::close(fd) };
                     return Poll::Ready(Err(err));
@@ -1044,7 +1165,8 @@ impl Future for BindUdpFuture {
 /// Helper to create a UDP socket
 /// 创建UDP套接字的辅助函数
 #[cfg(unix)]
-fn create_udp_socket(ipv4: bool) -> RawFd {
+fn create_udp_socket(ipv4: bool) -> RawFd
+{
     unsafe {
         let domain = if ipv4 { libc::AF_INET } else { libc::AF_INET6 };
 
@@ -1055,21 +1177,24 @@ fn create_udp_socket(ipv4: bool) -> RawFd {
         #[cfg(not(target_os = "linux"))]
         let fd = libc::socket(domain, libc::SOCK_DGRAM, 0);
 
-        if fd < 0 {
+        if fd < 0
+        {
             return fd;
         }
 
         #[cfg(not(target_os = "linux"))]
         {
             // Set close-on-exec for macOS/BSD
-            if libc::fcntl(fd, libc::F_SETFD, libc::FD_CLOEXEC) < 0 {
+            if libc::fcntl(fd, libc::F_SETFD, libc::FD_CLOEXEC) < 0
+            {
                 libc::close(fd);
                 return -1;
             }
 
             // Set non-blocking
             let flags = libc::fcntl(fd, libc::F_GETFL);
-            if libc::fcntl(fd, libc::F_SETFL, flags | libc::O_NONBLOCK) < 0 {
+            if libc::fcntl(fd, libc::F_SETFL, flags | libc::O_NONBLOCK) < 0
+            {
                 libc::close(fd);
                 return -1;
             }
@@ -1082,10 +1207,13 @@ fn create_udp_socket(ipv4: bool) -> RawFd {
 /// Helper to bind a UDP socket to an address
 /// 将UDP套接字绑定到地址的辅助函数
 #[cfg(unix)]
-fn do_bind_udp(fd: RawFd, addr: SocketAddr) -> i32 {
+fn do_bind_udp(fd: RawFd, addr: SocketAddr) -> i32
+{
     unsafe {
-        if addr.is_ipv4() {
-            if let SocketAddr::V4(v4) = addr {
+        if addr.is_ipv4()
+        {
+            if let SocketAddr::V4(v4) = addr
+            {
                 #[cfg(target_os = "linux")]
                 let sockaddr = libc::sockaddr_in {
                     sin_family: libc::AF_INET as u16,
@@ -1112,11 +1240,16 @@ fn do_bind_udp(fd: RawFd, addr: SocketAddr) -> i32 {
                     &sockaddr as *const _ as *const libc::sockaddr,
                     size_of::<libc::sockaddr_in>() as libc::socklen_t,
                 )
-            } else {
+            }
+            else
+            {
                 -1
             }
-        } else {
-            if let SocketAddr::V6(v6) = addr {
+        }
+        else
+        {
+            if let SocketAddr::V6(v6) = addr
+            {
                 #[cfg(target_os = "linux")]
                 let sockaddr = libc::sockaddr_in6 {
                     sin6_family: libc::AF_INET6 as u16,
@@ -1145,7 +1278,9 @@ fn do_bind_udp(fd: RawFd, addr: SocketAddr) -> i32 {
                     &sockaddr as *const _ as *const libc::sockaddr,
                     size_of::<libc::sockaddr_in6>() as libc::socklen_t,
                 )
-            } else {
+            }
+            else
+            {
                 -1
             }
         }
@@ -1154,15 +1289,18 @@ fn do_bind_udp(fd: RawFd, addr: SocketAddr) -> i32 {
 
 /// Future for receiving from a UDP socket
 /// 从UDP套接字接收的future
-pub struct RecvFromFuture<'a, 'b> {
+pub struct RecvFromFuture<'a, 'b>
+{
     stream: Option<&'a mut UdpSocket>,
     buf: &'b mut [u8],
 }
 
-impl Future for RecvFromFuture<'_, '_> {
+impl Future for RecvFromFuture<'_, '_>
+{
     type Output = io::Result<(usize, SocketAddr)>;
 
-    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
+    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output>
+    {
         // Extract all needed values upfront to avoid borrow issues
         // 提前提取所有需要的值以避免借用问题
         let stream_fd;
@@ -1192,9 +1330,11 @@ impl Future for RecvFromFuture<'_, '_> {
                 )
             };
 
-            if result < 0 {
+            if result < 0
+            {
                 let err = io::Error::last_os_error();
-                if err.kind() == io::ErrorKind::WouldBlock {
+                if err.kind() == io::ErrorKind::WouldBlock
+                {
                     return Poll::Pending;
                 }
                 return Poll::Ready(Err(err));
@@ -1222,23 +1362,28 @@ impl Future for RecvFromFuture<'_, '_> {
 
 /// Future for sending to a UDP socket
 /// 向UDP套接字发送的future
-pub struct SendToFuture<'a, 'b> {
+pub struct SendToFuture<'a, 'b>
+{
     stream: Option<&'a mut UdpSocket>,
     buf: &'b [u8],
     addr: SocketAddr,
 }
 
-impl Future for SendToFuture<'_, '_> {
+impl Future for SendToFuture<'_, '_>
+{
     type Output = io::Result<usize>;
 
-    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
+    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output>
+    {
         let stream = self.stream.as_mut().unwrap();
         let stream_fd = stream.as_raw_fd();
 
         #[cfg(unix)]
         {
-            let result = match self.addr {
-                SocketAddr::V4(v4) => {
+            let result = match self.addr
+            {
+                SocketAddr::V4(v4) =>
+                {
                     let sockaddr = libc::sockaddr_in {
                         #[cfg(target_os = "macos")]
                         sin_len: size_of::<libc::sockaddr_in>() as u8,
@@ -1260,7 +1405,8 @@ impl Future for SendToFuture<'_, '_> {
                         )
                     }
                 },
-                SocketAddr::V6(v6) => {
+                SocketAddr::V6(v6) =>
+                {
                     let sockaddr = libc::sockaddr_in6 {
                         sin6_family: libc::AF_INET6 as _,
                         sin6_port: v6.port().to_be(),
@@ -1285,9 +1431,11 @@ impl Future for SendToFuture<'_, '_> {
                 },
             };
 
-            if result < 0 {
+            if result < 0
+            {
                 let err = io::Error::last_os_error();
-                if err.kind() == io::ErrorKind::WouldBlock {
+                if err.kind() == io::ErrorKind::WouldBlock
+                {
                     return Poll::Pending;
                 }
                 return Poll::Ready(Err(err));
@@ -1310,16 +1458,19 @@ impl Future for SendToFuture<'_, '_> {
 
 /// Future for connecting a UDP socket
 /// 连接UDP套接字的future
-pub struct ConnectUdpFuture {
+pub struct ConnectUdpFuture
+{
     fd: RawFd,
     addr: SocketAddr,
     done: bool,
 }
 
-impl Future for ConnectUdpFuture {
+impl Future for ConnectUdpFuture
+{
     type Output = io::Result<()>;
 
-    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
+    fn poll(mut self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output>
+    {
         assert!(!self.done, "ConnectUdpFuture polled after completion");
 
         // Perform the connect operation
@@ -1327,8 +1478,10 @@ impl Future for ConnectUdpFuture {
         #[cfg(unix)]
         {
             let result = unsafe {
-                match self.addr {
-                    SocketAddr::V4(v4) => {
+                match self.addr
+                {
+                    SocketAddr::V4(v4) =>
+                    {
                         #[cfg(target_os = "linux")]
                         let sockaddr = libc::sockaddr_in {
                             sin_family: libc::AF_INET as u16,
@@ -1356,7 +1509,8 @@ impl Future for ConnectUdpFuture {
                             size_of::<libc::sockaddr_in>() as libc::socklen_t,
                         )
                     },
-                    SocketAddr::V6(v6) => {
+                    SocketAddr::V6(v6) =>
+                    {
                         #[cfg(target_os = "linux")]
                         let sockaddr = libc::sockaddr_in6 {
                             sin6_family: libc::AF_INET6 as u16,
@@ -1389,7 +1543,8 @@ impl Future for ConnectUdpFuture {
                 }
             };
 
-            if result < 0 {
+            if result < 0
+            {
                 return Poll::Ready(Err(io::Error::last_os_error()));
             }
         }
@@ -1416,11 +1571,13 @@ impl Future for ConnectUdpFuture {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_tcp_stream_create() {
+    fn test_tcp_stream_create()
+    {
         // Test that TcpStream can be created (will fail in practice without a valid fd)
         // 测试TcpStream可以被创建（实际上没有有效的fd会失败）
         let result = unsafe { TcpStream::from_raw_fd(-1) };
@@ -1428,21 +1585,27 @@ mod tests {
     }
 
     #[test]
-    fn test_tcp_listener_bind_invalid() {
+    fn test_tcp_listener_bind_invalid()
+    {
         let future = TcpListener::bind("invalid_address");
         // Should create Error future
         // 应该创建Error future
-        match future {
-            BindFuture::Error(_) => {},
+        match future
+        {
+            BindFuture::Error(_) =>
+            {},
             _ => panic!("Expected Error future"),
         }
     }
 
     #[test]
-    fn test_connect_invalid_addr() {
+    fn test_connect_invalid_addr()
+    {
         let future = TcpStream::connect("not_an_address");
-        match future {
-            ConnectFuture::Error(_) => {},
+        match future
+        {
+            ConnectFuture::Error(_) =>
+            {},
             _ => panic!("Expected Error future for invalid address"),
         }
     }

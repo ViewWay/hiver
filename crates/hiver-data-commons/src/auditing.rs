@@ -124,7 +124,8 @@ pub trait LastModifiedBy {}
 ///     }
 /// }
 /// ```
-pub trait AuditorAware<T>: Send + Sync {
+pub trait AuditorAware<T>: Send + Sync
+{
     /// Returns the current auditor.
     /// 返回当前审计者。
     ///
@@ -163,7 +164,8 @@ pub trait AuditorAware<T>: Send + Sync {
 ///     fn set_updated_by(&mut self, user: Option<String>) { self.updated_by = user; }
 /// }
 /// ```
-pub trait AuditingEntity {
+pub trait AuditingEntity
+{
     /// Get the creation timestamp.
     /// 获取创建时间戳。
     fn created_at(&self) -> Option<DateTime<Utc>>;
@@ -198,7 +200,8 @@ pub trait AuditingEntity {
 
     /// Mark this entity as new (set timestamps and auditor for creation).
     /// 将此实体标记为新实体（设置创建的时间戳和审计者）。
-    fn mark_new(&mut self, auditor: Option<String>) {
+    fn mark_new(&mut self, auditor: Option<String>)
+    {
         let now = Utc::now();
         self.set_created_at(now);
         self.set_updated_at(now);
@@ -208,7 +211,8 @@ pub trait AuditingEntity {
 
     /// Mark this entity as modified (update modification timestamp and auditor).
     /// 将此实体标记为已修改（更新修改时间戳和审计者）。
-    fn mark_modified(&mut self, auditor: Option<String>) {
+    fn mark_modified(&mut self, auditor: Option<String>)
+    {
         self.set_updated_at(Utc::now());
         self.set_updated_by(auditor);
     }
@@ -301,7 +305,8 @@ pub trait AuditingEntity {
 /// assert!(user.created_at().is_some());
 /// assert_eq!(user.created_by(), Some("system"));
 /// ```
-pub struct AuditingHandler<A> {
+pub struct AuditingHandler<A>
+{
     /// The auditor-aware provider.
     /// 审计者感知提供者。
     auditor_aware: A,
@@ -313,26 +318,30 @@ where
 {
     /// Create a new auditing handler with the given auditor provider.
     /// 使用给定的审计者提供者创建新的审计处理器。
-    pub fn new(auditor_aware: A) -> Self {
+    pub fn new(auditor_aware: A) -> Self
+    {
         Self { auditor_aware }
     }
 
     /// Get the current auditor from the configured provider.
     /// 从配置的提供者获取当前审计者。
-    pub fn current_auditor(&self) -> Option<String> {
+    pub fn current_auditor(&self) -> Option<String>
+    {
         self.auditor_aware.current_auditor()
     }
 
     /// Mark an entity as newly created, setting all audit fields.
     /// 将实体标记为新创建，设置所有审计字段。
-    pub fn mark_created(&self, entity: &mut impl AuditingEntity) {
+    pub fn mark_created(&self, entity: &mut impl AuditingEntity)
+    {
         let auditor = self.current_auditor();
         entity.mark_new(auditor);
     }
 
     /// Mark an entity as modified, updating modification audit fields.
     /// 将实体标记为已修改，更新修改审计字段。
-    pub fn mark_modified(&self, entity: &mut impl AuditingEntity) {
+    pub fn mark_modified(&self, entity: &mut impl AuditingEntity)
+    {
         let auditor = self.current_auditor();
         entity.mark_modified(auditor);
     }
@@ -346,68 +355,85 @@ where
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
-    struct TestAuditor {
+    struct TestAuditor
+    {
         current: Option<String>,
     }
 
-    impl TestAuditor {
-        fn new(current: Option<String>) -> Self {
+    impl TestAuditor
+    {
+        fn new(current: Option<String>) -> Self
+        {
             Self { current }
         }
     }
 
-    impl AuditorAware<String> for TestAuditor {
-        fn current_auditor(&self) -> Option<String> {
+    impl AuditorAware<String> for TestAuditor
+    {
+        fn current_auditor(&self) -> Option<String>
+        {
             self.current.clone()
         }
     }
 
     #[derive(Debug, Clone)]
-    struct TestAuditedEntity {
+    struct TestAuditedEntity
+    {
         created_at: Option<DateTime<Utc>>,
         updated_at: Option<DateTime<Utc>>,
         created_by: Option<String>,
         updated_by: Option<String>,
     }
 
-    impl AuditingEntity for TestAuditedEntity {
-        fn created_at(&self) -> Option<DateTime<Utc>> {
+    impl AuditingEntity for TestAuditedEntity
+    {
+        fn created_at(&self) -> Option<DateTime<Utc>>
+        {
             self.created_at
         }
 
-        fn set_created_at(&mut self, ts: DateTime<Utc>) {
+        fn set_created_at(&mut self, ts: DateTime<Utc>)
+        {
             self.created_at = Some(ts);
         }
 
-        fn updated_at(&self) -> Option<DateTime<Utc>> {
+        fn updated_at(&self) -> Option<DateTime<Utc>>
+        {
             self.updated_at
         }
 
-        fn set_updated_at(&mut self, ts: DateTime<Utc>) {
+        fn set_updated_at(&mut self, ts: DateTime<Utc>)
+        {
             self.updated_at = Some(ts);
         }
 
-        fn created_by(&self) -> Option<&str> {
+        fn created_by(&self) -> Option<&str>
+        {
             self.created_by.as_deref()
         }
 
-        fn set_created_by(&mut self, user: Option<String>) {
+        fn set_created_by(&mut self, user: Option<String>)
+        {
             self.created_by = user;
         }
 
-        fn updated_by(&self) -> Option<&str> {
+        fn updated_by(&self) -> Option<&str>
+        {
             self.updated_by.as_deref()
         }
 
-        fn set_updated_by(&mut self, user: Option<String>) {
+        fn set_updated_by(&mut self, user: Option<String>)
+        {
             self.updated_by = user;
         }
     }
 
-    fn new_entity() -> TestAuditedEntity {
+    fn new_entity() -> TestAuditedEntity
+    {
         TestAuditedEntity {
             created_at: None,
             updated_at: None,
@@ -417,7 +443,8 @@ mod tests {
     }
 
     #[test]
-    fn test_auditing_entity_mark_new() {
+    fn test_auditing_entity_mark_new()
+    {
         let mut entity = new_entity();
         entity.mark_new(Some("admin".to_string()));
 
@@ -428,7 +455,8 @@ mod tests {
     }
 
     #[test]
-    fn test_auditing_entity_mark_modified() {
+    fn test_auditing_entity_mark_modified()
+    {
         let mut entity = new_entity();
         entity.mark_new(Some("admin".to_string()));
 
@@ -439,7 +467,8 @@ mod tests {
     }
 
     #[test]
-    fn test_auditing_handler_mark_created() {
+    fn test_auditing_handler_mark_created()
+    {
         let handler = AuditingHandler::new(TestAuditor::new(Some("system".to_string())));
         let mut entity = new_entity();
 
@@ -452,7 +481,8 @@ mod tests {
     }
 
     #[test]
-    fn test_auditing_handler_mark_modified() {
+    fn test_auditing_handler_mark_modified()
+    {
         let handler = AuditingHandler::new(TestAuditor::new(Some("system".to_string())));
         let mut entity = new_entity();
 
@@ -463,7 +493,8 @@ mod tests {
     }
 
     #[test]
-    fn test_auditing_handler_no_auditor() {
+    fn test_auditing_handler_no_auditor()
+    {
         let handler = AuditingHandler::new(TestAuditor::new(None));
         let mut entity = new_entity();
 
@@ -476,7 +507,8 @@ mod tests {
     }
 
     #[test]
-    fn test_auditor_aware() {
+    fn test_auditor_aware()
+    {
         let auditor = TestAuditor::new(Some("alice".to_string()));
         assert_eq!(auditor.current_auditor(), Some("alice".to_string()));
 

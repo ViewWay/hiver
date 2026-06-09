@@ -45,7 +45,8 @@ thread_local! {
 /// Configuration for the async runtime including scheduler and driver settings.
 /// 异步运行时的配置，包括调度器和驱动设置。
 #[derive(Debug, Clone)]
-pub struct RuntimeConfig {
+pub struct RuntimeConfig
+{
     /// Scheduler configuration / 调度器配置
     pub scheduler: SchedulerConfig,
     /// Driver type to use / 要使用的driver类型
@@ -58,8 +59,10 @@ pub struct RuntimeConfig {
     pub park_timeout: Duration,
 }
 
-impl Default for RuntimeConfig {
-    fn default() -> Self {
+impl Default for RuntimeConfig
+{
+    fn default() -> Self
+    {
         Self {
             scheduler: SchedulerConfig::default(),
             driver_type: DriverType::Auto,
@@ -86,14 +89,17 @@ impl Default for RuntimeConfig {
 ///     .build()
 ///     .unwrap();
 /// ```
-pub struct RuntimeBuilder {
+pub struct RuntimeBuilder
+{
     config: RuntimeConfig,
 }
 
-impl RuntimeBuilder {
+impl RuntimeBuilder
+{
     /// Create a new runtime builder with default configuration
     /// 使用默认配置创建新的运行时构建器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             config: RuntimeConfig::default(),
         }
@@ -101,7 +107,8 @@ impl RuntimeBuilder {
 
     /// Set the number of worker threads
     /// 设置工作线程数量
-    pub fn worker_threads(mut self, count: usize) -> Self {
+    pub fn worker_threads(mut self, count: usize) -> Self
+    {
         self.config.scheduler.queue_size = count * 256;
         self.config.scheduler.thread_name = "hiver-worker".to_string();
         self
@@ -109,42 +116,48 @@ impl RuntimeBuilder {
 
     /// Set the queue size for the scheduler
     /// 设置调度器的队列大小
-    pub fn queue_size(mut self, size: usize) -> Self {
+    pub fn queue_size(mut self, size: usize) -> Self
+    {
         self.config.scheduler.queue_size = size;
         self
     }
 
     /// Set the thread name pattern
     /// 设置线程名称模式
-    pub fn thread_name(mut self, name: impl Into<String>) -> Self {
+    pub fn thread_name(mut self, name: impl Into<String>) -> Self
+    {
         self.config.scheduler.thread_name = name.into();
         self
     }
 
     /// Set the driver type
     /// 设置driver类型
-    pub fn driver_type(mut self, driver_type: DriverType) -> Self {
+    pub fn driver_type(mut self, driver_type: DriverType) -> Self
+    {
         self.config.driver_type = driver_type;
         self
     }
 
     /// Set the I/O driver queue depth
     /// 设置I/O驱动队列深度
-    pub fn io_entries(mut self, entries: u32) -> Self {
+    pub fn io_entries(mut self, entries: u32) -> Self
+    {
         self.config.driver_io.entries = entries;
         self
     }
 
     /// Enable or disable thread parking
     /// 启用或禁用线程休眠
-    pub fn enable_parking(mut self, enable: bool) -> Self {
+    pub fn enable_parking(mut self, enable: bool) -> Self
+    {
         self.config.enable_parking = enable;
         self
     }
 
     /// Set the park timeout
     /// 设置休眠超时
-    pub fn park_timeout(mut self, timeout: Duration) -> Self {
+    pub fn park_timeout(mut self, timeout: Duration) -> Self
+    {
         self.config.park_timeout = timeout;
         self
     }
@@ -156,13 +169,16 @@ impl RuntimeBuilder {
     ///
     /// Returns an error if runtime initialization fails.
     /// 如果运行时初始化失败则返回错误。
-    pub fn build(self) -> io::Result<Runtime> {
+    pub fn build(self) -> io::Result<Runtime>
+    {
         Runtime::with_config(self.config)
     }
 }
 
-impl Default for RuntimeBuilder {
-    fn default() -> Self {
+impl Default for RuntimeBuilder
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -185,7 +201,8 @@ impl Default for RuntimeBuilder {
 ///     Ok(())
 /// }
 /// ```
-pub struct Runtime {
+pub struct Runtime
+{
     /// The scheduler / 调度器
     scheduler: Scheduler,
     /// The driver / 驱动
@@ -198,7 +215,8 @@ pub struct Runtime {
     last_timer_advance: Instant,
 }
 
-impl Runtime {
+impl Runtime
+{
     /// Create a new runtime with default configuration
     /// 使用默认配置创建新的运行时
     ///
@@ -206,13 +224,15 @@ impl Runtime {
     ///
     /// Returns an error if runtime initialization fails.
     /// 如果运行时初始化失败则返回错误。
-    pub fn new() -> io::Result<Self> {
+    pub fn new() -> io::Result<Self>
+    {
         Self::with_config(RuntimeConfig::default())
     }
 
     /// Create a runtime builder
     /// 创建运行时构建器
-    pub fn builder() -> RuntimeBuilder {
+    pub fn builder() -> RuntimeBuilder
+    {
         RuntimeBuilder::new()
     }
 
@@ -225,7 +245,8 @@ impl Runtime {
     /// 返回错误如果：
     /// - Driver creation fails / Driver创建失败
     /// - Scheduler creation fails / 调度器创建失败
-    pub fn with_config(config: RuntimeConfig) -> io::Result<Self> {
+    pub fn with_config(config: RuntimeConfig) -> io::Result<Self>
+    {
         // Create the driver
         // 创建driver
         let driver = DriverFactory::create_with_config(config.driver_type, config.driver_io)?;
@@ -264,7 +285,8 @@ impl Runtime {
     ///     println!("Hello, world!");
     /// });
     /// ```
-    pub fn block_on<F: Future<Output = ()>>(&mut self, future: F) -> io::Result<()> {
+    pub fn block_on<F: Future<Output = ()>>(&mut self, future: F) -> io::Result<()>
+    {
         // Set the current runtime handle for this thread
         // 为当前线程设置运行时句柄
         let handle = Handle {
@@ -285,17 +307,21 @@ impl Runtime {
 
         // Run the event loop
         // 运行事件循环
-        let result = loop {
+        let result = loop
+        {
             // Poll the future
             // 轮询future
-            match Pin::new(&mut future).poll(&mut context) {
-                Poll::Ready(()) => {
+            match Pin::new(&mut future).poll(&mut context)
+            {
+                Poll::Ready(()) =>
+                {
                     // Future completed, flush any remaining events
                     // Future完成，刷新任何剩余事件
                     let _ = self.flush_events();
                     break Ok(());
                 },
-                Poll::Pending => {
+                Poll::Pending =>
+                {
                     // Future is not ready, run the event loop
                     // Future未就绪，运行事件循环
                     self.run_once()?;
@@ -312,26 +338,34 @@ impl Runtime {
 
     /// Run a single iteration of the event loop
     /// 运行事件循环的单次迭代
-    fn run_once(&mut self) -> io::Result<()> {
+    fn run_once(&mut self) -> io::Result<()>
+    {
         // Submit any pending I/O operations
         // 提交任何挂起的I/O操作
         let _ = self.driver.submit();
 
         // Wait for events with timeout
         // 带超时等待事件
-        let timeout = if self.config.enable_parking {
+        let timeout = if self.config.enable_parking
+        {
             Some(self.config.park_timeout)
-        } else {
+        }
+        else
+        {
             None
         };
 
-        if let Some(to) = timeout {
+        if let Some(to) = timeout
+        {
             let (_events, timed_out) = self.driver.wait_timeout(to)?;
-            if timed_out {
+            if timed_out
+            {
                 // Timeout occurred, this is normal for idle periods
                 // 超时发生，这对空闲期是正常的
             }
-        } else {
+        }
+        else
+        {
             let _events = self.driver.wait()?;
         }
 
@@ -348,11 +382,14 @@ impl Runtime {
 
     /// Process completion events from the driver
     /// 处理来自driver的完成事件
-    fn process_completions(&mut self) {
-        while let Some(completion) = self.driver.get_completion() {
+    fn process_completions(&mut self)
+    {
+        while let Some(completion) = self.driver.get_completion()
+        {
             // Notify the task associated with this completion
             // 通知与此完成关联的任务
-            if let Some(waker) = self.scheduler.get_task_waker(completion.user_data) {
+            if let Some(waker) = self.scheduler.get_task_waker(completion.user_data)
+            {
                 waker.wake();
             }
             self.driver.advance_completion();
@@ -361,7 +398,8 @@ impl Runtime {
 
     /// Advance the timer wheel and wake expired timers
     /// 推进时间轮并唤醒到期的定时器
-    fn advance_timers(&mut self) {
+    fn advance_timers(&mut self)
+    {
         use crate::time::global_timer;
 
         let now = Instant::now();
@@ -371,7 +409,8 @@ impl Runtime {
         // 将经过时间转换为滴答数（每毫秒1个滴答）
         let ticks_to_advance = elapsed.as_millis() as u64;
 
-        if ticks_to_advance > 0 {
+        if ticks_to_advance > 0
+        {
             let _expired = global_timer().advance(ticks_to_advance);
             self.last_timer_advance = now;
         }
@@ -379,7 +418,8 @@ impl Runtime {
 
     /// Flush any remaining events in the driver
     /// 刷新driver中的任何剩余事件
-    fn flush_events(&mut self) -> io::Result<()> {
+    fn flush_events(&mut self) -> io::Result<()>
+    {
         // Submit pending operations
         // 提交挂起的操作
         let _ = self.driver.submit();
@@ -402,12 +442,14 @@ impl Runtime {
 /// Provides access to runtime functionality from within tasks.
 /// 从任务内部提供运行时功能访问。
 #[derive(Clone)]
-pub struct Handle {
+pub struct Handle
+{
     /// The scheduler handle / 调度器句柄
     scheduler_handle: SchedulerHandle,
 }
 
-impl Handle {
+impl Handle
+{
     /// Get a handle to the current runtime
     /// 获取当前运行时的句柄
     ///
@@ -416,25 +458,29 @@ impl Handle {
     /// Panics if called outside of a runtime context.
     /// 如果在运行时上下文之外调用则恐慌。
     #[allow(clippy::expect_used)]
-    pub fn current() -> Self {
+    pub fn current() -> Self
+    {
         Self::try_current().expect("Handle::current() called outside of a runtime context")
     }
 
     /// Try to get a handle to the current runtime. Returns None if outside a runtime.
     /// 尝试获取当前运行时的句柄。如果在运行时外部则返回None。
-    pub fn try_current() -> Option<Self> {
+    pub fn try_current() -> Option<Self>
+    {
         CURRENT_HANDLE.with(|h| h.borrow().clone())
     }
 
     /// Set the current runtime handle for this thread
     /// 为当前线程设置运行时句柄
-    fn set_current(handle: Option<Handle>) {
+    fn set_current(handle: Option<Handle>)
+    {
         CURRENT_HANDLE.with(|h| *h.borrow_mut() = handle);
     }
 
     /// Get the scheduler handle
     /// 获取调度器句柄
-    pub fn scheduler(&self) -> &SchedulerHandle {
+    pub fn scheduler(&self) -> &SchedulerHandle
+    {
         &self.scheduler_handle
     }
 }
@@ -447,11 +493,13 @@ impl Handle {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_runtime_config_default() {
+    fn test_runtime_config_default()
+    {
         let config = RuntimeConfig::default();
         assert_eq!(config.scheduler.queue_size, 256);
         assert!(config.enable_parking);
@@ -459,7 +507,8 @@ mod tests {
     }
 
     #[test]
-    fn test_runtime_builder() {
+    fn test_runtime_builder()
+    {
         let builder = RuntimeBuilder::new()
             .worker_threads(4)
             .queue_size(512)
@@ -472,7 +521,8 @@ mod tests {
     }
 
     #[test]
-    fn test_runtime_builder_driver_config() {
+    fn test_runtime_builder_driver_config()
+    {
         let builder = RuntimeBuilder::new()
             .driver_type(DriverType::Auto)
             .io_entries(512)
@@ -483,7 +533,8 @@ mod tests {
     }
 
     #[test]
-    fn test_runtime_creation() {
+    fn test_runtime_creation()
+    {
         let runtime = Runtime::new();
         #[cfg(any(
             target_os = "linux",
@@ -499,14 +550,16 @@ mod tests {
     }
 
     #[test]
-    fn test_block_on_simple() {
+    fn test_block_on_simple()
+    {
         let mut runtime = Runtime::new().unwrap();
         let result = runtime.block_on(async {});
         assert!(result.is_ok());
     }
 
     #[test]
-    fn test_spawn_executes_through_scheduler() {
+    fn test_spawn_executes_through_scheduler()
+    {
         use std::sync::{
             Arc,
             atomic::{AtomicI32, Ordering},
@@ -529,7 +582,8 @@ mod tests {
     }
 
     #[test]
-    fn test_spawn_returns_value() {
+    fn test_spawn_returns_value()
+    {
         let mut runtime = Runtime::new().unwrap();
 
         runtime
@@ -542,7 +596,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multiple_spawns() {
+    fn test_multiple_spawns()
+    {
         use std::sync::{
             Arc,
             atomic::{AtomicI32, Ordering},
@@ -554,13 +609,15 @@ mod tests {
         runtime
             .block_on(async {
                 let mut handles = vec![];
-                for _ in 0..10 {
+                for _ in 0..10
+                {
                     let c = counter.clone();
                     handles.push(crate::task::spawn(async move {
                         c.fetch_add(1, Ordering::SeqCst);
                     }));
                 }
-                for h in handles {
+                for h in handles
+                {
                     let _ = h.wait().await;
                 }
             })
@@ -570,7 +627,8 @@ mod tests {
     }
 
     #[test]
-    fn test_spawn_with_async_computation() {
+    fn test_spawn_with_async_computation()
+    {
         let mut runtime = Runtime::new().unwrap();
 
         runtime
@@ -588,7 +646,8 @@ mod tests {
     }
 
     #[test]
-    fn test_spawn_join_handle_id() {
+    fn test_spawn_join_handle_id()
+    {
         let mut runtime = Runtime::new().unwrap();
 
         runtime
@@ -605,7 +664,8 @@ mod tests {
     }
 
     #[test]
-    fn test_spawn_join_handle_is_finished() {
+    fn test_spawn_join_handle_is_finished()
+    {
         let mut runtime = Runtime::new().unwrap();
         use std::sync::{
             Arc,
@@ -628,7 +688,8 @@ mod tests {
     }
 
     #[test]
-    fn test_spawn_string_return() {
+    fn test_spawn_string_return()
+    {
         let mut runtime = Runtime::new().unwrap();
 
         runtime
@@ -641,7 +702,8 @@ mod tests {
     }
 
     #[test]
-    fn test_spawn_vec_return() {
+    fn test_spawn_vec_return()
+    {
         let mut runtime = Runtime::new().unwrap();
 
         runtime
@@ -654,7 +716,8 @@ mod tests {
     }
 
     #[test]
-    fn test_spawn_tuple_return() {
+    fn test_spawn_tuple_return()
+    {
         let mut runtime = Runtime::new().unwrap();
 
         runtime
@@ -667,7 +730,8 @@ mod tests {
     }
 
     #[test]
-    fn test_spawn_unit_return() {
+    fn test_spawn_unit_return()
+    {
         let mut runtime = Runtime::new().unwrap();
 
         runtime
@@ -680,7 +744,8 @@ mod tests {
     }
 
     #[test]
-    fn test_spawn_option_return() {
+    fn test_spawn_option_return()
+    {
         let mut runtime = Runtime::new().unwrap();
 
         runtime
@@ -693,7 +758,8 @@ mod tests {
     }
 
     #[test]
-    fn test_nested_spawn() {
+    fn test_nested_spawn()
+    {
         let mut runtime = Runtime::new().unwrap();
 
         runtime
@@ -709,7 +775,8 @@ mod tests {
     }
 
     #[test]
-    fn test_handle_current_and_try_current() {
+    fn test_handle_current_and_try_current()
+    {
         let mut runtime = Runtime::new().unwrap();
 
         runtime
@@ -729,12 +796,14 @@ mod tests {
 
     #[test]
     #[should_panic(expected = "outside of a runtime context")]
-    fn test_handle_current_panics_outside_runtime() {
+    fn test_handle_current_panics_outside_runtime()
+    {
         let _ = Handle::current();
     }
 
     #[test]
-    fn test_block_on_with_config() {
+    fn test_block_on_with_config()
+    {
         let config = RuntimeConfig {
             park_timeout: Duration::from_millis(10),
             ..RuntimeConfig::default()

@@ -67,7 +67,8 @@ use crate::{Error, Request, Response, Result};
 /// let middleware = JwtAuthenticationMiddleware::new();
 /// ```
 #[derive(Clone)]
-pub struct JwtAuthenticationMiddleware {
+pub struct JwtAuthenticationMiddleware
+{
     /// Token header name (default: "authorization")
     /// Token头名称（默认："authorization"）
     token_header: String,
@@ -81,7 +82,8 @@ pub struct JwtAuthenticationMiddleware {
     skip_paths: Vec<String>,
 }
 
-impl JwtAuthenticationMiddleware {
+impl JwtAuthenticationMiddleware
+{
     /// Create a new JWT authentication middleware
     /// 创建新的JWT认证中间件
     ///
@@ -90,7 +92,8 @@ impl JwtAuthenticationMiddleware {
     /// ```rust,ignore
     /// let middleware = JwtAuthenticationMiddleware::new();
     /// ```
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             token_header: "authorization".to_string(),
             token_prefix: "Bearer ".to_string(),
@@ -111,7 +114,8 @@ impl JwtAuthenticationMiddleware {
     /// let middleware = JwtAuthenticationMiddleware::new()
     ///     .with_token_header("x-auth-token");
     /// ```
-    pub fn with_token_header(mut self, header: impl Into<String>) -> Self {
+    pub fn with_token_header(mut self, header: impl Into<String>) -> Self
+    {
         self.token_header = header.into().to_lowercase();
         self
     }
@@ -125,7 +129,8 @@ impl JwtAuthenticationMiddleware {
     /// let middleware = JwtAuthenticationMiddleware::new()
     ///     .with_token_prefix("Token ");
     /// ```
-    pub fn with_token_prefix(mut self, prefix: impl Into<String>) -> Self {
+    pub fn with_token_prefix(mut self, prefix: impl Into<String>) -> Self
+    {
         self.token_prefix = prefix.into();
         self
     }
@@ -140,7 +145,8 @@ impl JwtAuthenticationMiddleware {
     ///     .skip_path("/api/public")
     ///     .skip_path("/api/docs");
     /// ```
-    pub fn skip_path(mut self, path: impl Into<String>) -> Self {
+    pub fn skip_path(mut self, path: impl Into<String>) -> Self
+    {
         self.skip_paths.push(path.into());
         self
     }
@@ -154,7 +160,8 @@ impl JwtAuthenticationMiddleware {
     /// let middleware = JwtAuthenticationMiddleware::new()
     ///     .with_skip_paths(&["/api/auth/login", "/api/auth/register"]);
     /// ```
-    pub fn with_skip_paths(mut self, paths: &[&str]) -> Self {
+    pub fn with_skip_paths(mut self, paths: &[&str]) -> Self
+    {
         self.skip_paths = paths.iter().map(ToString::to_string).collect();
         self
     }
@@ -173,14 +180,18 @@ impl JwtAuthenticationMiddleware {
     ///     return null;
     /// }
     /// ```
-    fn extract_token<'a>(&'a self, headers: &'a http::HeaderMap) -> Option<&'a str> {
+    fn extract_token<'a>(&'a self, headers: &'a http::HeaderMap) -> Option<&'a str>
+    {
         headers
             .get(&self.token_header)
             .and_then(|value: &http::header::HeaderValue| value.to_str().ok())
             .and_then(|auth_header: &str| {
-                if auth_header.starts_with(&self.token_prefix) {
+                if auth_header.starts_with(&self.token_prefix)
+                {
                     Some(&auth_header[self.token_prefix.len()..])
-                } else {
+                }
+                else
+                {
                     None
                 }
             })
@@ -188,15 +199,18 @@ impl JwtAuthenticationMiddleware {
 
     /// Check if request path should skip authentication
     /// 检查请求路径是否应该跳过认证
-    fn should_skip_auth(&self, path: &str) -> bool {
+    fn should_skip_auth(&self, path: &str) -> bool
+    {
         self.skip_paths
             .iter()
             .any(|skip_path| path == skip_path || path.starts_with(&format!("{}/", skip_path)))
     }
 }
 
-impl Default for JwtAuthenticationMiddleware {
-    fn default() -> Self {
+impl Default for JwtAuthenticationMiddleware
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -210,7 +224,8 @@ where
         req: Request,
         state: Arc<S>,
         next: Next<S>,
-    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>> {
+    ) -> Pin<Box<dyn Future<Output = Result<Response>> + Send>>
+    {
         let token_header = self.token_header.clone();
         let token_prefix = self.token_prefix.clone();
         let skip_paths = self.skip_paths.clone();
@@ -233,35 +248,44 @@ where
                 .get(&token_header)
                 .and_then(|v| v.to_str().ok())
             {
-                Some(auth_header) if auth_header.starts_with(&token_prefix) => {
+                Some(auth_header) if auth_header.starts_with(&token_prefix) =>
+                {
                     Some(auth_header[token_prefix.len()..].to_string())
                 },
                 Some(_) => None,
                 None => None,
             };
 
-            let token = if let Some(t) = token {
+            let token = if let Some(t) = token
+            {
                 t
-            } else {
+            }
+            else
+            {
                 tracing::warn!("Missing JWT token for path: {}", path);
                 return Err(Error::unauthorized());
             };
 
             // Verify and parse JWT token
-            let _claims: JwtClaims = match JwtUtil::verify_token(&token) {
-                Ok(claims) => {
+            let _claims: JwtClaims = match JwtUtil::verify_token(&token)
+            {
+                Ok(claims) =>
+                {
                     tracing::debug!("JWT verified for user: {}", claims.username);
                     claims
                 },
-                Err(SecurityError::TokenExpired(msg)) => {
+                Err(SecurityError::TokenExpired(msg)) =>
+                {
                     tracing::warn!("JWT token expired: {}", msg);
                     return Err(Error::unauthorized());
                 },
-                Err(SecurityError::InvalidToken(msg)) => {
+                Err(SecurityError::InvalidToken(msg)) =>
+                {
                     tracing::warn!("Invalid JWT token: {}", msg);
                     return Err(Error::unauthorized());
                 },
-                Err(e) => {
+                Err(e) =>
+                {
                     tracing::error!("JWT verification error: {:?}", e);
                     return Err(Error::internal("Authentication error"));
                 },
@@ -289,7 +313,8 @@ where
 ///         .getAuthentication();
 /// UserDetailsImpl loginUser = (UserDetailsImpl) authentication.getPrincipal();
 /// ```
-pub trait JwtRequestExt {
+pub trait JwtRequestExt
+{
     /// Get JWT authentication from request
     /// 从请求获取JWT认证
     ///
@@ -336,16 +361,20 @@ pub trait JwtRequestExt {
     fn get_current_username(&self) -> Option<&str>;
 }
 
-impl JwtRequestExt for Request {
-    fn get_jwt_auth(&self) -> Option<&JwtAuthentication> {
+impl JwtRequestExt for Request
+{
+    fn get_jwt_auth(&self) -> Option<&JwtAuthentication>
+    {
         self.extensions().get::<JwtAuthentication>()
     }
 
-    fn get_current_user_id(&self) -> Option<&str> {
+    fn get_current_user_id(&self) -> Option<&str>
+    {
         self.get_jwt_auth().map(|auth| auth.user_id.as_str())
     }
 
-    fn get_current_username(&self) -> Option<&str> {
+    fn get_current_username(&self) -> Option<&str>
+    {
         self.get_jwt_auth().map(|auth| auth.username.as_str())
     }
 }
@@ -358,11 +387,13 @@ impl JwtRequestExt for Request {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_extract_token() {
+    fn test_extract_token()
+    {
         let middleware = JwtAuthenticationMiddleware::new();
 
         // Test valid token
@@ -391,7 +422,8 @@ mod tests {
     }
 
     #[test]
-    fn test_should_skip_auth() {
+    fn test_should_skip_auth()
+    {
         let middleware = JwtAuthenticationMiddleware::new();
 
         assert!(middleware.should_skip_auth("/api/auth/login"));
@@ -403,7 +435,8 @@ mod tests {
     }
 
     #[test]
-    fn test_custom_token_header() {
+    fn test_custom_token_header()
+    {
         let middleware = JwtAuthenticationMiddleware::new()
             .with_token_header("X-Auth-Token")
             .with_token_prefix("");
@@ -416,7 +449,8 @@ mod tests {
     }
 
     #[test]
-    fn test_with_skip_paths() {
+    fn test_with_skip_paths()
+    {
         let middleware = JwtAuthenticationMiddleware::new()
             .skip_path("/api/public")
             .skip_path("/api/docs");

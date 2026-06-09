@@ -11,7 +11,8 @@ use crate::{Operation, Parameter, Response, Schema};
 /// 路径方法
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
-pub enum PathMethod {
+pub enum PathMethod
+{
     /// GET
     #[serde(rename = "get")]
     Get,
@@ -51,7 +52,8 @@ pub enum PathMethod {
 /// Describes the operations available on a single path.
 /// 描述单个路径上可用的操作。
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct PathItem {
+pub struct PathItem
+{
     /// GET operation
     /// GET操作
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -103,44 +105,51 @@ pub struct PathItem {
     pub servers: Vec<crate::ServerConfig>,
 }
 
-impl PathItem {
+impl PathItem
+{
     /// Create a new path item
     /// 创建新路径项
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set GET operation
     /// 设置GET操作
-    pub fn get(mut self, operation: Operation) -> Self {
+    pub fn get(mut self, operation: Operation) -> Self
+    {
         self.get = Some(operation);
         self
     }
 
     /// Set POST operation
     /// 设置POST操作
-    pub fn post(mut self, operation: Operation) -> Self {
+    pub fn post(mut self, operation: Operation) -> Self
+    {
         self.post = Some(operation);
         self
     }
 
     /// Set PUT operation
     /// 设置PUT操作
-    pub fn put(mut self, operation: Operation) -> Self {
+    pub fn put(mut self, operation: Operation) -> Self
+    {
         self.put = Some(operation);
         self
     }
 
     /// Set DELETE operation
     /// 设置DELETE操作
-    pub fn delete(mut self, operation: Operation) -> Self {
+    pub fn delete(mut self, operation: Operation) -> Self
+    {
         self.delete = Some(operation);
         self
     }
 
     /// Set PATCH operation
     /// 设置PATCH操作
-    pub fn patch(mut self, operation: Operation) -> Self {
+    pub fn patch(mut self, operation: Operation) -> Self
+    {
         self.patch = Some(operation);
         self
     }
@@ -152,7 +161,8 @@ impl PathItem {
 /// Combines a path with a method and operation.
 /// 组合路径、方法和操作。
 #[derive(Debug, Clone)]
-pub struct PathOperation {
+pub struct PathOperation
+{
     /// Path (e.g., "/users/{id}")
     /// 路径（例如 "/users/{id}"）
     pub path: String,
@@ -166,10 +176,12 @@ pub struct PathOperation {
     pub operation: Operation,
 }
 
-impl PathOperation {
+impl PathOperation
+{
     /// Create a new path operation
     /// 创建新路径操作
-    pub fn new(path: impl Into<String>, method: PathMethod, operation: Operation) -> Self {
+    pub fn new(path: impl Into<String>, method: PathMethod, operation: Operation) -> Self
+    {
         Self {
             path: path.into(),
             method,
@@ -179,31 +191,36 @@ impl PathOperation {
 
     /// Create a GET operation
     /// 创建GET操作
-    pub fn get(path: impl Into<String>, operation: Operation) -> Self {
+    pub fn get(path: impl Into<String>, operation: Operation) -> Self
+    {
         Self::new(path, PathMethod::Get, operation)
     }
 
     /// Create a POST operation
     /// 创建POST操作
-    pub fn post(path: impl Into<String>, operation: Operation) -> Self {
+    pub fn post(path: impl Into<String>, operation: Operation) -> Self
+    {
         Self::new(path, PathMethod::Post, operation)
     }
 
     /// Create a PUT operation
     /// 创建PUT操作
-    pub fn put(path: impl Into<String>, operation: Operation) -> Self {
+    pub fn put(path: impl Into<String>, operation: Operation) -> Self
+    {
         Self::new(path, PathMethod::Put, operation)
     }
 
     /// Create a DELETE operation
     /// 创建DELETE操作
-    pub fn delete(path: impl Into<String>, operation: Operation) -> Self {
+    pub fn delete(path: impl Into<String>, operation: Operation) -> Self
+    {
         Self::new(path, PathMethod::Delete, operation)
     }
 
     /// Create a PATCH operation
     /// 创建PATCH操作
-    pub fn patch(path: impl Into<String>, operation: Operation) -> Self {
+    pub fn patch(path: impl Into<String>, operation: Operation) -> Self
+    {
         Self::new(path, PathMethod::Patch, operation)
     }
 }
@@ -211,23 +228,27 @@ impl PathOperation {
 /// Schema reference
 /// 模式引用
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SchemaRef {
+pub struct SchemaRef
+{
     /// Reference
     /// 引用
     #[serde(rename = "$ref")]
     pub ref_: String,
 }
 
-impl SchemaRef {
+impl SchemaRef
+{
     /// Create a new schema reference
     /// 创建新模式引用
-    pub fn new(ref_: impl Into<String>) -> Self {
+    pub fn new(ref_: impl Into<String>) -> Self
+    {
         Self { ref_: ref_.into() }
     }
 
     /// Reference to component schema
     /// 引用组件模式
-    pub fn component(name: impl Into<String>) -> Self {
+    pub fn component(name: impl Into<String>) -> Self
+    {
         Self::new(format!("#/components/schemas/{}", name.into()))
     }
 }
@@ -235,7 +256,8 @@ impl SchemaRef {
 /// Components
 /// 组件
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct Components {
+pub struct Components
+{
     /// Schemas
     /// 模式列表
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -277,16 +299,19 @@ pub struct Components {
     pub callbacks: Option<HashMap<String, serde_json::Value>>,
 }
 
-impl Components {
+impl Components
+{
     /// Create a new components
     /// 创建新组件
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Add schema
     /// 添加模式
-    pub fn add_schema(&mut self, name: impl Into<String>, schema: Schema) -> &mut Self {
+    pub fn add_schema(&mut self, name: impl Into<String>, schema: Schema) -> &mut Self
+    {
         self.schemas
             .get_or_insert_with(HashMap::new)
             .insert(name.into(), schema);
@@ -295,7 +320,8 @@ impl Components {
 
     /// Add response
     /// 添加响应
-    pub fn add_response(&mut self, name: impl Into<String>, response: Response) -> &mut Self {
+    pub fn add_response(&mut self, name: impl Into<String>, response: Response) -> &mut Self
+    {
         self.responses
             .get_or_insert_with(HashMap::new)
             .insert(name.into(), response);
@@ -304,7 +330,8 @@ impl Components {
 
     /// Add parameter
     /// 添加参数
-    pub fn add_parameter(&mut self, name: impl Into<String>, parameter: Parameter) -> &mut Self {
+    pub fn add_parameter(&mut self, name: impl Into<String>, parameter: Parameter) -> &mut Self
+    {
         self.parameters
             .get_or_insert_with(HashMap::new)
             .insert(name.into(), parameter);
@@ -320,11 +347,13 @@ impl Components {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_path_operation() {
+    fn test_path_operation()
+    {
         let op = PathOperation::get(
             "/users/{id}",
             Operation::new()
@@ -337,13 +366,15 @@ mod tests {
     }
 
     #[test]
-    fn test_schema_ref() {
+    fn test_schema_ref()
+    {
         let ref_ = SchemaRef::component("User");
         assert_eq!(ref_.ref_, "#/components/schemas/User");
     }
 
     #[test]
-    fn test_components() {
+    fn test_components()
+    {
         let mut components = Components::new();
         components.add_schema("User", Schema::object());
 

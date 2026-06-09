@@ -39,7 +39,8 @@ use crate::{
 ///     // Handle event
 /// }
 /// ```
-pub trait EventConsumer<E>: Send + Sync {
+pub trait EventConsumer<E>: Send + Sync
+{
     /// Consume an event
     /// 消费事件
     fn call_event(
@@ -49,13 +50,15 @@ pub trait EventConsumer<E>: Send + Sync {
 
     /// Get consumer ID
     /// 获取消费者ID
-    fn consumer_id(&self) -> &str {
+    fn consumer_id(&self) -> &str
+    {
         std::any::type_name::<Self>()
     }
 
     /// Get order (for sorting listeners)
     /// 获取顺序（用于排序监听器）
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         0
     }
 }
@@ -74,7 +77,8 @@ pub trait EventConsumer<E>: Send + Sync {
 ///     }
 /// }
 /// ```
-pub trait EventListener<E>: Send + Sync {
+pub trait EventListener<E>: Send + Sync
+{
     /// Handle the event
     /// 处理事件
     fn on_event(&self, event: &E) -> Result<(), String>;
@@ -136,7 +140,8 @@ where
 {
     /// Create new listener function
     /// 创建新的监听器函数
-    pub fn new(handler: F) -> Self {
+    pub fn new(handler: F) -> Self
+    {
         use std::hash::{Hash, Hasher};
         let mut hasher = std::collections::hash_map::DefaultHasher::new();
         TypeId::of::<E>().hash(&mut hasher);
@@ -150,21 +155,24 @@ where
 
     /// Set listener ID
     /// 设置监听器ID
-    pub fn with_id(mut self, id: impl Into<String>) -> Self {
+    pub fn with_id(mut self, id: impl Into<String>) -> Self
+    {
         self.id = id.into();
         self
     }
 
     /// Set order
     /// 设置顺序
-    pub fn with_order(mut self, order: i32) -> Self {
+    pub fn with_order(mut self, order: i32) -> Self
+    {
         self.order = order;
         self
     }
 
     /// Handle event
     /// 处理事件
-    pub fn on_event(&self, event: &E) -> Result<(), String> {
+    pub fn on_event(&self, event: &E) -> Result<(), String>
+    {
         (self.handler)(event)
     }
 }
@@ -174,7 +182,8 @@ where
     E: Send + Sync + 'static,
     F: Fn(&E) -> Result<(), String> + Send + Sync + 'static,
 {
-    fn on_event(&self, event: &E) -> Result<(), String> {
+    fn on_event(&self, event: &E) -> Result<(), String>
+    {
         (self.handler)(event)
     }
 }
@@ -187,18 +196,21 @@ where
     fn call_event(
         &self,
         event: &E,
-    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>> {
+    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>>
+    {
         // Clone the event to create an owned value for the 'static future
         let event_clone = event.clone();
         let handler = self.handler.clone();
         Box::pin(async move { handler(&event_clone) })
     }
 
-    fn consumer_id(&self) -> &str {
+    fn consumer_id(&self) -> &str
+    {
         &self.id
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         self.order
     }
 }
@@ -208,7 +220,8 @@ where
     E: Send + Sync + 'static,
     F: Fn(&E) -> Result<(), String> + Send + Sync + Clone + 'static,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self {
             handler: self.handler.clone(),
             _phantom: PhantomData,
@@ -249,7 +262,8 @@ where
 {
     /// Create new async listener function
     /// 创建新的异步监听器函数
-    pub fn new(handler: F) -> Self {
+    pub fn new(handler: F) -> Self
+    {
         use std::hash::{Hash, Hasher};
         let mut hasher = std::collections::hash_map::DefaultHasher::new();
         TypeId::of::<E>().hash(&mut hasher);
@@ -263,14 +277,16 @@ where
 
     /// Set listener ID
     /// 设置监听器ID
-    pub fn with_id(mut self, id: impl Into<String>) -> Self {
+    pub fn with_id(mut self, id: impl Into<String>) -> Self
+    {
         self.id = id.into();
         self
     }
 
     /// Set order
     /// 设置顺序
-    pub fn with_order(mut self, order: i32) -> Self {
+    pub fn with_order(mut self, order: i32) -> Self
+    {
         self.order = order;
         self
     }
@@ -283,7 +299,8 @@ where
     F: for<'a> Fn(&'a E) -> Fut + Send + Sync,
     Fut: Future<Output = Result<(), String>> + Send,
 {
-    async fn on_event(&self, event: &E) -> Result<(), String> {
+    async fn on_event(&self, event: &E) -> Result<(), String>
+    {
         (self.handler)(event).await
     }
 }
@@ -293,7 +310,8 @@ where
     E: Send + Sync + 'static,
     F: Clone,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self {
             handler: self.handler.clone(),
             _phantom: PhantomData,
@@ -316,7 +334,8 @@ where
 ///     }
 /// }
 /// ```
-pub struct BoxedEventConsumer {
+pub struct BoxedEventConsumer
+{
     /// Type ID of the event
     /// 事件的类型ID
     event_type_id: TypeId,
@@ -338,8 +357,10 @@ pub struct BoxedEventConsumer {
     order: i32,
 }
 
-impl Clone for BoxedEventConsumer {
-    fn clone(&self) -> Self {
+impl Clone for BoxedEventConsumer
+{
+    fn clone(&self) -> Self
+    {
         Self {
             event_type_id: self.event_type_id,
             event_type_name: self.event_type_name.clone(),
@@ -350,7 +371,8 @@ impl Clone for BoxedEventConsumer {
     }
 }
 
-impl BoxedEventConsumer {
+impl BoxedEventConsumer
+{
     /// Create new boxed consumer
     /// 创建新的装箱消费者
     pub fn new<E, C>(consumer: C) -> Self
@@ -374,44 +396,52 @@ impl BoxedEventConsumer {
 
     /// Get event type ID
     /// 获取事件类型ID
-    pub fn event_type_id(&self) -> TypeId {
+    pub fn event_type_id(&self) -> TypeId
+    {
         self.event_type_id
     }
 
     /// Get event type name
     /// 获取事件类型名称
-    pub fn event_type_name(&self) -> &str {
+    pub fn event_type_name(&self) -> &str
+    {
         &self.event_type_name
     }
 
     /// Get consumer ID
     /// 获取消费者ID
-    pub fn consumer_id(&self) -> &str {
+    pub fn consumer_id(&self) -> &str
+    {
         &self.id
     }
 
     /// Get order
     /// 获取顺序
-    pub fn order(&self) -> i32 {
+    pub fn order(&self) -> i32
+    {
         self.order
     }
 
     /// Call the consumer with a type-erased event
     /// 使用类型擦除的事件调用消费者
-    pub async fn call_event(&self, event: &(dyn Any + Send + Sync)) -> Result<(), String> {
+    pub async fn call_event(&self, event: &(dyn Any + Send + Sync)) -> Result<(), String>
+    {
         self.consumer.call_boxed(event).await
     }
 
     /// Get the inner consumer function (for internal use)
     /// 获取内部消费者函数（供内部使用）
-    pub(crate) fn consumer(&self) -> &Arc<dyn ConsumerFn + Send + Sync> {
+    pub(crate) fn consumer(&self) -> &Arc<dyn ConsumerFn + Send + Sync>
+    {
         &self.consumer
     }
 }
 
 #[allow(clippy::missing_fields_in_debug)]
-impl fmt::Debug for BoxedEventConsumer {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Debug for BoxedEventConsumer
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.debug_struct("BoxedEventConsumer")
             .field("event_type_name", &self.event_type_name)
             .field("id", &self.id)
@@ -428,7 +458,8 @@ impl fmt::Debug for BoxedEventConsumer {
 ///
 /// Note: Events must be Sync to allow safe cross-thread access via references.
 /// 注意：事件必须是Sync，以允许通过引用进行安全的跨线程访问。
-pub trait ConsumerFn: Send + Sync {
+pub trait ConsumerFn: Send + Sync
+{
     /// Call with type-erased event
     /// 使用类型擦除的事件调用
     fn call_boxed(
@@ -453,7 +484,8 @@ where
     E: ApplicationEvent + Send + Sync + 'static,
     C: EventConsumer<E> + Send + Sync + 'static,
 {
-    fn new(consumer: C) -> Self {
+    fn new(consumer: C) -> Self
+    {
         Self {
             consumer: Arc::new(consumer),
             _phantom: PhantomData,
@@ -469,12 +501,16 @@ where
     fn call_boxed(
         &self,
         event: &(dyn Any + Send + Sync),
-    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>> {
-        if let Some(typed) = event.downcast_ref::<E>() {
+    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>>
+    {
+        if let Some(typed) = event.downcast_ref::<E>()
+        {
             let typed = typed.clone();
             let consumer = self.consumer.clone();
             Box::pin(async move { consumer.call_event(&typed).await })
-        } else {
+        }
+        else
+        {
             Box::pin(async move {
                 Err(format!("Invalid event type: expected {}", std::any::type_name::<E>()))
             })
@@ -500,7 +536,8 @@ where
 {
     /// Create new adapter
     /// 创建新适配器
-    pub fn new(listener: L) -> Self {
+    pub fn new(listener: L) -> Self
+    {
         Self {
             listener,
             _phantom: PhantomData,
@@ -516,17 +553,20 @@ where
     fn call_event(
         &self,
         event: &E,
-    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>> {
+    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>>
+    {
         let event_clone = event.clone();
         let listener = self.listener.clone();
         Box::pin(async move { listener.on_event(&event_clone) })
     }
 
-    fn consumer_id(&self) -> &str {
+    fn consumer_id(&self) -> &str
+    {
         std::any::type_name::<L>()
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         0
     }
 }
@@ -549,7 +589,8 @@ where
 {
     /// Create new adapter
     /// 创建新适配器
-    pub fn new(listener: L) -> Self {
+    pub fn new(listener: L) -> Self
+    {
         Self {
             listener: Arc::new(listener),
             _phantom: PhantomData,
@@ -565,17 +606,20 @@ where
     fn call_event(
         &self,
         event: &E,
-    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>> {
+    ) -> Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>>
+    {
         let listener = self.listener.clone();
         let event = event.clone();
         Box::pin(async move { listener.on_event(&event).await })
     }
 
-    fn consumer_id(&self) -> &str {
+    fn consumer_id(&self) -> &str
+    {
         std::any::type_name::<L>()
     }
 
-    fn order(&self) -> i32 {
+    fn order(&self) -> i32
+    {
         0
     }
 }
@@ -600,7 +644,8 @@ where
 /// public void handleEvent(MyEvent event) { }
 /// ```
 #[derive(Debug, Clone, Default)]
-pub struct ListenerConfig {
+pub struct ListenerConfig
+{
     /// Listener ID for identification
     /// 用于标识的监听器ID
     pub id: Option<String>,
@@ -614,30 +659,35 @@ pub struct ListenerConfig {
     pub condition: Option<String>,
 }
 
-impl ListenerConfig {
+impl ListenerConfig
+{
     /// Create a new default configuration
     /// 创建新的默认配置
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set the listener ID
     /// 设置监听器ID
-    pub fn with_id(mut self, id: impl Into<String>) -> Self {
+    pub fn with_id(mut self, id: impl Into<String>) -> Self
+    {
         self.id = Some(id.into());
         self
     }
 
     /// Set the execution order
     /// 设置执行顺序
-    pub fn with_order(mut self, order: i32) -> Self {
+    pub fn with_order(mut self, order: i32) -> Self
+    {
         self.order = order;
         self
     }
 
     /// Set the condition expression
     /// 设置条件表达式
-    pub fn with_condition(mut self, condition: impl Into<String>) -> Self {
+    pub fn with_condition(mut self, condition: impl Into<String>) -> Self
+    {
         self.condition = Some(condition.into());
         self
     }
@@ -651,7 +701,8 @@ impl ListenerConfig {
     /// 如果条件表达式语法无效则返回 `Err`。
     pub fn build_condition(
         &self,
-    ) -> Option<Result<Box<dyn EventCondition>, crate::condition::ConditionParseError>> {
+    ) -> Option<Result<Box<dyn EventCondition>, crate::condition::ConditionParseError>>
+    {
         self.condition
             .as_ref()
             .map(|expr| ConditionParser::parse(expr))
@@ -709,7 +760,8 @@ where
 {
     /// Create a new listener builder with the given handler
     /// 使用给定的处理函数创建新的监听器构建器
-    pub fn new(handler: F) -> Self {
+    pub fn new(handler: F) -> Self
+    {
         Self {
             handler,
             config: ListenerConfig::default(),
@@ -719,14 +771,16 @@ where
 
     /// Set the listener ID
     /// 设置监听器ID
-    pub fn with_id(mut self, id: impl Into<String>) -> Self {
+    pub fn with_id(mut self, id: impl Into<String>) -> Self
+    {
         self.config.id = Some(id.into());
         self
     }
 
     /// Set the execution order
     /// 设置执行顺序
-    pub fn with_order(mut self, order: i32) -> Self {
+    pub fn with_order(mut self, order: i32) -> Self
+    {
         self.config.order = order;
         self
     }
@@ -745,16 +799,19 @@ where
     /// - `"a == 'x' and b > 1"` -- logical AND
     /// - `"a == 'x' or a == 'y'"` -- logical OR
     /// - `"not a == 'z'"` -- logical NOT
-    pub fn with_condition(mut self, condition: impl Into<String>) -> Self {
+    pub fn with_condition(mut self, condition: impl Into<String>) -> Self
+    {
         self.config.condition = Some(condition.into());
         self
     }
 
     /// Build the `ListenerFn` from this builder
     /// 从此构建器构建 `ListenerFn`
-    pub fn build(self) -> ListenerFn<E, F> {
+    pub fn build(self) -> ListenerFn<E, F>
+    {
         let mut listener_fn = ListenerFn::new(self.handler);
-        if let Some(id) = self.config.id {
+        if let Some(id) = self.config.id
+        {
             listener_fn = listener_fn.with_id(id);
         }
         listener_fn = listener_fn.with_order(self.config.order);
@@ -763,7 +820,8 @@ where
 
     /// Get a reference to the configuration
     /// 获取配置的引用
-    pub fn config(&self) -> &ListenerConfig {
+    pub fn config(&self) -> &ListenerConfig
+    {
         &self.config
     }
 }
@@ -782,7 +840,8 @@ where
 ///
 /// 泛型于事件类型 `E`。当 `E` 实现了 `ConditionPropertyProvider` 时，
 /// 基于属性的条件（例如 `"status == 'active'"`）会被正确求值。
-pub struct ConditionFilter<E> {
+pub struct ConditionFilter<E>
+{
     /// The underlying condition
     /// 底层条件
     condition: Box<dyn EventCondition>,
@@ -791,10 +850,12 @@ pub struct ConditionFilter<E> {
     _phantom: PhantomData<E>,
 }
 
-impl<E> ConditionFilter<E> {
+impl<E> ConditionFilter<E>
+{
     /// Create a new condition filter from an `EventCondition`
     /// 从 `EventCondition` 创建新的条件过滤器
-    pub fn new(condition: Box<dyn EventCondition>) -> Self {
+    pub fn new(condition: Box<dyn EventCondition>) -> Self
+    {
         Self {
             condition,
             _phantom: PhantomData,
@@ -803,7 +864,8 @@ impl<E> ConditionFilter<E> {
 
     /// Create a condition filter by parsing an expression string
     /// 通过解析表达式字符串创建条件过滤器
-    pub fn parse(expression: &str) -> Result<Self, crate::condition::ConditionParseError> {
+    pub fn parse(expression: &str) -> Result<Self, crate::condition::ConditionParseError>
+    {
         let condition = ConditionParser::parse(expression)?;
         Ok(Self {
             condition,
@@ -815,7 +877,8 @@ impl<E> ConditionFilter<E> {
 impl<E: crate::condition::ConditionPropertyProvider + Any + Send + Sync>
     crate::registry::EventFilter<E> for ConditionFilter<E>
 {
-    fn should_process(&self, event: &E) -> bool {
+    fn should_process(&self, event: &E) -> bool
+    {
         crate::condition::evaluate_condition(self.condition.as_ref(), event)
     }
 }
@@ -828,46 +891,57 @@ impl<E: crate::condition::ConditionPropertyProvider + Any + Send + Sync>
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use std::sync::atomic::{AtomicU32, Ordering};
 
     use super::*;
     use crate::{condition::ConditionPropertyProvider, registry::EventFilter};
 
     #[derive(Clone, Debug)]
-    struct TestEvent {
+    struct TestEvent
+    {
         value: i32,
     }
 
-    impl ApplicationEvent for TestEvent {
-        fn timestamp(&self) -> chrono::DateTime<chrono::Utc> {
+    impl ApplicationEvent for TestEvent
+    {
+        fn timestamp(&self) -> chrono::DateTime<chrono::Utc>
+        {
             chrono::Utc::now()
         }
 
-        fn as_any(&self) -> &dyn Any {
+        fn as_any(&self) -> &dyn Any
+        {
             self
         }
     }
 
     #[derive(Clone)]
-    struct TestListener {
+    struct TestListener
+    {
         call_count: Arc<AtomicU32>,
     }
 
-    impl TestListener {
-        fn new() -> Self {
+    impl TestListener
+    {
+        fn new() -> Self
+        {
             Self {
                 call_count: Arc::new(AtomicU32::new(0)),
             }
         }
 
-        fn count(&self) -> u32 {
+        fn count(&self) -> u32
+        {
             self.call_count.load(Ordering::Relaxed)
         }
     }
 
-    impl EventListener<TestEvent> for TestListener {
-        fn on_event(&self, event: &TestEvent) -> Result<(), String> {
+    impl EventListener<TestEvent> for TestListener
+    {
+        fn on_event(&self, event: &TestEvent) -> Result<(), String>
+        {
             self.call_count.fetch_add(1, Ordering::Relaxed);
             println!("Event received with value: {}", event.value);
             Ok(())
@@ -875,7 +949,8 @@ mod tests {
     }
 
     #[test]
-    fn test_listener_fn() {
+    fn test_listener_fn()
+    {
         let listener = ListenerFn::new(|event: &TestEvent| {
             println!("Value: {}", event.value);
             Ok(())
@@ -892,7 +967,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_async_listener_fn() {
+    async fn test_async_listener_fn()
+    {
         let listener = AsyncListenerFn::new(|event: &TestEvent| {
             let value = event.value;
             async move {
@@ -908,7 +984,8 @@ mod tests {
     }
 
     #[test]
-    fn test_event_listener() {
+    fn test_event_listener()
+    {
         let listener = TestListener::new();
         let event = TestEvent { value: 123 };
 
@@ -918,7 +995,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_boxed_consumer() {
+    async fn test_boxed_consumer()
+    {
         let listener = TestListener::new();
         let adapter = ListenerAdapter::new(listener.clone());
         let boxed = BoxedEventConsumer::new(adapter);
@@ -936,7 +1014,8 @@ mod tests {
     // --- ListenerConfig Tests ---
 
     #[test]
-    fn test_listener_config_default() {
+    fn test_listener_config_default()
+    {
         let config = ListenerConfig::default();
         assert!(config.id.is_none());
         assert_eq!(config.order, 0);
@@ -944,7 +1023,8 @@ mod tests {
     }
 
     #[test]
-    fn test_listener_config_builder() {
+    fn test_listener_config_builder()
+    {
         let config = ListenerConfig::new()
             .with_id("my_listener")
             .with_order(5)
@@ -956,7 +1036,8 @@ mod tests {
     }
 
     #[test]
-    fn test_listener_config_build_condition() {
+    fn test_listener_config_build_condition()
+    {
         let config = ListenerConfig::new().with_condition("status == 'active'");
         let result = config.build_condition();
         assert!(result.is_some());
@@ -965,13 +1046,15 @@ mod tests {
     }
 
     #[test]
-    fn test_listener_config_no_condition() {
+    fn test_listener_config_no_condition()
+    {
         let config = ListenerConfig::new();
         assert!(config.build_condition().is_none());
     }
 
     #[test]
-    fn test_listener_config_invalid_condition() {
+    fn test_listener_config_invalid_condition()
+    {
         let config = ListenerConfig::new().with_condition("!!!invalid!!!");
         let result = config.build_condition();
         assert!(result.is_some());
@@ -981,7 +1064,8 @@ mod tests {
     // --- ListenerBuilder Tests ---
 
     #[test]
-    fn test_listener_builder_basic() {
+    fn test_listener_builder_basic()
+    {
         let listener = ListenerBuilder::new(|_event: &TestEvent| Ok(())).build();
 
         let event = TestEvent { value: 42 };
@@ -989,7 +1073,8 @@ mod tests {
     }
 
     #[test]
-    fn test_listener_builder_with_id_and_order() {
+    fn test_listener_builder_with_id_and_order()
+    {
         let listener = ListenerBuilder::new(|_event: &TestEvent| Ok(()))
             .with_id("ordered_listener")
             .with_order(42)
@@ -1000,7 +1085,8 @@ mod tests {
     }
 
     #[test]
-    fn test_listener_builder_with_condition() {
+    fn test_listener_builder_with_condition()
+    {
         let builder =
             ListenerBuilder::new(|_event: &TestEvent| Ok(())).with_condition("value > 10");
 
@@ -1011,23 +1097,30 @@ mod tests {
     // --- ConditionFilter Tests ---
 
     #[derive(Clone, Debug)]
-    struct FilterableEvent {
+    struct FilterableEvent
+    {
         status: String,
     }
 
-    impl ApplicationEvent for FilterableEvent {
-        fn timestamp(&self) -> chrono::DateTime<chrono::Utc> {
+    impl ApplicationEvent for FilterableEvent
+    {
+        fn timestamp(&self) -> chrono::DateTime<chrono::Utc>
+        {
             chrono::Utc::now()
         }
 
-        fn as_any(&self) -> &dyn Any {
+        fn as_any(&self) -> &dyn Any
+        {
             self
         }
     }
 
-    impl ConditionPropertyProvider for FilterableEvent {
-        fn get_property(&self, path: &str) -> Option<String> {
-            match path {
+    impl ConditionPropertyProvider for FilterableEvent
+    {
+        fn get_property(&self, path: &str) -> Option<String>
+        {
+            match path
+            {
                 "status" => Some(self.status.clone()),
                 _ => None,
             }
@@ -1035,7 +1128,8 @@ mod tests {
     }
 
     #[test]
-    fn test_condition_filter_parse() {
+    fn test_condition_filter_parse()
+    {
         let filter: ConditionFilter<FilterableEvent> =
             ConditionFilter::parse("status == 'active'").unwrap();
 
@@ -1051,7 +1145,8 @@ mod tests {
     }
 
     #[test]
-    fn test_condition_filter_with_event_condition() {
+    fn test_condition_filter_with_event_condition()
+    {
         let condition = Box::new(crate::condition::PropertyCondition::new(
             "status",
             crate::condition::CompareOp::Eq,

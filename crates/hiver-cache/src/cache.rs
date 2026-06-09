@@ -10,7 +10,8 @@ use chrono::{DateTime, Utc};
 /// Cache entry with metadata
 /// 带元数据的缓存条目
 #[derive(Debug, Clone)]
-pub(crate) struct CacheEntry<V> {
+pub(crate) struct CacheEntry<V>
+{
     /// The cached value
     /// 缓存的值
     pub value: V,
@@ -36,10 +37,12 @@ pub(crate) struct CacheEntry<V> {
     pub last_access: DateTime<Utc>,
 }
 
-impl<V> CacheEntry<V> {
+impl<V> CacheEntry<V>
+{
     /// Create a new cache entry
     /// 创建新的缓存条目
-    pub(crate) fn new(value: V) -> Self {
+    pub(crate) fn new(value: V) -> Self
+    {
         let now = Utc::now();
         Self {
             value,
@@ -53,7 +56,8 @@ impl<V> CacheEntry<V> {
 
     /// Create a new cache entry with TTL
     /// 创建带TTL的新缓存条目
-    pub(crate) fn with_ttl(value: V, ttl_secs: u64) -> Self {
+    pub(crate) fn with_ttl(value: V, ttl_secs: u64) -> Self
+    {
         let now = Utc::now();
         let expires_at = now + chrono::Duration::seconds(ttl_secs as i64);
         Self {
@@ -68,17 +72,22 @@ impl<V> CacheEntry<V> {
 
     /// Check if the entry has expired
     /// 检查条目是否已过期
-    pub(crate) fn is_expired(&self) -> bool {
-        if let Some(expires) = self.expires_at {
+    pub(crate) fn is_expired(&self) -> bool
+    {
+        if let Some(expires) = self.expires_at
+        {
             Utc::now() > expires
-        } else {
+        }
+        else
+        {
             false
         }
     }
 
     /// Record a hit
     /// 记录一次命中
-    pub(crate) fn hit(&mut self) {
+    pub(crate) fn hit(&mut self)
+    {
         self.hits += 1;
         self.last_access = Utc::now();
     }
@@ -90,7 +99,8 @@ impl<V> CacheEntry<V> {
 /// Equivalent to Spring's `@CacheConfig`.
 /// 等价于Spring的`@CacheConfig`。
 #[derive(Debug, Clone)]
-pub struct CacheConfig {
+pub struct CacheConfig
+{
     /// Cache name
     /// 缓存名称
     pub name: String,
@@ -116,10 +126,12 @@ pub struct CacheConfig {
     pub key_prefix: Option<String>,
 }
 
-impl CacheConfig {
+impl CacheConfig
+{
     /// Create a new cache configuration
     /// 创建新的缓存配置
-    pub fn new(name: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>) -> Self
+    {
         Self {
             name: name.into(),
             max_capacity: crate::DEFAULT_MAX_CAPACITY,
@@ -132,35 +144,41 @@ impl CacheConfig {
 
     /// Set maximum capacity
     /// 设置最大容量
-    pub fn max_capacity(mut self, capacity: usize) -> Self {
+    pub fn max_capacity(mut self, capacity: usize) -> Self
+    {
         self.max_capacity = capacity;
         self
     }
 
     /// Set TTL in seconds
     /// 设置TTL（秒）
-    pub fn ttl_secs(mut self, ttl: u64) -> Self {
+    pub fn ttl_secs(mut self, ttl: u64) -> Self
+    {
         self.ttl_secs = Some(ttl);
         self
     }
 
     /// Set whether to cache null values
     /// 设置是否缓存null值
-    pub fn cache_null_values(mut self, cache: bool) -> Self {
+    pub fn cache_null_values(mut self, cache: bool) -> Self
+    {
         self.cache_null_values = cache;
         self
     }
 
     /// Set key prefix
     /// 设置key前缀
-    pub fn key_prefix(mut self, prefix: impl Into<String>) -> Self {
+    pub fn key_prefix(mut self, prefix: impl Into<String>) -> Self
+    {
         self.key_prefix = Some(prefix.into());
         self
     }
 }
 
-impl Default for CacheConfig {
-    fn default() -> Self {
+impl Default for CacheConfig
+{
+    fn default() -> Self
+    {
         Self::new(crate::DEFAULT_CACHE)
     }
 }
@@ -168,7 +186,8 @@ impl Default for CacheConfig {
 /// Cache statistics
 /// 缓存统计
 #[derive(Debug, Clone, Default)]
-pub struct CacheStats {
+pub struct CacheStats
+{
     /// Number of cache hits
     /// 缓存命中次数
     pub hits: u64,
@@ -194,12 +213,15 @@ pub struct CacheStats {
     pub hit_rate: f64,
 }
 
-impl CacheStats {
+impl CacheStats
+{
     /// Calculate hit rate
     /// 计算命中率
     #[allow(clippy::cast_precision_loss)]
-    pub fn calculate_hit_rate(&mut self) {
-        if self.total_requests > 0 {
+    pub fn calculate_hit_rate(&mut self)
+    {
+        if self.total_requests > 0
+        {
             self.hit_rate = self.hits as f64 / self.total_requests as f64;
         }
     }
@@ -283,7 +305,8 @@ where
 {
     /// Create a new memory cache
     /// 创建新的内存缓存
-    pub fn new(config: CacheConfig) -> Self {
+    pub fn new(config: CacheConfig) -> Self
+    {
         // Use time_to_live (absolute TTL from insertion) instead of time_to_idle (sliding window)
         // to match CacheEntry::expires_at semantics which uses absolute expiration from creation
         // time 使用 time_to_live（从插入开始的绝对TTL）而不是 time_to_idle（滑动窗口）
@@ -300,13 +323,15 @@ where
 
     /// Create a cache builder
     /// 创建缓存构建器
-    pub fn builder() -> CacheBuilder<K, V> {
+    pub fn builder() -> CacheBuilder<K, V>
+    {
         CacheBuilder::new()
     }
 
     /// Get cache configuration
     /// 获取缓存配置
-    pub fn config(&self) -> &CacheConfig {
+    pub fn config(&self) -> &CacheConfig
+    {
         &self.config
     }
 }
@@ -316,7 +341,8 @@ where
     K: Hash + Eq + Send + Sync + 'static,
     V: Clone + Send + Sync + 'static,
 {
-    fn clone(&self) -> Self {
+    fn clone(&self) -> Self
+    {
         Self {
             inner: self.inner.clone(),
             config: self.config.clone(),
@@ -331,32 +357,43 @@ where
     K: Hash + Eq + Send + Sync + 'static,
     V: Clone + Send + Sync + 'static,
 {
-    async fn get(&self, key: &K) -> Option<V> {
+    async fn get(&self, key: &K) -> Option<V>
+    {
         let mut stats = self.stats.write().await;
         stats.total_requests += 1;
 
-        if let Some(entry) = self.inner.get(key).await {
-            if entry.is_expired() {
+        if let Some(entry) = self.inner.get(key).await
+        {
+            if entry.is_expired()
+            {
                 self.inner.invalidate(key).await;
                 stats.misses += 1;
                 stats.calculate_hit_rate();
                 None
-            } else {
+            }
+            else
+            {
                 stats.hits += 1;
                 stats.calculate_hit_rate();
                 Some(entry.value)
             }
-        } else {
+        }
+        else
+        {
             stats.misses += 1;
             stats.calculate_hit_rate();
             None
         }
     }
 
-    async fn put(&self, key: K, value: V) {
-        let entry = if let Some(ttl) = self.config.ttl_secs {
+    async fn put(&self, key: K, value: V)
+    {
+        let entry = if let Some(ttl) = self.config.ttl_secs
+        {
             CacheEntry::with_ttl(value, ttl)
-        } else {
+        }
+        else
+        {
             CacheEntry::new(value)
         };
 
@@ -366,7 +403,8 @@ where
         stats.size = self.inner.entry_count() as usize;
     }
 
-    async fn put_with_ttl(&self, key: K, value: V, ttl_secs: u64) {
+    async fn put_with_ttl(&self, key: K, value: V, ttl_secs: u64)
+    {
         let entry = CacheEntry::with_ttl(value, ttl_secs);
         self.inner.insert(key, entry).await;
 
@@ -374,34 +412,40 @@ where
         stats.size = self.inner.entry_count() as usize;
     }
 
-    async fn invalidate(&self, key: &K) {
+    async fn invalidate(&self, key: &K)
+    {
         self.inner.invalidate(key).await;
 
         let mut stats = self.stats.write().await;
         stats.size = self.inner.entry_count() as usize;
     }
 
-    async fn invalidate_all(&self) {
+    async fn invalidate_all(&self)
+    {
         self.inner.invalidate_all();
 
         let mut stats = self.stats.write().await;
         stats.size = 0;
     }
 
-    async fn contains_key(&self, key: &K) -> bool {
+    async fn contains_key(&self, key: &K) -> bool
+    {
         self.inner.get(key).await.is_some_and(|e| !e.is_expired())
     }
 
-    async fn size(&self) -> usize {
+    async fn size(&self) -> usize
+    {
         self.inner.entry_count() as usize
     }
 
-    async fn stats(&self) -> CacheStats {
+    async fn stats(&self) -> CacheStats
+    {
         let stats = self.stats.read().await;
         stats.clone()
     }
 
-    async fn clear(&self) {
+    async fn clear(&self)
+    {
         self.inner.invalidate_all();
     }
 }
@@ -427,7 +471,8 @@ where
 {
     /// Create a new cache builder
     /// 创建新的缓存构建器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             config: CacheConfig::default(),
             _phantom: std::marker::PhantomData,
@@ -436,42 +481,48 @@ where
 
     /// Set cache name
     /// 设置缓存名称
-    pub fn name(mut self, name: impl Into<String>) -> Self {
+    pub fn name(mut self, name: impl Into<String>) -> Self
+    {
         self.config.name = name.into();
         self
     }
 
     /// Set maximum capacity
     /// 设置最大容量
-    pub fn max_capacity(mut self, capacity: usize) -> Self {
+    pub fn max_capacity(mut self, capacity: usize) -> Self
+    {
         self.config.max_capacity = capacity;
         self
     }
 
     /// Set TTL in seconds
     /// 设置TTL（秒）
-    pub fn ttl_secs(mut self, ttl: u64) -> Self {
+    pub fn ttl_secs(mut self, ttl: u64) -> Self
+    {
         self.config.ttl_secs = Some(ttl);
         self
     }
 
     /// Set whether to cache null values
     /// 设置是否缓存null值
-    pub fn cache_null_values(mut self, cache: bool) -> Self {
+    pub fn cache_null_values(mut self, cache: bool) -> Self
+    {
         self.config.cache_null_values = cache;
         self
     }
 
     /// Set key prefix
     /// 设置key前缀
-    pub fn key_prefix(mut self, prefix: impl Into<String>) -> Self {
+    pub fn key_prefix(mut self, prefix: impl Into<String>) -> Self
+    {
         self.config.key_prefix = Some(prefix.into());
         self
     }
 
     /// Build the cache
     /// 构建缓存
-    pub fn build(self) -> MemoryCache<K, V> {
+    pub fn build(self) -> MemoryCache<K, V>
+    {
         MemoryCache::new(self.config)
     }
 }
@@ -481,7 +532,8 @@ where
     K: Hash + Eq + Send + Sync + 'static,
     V: Clone + Send + Sync + 'static,
 {
-    fn default() -> Self {
+    fn default() -> Self
+    {
         Self::new()
     }
 }

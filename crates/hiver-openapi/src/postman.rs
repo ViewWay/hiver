@@ -43,7 +43,8 @@ pub const POSTMAN_SCHEMA: &str =
 /// Postman Collection info block
 /// Postman Collection 信息块
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CollectionInfo {
+pub struct CollectionInfo
+{
     /// Collection name
     /// Collection 名称
     pub name: String,
@@ -58,10 +59,12 @@ pub struct CollectionInfo {
     pub description: Option<String>,
 }
 
-impl CollectionInfo {
+impl CollectionInfo
+{
     /// Create a new collection info
     /// 创建新的 Collection 信息
-    pub fn new(name: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>) -> Self
+    {
         Self {
             name: name.into(),
             schema: POSTMAN_SCHEMA.to_string(),
@@ -71,7 +74,8 @@ impl CollectionInfo {
 
     /// Set description
     /// 设置描述
-    pub fn description(mut self, desc: impl Into<String>) -> Self {
+    pub fn description(mut self, desc: impl Into<String>) -> Self
+    {
         self.description = Some(desc.into());
         self
     }
@@ -80,7 +84,8 @@ impl CollectionInfo {
 /// Postman Collection v2.1 root
 /// Postman Collection v2.1 根结构
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostmanCollection {
+pub struct PostmanCollection
+{
     /// Collection metadata
     /// Collection 元数据
     pub info: CollectionInfo,
@@ -90,10 +95,12 @@ pub struct PostmanCollection {
     pub item: Vec<PostmanItem>,
 }
 
-impl PostmanCollection {
+impl PostmanCollection
+{
     /// Create a new collection
     /// 创建新 Collection
-    pub fn new(name: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>) -> Self
+    {
         Self {
             info: CollectionInfo::new(name),
             item: Vec::new(),
@@ -102,13 +109,15 @@ impl PostmanCollection {
 
     /// Export as JSON string
     /// 导出为 JSON 字符串
-    pub fn to_json(&self) -> Result<String, serde_json::Error> {
+    pub fn to_json(&self) -> Result<String, serde_json::Error>
+    {
         serde_json::to_string_pretty(self)
     }
 
     /// Export as YAML string
     /// 导出为 YAML 字符串
-    pub fn to_yaml(&self) -> Result<String, serde_yaml::Error> {
+    pub fn to_yaml(&self) -> Result<String, serde_yaml::Error>
+    {
         serde_yaml::to_string(self)
     }
 }
@@ -116,7 +125,8 @@ impl PostmanCollection {
 /// A Postman item -- can be a folder or a request
 /// Postman 条目 -- 可以是文件夹或请求
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostmanItem {
+pub struct PostmanItem
+{
     /// Item name
     /// 条目名称
     pub name: String,
@@ -142,10 +152,12 @@ pub struct PostmanItem {
     pub response: Vec<PostmanResponse>,
 }
 
-impl PostmanItem {
+impl PostmanItem
+{
     /// Create a folder item
     /// 创建文件夹条目
-    pub fn folder(name: impl Into<String>) -> Self {
+    pub fn folder(name: impl Into<String>) -> Self
+    {
         Self {
             name: name.into(),
             request: None,
@@ -157,7 +169,8 @@ impl PostmanItem {
 
     /// Create a request item
     /// 创建请求条目
-    pub fn request_item(name: impl Into<String>, request: PostmanRequest) -> Self {
+    pub fn request_item(name: impl Into<String>, request: PostmanRequest) -> Self
+    {
         Self {
             name: name.into(),
             request: Some(request),
@@ -169,21 +182,24 @@ impl PostmanItem {
 
     /// Add a child item
     /// 添加子条目
-    pub fn add_item(mut self, item: PostmanItem) -> Self {
+    pub fn add_item(mut self, item: PostmanItem) -> Self
+    {
         self.item.push(item);
         self
     }
 
     /// Set description
     /// 设置描述
-    pub fn description(mut self, desc: impl Into<String>) -> Self {
+    pub fn description(mut self, desc: impl Into<String>) -> Self
+    {
         self.description = Some(desc.into());
         self
     }
 
     /// Add a saved response
     /// 添加保存的响应
-    pub fn add_response(mut self, resp: PostmanResponse) -> Self {
+    pub fn add_response(mut self, resp: PostmanResponse) -> Self
+    {
         self.response.push(resp);
         self
     }
@@ -192,7 +208,8 @@ impl PostmanItem {
 /// Postman request definition
 /// Postman 请求定义
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostmanRequest {
+pub struct PostmanRequest
+{
     /// HTTP method
     /// HTTP 方法
     pub method: String,
@@ -222,10 +239,12 @@ pub struct PostmanRequest {
     pub auth: Option<PostmanAuth>,
 }
 
-impl PostmanRequest {
+impl PostmanRequest
+{
     /// Create a new request
     /// 创建新请求
-    pub fn new(method: impl Into<String>, url: impl Into<String>) -> Self {
+    pub fn new(method: impl Into<String>, url: impl Into<String>) -> Self
+    {
         Self {
             method: method.into(),
             url: PostmanUrl::raw(url),
@@ -238,28 +257,32 @@ impl PostmanRequest {
 
     /// Add header
     /// 添加头
-    pub fn add_header(mut self, key: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn add_header(mut self, key: impl Into<String>, value: impl Into<String>) -> Self
+    {
         self.header.push(PostmanHeader::new(key, value));
         self
     }
 
     /// Set body
     /// 设置请求体
-    pub fn body(mut self, body: PostmanBody) -> Self {
+    pub fn body(mut self, body: PostmanBody) -> Self
+    {
         self.body = Some(body);
         self
     }
 
     /// Set description
     /// 设置描述
-    pub fn description(mut self, desc: impl Into<String>) -> Self {
+    pub fn description(mut self, desc: impl Into<String>) -> Self
+    {
         self.description = Some(desc.into());
         self
     }
 
     /// Set bearer token auth
     /// 设置 Bearer Token 认证
-    pub fn bearer_token(mut self, token: impl Into<String>) -> Self {
+    pub fn bearer_token(mut self, token: impl Into<String>) -> Self
+    {
         self.auth = Some(PostmanAuth::bearer_token(token));
         self
     }
@@ -268,7 +291,8 @@ impl PostmanRequest {
 /// Postman URL
 /// Postman URL
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostmanUrl {
+pub struct PostmanUrl
+{
     /// Raw URL string
     /// 原始 URL 字符串
     pub raw: String,
@@ -299,56 +323,75 @@ pub struct PostmanUrl {
     pub port: Option<String>,
 }
 
-impl PostmanUrl {
+impl PostmanUrl
+{
     /// Create a URL from a raw string
     /// 从原始字符串创建 URL
-    pub fn raw(raw: impl Into<String>) -> Self {
+    pub fn raw(raw: impl Into<String>) -> Self
+    {
         let raw = raw.into();
-        let (protocol, rest) = if let Some(idx) = raw.find("://") {
+        let (protocol, rest) = if let Some(idx) = raw.find("://")
+        {
             (Some(raw[..idx].to_string()), &raw[idx + 3..])
-        } else {
+        }
+        else
+        {
             (None, raw.as_str())
         };
 
-        let (host_port, path_query) = match rest.find('/') {
+        let (host_port, path_query) = match rest.find('/')
+        {
             Some(idx) => (&rest[..idx], Some(&rest[idx..])),
             None => (rest, None),
         };
 
         let mut host = Vec::new();
         let mut port = None;
-        if let Some(colon) = host_port.find(':') {
+        if let Some(colon) = host_port.find(':')
+        {
             host.push(host_port[..colon].to_string());
             port = Some(host_port[colon + 1..].to_string());
-        } else {
+        }
+        else
+        {
             host.push(host_port.to_string());
         }
 
         let mut path_segments = Vec::new();
         let mut query_params = Vec::new();
 
-        if let Some(pq) = path_query {
+        if let Some(pq) = path_query
+        {
             let pq = pq.trim_start_matches('/');
-            if let Some(qmark) = pq.find('?') {
+            if let Some(qmark) = pq.find('?')
+            {
                 let path_part = &pq[..qmark];
                 let query_part = &pq[qmark + 1..];
 
-                if !path_part.is_empty() {
+                if !path_part.is_empty()
+                {
                     path_segments = path_part.split('/').map(String::from).collect();
                 }
 
-                for pair in query_part.split('&') {
-                    if pair.is_empty() {
+                for pair in query_part.split('&')
+                {
+                    if pair.is_empty()
+                    {
                         continue;
                     }
-                    let (k, v) = if let Some(eq) = pair.find('=') {
+                    let (k, v) = if let Some(eq) = pair.find('=')
+                    {
                         (pair[..eq].to_string(), pair[eq + 1..].to_string())
-                    } else {
+                    }
+                    else
+                    {
                         (pair.to_string(), String::new())
                     };
                     query_params.push(PostmanQueryParam::new(k, v));
                 }
-            } else if !pq.is_empty() {
+            }
+            else if !pq.is_empty()
+            {
                 path_segments = pq.split('/').map(String::from).collect();
             }
         }
@@ -367,7 +410,8 @@ impl PostmanUrl {
 /// Postman header
 /// Postman 头
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostmanHeader {
+pub struct PostmanHeader
+{
     /// Header key
     /// 头键
     pub key: String,
@@ -387,10 +431,12 @@ pub struct PostmanHeader {
     pub description: Option<String>,
 }
 
-impl PostmanHeader {
+impl PostmanHeader
+{
     /// Create a new header
     /// 创建新头
-    pub fn new(key: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn new(key: impl Into<String>, value: impl Into<String>) -> Self
+    {
         Self {
             key: key.into(),
             value: value.into(),
@@ -401,7 +447,8 @@ impl PostmanHeader {
 
     /// Create a disabled header
     /// 创建禁用头
-    pub fn disabled(key: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn disabled(key: impl Into<String>, value: impl Into<String>) -> Self
+    {
         Self {
             key: key.into(),
             value: value.into(),
@@ -414,7 +461,8 @@ impl PostmanHeader {
 /// Postman request body
 /// Postman 请求体
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostmanBody {
+pub struct PostmanBody
+{
     /// Body mode (raw, urlencoded, formdata, etc.)
     /// 体模式（raw, urlencoded, formdata 等）
     pub mode: String,
@@ -440,10 +488,12 @@ pub struct PostmanBody {
     pub options: Option<PostmanBodyOptions>,
 }
 
-impl PostmanBody {
+impl PostmanBody
+{
     /// Create a raw JSON body
     /// 创建原始 JSON 请求体
-    pub fn raw_json(json: impl Into<String>) -> Self {
+    pub fn raw_json(json: impl Into<String>) -> Self
+    {
         Self {
             mode: "raw".to_string(),
             raw: Some(json.into()),
@@ -461,7 +511,8 @@ impl PostmanBody {
 /// Postman body options
 /// Postman 请求体选项
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostmanBodyOptions {
+pub struct PostmanBodyOptions
+{
     /// Raw options
     /// 原始选项
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -471,7 +522,8 @@ pub struct PostmanBodyOptions {
 /// Postman raw body options
 /// Postman 原始请求体选项
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostmanRawOptions {
+pub struct PostmanRawOptions
+{
     /// Language (json, xml, text, etc.)
     /// 语言（json, xml, text 等）
     pub language: String,
@@ -480,7 +532,8 @@ pub struct PostmanRawOptions {
 /// Postman URL-encoded pair
 /// Postman URL 编码键值对
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostmanUrlEncodedPair {
+pub struct PostmanUrlEncodedPair
+{
     /// Key
     /// 键
     pub key: String,
@@ -498,7 +551,8 @@ pub struct PostmanUrlEncodedPair {
 /// Postman form data entry
 /// Postman 表单数据条目
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostmanFormData {
+pub struct PostmanFormData
+{
     /// Key
     /// 键
     pub key: String,
@@ -521,7 +575,8 @@ pub struct PostmanFormData {
 /// Postman query parameter
 /// Postman 查询参数
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostmanQueryParam {
+pub struct PostmanQueryParam
+{
     /// Key
     /// 键
     pub key: String,
@@ -541,10 +596,12 @@ pub struct PostmanQueryParam {
     pub disabled: bool,
 }
 
-impl PostmanQueryParam {
+impl PostmanQueryParam
+{
     /// Create a new query parameter
     /// 创建新查询参数
-    pub fn new(key: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn new(key: impl Into<String>, value: impl Into<String>) -> Self
+    {
         Self {
             key: key.into(),
             value: value.into(),
@@ -555,7 +612,8 @@ impl PostmanQueryParam {
 
     /// Set description
     /// 设置描述
-    pub fn description(mut self, desc: impl Into<String>) -> Self {
+    pub fn description(mut self, desc: impl Into<String>) -> Self
+    {
         self.description = Some(desc.into());
         self
     }
@@ -564,7 +622,8 @@ impl PostmanQueryParam {
 /// Postman saved response
 /// Postman 保存的响应
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostmanResponse {
+pub struct PostmanResponse
+{
     /// Response name
     /// 响应名称
     pub name: String,
@@ -588,10 +647,12 @@ pub struct PostmanResponse {
     pub header: Option<Vec<PostmanHeader>>,
 }
 
-impl PostmanResponse {
+impl PostmanResponse
+{
     /// Create a new response
     /// 创建新响应
-    pub fn new(name: impl Into<String>, status: impl Into<String>, code: u16) -> Self {
+    pub fn new(name: impl Into<String>, status: impl Into<String>, code: u16) -> Self
+    {
         Self {
             name: name.into(),
             status: status.into(),
@@ -605,7 +666,8 @@ impl PostmanResponse {
 /// Postman authentication
 /// Postman 认证
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostmanAuth {
+pub struct PostmanAuth
+{
     /// Auth type (bearer, apikey, basic, etc.)
     /// 认证类型（bearer, apikey, basic 等）
     #[serde(rename = "type")]
@@ -617,10 +679,12 @@ pub struct PostmanAuth {
     pub bearer: Option<Vec<PostmanAuthBearer>>,
 }
 
-impl PostmanAuth {
+impl PostmanAuth
+{
     /// Create a bearer token auth
     /// 创建 Bearer Token 认证
-    pub fn bearer_token(token: impl Into<String>) -> Self {
+    pub fn bearer_token(token: impl Into<String>) -> Self
+    {
         Self {
             type_: "bearer".to_string(),
             bearer: Some(vec![PostmanAuthBearer {
@@ -633,7 +697,8 @@ impl PostmanAuth {
 /// Bearer token data
 /// Bearer Token 数据
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostmanAuthBearer {
+pub struct PostmanAuthBearer
+{
     /// Token value
     /// Token 值
     pub token: String,
@@ -645,14 +710,17 @@ pub struct PostmanAuthBearer {
 
 /// Converts `OpenAPI` 3.0 specification to a Postman Collection v2.1
 /// 将 `OpenAPI` 3.0 规范转换为 Postman Collection v2.1
-pub struct PostmanGenerator {
+pub struct PostmanGenerator
+{
     base_url: String,
 }
 
-impl PostmanGenerator {
+impl PostmanGenerator
+{
     /// Create a new generator with the given base URL
     /// 使用给定基础 URL 创建生成器
-    pub fn new(base_url: impl Into<String>) -> Self {
+    pub fn new(base_url: impl Into<String>) -> Self
+    {
         Self {
             base_url: base_url.into(),
         }
@@ -660,7 +728,8 @@ impl PostmanGenerator {
 
     /// Generate a Postman Collection from an `OpenApi` spec
     /// 从 `OpenApi` 规范生成 Postman Collection
-    pub fn generate(&self, openapi: &OpenApi) -> PostmanCollection {
+    pub fn generate(&self, openapi: &OpenApi) -> PostmanCollection
+    {
         let mut collection = PostmanCollection::new(&openapi.info.title);
         collection
             .info
@@ -671,13 +740,15 @@ impl PostmanGenerator {
         // 按标签分组路由，默认使用 "default" 文件夹
         let mut tag_folders: HashMap<String, Vec<PostmanItem>> = HashMap::new();
 
-        for (path_str, path_item) in &openapi.paths {
+        for (path_str, path_item) in &openapi.paths
+        {
             self.collect_operations(path_str, path_item, &mut tag_folders);
         }
 
         // If there are tags defined, order folders by tag order
         // 如果定义了标签，按标签顺序排列文件夹
-        if tag_folders.is_empty() {
+        if tag_folders.is_empty()
+        {
             // no paths
             // 无路径
             return collection;
@@ -695,12 +766,15 @@ impl PostmanGenerator {
             )
             .collect();
 
-        for tag in ordered_tags {
-            if let Some(items) = tag_folders.remove(&tag) {
+        for tag in ordered_tags
+        {
+            if let Some(items) = tag_folders.remove(&tag)
+            {
                 collection
                     .item
                     .push(PostmanItem::folder(&tag).description(format!("{} endpoints", tag)));
-                if let Some(folder) = collection.item.last_mut() {
+                if let Some(folder) = collection.item.last_mut()
+                {
                     folder.item = items;
                 }
             }
@@ -711,7 +785,8 @@ impl PostmanGenerator {
 
     /// Convenience: build from `OpenApi` ref and base URL
     /// 便捷方法：从 `OpenApi` 引用和基础 URL 构建
-    pub fn from_openapi(openapi: &OpenApi, base_url: impl Into<String>) -> PostmanCollection {
+    pub fn from_openapi(openapi: &OpenApi, base_url: impl Into<String>) -> PostmanCollection
+    {
         Self::new(base_url).generate(openapi)
     }
 
@@ -722,7 +797,8 @@ impl PostmanGenerator {
         path_str: &str,
         path_item: &PathItem,
         folders: &mut HashMap<String, Vec<PostmanItem>>,
-    ) {
+    )
+    {
         let methods: &[(Option<&crate::Operation>, &str)] = &[
             (path_item.get.as_ref(), "GET"),
             (path_item.post.as_ref(), "POST"),
@@ -734,8 +810,11 @@ impl PostmanGenerator {
             (path_item.trace.as_ref(), "TRACE"),
         ];
 
-        for (op_opt, method) in methods {
-            let Some(op) = op_opt else {
+        for (op_opt, method) in methods
+        {
+            let Some(op) = op_opt
+            else
+            {
                 continue;
             };
 
@@ -753,7 +832,8 @@ impl PostmanGenerator {
 
             // Description
             // 描述
-            if let Some(desc) = &op.description {
+            if let Some(desc) = &op.description
+            {
                 req = req.description(desc);
             }
 
@@ -761,13 +841,15 @@ impl PostmanGenerator {
             // 路径参数（Postman 使用 {{variable}} 语法）
             // Query parameters
             // 查询参数
-            for param in &op.parameters {
+            for param in &op.parameters
+            {
                 req = self.convert_parameter(param, req);
             }
 
             // Also apply path-item-level parameters
             // 同样应用路径项级别的参数
-            for param in &path_item.parameters {
+            for param in &path_item.parameters
+            {
                 req = self.convert_parameter(param, req);
             }
 
@@ -781,8 +863,10 @@ impl PostmanGenerator {
 
             // Bearer auth from security
             // 从安全配置获取 Bearer 认证
-            for sec_req in &op.security {
-                if sec_req.contains_key("bearerAuth") || sec_req.contains_key("BearerAuth") {
+            for sec_req in &op.security
+            {
+                if sec_req.contains_key("bearerAuth") || sec_req.contains_key("BearerAuth")
+                {
                     req = req.bearer_token("{{bearer_token}}");
                 }
             }
@@ -791,7 +875,8 @@ impl PostmanGenerator {
             // 构建带保存响应的条目
             let mut item = PostmanItem::request_item(item_name, req);
 
-            for (code, response) in &op.responses {
+            for (code, response) in &op.responses
+            {
                 let code_num: u16 = code.parse().unwrap_or(200);
                 let resp = PostmanResponse::new(
                     response.description.clone(),
@@ -813,9 +898,12 @@ impl PostmanGenerator {
         }
     }
 
-    fn convert_parameter(&self, param: &Parameter, mut req: PostmanRequest) -> PostmanRequest {
-        match param.location {
-            ParameterLocation::Path => {
+    fn convert_parameter(&self, param: &Parameter, mut req: PostmanRequest) -> PostmanRequest
+    {
+        match param.location
+        {
+            ParameterLocation::Path =>
+            {
                 // Replace {param} with {{param}} in raw URL
                 // 在原始 URL 中将 {param} 替换为 {{param}}
                 req.url.raw = req
@@ -836,17 +924,21 @@ impl PostmanGenerator {
                     })
                     .collect();
             },
-            ParameterLocation::Query => {
+            ParameterLocation::Query =>
+            {
                 let mut qp = PostmanQueryParam::new(&param.name, "");
-                if let Some(desc) = &param.description {
+                if let Some(desc) = &param.description
+                {
                     qp.description = Some(desc.clone());
                 }
                 req.url.query.push(qp);
             },
-            ParameterLocation::Header => {
+            ParameterLocation::Header =>
+            {
                 req = req.add_header(&param.name, "");
             },
-            ParameterLocation::Cookie => {
+            ParameterLocation::Cookie =>
+            {
                 // Postman does not have direct cookie param mapping in collection schema;
                 // add as header for reference
                 // Postman Collection 模式中没有直接的 cookie 参数映射；作为头添加以供参考
@@ -856,7 +948,8 @@ impl PostmanGenerator {
         req
     }
 
-    fn extract_body_json(&self, body: &crate::RequestBody) -> Option<String> {
+    fn extract_body_json(&self, body: &crate::RequestBody) -> Option<String>
+    {
         let media = body.content.get("application/json")?;
         let schema = media.schema.as_ref()?;
 
@@ -872,25 +965,30 @@ impl PostmanGenerator {
     /// Recursively build an example JSON value from a schema
     /// 从模式递归构建示例 JSON 值
     #[allow(clippy::self_only_used_in_recursion)]
-    fn schema_to_example(&self, schema: &Schema) -> Option<serde_json::Value> {
+    fn schema_to_example(&self, schema: &Schema) -> Option<serde_json::Value>
+    {
         // If schema already has an example, return it
         // 如果模式已有示例，直接返回
-        if let Some(ex) = &schema.example {
+        if let Some(ex) = &schema.example
+        {
             return Some(ex.clone());
         }
 
         // If it's a reference, return null placeholder
         // 如果是引用，返回 null 占位符
-        if schema.ref_.is_some() {
+        if schema.ref_.is_some()
+        {
             return Some(serde_json::Value::Null);
         }
 
-        match schema.schema_type.as_ref()? {
+        match schema.schema_type.as_ref()?
+        {
             crate::SchemaType::String => Some(serde_json::Value::String("string".to_string())),
             crate::SchemaType::Integer => Some(serde_json::Value::Number(0.into())),
             crate::SchemaType::Number => Some(serde_json::json!(0.0)),
             crate::SchemaType::Boolean => Some(serde_json::Value::Bool(false)),
-            crate::SchemaType::Array => {
+            crate::SchemaType::Array =>
+            {
                 let item_example = schema
                     .items
                     .as_ref()
@@ -898,10 +996,12 @@ impl PostmanGenerator {
                     .unwrap_or(serde_json::Value::Null);
                 Some(serde_json::Value::Array(vec![item_example]))
             },
-            crate::SchemaType::Object => {
+            crate::SchemaType::Object =>
+            {
                 let props = schema.properties.as_ref()?;
                 let mut map = serde_json::Map::new();
-                for (name, prop) in props {
+                for (name, prop) in props
+                {
                     map.insert(
                         name.clone(),
                         self.schema_to_example(&prop.schema)
@@ -926,12 +1026,14 @@ impl PostmanGenerator {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::{OpenApiBuilder, Operation, PathItem, Response, Schema, operation::MediaType};
 
     #[test]
-    fn test_postman_url_raw() {
+    fn test_postman_url_raw()
+    {
         let url = PostmanUrl::raw("https://api.example.com/users?page=1");
         assert_eq!(url.protocol.as_deref(), Some("https"));
         assert_eq!(url.host, vec!["api.example.com"]);
@@ -942,21 +1044,24 @@ mod tests {
     }
 
     #[test]
-    fn test_postman_url_no_query() {
+    fn test_postman_url_no_query()
+    {
         let url = PostmanUrl::raw("https://api.example.com/health");
         assert_eq!(url.path, vec!["health"]);
         assert!(url.query.is_empty());
     }
 
     #[test]
-    fn test_postman_url_relative() {
+    fn test_postman_url_relative()
+    {
         let url = PostmanUrl::raw("/users/{id}");
         assert!(url.protocol.is_none());
         assert_eq!(url.path, vec!["users", "{id}"]);
     }
 
     #[test]
-    fn test_postman_header() {
+    fn test_postman_header()
+    {
         let h = PostmanHeader::new("Content-Type", "application/json");
         assert_eq!(h.key, "Content-Type");
         assert_eq!(h.value, "application/json");
@@ -964,7 +1069,8 @@ mod tests {
     }
 
     #[test]
-    fn test_postman_query_param() {
+    fn test_postman_query_param()
+    {
         let qp = PostmanQueryParam::new("limit", "10").description("Max results");
         assert_eq!(qp.key, "limit");
         assert_eq!(qp.value, "10");
@@ -972,14 +1078,16 @@ mod tests {
     }
 
     #[test]
-    fn test_postman_response() {
+    fn test_postman_response()
+    {
         let r = PostmanResponse::new("OK", "200 OK", 200);
         assert_eq!(r.code, 200);
         assert_eq!(r.status, "200 OK");
     }
 
     #[test]
-    fn test_postman_collection_to_json() {
+    fn test_postman_collection_to_json()
+    {
         let mut collection = PostmanCollection::new("Test API");
         collection.item.push(PostmanItem::folder("users"));
         let json = collection.to_json().unwrap();
@@ -989,21 +1097,24 @@ mod tests {
     }
 
     #[test]
-    fn test_postman_collection_to_yaml() {
+    fn test_postman_collection_to_yaml()
+    {
         let collection = PostmanCollection::new("Test API");
         let yaml = collection.to_yaml().unwrap();
         assert!(yaml.contains("Test API"));
     }
 
     #[test]
-    fn test_postman_item_folder() {
+    fn test_postman_item_folder()
+    {
         let folder = PostmanItem::folder("pets").description("Pet operations");
         assert!(folder.request.is_none());
         assert_eq!(folder.name, "pets");
     }
 
     #[test]
-    fn test_postman_item_request() {
+    fn test_postman_item_request()
+    {
         let req = PostmanRequest::new("GET", "https://api.example.com/users");
         let item = PostmanItem::request_item("List users", req);
         assert!(item.request.is_some());
@@ -1011,14 +1122,16 @@ mod tests {
     }
 
     #[test]
-    fn test_postman_auth_bearer() {
+    fn test_postman_auth_bearer()
+    {
         let auth = PostmanAuth::bearer_token("my-token");
         assert_eq!(auth.type_, "bearer");
         assert_eq!(auth.bearer.as_ref().unwrap()[0].token, "my-token");
     }
 
     #[test]
-    fn test_postman_generator_simple() {
+    fn test_postman_generator_simple()
+    {
         let openapi = OpenApiBuilder::new()
             .title("Pet Store")
             .version("1.0.0")
@@ -1076,7 +1189,8 @@ mod tests {
     }
 
     #[test]
-    fn test_postman_generator_with_body() {
+    fn test_postman_generator_with_body()
+    {
         let openapi = OpenApiBuilder::new()
             .title("User API")
             .version("1.0.0")
@@ -1125,7 +1239,8 @@ mod tests {
     }
 
     #[test]
-    fn test_postman_generator_query_params() {
+    fn test_postman_generator_query_params()
+    {
         let openapi = OpenApiBuilder::new()
             .title("Search API")
             .version("1.0.0")

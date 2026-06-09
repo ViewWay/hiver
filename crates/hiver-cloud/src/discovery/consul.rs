@@ -50,7 +50,8 @@ use super::{InstanceStatus, ServiceInstance, ServiceRegistry};
 /// Maps to Consul's `/v1/agent/service/register` API.
 /// 对应 Consul 的 `/v1/agent/service/register` API。
 #[derive(Debug, Serialize, Deserialize)]
-struct AgentServiceRegistration {
+struct AgentServiceRegistration
+{
     /// Service ID / 服务ID
     #[serde(skip_serializing_if = "Option::is_none")]
     id: Option<String>,
@@ -79,7 +80,8 @@ struct AgentServiceRegistration {
 /// Consul agent service health check definition.
 /// Consul Agent 服务健康检查定义。
 #[derive(Debug, Serialize, Deserialize)]
-struct AgentServiceCheck {
+struct AgentServiceCheck
+{
     /// HTTP health check URL / HTTP 健康检查 URL
     #[serde(skip_serializing_if = "Option::is_none")]
     http: Option<String>,
@@ -101,7 +103,8 @@ struct AgentServiceCheck {
 /// Consul health service entry from `/v1/health/service/:service`.
 /// Consul 健康服务条目，来自 `/v1/health/service/:service`。
 #[derive(Debug, Deserialize)]
-struct HealthServiceEntry {
+struct HealthServiceEntry
+{
     /// Service details / 服务详情
     service: HealthService,
     /// Health checks for this service / 该服务的健康检查
@@ -111,7 +114,8 @@ struct HealthServiceEntry {
 /// Consul service details within a health entry.
 /// 健康条目中的 Consul 服务详情。
 #[derive(Debug, Deserialize)]
-struct HealthService {
+struct HealthService
+{
     /// Service ID / 服务ID
     id: String,
     /// Service name / 服务名称
@@ -130,7 +134,8 @@ struct HealthService {
 /// Consul health check status.
 /// Consul 健康检查状态。
 #[derive(Debug, Deserialize)]
-struct HealthCheck {
+struct HealthCheck
+{
     /// Check status (passing, warning, critical) / 检查状态
     status: String,
 }
@@ -155,7 +160,8 @@ type CatalogServicesResponse = HashMap<String, Vec<String>>;
 ///     .health_check_interval_secs(10);
 /// ```
 #[derive(Debug, Clone)]
-pub struct ConsulConfig {
+pub struct ConsulConfig
+{
     /// Consul agent address (e.g., "http://localhost:8500")
     /// Consul Agent 地址（例如 "http://localhost:8500"）
     pub address: String,
@@ -177,10 +183,12 @@ pub struct ConsulConfig {
     pub timeout_secs: u64,
 }
 
-impl ConsulConfig {
+impl ConsulConfig
+{
     /// Create a new configuration pointing to the given Consul address.
     /// 创建指向指定 Consul 地址的新配置。
-    pub fn new(address: impl Into<String>) -> Self {
+    pub fn new(address: impl Into<String>) -> Self
+    {
         Self {
             address: address.into(),
             token: None,
@@ -192,31 +200,36 @@ impl ConsulConfig {
     }
 
     /// Set the ACL token / 设置 ACL 令牌
-    pub fn token(mut self, token: impl Into<String>) -> Self {
+    pub fn token(mut self, token: impl Into<String>) -> Self
+    {
         self.token = Some(token.into());
         self
     }
 
     /// Set the datacenter / 设置数据中心
-    pub fn datacenter(mut self, dc: impl Into<String>) -> Self {
+    pub fn datacenter(mut self, dc: impl Into<String>) -> Self
+    {
         self.datacenter = Some(dc.into());
         self
     }
 
     /// Set health check interval in seconds / 设置健康检查间隔（秒）
-    pub fn health_check_interval_secs(mut self, secs: u64) -> Self {
+    pub fn health_check_interval_secs(mut self, secs: u64) -> Self
+    {
         self.health_check_interval_secs = secs;
         self
     }
 
     /// Set deregister critical after seconds / 设置关键服务注销时间（秒）
-    pub fn deregister_critical_after_secs(mut self, secs: u64) -> Self {
+    pub fn deregister_critical_after_secs(mut self, secs: u64) -> Self
+    {
         self.deregister_critical_after_secs = secs;
         self
     }
 
     /// Set HTTP request timeout in seconds / 设置 HTTP 请求超时（秒）
-    pub fn timeout_secs(mut self, secs: u64) -> Self {
+    pub fn timeout_secs(mut self, secs: u64) -> Self
+    {
         self.timeout_secs = secs;
         self
     }
@@ -235,17 +248,20 @@ impl ConsulConfig {
 ///
 /// Equivalent to Spring Cloud Consul's `ConsulServiceRegistry`.
 /// 等价于 Spring Cloud Consul 的 `ConsulServiceRegistry`。
-pub struct ConsulServiceRegistry {
+pub struct ConsulServiceRegistry
+{
     /// HTTP client / HTTP 客户端
     client: reqwest::Client,
     /// Configuration / 配置
     config: ConsulConfig,
 }
 
-impl ConsulServiceRegistry {
+impl ConsulServiceRegistry
+{
     /// Create a new Consul service registry with the given configuration.
     /// 使用给定配置创建新的 Consul 服务注册表。
-    pub fn new(config: ConsulConfig) -> Self {
+    pub fn new(config: ConsulConfig) -> Self
+    {
         let client = reqwest::Client::builder()
             .timeout(std::time::Duration::from_secs(config.timeout_secs))
             .build()
@@ -255,7 +271,8 @@ impl ConsulServiceRegistry {
 
     /// Create a registry from a Consul address string (convenience).
     /// 从 Consul 地址字符串创建注册表（便捷方法）。
-    pub fn from_address(address: impl Into<String>) -> Self {
+    pub fn from_address(address: impl Into<String>) -> Self
+    {
         Self::new(ConsulConfig::new(address))
     }
 
@@ -263,16 +280,19 @@ impl ConsulServiceRegistry {
 
     /// Build the authorization header value if a token is configured.
     /// 如果配置了令牌，构建授权头部值。
-    fn auth_header(&self) -> Option<String> {
+    fn auth_header(&self) -> Option<String>
+    {
         self.config.token.as_ref().map(|t| format!("Bearer {}", t))
     }
 
     /// Build a request builder with common headers set.
     /// 构建带通用头部的请求构建器。
-    fn request(&self, method: reqwest::Method, path: &str) -> reqwest::RequestBuilder {
+    fn request(&self, method: reqwest::Method, path: &str) -> reqwest::RequestBuilder
+    {
         let url = format!("{}{}", self.config.address, path);
         let mut builder = self.client.request(method, &url);
-        if let Some(ref auth) = self.auth_header() {
+        if let Some(ref auth) = self.auth_header()
+        {
             builder = builder.header("Authorization", auth.as_str());
         }
         builder
@@ -280,10 +300,13 @@ impl ConsulServiceRegistry {
 
     /// Parse Consul tags into metadata, extracting entries of the form "key=value".
     /// 解析 Consul 标签为元数据，提取 "key=value" 形式的条目。
-    fn tags_to_meta(tags: &[String]) -> HashMap<String, String> {
+    fn tags_to_meta(tags: &[String]) -> HashMap<String, String>
+    {
         let mut meta = HashMap::new();
-        for tag in tags {
-            if let Some((k, v)) = tag.split_once('=') {
+        for tag in tags
+        {
+            if let Some((k, v)) = tag.split_once('=')
+            {
                 meta.insert(k.to_string(), v.to_string());
             }
         }
@@ -292,13 +315,15 @@ impl ConsulServiceRegistry {
 
     /// Convert metadata to Consul tags (key=value format).
     /// 将元数据转换为 Consul 标签（key=value 格式）。
-    fn meta_to_tags(meta: &HashMap<String, String>) -> Vec<String> {
+    fn meta_to_tags(meta: &HashMap<String, String>) -> Vec<String>
+    {
         meta.iter().map(|(k, v)| format!("{}={}", k, v)).collect()
     }
 
     /// Convert a `ServiceInstance` to Consul's registration payload.
     /// 将 `ServiceInstance` 转换为 Consul 的注册请求体。
-    fn instance_to_registration(&self, instance: &ServiceInstance) -> AgentServiceRegistration {
+    fn instance_to_registration(&self, instance: &ServiceInstance) -> AgentServiceRegistration
+    {
         let check = instance
             .health_check_url
             .as_ref()
@@ -327,28 +352,38 @@ impl ConsulServiceRegistry {
 
     /// Convert a Consul health service entry into a `ServiceInstance`.
     /// 将 Consul 健康服务条目转换为 `ServiceInstance`。
-    fn health_entry_to_instance(entry: &HealthServiceEntry) -> ServiceInstance {
+    fn health_entry_to_instance(entry: &HealthServiceEntry) -> ServiceInstance
+    {
         let svc = &entry.service;
 
         // Determine status from checks / 从检查结果判断状态
-        let status = if entry.checks.iter().all(|c| c.status == "passing") {
+        let status = if entry.checks.iter().all(|c| c.status == "passing")
+        {
             InstanceStatus::Up
-        } else if entry.checks.iter().any(|c| c.status == "critical") {
+        }
+        else if entry.checks.iter().any(|c| c.status == "critical")
+        {
             InstanceStatus::Down
-        } else {
+        }
+        else
+        {
             InstanceStatus::Unknown
         };
 
-        let scheme = if svc.tags.iter().any(|t| t == "secure") {
+        let scheme = if svc.tags.iter().any(|t| t == "secure")
+        {
             "https"
-        } else {
+        }
+        else
+        {
             "http"
         };
         let uri = format!("{}://{}:{}", scheme, svc.address, svc.port);
 
         // Merge tags-based meta with native meta / 合并基于标签的元数据和原生元数据
         let mut metadata = Self::tags_to_meta(&svc.tags);
-        for (k, v) in &svc.meta {
+        for (k, v) in &svc.meta
+        {
             metadata.insert(k.clone(), v.clone());
         }
 
@@ -369,13 +404,15 @@ impl ConsulServiceRegistry {
 }
 
 #[async_trait]
-impl ServiceRegistry for ConsulServiceRegistry {
+impl ServiceRegistry for ConsulServiceRegistry
+{
     /// Register a service instance with Consul.
     /// 向 Consul 注册服务实例。
     ///
     /// Uses Consul's Agent Service Register API (`PUT /v1/agent/service/register`).
     /// 使用 Consul 的 Agent 服务注册 API。
-    async fn register(&self, instance: ServiceInstance) -> Result<(), String> {
+    async fn register(&self, instance: ServiceInstance) -> Result<(), String>
+    {
         let registration = self.instance_to_registration(&instance);
         let body = serde_json::to_string(&registration)
             .map_err(|e| format!("Failed to serialize registration: {}", e))?;
@@ -388,14 +425,17 @@ impl ServiceRegistry for ConsulServiceRegistry {
             .await
             .map_err(|e| format!("Consul register request failed: {}", e))?;
 
-        if resp.status().is_success() {
+        if resp.status().is_success()
+        {
             tracing::info!(
                 "Registered service {} instance {} with Consul",
                 instance.service_id,
                 instance.instance_id
             );
             Ok(())
-        } else {
+        }
+        else
+        {
             let status = resp.status();
             let text = resp.text().await.unwrap_or_default();
             Err(format!("Consul register failed with status {}: {}", status, text))
@@ -407,7 +447,8 @@ impl ServiceRegistry for ConsulServiceRegistry {
     ///
     /// Uses Consul's Agent Service Deregister API (`PUT /v1/agent/service/deregister/:service_id`).
     /// 使用 Consul 的 Agent 服务注销 API。
-    async fn deregister(&self, instance_id: &str) -> Result<(), String> {
+    async fn deregister(&self, instance_id: &str) -> Result<(), String>
+    {
         let path = format!("/v1/agent/service/deregister/{}", instance_id);
         let resp = self
             .request(reqwest::Method::PUT, &path)
@@ -415,10 +456,13 @@ impl ServiceRegistry for ConsulServiceRegistry {
             .await
             .map_err(|e| format!("Consul deregister request failed: {}", e))?;
 
-        if resp.status().is_success() {
+        if resp.status().is_success()
+        {
             tracing::info!("Deregistered instance {} from Consul", instance_id);
             Ok(())
-        } else {
+        }
+        else
+        {
             let status = resp.status();
             let text = resp.text().await.unwrap_or_default();
             Err(format!("Consul deregister failed with status {}: {}", status, text))
@@ -430,15 +474,20 @@ impl ServiceRegistry for ConsulServiceRegistry {
     ///
     /// Uses Consul's Health Service API (`GET /v1/health/service/:service?passing`).
     /// 使用 Consul 的健康服务 API，仅返回通过健康检查的实例。
-    async fn get_instances(&self, service_id: &str) -> Vec<ServiceInstance> {
+    async fn get_instances(&self, service_id: &str) -> Vec<ServiceInstance>
+    {
         let path = format!("/v1/health/service/{}?passing", service_id);
         let resp = self.request(reqwest::Method::GET, &path).send().await;
 
-        match resp {
-            Ok(response) if response.status().is_success() => {
-                match response.json::<Vec<HealthServiceEntry>>().await {
+        match resp
+        {
+            Ok(response) if response.status().is_success() =>
+            {
+                match response.json::<Vec<HealthServiceEntry>>().await
+                {
                     Ok(entries) => entries.iter().map(Self::health_entry_to_instance).collect(),
-                    Err(e) => {
+                    Err(e) =>
+                    {
                         tracing::warn!(
                             "Failed to parse Consul health response for {}: {}",
                             service_id,
@@ -448,7 +497,8 @@ impl ServiceRegistry for ConsulServiceRegistry {
                     },
                 }
             },
-            Ok(response) => {
+            Ok(response) =>
+            {
                 tracing::warn!(
                     "Consul health query for {} returned status {}",
                     service_id,
@@ -456,7 +506,8 @@ impl ServiceRegistry for ConsulServiceRegistry {
                 );
                 Vec::new()
             },
-            Err(e) => {
+            Err(e) =>
+            {
                 tracing::warn!("Consul health query request failed for {}: {}", service_id, e);
                 Vec::new()
             },
@@ -468,7 +519,8 @@ impl ServiceRegistry for ConsulServiceRegistry {
     ///
     /// Uses Consul's Agent Check Pass API (`PUT /v1/agent/check/pass/:check_id`).
     /// 使用 Consul 的 Agent 检查通过 API。
-    async fn heartbeat(&self, instance_id: &str) -> Result<(), String> {
+    async fn heartbeat(&self, instance_id: &str) -> Result<(), String>
+    {
         // Consul TTL checks are named "service:<instance_id>"
         // Consul TTL 检查命名为 "service:<instance_id>"
         let check_id = format!("service:{}", instance_id);
@@ -479,9 +531,12 @@ impl ServiceRegistry for ConsulServiceRegistry {
             .await
             .map_err(|e| format!("Consul heartbeat request failed: {}", e))?;
 
-        if resp.status().is_success() {
+        if resp.status().is_success()
+        {
             Ok(())
-        } else {
+        }
+        else
+        {
             let status = resp.status();
             let text = resp.text().await.unwrap_or_default();
             Err(format!("Consul heartbeat failed with status {}: {}", status, text))
@@ -493,27 +548,34 @@ impl ServiceRegistry for ConsulServiceRegistry {
     ///
     /// Uses Consul's Catalog Services API (`GET /v1/catalog/services`).
     /// 使用 Consul 的目录服务 API。
-    async fn get_services(&self) -> Vec<String> {
+    async fn get_services(&self) -> Vec<String>
+    {
         let resp = self
             .request(reqwest::Method::GET, "/v1/catalog/services")
             .send()
             .await;
 
-        match resp {
-            Ok(response) if response.status().is_success() => {
-                match response.json::<CatalogServicesResponse>().await {
+        match resp
+        {
+            Ok(response) if response.status().is_success() =>
+            {
+                match response.json::<CatalogServicesResponse>().await
+                {
                     Ok(services) => services.keys().cloned().collect(),
-                    Err(e) => {
+                    Err(e) =>
+                    {
                         tracing::warn!("Failed to parse Consul catalog services: {}", e);
                         Vec::new()
                     },
                 }
             },
-            Ok(response) => {
+            Ok(response) =>
+            {
                 tracing::warn!("Consul catalog services returned status {}", response.status());
                 Vec::new()
             },
-            Err(e) => {
+            Err(e) =>
+            {
                 tracing::warn!("Consul catalog services request failed: {}", e);
                 Vec::new()
             },
@@ -533,14 +595,16 @@ impl ServiceRegistry for ConsulServiceRegistry {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use mockito::{Matcher, Server};
 
     use super::*;
 
     /// Helper: create a basic `ServiceInstance` for testing.
     /// 辅助函数：创建用于测试的基本 `ServiceInstance`。
-    fn test_instance(service_id: &str, instance_id: &str, port: u16) -> ServiceInstance {
+    fn test_instance(service_id: &str, instance_id: &str, port: u16) -> ServiceInstance
+    {
         ServiceInstance::new(service_id, instance_id, "127.0.0.1", port)
     }
 
@@ -549,7 +613,8 @@ mod tests {
     // 测试1：ConsulConfig 构建器默认值和覆盖
     // -----------------------------------------------------------------------
     #[test]
-    fn test_consul_config_builder() {
+    fn test_consul_config_builder()
+    {
         let config = ConsulConfig::new("http://localhost:8500")
             .token("my-token")
             .datacenter("dc1")
@@ -570,7 +635,8 @@ mod tests {
     // 测试2：ConsulConfig 默认值
     // -----------------------------------------------------------------------
     #[test]
-    fn test_consul_config_defaults() {
+    fn test_consul_config_defaults()
+    {
         let config = ConsulConfig::new("http://localhost:8500");
         assert_eq!(config.address, "http://localhost:8500");
         assert!(config.token.is_none());
@@ -585,7 +651,8 @@ mod tests {
     // 测试3：元数据到标签转换
     // -----------------------------------------------------------------------
     #[test]
-    fn test_meta_to_tags() {
+    fn test_meta_to_tags()
+    {
         let mut meta = HashMap::new();
         meta.insert("version".to_string(), "1.0.0".to_string());
         meta.insert("env".to_string(), "prod".to_string());
@@ -601,7 +668,8 @@ mod tests {
     // 测试4：标签到元数据转换
     // -----------------------------------------------------------------------
     #[test]
-    fn test_tags_to_meta() {
+    fn test_tags_to_meta()
+    {
         let tags = vec![
             "version=1.0.0".to_string(),
             "env=prod".to_string(),
@@ -619,7 +687,8 @@ mod tests {
     // 测试5：向 Consul 注册服务实例
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_register_success() {
+    async fn test_register_success()
+    {
         let mut server = Server::new_async().await;
         let mock = server
             .mock("PUT", "/v1/agent/service/register")
@@ -642,7 +711,8 @@ mod tests {
     // 测试6：使用 ACL 令牌注册
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_register_with_token() {
+    async fn test_register_with_token()
+    {
         let mut server = Server::new_async().await;
         let mock = server
             .mock("PUT", "/v1/agent/service/register")
@@ -665,7 +735,8 @@ mod tests {
     // 测试7：带健康检查 URL 注册
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_register_with_health_check() {
+    async fn test_register_with_health_check()
+    {
         let mut server = Server::new_async().await;
         let mock = server
             .mock("PUT", "/v1/agent/service/register")
@@ -693,7 +764,8 @@ mod tests {
     // 测试8：带元数据注册，元数据转换为标签
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_register_with_metadata() {
+    async fn test_register_with_metadata()
+    {
         let mut server = Server::new_async().await;
         let mock = server
             .mock("PUT", "/v1/agent/service/register")
@@ -719,7 +791,8 @@ mod tests {
     // 测试9：注册失败返回错误
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_register_failure() {
+    async fn test_register_failure()
+    {
         let mut server = Server::new_async().await;
         let mock = server
             .mock("PUT", "/v1/agent/service/register")
@@ -744,7 +817,8 @@ mod tests {
     // 测试10：注销服务实例
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_deregister_success() {
+    async fn test_deregister_success()
+    {
         let mut server = Server::new_async().await;
         let mock = server
             .mock("PUT", "/v1/agent/service/deregister/inst-1")
@@ -765,7 +839,8 @@ mod tests {
     // 测试11：注销失败返回错误
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_deregister_failure() {
+    async fn test_deregister_failure()
+    {
         let mut server = Server::new_async().await;
         let mock = server
             .mock("PUT", "/v1/agent/service/deregister/inst-1")
@@ -788,7 +863,8 @@ mod tests {
     // 测试12：获取实例返回健康服务
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_get_instances() {
+    async fn test_get_instances()
+    {
         let mut server = Server::new_async().await;
         let health_response = serde_json::json!([
             {
@@ -858,7 +934,8 @@ mod tests {
     // 测试13：关键健康检查将实例标记为 Down
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_get_instances_critical_status() {
+    async fn test_get_instances_critical_status()
+    {
         let mut server = Server::new_async().await;
         // Note: with ?passing the real Consul would not return critical instances.
         // We test the parsing logic regardless.
@@ -902,7 +979,8 @@ mod tests {
     // 测试14：服务器错误时获取实例返回空列表
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_get_instances_server_error() {
+    async fn test_get_instances_server_error()
+    {
         let mut server = Server::new_async().await;
         let mock = server
             .mock("GET", "/v1/health/service/svc?passing")
@@ -923,7 +1001,8 @@ mod tests {
     // 测试15：从目录获取所有服务
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_get_services() {
+    async fn test_get_services()
+    {
         let mut server = Server::new_async().await;
         let catalog_response = serde_json::json!({
             "userservice": ["v1"],
@@ -955,7 +1034,8 @@ mod tests {
     // 测试16：失败时获取服务返回空列表
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_get_services_failure() {
+    async fn test_get_services_failure()
+    {
         let mut server = Server::new_async().await;
         let mock = server
             .mock("GET", "/v1/catalog/services")
@@ -976,7 +1056,8 @@ mod tests {
     // 测试17：心跳发送 TTL 通过给 Consul
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_heartbeat_success() {
+    async fn test_heartbeat_success()
+    {
         let mut server = Server::new_async().await;
         let mock = server
             .mock("PUT", "/v1/agent/check/pass/service:inst-1")
@@ -997,7 +1078,8 @@ mod tests {
     // 测试18：心跳失败返回错误
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_heartbeat_failure() {
+    async fn test_heartbeat_failure()
+    {
         let mut server = Server::new_async().await;
         let mock = server
             .mock("PUT", "/v1/agent/check/pass/service:inst-unknown")
@@ -1020,7 +1102,8 @@ mod tests {
     // 测试19：从 "secure" 标签检测安全实例
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_get_instances_secure_service() {
+    async fn test_get_instances_secure_service()
+    {
         let mut server = Server::new_async().await;
         let health_response = serde_json::json!([
             {
@@ -1061,7 +1144,8 @@ mod tests {
     // 测试20：from_address 便捷构造函数
     // -----------------------------------------------------------------------
     #[test]
-    fn test_from_address() {
+    fn test_from_address()
+    {
         let registry = ConsulServiceRegistry::from_address("http://consul.example.com:8500");
         assert_eq!(registry.config.address, "http://consul.example.com:8500");
     }
@@ -1071,7 +1155,8 @@ mod tests {
     // 测试21：注册请求体包含正确的服务字段
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_register_body_fields() {
+    async fn test_register_body_fields()
+    {
         let mut server = Server::new_async().await;
         let mock = server
             .mock("PUT", "/v1/agent/service/register")
@@ -1099,7 +1184,8 @@ mod tests {
     // 测试22：带 ACL 令牌注销发送授权头部
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_deregister_with_token() {
+    async fn test_deregister_with_token()
+    {
         let mut server = Server::new_async().await;
         let mock = server
             .mock("PUT", "/v1/agent/service/deregister/inst-1")
@@ -1121,7 +1207,8 @@ mod tests {
     // 测试23：获取实例返回空响应
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_get_instances_empty() {
+    async fn test_get_instances_empty()
+    {
         let mut server = Server::new_async().await;
         let mock = server
             .mock("GET", "/v1/health/service/nonexistent?passing")
@@ -1144,7 +1231,8 @@ mod tests {
     // 测试24：instance_to_registration 包含 deregister_critical_service_after
     // -----------------------------------------------------------------------
     #[test]
-    fn test_registration_includes_deregister_config() {
+    fn test_registration_includes_deregister_config()
+    {
         let config = ConsulConfig::new("http://localhost:8500").deregister_critical_after_secs(120);
         let registry = ConsulServiceRegistry::new(config);
 
@@ -1163,7 +1251,8 @@ mod tests {
     // 测试25：获取带 warning 状态的实例结果为 Unknown
     // -----------------------------------------------------------------------
     #[tokio::test]
-    async fn test_get_instances_warning_status() {
+    async fn test_get_instances_warning_status()
+    {
         let mut server = Server::new_async().await;
         let health_response = serde_json::json!([
             {

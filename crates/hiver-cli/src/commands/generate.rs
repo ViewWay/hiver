@@ -9,7 +9,8 @@ use crate::cli::GenerateArgs;
 
 /// Run the `hiver generate` command.
 /// 执行 `hiver generate` 命令。
-pub fn run(args: &GenerateArgs) -> Result<(), Box<dyn std::error::Error>> {
+pub fn run(args: &GenerateArgs) -> Result<(), Box<dyn std::error::Error>>
+{
     let gen_type = args.gen_type.to_lowercase();
     let name = &args.name;
 
@@ -18,14 +19,16 @@ pub fn run(args: &GenerateArgs) -> Result<(), Box<dyn std::error::Error>> {
     let snake_name = to_snake_case(name);
     let pascal_name = to_pascal_case(name);
 
-    let (code, subdir) = match gen_type.as_str() {
+    let (code, subdir) = match gen_type.as_str()
+    {
         "controller" | "c" => (generate_controller(&pascal_name, &snake_name), "controller"),
         "service" | "s" => (generate_service(&pascal_name, &snake_name), "service"),
         "repository" | "r" => (generate_repository(&pascal_name, &snake_name), "repository"),
         "entity" | "e" => (generate_entity(&pascal_name, &snake_name), "entity"),
         "middleware" | "m" => (generate_middleware(&pascal_name, &snake_name), "middleware"),
         "config" | "cfg" => (generate_config(&pascal_name, &snake_name), "config"),
-        _ => {
+        _ =>
+        {
             return Err(format!(
                 "Unknown type '{}'. Available: controller, service, repository, entity, \
                  middleware, config\n未知类型 '{}'。可用：controller, service, repository, \
@@ -42,7 +45,8 @@ pub fn run(args: &GenerateArgs) -> Result<(), Box<dyn std::error::Error>> {
     fs::create_dir_all(&dir)?;
 
     let file_path = dir.join(format!("{}.rs", snake_name));
-    if file_path.exists() {
+    if file_path.exists()
+    {
         return Err(format!(
             "File '{}' already exists / 文件 '{}' 已存在",
             file_path.display(),
@@ -66,7 +70,8 @@ pub fn run(args: &GenerateArgs) -> Result<(), Box<dyn std::error::Error>> {
 
 /// Generate a controller template.
 /// 生成控制器模板。
-fn generate_controller(pascal: &str, snake: &str) -> String {
+fn generate_controller(pascal: &str, snake: &str) -> String
+{
     format!(
         r#"//! {pascal} controller.
 //! {pascal} 控制器。
@@ -104,7 +109,8 @@ impl {pascal}Controller {{
 
 /// Generate a service template.
 /// 生成服务模板。
-fn generate_service(pascal: &str, _snake: &str) -> String {
+fn generate_service(pascal: &str, _snake: &str) -> String
+{
     format!(
         r#"//! {pascal} service.
 //! {pascal} 服务。
@@ -140,7 +146,8 @@ impl {pascal}Service for Default{pascal}Service {{
 
 /// Generate a repository template.
 /// 生成仓储模板。
-fn generate_repository(pascal: &str, _snake: &str) -> String {
+fn generate_repository(pascal: &str, _snake: &str) -> String
+{
     format!(
         r#"//! {pascal} repository.
 //! {pascal} 仓储。
@@ -166,7 +173,8 @@ pub trait {pascal}Repository {{
 
 /// Generate an entity template.
 /// 生成实体模板。
-fn generate_entity(pascal: &str, _snake: &str) -> String {
+fn generate_entity(pascal: &str, _snake: &str) -> String
+{
     format!(
         r#"//! {pascal} entity.
 //! {pascal} 实体。
@@ -192,7 +200,8 @@ pub struct {pascal} {{
 
 /// Generate a middleware template.
 /// 生成中间件模板。
-fn generate_middleware(pascal: &str, _snake: &str) -> String {
+fn generate_middleware(pascal: &str, _snake: &str) -> String
+{
     format!(
         r#"//! {pascal} middleware.
 //! {pascal} 中间件。
@@ -219,7 +228,8 @@ impl Default for {pascal}Middleware {{
 
 /// Generate a config template.
 /// 生成配置模板。
-fn generate_config(pascal: &str, _snake: &str) -> String {
+fn generate_config(pascal: &str, _snake: &str) -> String
+{
     format!(
         r#"//! {pascal} configuration.
 //! {pascal} 配置。
@@ -252,10 +262,13 @@ impl Default for {pascal}Config {{
 
 /// Convert to snake_case.
 /// 转换为 snake_case。
-fn to_snake_case(s: &str) -> String {
+fn to_snake_case(s: &str) -> String
+{
     let mut result = String::new();
-    for (i, c) in s.chars().enumerate() {
-        if c.is_uppercase() && i > 0 {
+    for (i, c) in s.chars().enumerate()
+    {
+        if c.is_uppercase() && i > 0
+        {
             result.push('_');
         }
         result.push(c.to_ascii_lowercase());
@@ -266,12 +279,14 @@ fn to_snake_case(s: &str) -> String {
 
 /// Convert to PascalCase.
 /// 转换为 PascalCase。
-fn to_pascal_case(s: &str) -> String {
+fn to_pascal_case(s: &str) -> String
+{
     s.split(['-', '_'])
         .filter(|part| !part.is_empty())
         .map(|part| {
             let mut chars = part.chars();
-            match chars.next() {
+            match chars.next()
+            {
                 None => String::new(),
                 Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
             }

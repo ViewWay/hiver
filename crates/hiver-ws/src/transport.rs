@@ -6,7 +6,8 @@
 
 /// SOAP request / SOAP请求
 #[derive(Debug, Clone)]
-pub struct SoapRequest {
+pub struct SoapRequest
+{
     /// SOAP action header value / SOAP操作头部值
     pub soap_action: Option<String>,
     /// Request body / 请求体
@@ -17,7 +18,8 @@ pub struct SoapRequest {
 
 /// SOAP response / SOAP响应
 #[derive(Debug, Clone)]
-pub struct SoapResponse {
+pub struct SoapResponse
+{
     /// HTTP status code / HTTP状态码
     pub status: u16,
     /// Response body / 响应体
@@ -27,7 +29,8 @@ pub struct SoapResponse {
 }
 
 /// Transport trait / 传输trait
-pub trait Transport: Send + Sync {
+pub trait Transport: Send + Sync
+{
     /// Returns the list of supported protocols / 返回支持的协议列表
     fn supported_protocols(&self) -> Vec<&str>;
     /// Send a SOAP request and return the response / 发送SOAP请求并返回响应
@@ -36,30 +39,37 @@ pub trait Transport: Send + Sync {
 
 /// HTTP transport / HTTP传输
 #[derive(Debug, Clone)]
-pub struct HttpTransport {
+pub struct HttpTransport
+{
     endpoint_url: String,
 }
 
-impl HttpTransport {
+impl HttpTransport
+{
     /// Create a new HTTP transport / 创建新的HTTP传输
-    pub fn new(url: &str) -> Self {
+    pub fn new(url: &str) -> Self
+    {
         Self {
             endpoint_url: url.to_string(),
         }
     }
 
     /// Get the endpoint URL / 获取端点URL
-    pub fn url(&self) -> &str {
+    pub fn url(&self) -> &str
+    {
         &self.endpoint_url
     }
 }
 
-impl Transport for HttpTransport {
-    fn supported_protocols(&self) -> Vec<&str> {
+impl Transport for HttpTransport
+{
+    fn supported_protocols(&self) -> Vec<&str>
+    {
         vec!["http", "https"]
     }
 
-    fn send(&self, _request: &SoapRequest) -> Result<SoapResponse, String> {
+    fn send(&self, _request: &SoapRequest) -> Result<SoapResponse, String>
+    {
         // In a real implementation, this would use an HTTP client.
         // 在实际实现中，会使用HTTP客户端。
         Ok(SoapResponse {
@@ -78,11 +88,13 @@ impl Transport for HttpTransport {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_http_transport() {
+    fn test_http_transport()
+    {
         let transport = HttpTransport::new("http://localhost:8080/ws");
         assert!(transport.supported_protocols().contains(&"http"));
         assert_eq!(transport.url(), "http://localhost:8080/ws");

@@ -32,7 +32,8 @@ use std::{collections::HashMap, fmt::Write};
 /// Represents the type of operation described by an LDIF entry.
 /// 表示 LDIF 条目描述的操作类型。
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum LdifChangeType {
+pub enum LdifChangeType
+{
     /// Add a new entry / 添加新条目
     Add,
     /// Modify an existing entry / 修改现有条目
@@ -43,10 +44,13 @@ pub enum LdifChangeType {
     ModDn,
 }
 
-impl LdifChangeType {
+impl LdifChangeType
+{
     /// Parse from string / 从字符串解析
-    pub fn from_str(s: &str) -> Option<Self> {
-        match s.trim().to_lowercase().as_str() {
+    pub fn from_str(s: &str) -> Option<Self>
+    {
+        match s.trim().to_lowercase().as_str()
+        {
             "add" => Some(Self::Add),
             "modify" => Some(Self::Modify),
             "delete" => Some(Self::Delete),
@@ -62,7 +66,8 @@ impl LdifChangeType {
 /// and attributes or modifications depending on the change type.
 /// LDIF 条目包含可分辨名称、更改类型以及根据更改类型而定的属性或修改。
 #[derive(Debug, Clone)]
-pub struct LdifEntry {
+pub struct LdifEntry
+{
     /// Distinguished name / 可分辨名称
     pub dn: String,
 
@@ -78,10 +83,12 @@ pub struct LdifEntry {
     pub modifications: Vec<LdifModification>,
 }
 
-impl LdifEntry {
+impl LdifEntry
+{
     /// Create a new LDIF entry with the given DN and change type
     /// 使用给定的 DN 和更改类型创建新 LDIF 条目
-    pub fn new(dn: impl Into<String>, changetype: LdifChangeType) -> Self {
+    pub fn new(dn: impl Into<String>, changetype: LdifChangeType) -> Self
+    {
         Self {
             dn: dn.into(),
             changetype,
@@ -91,7 +98,8 @@ impl LdifEntry {
     }
 
     /// Add an attribute value / 添加属性值
-    pub fn add_attribute(&mut self, name: impl Into<String>, value: impl Into<String>) {
+    pub fn add_attribute(&mut self, name: impl Into<String>, value: impl Into<String>)
+    {
         self.attributes
             .entry(name.into())
             .or_default()
@@ -99,7 +107,8 @@ impl LdifEntry {
     }
 
     /// Get an attribute's values / 获取属性值列表
-    pub fn get_attribute(&self, name: &str) -> Option<&Vec<String>> {
+    pub fn get_attribute(&self, name: &str) -> Option<&Vec<String>>
+    {
         self.attributes.get(name)
     }
 }
@@ -107,7 +116,8 @@ impl LdifEntry {
 /// Represents a modification within an LDIF modify entry
 /// 表示 LDIF 修改条目中的单个修改操作
 #[derive(Debug, Clone)]
-pub struct LdifModification {
+pub struct LdifModification
+{
     /// The modification operation type / 修改操作类型
     pub operation: LdifModOp,
     /// The attribute name / 属性名称
@@ -118,7 +128,8 @@ pub struct LdifModification {
 
 /// LDIF modification operation type / LDIF 修改操作类型
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum LdifModOp {
+pub enum LdifModOp
+{
     /// Add values / 添加值
     Add,
     /// Replace values / 替换值
@@ -148,37 +159,45 @@ pub enum LdifModOp {
 ///
 /// Returns a descriptive error string if the LDIF content is malformed.
 /// 如果 LDIF 内容格式错误，则返回描述性错误字符串。
-pub fn parse_ldif(input: &str) -> Result<Vec<LdifEntry>, String> {
+pub fn parse_ldif(input: &str) -> Result<Vec<LdifEntry>, String>
+{
     let lines = unfold_lines(input);
     let mut entries = Vec::new();
     let mut current: Option<LdifEntry> = None;
 
-    for line in &lines {
+    for line in &lines
+    {
         let line = line.trim();
 
         // Skip empty lines — they separate entries
-        if line.is_empty() {
-            if let Some(entry) = current.take() {
+        if line.is_empty()
+        {
+            if let Some(entry) = current.take()
+            {
                 entries.push(entry);
             }
             continue;
         }
 
         // Skip comments
-        if line.starts_with('#') {
+        if line.starts_with('#')
+        {
             continue;
         }
 
         // version header (optional)
-        if line.starts_with("version:") {
+        if line.starts_with("version:")
+        {
             continue;
         }
 
         // DN line starts a new entry
-        if let Some(dn) = line.strip_prefix("dn:") {
+        if let Some(dn) = line.strip_prefix("dn:")
+        {
             let dn = dn.trim();
             // If there's already an unfinished entry, push it
-            if let Some(entry) = current.take() {
+            if let Some(entry) = current.take()
+            {
                 entries.push(entry);
             }
             // Default to Add if no changetype specified
@@ -187,22 +206,30 @@ pub fn parse_ldif(input: &str) -> Result<Vec<LdifEntry>, String> {
         }
 
         // changetype
-        if let Some(ct) = line.strip_prefix("changetype:") {
+        if let Some(ct) = line.strip_prefix("changetype:")
+        {
             let ct_str = ct.trim();
-            if let Some(changetype) = LdifChangeType::from_str(ct_str) {
-                if let Some(ref mut entry) = current {
+            if let Some(changetype) = LdifChangeType::from_str(ct_str)
+            {
+                if let Some(ref mut entry) = current
+                {
                     entry.changetype = changetype;
                 }
-            } else {
+            }
+            else
+            {
                 return Err(format!("Unknown changetype: {}", ct_str));
             }
             continue;
         }
 
         // Handle modify-specific lines (add: attr, replace: attr, delete: attr, - separator)
-        if let Some(ref mut entry) = current {
-            if entry.changetype == LdifChangeType::Modify {
-                if let Some(attr) = line.strip_prefix("add:") {
+        if let Some(ref mut entry) = current
+        {
+            if entry.changetype == LdifChangeType::Modify
+            {
+                if let Some(attr) = line.strip_prefix("add:")
+                {
                     entry.modifications.push(LdifModification {
                         operation: LdifModOp::Add,
                         attribute: attr.trim().to_string(),
@@ -210,7 +237,8 @@ pub fn parse_ldif(input: &str) -> Result<Vec<LdifEntry>, String> {
                     });
                     continue;
                 }
-                if let Some(attr) = line.strip_prefix("replace:") {
+                if let Some(attr) = line.strip_prefix("replace:")
+                {
                     entry.modifications.push(LdifModification {
                         operation: LdifModOp::Replace,
                         attribute: attr.trim().to_string(),
@@ -218,7 +246,8 @@ pub fn parse_ldif(input: &str) -> Result<Vec<LdifEntry>, String> {
                     });
                     continue;
                 }
-                if let Some(attr) = line.strip_prefix("delete:") {
+                if let Some(attr) = line.strip_prefix("delete:")
+                {
                     entry.modifications.push(LdifModification {
                         operation: LdifModOp::Delete,
                         attribute: attr.trim().to_string(),
@@ -227,19 +256,25 @@ pub fn parse_ldif(input: &str) -> Result<Vec<LdifEntry>, String> {
                     continue;
                 }
                 // "-" is a separator between modification operations; skip it
-                if line == "-" {
+                if line == "-"
+                {
                     continue;
                 }
             }
 
             // Regular attribute line: "attr: value" or "attr:: base64value"
-            if let Some((attr, value)) = parse_attribute_line(line) {
-                if entry.changetype == LdifChangeType::Modify {
+            if let Some((attr, value)) = parse_attribute_line(line)
+            {
+                if entry.changetype == LdifChangeType::Modify
+                {
                     // Add value to the last modification
-                    if let Some(last_mod) = entry.modifications.last_mut() {
+                    if let Some(last_mod) = entry.modifications.last_mut()
+                    {
                         last_mod.values.push(value);
                     }
-                } else {
+                }
+                else
+                {
                     entry.add_attribute(attr, value);
                 }
             }
@@ -247,7 +282,8 @@ pub fn parse_ldif(input: &str) -> Result<Vec<LdifEntry>, String> {
     }
 
     // Don't forget the last entry
-    if let Some(entry) = current.take() {
+    if let Some(entry) = current.take()
+    {
         entries.push(entry);
     }
 
@@ -261,23 +297,30 @@ pub fn parse_ldif(input: &str) -> Result<Vec<LdifEntry>, String> {
 /// by a single space on the next line. This function joins those lines.
 /// 在 LDIF 中，长行可以通过插入换行符并在下一行开头添加一个空格来折叠。
 /// 此函数将这些行连接起来。
-fn unfold_lines(input: &str) -> Vec<String> {
+fn unfold_lines(input: &str) -> Vec<String>
+{
     let mut result = Vec::new();
     let mut current_line = String::new();
 
-    for line in input.lines() {
-        if line.starts_with(' ') || line.starts_with('\t') {
+    for line in input.lines()
+    {
+        if line.starts_with(' ') || line.starts_with('\t')
+        {
             // Continuation line
             current_line.push_str(line.trim_start());
-        } else {
-            if !current_line.is_empty() {
+        }
+        else
+        {
+            if !current_line.is_empty()
+            {
                 result.push(current_line);
             }
             current_line = line.to_string();
         }
     }
 
-    if !current_line.is_empty() {
+    if !current_line.is_empty()
+    {
         result.push(current_line);
     }
 
@@ -286,11 +329,14 @@ fn unfold_lines(input: &str) -> Vec<String> {
 
 /// Parse a single attribute line "attr: value" or "attr:: base64value".
 /// 解析单个属性行 "attr: value" 或 "attr:: base64value"。
-fn parse_attribute_line(line: &str) -> Option<(String, String)> {
+fn parse_attribute_line(line: &str) -> Option<(String, String)>
+{
     // Check for base64-encoded value first (double colon "attr:: value")
-    if let Some(pos) = line.find("::") {
+    if let Some(pos) = line.find("::")
+    {
         let attr = line[..pos].trim();
-        if !attr.is_empty() {
+        if !attr.is_empty()
+        {
             let encoded = line[pos + 2..].trim();
             let value = decode_base64_value(encoded);
             return Some((attr.to_string(), value));
@@ -298,10 +344,12 @@ fn parse_attribute_line(line: &str) -> Option<(String, String)> {
     }
 
     // Regular "attr: value"
-    if let Some(pos) = line.find(':') {
+    if let Some(pos) = line.find(':')
+    {
         let attr = line[..pos].trim();
         let value = line[pos + 1..].trim();
-        if !attr.is_empty() {
+        if !attr.is_empty()
+        {
             return Some((attr.to_string(), value.to_string()));
         }
     }
@@ -310,9 +358,11 @@ fn parse_attribute_line(line: &str) -> Option<(String, String)> {
 }
 
 /// Decode a base64-encoded LDIF value / 解码 base64 编码的 LDIF 值
-fn decode_base64_value(encoded: &str) -> String {
+fn decode_base64_value(encoded: &str) -> String
+{
     use base64::Engine;
-    match base64::engine::general_purpose::STANDARD.decode(encoded.trim()) {
+    match base64::engine::general_purpose::STANDARD.decode(encoded.trim())
+    {
         Ok(bytes) => String::from_utf8_lossy(&bytes).to_string(),
         Err(_) => encoded.to_string(), // Return as-is if decode fails
     }
@@ -322,13 +372,16 @@ fn decode_base64_value(encoded: &str) -> String {
 ///
 /// Serializes a list of LDIF entries into valid LDIF format.
 /// 将 LDIF 条目列表序列化为有效的 LDIF 格式。
-pub fn generate_ldif(entries: &[LdifEntry]) -> String {
+pub fn generate_ldif(entries: &[LdifEntry]) -> String
+{
     let mut output = String::new();
 
-    for entry in entries {
+    for entry in entries
+    {
         let _ = writeln!(output, "dn: {}", entry.dn);
 
-        let ct = match entry.changetype {
+        let ct = match entry.changetype
+        {
             LdifChangeType::Add => "add",
             LdifChangeType::Modify => "modify",
             LdifChangeType::Delete => "delete",
@@ -336,33 +389,43 @@ pub fn generate_ldif(entries: &[LdifEntry]) -> String {
         };
         let _ = writeln!(output, "changetype: {}", ct);
 
-        match entry.changetype {
-            LdifChangeType::Add => {
+        match entry.changetype
+        {
+            LdifChangeType::Add =>
+            {
                 let mut attrs: Vec<_> = entry.attributes.iter().collect();
                 attrs.sort_by_key(|(k, _)| (**k).clone());
-                for (attr, values) in attrs {
-                    for value in values {
+                for (attr, values) in attrs
+                {
+                    for value in values
+                    {
                         let _ = writeln!(output, "{}: {}", attr, value);
                     }
                 }
             },
-            LdifChangeType::Modify => {
-                for (i, modification) in entry.modifications.iter().enumerate() {
-                    if i > 0 {
+            LdifChangeType::Modify =>
+            {
+                for (i, modification) in entry.modifications.iter().enumerate()
+                {
+                    if i > 0
+                    {
                         output.push_str("-\n");
                     }
-                    let op = match modification.operation {
+                    let op = match modification.operation
+                    {
                         LdifModOp::Add => "add",
                         LdifModOp::Replace => "replace",
                         LdifModOp::Delete => "delete",
                     };
                     let _ = writeln!(output, "{}: {}", op, modification.attribute);
-                    for value in &modification.values {
+                    for value in &modification.values
+                    {
                         let _ = writeln!(output, "{}: {}", modification.attribute, value);
                     }
                 }
             },
-            LdifChangeType::Delete | LdifChangeType::ModDn => {},
+            LdifChangeType::Delete | LdifChangeType::ModDn =>
+            {},
         }
 
         output.push('\n');
@@ -379,11 +442,13 @@ pub fn generate_ldif(entries: &[LdifEntry]) -> String {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_ldif_change_type_from_str() {
+    fn test_ldif_change_type_from_str()
+    {
         assert_eq!(LdifChangeType::from_str("add"), Some(LdifChangeType::Add));
         assert_eq!(LdifChangeType::from_str("modify"), Some(LdifChangeType::Modify));
         assert_eq!(LdifChangeType::from_str("delete"), Some(LdifChangeType::Delete));
@@ -393,7 +458,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_ldif_add() {
+    fn test_parse_ldif_add()
+    {
         let input = "\
 dn: cn=John Doe,dc=example,dc=com
 changetype: add
@@ -414,7 +480,8 @@ mail: john@example.com
     }
 
     #[test]
-    fn test_parse_ldif_multiple_entries() {
+    fn test_parse_ldif_multiple_entries()
+    {
         let input = "\
 dn: cn=Alice,dc=example,dc=com
 changetype: add
@@ -433,7 +500,8 @@ sn: Bob
     }
 
     #[test]
-    fn test_parse_ldif_modify() {
+    fn test_parse_ldif_modify()
+    {
         let input = "\
 dn: cn=John Doe,dc=example,dc=com
 changetype: modify
@@ -460,7 +528,8 @@ description: Updated user
     }
 
     #[test]
-    fn test_parse_ldif_delete() {
+    fn test_parse_ldif_delete()
+    {
         let input = "\
 dn: cn=Old User,dc=example,dc=com
 changetype: delete
@@ -472,7 +541,8 @@ changetype: delete
     }
 
     #[test]
-    fn test_parse_ldif_moddn() {
+    fn test_parse_ldif_moddn()
+    {
         let input = "\
 dn: cn=John,ou=users,dc=example,dc=com
 changetype: moddn
@@ -486,7 +556,8 @@ newsuperior: ou=admins,dc=example,dc=com
     }
 
     #[test]
-    fn test_parse_ldif_with_comments() {
+    fn test_parse_ldif_with_comments()
+    {
         let input = "\
 # This is a comment
 dn: cn=Test,dc=example,dc=com
@@ -500,7 +571,8 @@ objectClass: person
     }
 
     #[test]
-    fn test_parse_ldif_with_version() {
+    fn test_parse_ldif_with_version()
+    {
         let input = "\
 version: 1
 dn: cn=Test,dc=example,dc=com
@@ -512,7 +584,8 @@ objectClass: person
     }
 
     #[test]
-    fn test_parse_ldif_unknown_changetype() {
+    fn test_parse_ldif_unknown_changetype()
+    {
         let input = "\
 dn: cn=Test,dc=example,dc=com
 changetype: invalid
@@ -522,7 +595,8 @@ changetype: invalid
     }
 
     #[test]
-    fn test_unfold_lines() {
+    fn test_unfold_lines()
+    {
         let input = "dn: cn=Very Long Name,\\n dc=example,dc=com";
         let lines = unfold_lines(input);
         // The test input doesn't have continuation lines with leading space
@@ -530,7 +604,8 @@ changetype: invalid
     }
 
     #[test]
-    fn test_generate_ldif_add() {
+    fn test_generate_ldif_add()
+    {
         let mut entry = LdifEntry::new("cn=John,dc=example,dc=com", LdifChangeType::Add);
         entry.add_attribute("objectClass", "person");
         entry.add_attribute("sn", "John");
@@ -542,7 +617,8 @@ changetype: invalid
     }
 
     #[test]
-    fn test_generate_ldif_modify() {
+    fn test_generate_ldif_modify()
+    {
         let mut entry = LdifEntry::new("cn=John,dc=example,dc=com", LdifChangeType::Modify);
         entry.modifications.push(LdifModification {
             operation: LdifModOp::Replace,
@@ -556,14 +632,16 @@ changetype: invalid
     }
 
     #[test]
-    fn test_generate_ldif_delete() {
+    fn test_generate_ldif_delete()
+    {
         let entry = LdifEntry::new("cn=Old,dc=example,dc=com", LdifChangeType::Delete);
         let ldif = generate_ldif(&[entry]);
         assert!(ldif.contains("changetype: delete"));
     }
 
     #[test]
-    fn test_ldif_entry_add_attribute() {
+    fn test_ldif_entry_add_attribute()
+    {
         let mut entry = LdifEntry::new("cn=Test,dc=example,dc=com", LdifChangeType::Add);
         entry.add_attribute("cn", "Test");
         entry.add_attribute("cn", "Test User"); // Multi-valued
@@ -575,20 +653,23 @@ changetype: invalid
     }
 
     #[test]
-    fn test_parse_ldif_empty() {
+    fn test_parse_ldif_empty()
+    {
         let entries = parse_ldif("").unwrap();
         assert!(entries.is_empty());
     }
 
     #[test]
-    fn test_parse_ldif_comments_only() {
+    fn test_parse_ldif_comments_only()
+    {
         let input = "# Just a comment\n# Another comment\n";
         let entries = parse_ldif(input).unwrap();
         assert!(entries.is_empty());
     }
 
     #[test]
-    fn test_modification_helpers() {
+    fn test_modification_helpers()
+    {
         let add_mod = LdifModification {
             operation: LdifModOp::Add,
             attribute: "mail".to_string(),

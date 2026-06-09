@@ -141,7 +141,8 @@ pub use state::State;
 ///     format!("ID: {}", params.id)
 /// }
 /// ```
-pub trait FromRequest: Sized {
+pub trait FromRequest: Sized
+{
     /// Extract from request
     /// 从请求提取
     ///
@@ -174,7 +175,8 @@ pub type ExtractorFuture<T> = Pin<Box<dyn Future<Output = Result<T, ExtractorErr
 /// 请求数据提取过程中可能发生的错误。
 /// 每个变体代表不同类别的提取失败。
 #[derive(Debug, thiserror::Error)]
-pub enum ExtractorError {
+pub enum ExtractorError
+{
     /// Missing parameter
     /// 缺少参数
     ///

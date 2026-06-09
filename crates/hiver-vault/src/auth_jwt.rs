@@ -37,7 +37,8 @@ use crate::{
 /// JWT login request body sent to Vault.
 /// 发送到 Vault 的 JWT 登录请求体。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct JwtLoginRequest {
+pub struct JwtLoginRequest
+{
     /// The JWT role to authenticate against.
     /// 要认证的 JWT 角色。
     #[serde(rename = "role")]
@@ -59,7 +60,8 @@ pub struct JwtLoginRequest {
 /// Equivalent to Vault's JWT auth role configuration.
 /// 等价于 Vault 的 JWT 认证角色配置。
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct JwtRoleConfig {
+pub struct JwtRoleConfig
+{
     /// The role name.
     /// 角色名称。
     #[serde(rename = "name")]
@@ -106,10 +108,12 @@ pub struct JwtRoleConfig {
     pub bound_subject: Option<String>,
 }
 
-impl JwtRoleConfig {
+impl JwtRoleConfig
+{
     /// Create a new role configuration with required fields.
     /// 使用必填字段创建新角色配置。
-    pub fn new(name: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>) -> Self
+    {
         Self {
             name: name.into(),
             role_type: None,
@@ -125,42 +129,48 @@ impl JwtRoleConfig {
 
     /// Set the role type.
     /// 设置角色类型。
-    pub fn with_role_type(mut self, role_type: impl Into<String>) -> Self {
+    pub fn with_role_type(mut self, role_type: impl Into<String>) -> Self
+    {
         self.role_type = Some(role_type.into());
         self
     }
 
     /// Set the bound audiences.
     /// 设置绑定受众。
-    pub fn with_bound_audiences(mut self, audiences: Vec<String>) -> Self {
+    pub fn with_bound_audiences(mut self, audiences: Vec<String>) -> Self
+    {
         self.bound_audiences = Some(audiences);
         self
     }
 
     /// Set the user claim (required for most configurations).
     /// 设置用户声明（大多数配置必需）。
-    pub fn with_user_claim(mut self, claim: impl Into<String>) -> Self {
+    pub fn with_user_claim(mut self, claim: impl Into<String>) -> Self
+    {
         self.user_claim = Some(claim.into());
         self
     }
 
     /// Set the groups claim.
     /// 设置分组声明。
-    pub fn with_groups_claim(mut self, claim: impl Into<String>) -> Self {
+    pub fn with_groups_claim(mut self, claim: impl Into<String>) -> Self
+    {
         self.groups_claim = Some(claim.into());
         self
     }
 
     /// Set the policies to grant.
     /// 设置要授予的策略。
-    pub fn with_policies(mut self, policies: Vec<String>) -> Self {
+    pub fn with_policies(mut self, policies: Vec<String>) -> Self
+    {
         self.policies = Some(policies);
         self
     }
 
     /// Set the token TTL.
     /// 设置 Token TTL。
-    pub fn with_ttl(mut self, ttl: impl Into<String>) -> Self {
+    pub fn with_ttl(mut self, ttl: impl Into<String>) -> Self
+    {
         self.ttl = Some(ttl.into());
         self
     }
@@ -197,16 +207,19 @@ impl JwtRoleConfig {
 /// println!("Token: {}", result.client_token);
 /// ```
 #[derive(Debug, Clone)]
-pub struct JwtAuth {
+pub struct JwtAuth
+{
     role: String,
     jwt: String,
     mount: String,
 }
 
-impl JwtAuth {
+impl JwtAuth
+{
     /// Create a new JWT authentication with the default mount path ("jwt").
     /// 使用默认挂载路径（"jwt"）创建新的 JWT 认证。
-    pub fn new(role: impl Into<String>, jwt: impl Into<String>) -> Self {
+    pub fn new(role: impl Into<String>, jwt: impl Into<String>) -> Self
+    {
         Self {
             role: role.into(),
             jwt: jwt.into(),
@@ -216,15 +229,18 @@ impl JwtAuth {
 
     /// Create a new JWT authentication with a custom mount path.
     /// 使用自定义挂载路径创建新的 JWT 认证。
-    pub fn with_mount(mut self, mount: impl Into<String>) -> Self {
+    pub fn with_mount(mut self, mount: impl Into<String>) -> Self
+    {
         self.mount = mount.into();
         self
     }
 }
 
 #[async_trait::async_trait]
-impl AuthBackend for JwtAuth {
-    async fn authenticate(&self, client: &VaultClient) -> VaultResult<crate::auth::AuthResult> {
+impl AuthBackend for JwtAuth
+{
+    async fn authenticate(&self, client: &VaultClient) -> VaultResult<crate::auth::AuthResult>
+    {
         let path = format!("auth/{}/login", self.mount);
         let url = client.url(&path)?;
 
@@ -237,7 +253,8 @@ impl AuthBackend for JwtAuth {
         // 不使用 client.post() 因为此时可能还没有 token
         let resp = client.http_client().post(url).json(&body).send().await?;
 
-        if !resp.status().is_success() {
+        if !resp.status().is_success()
+        {
             let status = resp.status().as_u16();
             let body_text = resp.text().await.unwrap_or_default();
             return Err(VaultError::AuthenticationFailed(format!(
@@ -262,15 +279,18 @@ impl AuthBackend for JwtAuth {
 ///
 /// 提供配置 JWT 认证方法和管理角色的方法。
 /// 等价于 Spring Vault 的 JWT 配置 `VaultOperations`。
-pub struct JwtAuthManager<'a> {
+pub struct JwtAuthManager<'a>
+{
     client: &'a VaultClient,
     mount: String,
 }
 
-impl<'a> JwtAuthManager<'a> {
+impl<'a> JwtAuthManager<'a>
+{
     /// Create a new JWT auth manager with the default mount path.
     /// 使用默认挂载路径创建新的 JWT 认证管理器。
-    pub fn new(client: &'a VaultClient) -> Self {
+    pub fn new(client: &'a VaultClient) -> Self
+    {
         Self {
             client,
             mount: "jwt".to_string(),
@@ -279,7 +299,8 @@ impl<'a> JwtAuthManager<'a> {
 
     /// Create with a custom mount path.
     /// 使用自定义挂载路径创建。
-    pub fn with_mount(client: &'a VaultClient, mount: &str) -> Self {
+    pub fn with_mount(client: &'a VaultClient, mount: &str) -> Self
+    {
         Self {
             client,
             mount: mount.to_string(),
@@ -294,7 +315,8 @@ impl<'a> JwtAuthManager<'a> {
     /// ```java
     /// vaultOperations.write("auth/jwt/role/my-role", roleConfig);
     /// ```
-    pub async fn configure_role(&self, config: &JwtRoleConfig) -> VaultResult<()> {
+    pub async fn configure_role(&self, config: &JwtRoleConfig) -> VaultResult<()>
+    {
         let path = format!("auth/{}/role/{}", self.mount, config.name);
         self.client.post(&path, config).await?;
         Ok(())
@@ -302,7 +324,8 @@ impl<'a> JwtAuthManager<'a> {
 
     /// Read a JWT auth role configuration.
     /// 读取 JWT 认证角色配置。
-    pub async fn read_role(&self, role_name: &str) -> VaultResult<serde_json::Value> {
+    pub async fn read_role(&self, role_name: &str) -> VaultResult<serde_json::Value>
+    {
         let path = format!("auth/{}/role/{}", self.mount, role_name);
         let resp = self.client.get(&path).await?;
         let body: serde_json::Value = resp.json().await?;
@@ -313,7 +336,8 @@ impl<'a> JwtAuthManager<'a> {
 
     /// Delete a JWT auth role.
     /// 删除 JWT 认证角色。
-    pub async fn delete_role(&self, role_name: &str) -> VaultResult<()> {
+    pub async fn delete_role(&self, role_name: &str) -> VaultResult<()>
+    {
         let path = format!("auth/{}/role/{}", self.mount, role_name);
         self.client.delete(&path).await?;
         Ok(())
@@ -321,7 +345,8 @@ impl<'a> JwtAuthManager<'a> {
 
     /// List all JWT auth roles.
     /// 列出所有 JWT 认证角色。
-    pub async fn list_roles(&self) -> VaultResult<Vec<String>> {
+    pub async fn list_roles(&self) -> VaultResult<Vec<String>>
+    {
         let path = format!("auth/{}/role", self.mount);
         crate::secret::list(self.client, &path).await
     }
@@ -333,18 +358,21 @@ impl<'a> JwtAuthManager<'a> {
         oidc_discovery_url: Option<&str>,
         jwt_validation_pubkeys: Option<&[String]>,
         default_role: Option<&str>,
-    ) -> VaultResult<()> {
+    ) -> VaultResult<()>
+    {
         let path = format!("auth/{}/config", self.mount);
         let mut body = serde_json::Map::new();
 
-        if let Some(url) = oidc_discovery_url {
+        if let Some(url) = oidc_discovery_url
+        {
             body.insert(
                 "oidc_discovery_url".to_string(),
                 serde_json::Value::String(url.to_string()),
             );
         }
 
-        if let Some(keys) = jwt_validation_pubkeys {
+        if let Some(keys) = jwt_validation_pubkeys
+        {
             body.insert(
                 "jwt_validation_pubkeys".to_string(),
                 serde_json::Value::Array(
@@ -355,7 +383,8 @@ impl<'a> JwtAuthManager<'a> {
             );
         }
 
-        if let Some(role) = default_role {
+        if let Some(role) = default_role
+        {
             body.insert("default_role".to_string(), serde_json::Value::String(role.to_string()));
         }
 
@@ -374,11 +403,13 @@ impl<'a> JwtAuthManager<'a> {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_jwt_auth_creation() {
+    fn test_jwt_auth_creation()
+    {
         let auth = JwtAuth::new("my-role", "my-jwt-token");
         assert_eq!(auth.role, "my-role");
         assert_eq!(auth.jwt, "my-jwt-token");
@@ -386,13 +417,15 @@ mod tests {
     }
 
     #[test]
-    fn test_jwt_auth_custom_mount() {
+    fn test_jwt_auth_custom_mount()
+    {
         let auth = JwtAuth::new("my-role", "my-jwt-token").with_mount("oidc");
         assert_eq!(auth.mount, "oidc");
     }
 
     #[test]
-    fn test_jwt_role_config_builder() {
+    fn test_jwt_role_config_builder()
+    {
         let config = JwtRoleConfig::new("my-app")
             .with_role_type("oidc")
             .with_bound_audiences(vec!["my-app".to_string()])
@@ -411,7 +444,8 @@ mod tests {
     }
 
     #[test]
-    fn test_jwt_role_config_serialization() {
+    fn test_jwt_role_config_serialization()
+    {
         let config = JwtRoleConfig::new("test-role")
             .with_user_claim("sub")
             .with_policies(vec!["reader".to_string()]);
@@ -427,7 +461,8 @@ mod tests {
     }
 
     #[test]
-    fn test_jwt_login_request_serialization() {
+    fn test_jwt_login_request_serialization()
+    {
         let req = JwtLoginRequest {
             role: "my-role".to_string(),
             jwt: "token-value".to_string(),

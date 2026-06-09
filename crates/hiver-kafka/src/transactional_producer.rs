@@ -12,7 +12,8 @@ use crate::{ProducerConfig, Record};
 /// Offset and metadata for consume-transform-produce pattern.
 /// consume-transform-produce 模式的偏移和元数据。
 #[derive(Clone, Debug)]
-pub struct TransactionOffset {
+pub struct TransactionOffset
+{
     /// Topic name.
     /// 主题名称。
     pub topic: String,
@@ -30,10 +31,12 @@ pub struct TransactionOffset {
     pub metadata: Option<String>,
 }
 
-impl TransactionOffset {
+impl TransactionOffset
+{
     /// Create a new transaction offset.
     /// 创建新的事务偏移。
-    pub fn new(topic: impl Into<String>, partition: i32, offset: i64) -> Self {
+    pub fn new(topic: impl Into<String>, partition: i32, offset: i64) -> Self
+    {
         Self {
             topic: topic.into(),
             partition,
@@ -44,7 +47,8 @@ impl TransactionOffset {
 
     /// Attach metadata to this offset entry.
     /// 为此偏移条目附加元数据。
-    pub fn with_metadata(mut self, metadata: impl Into<String>) -> Self {
+    pub fn with_metadata(mut self, metadata: impl Into<String>) -> Self
+    {
         self.metadata = Some(metadata.into());
         self
     }
@@ -53,7 +57,8 @@ impl TransactionOffset {
 /// State of a transaction.
 /// 事务的状态。
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub enum TransactionState {
+pub enum TransactionState
+{
     /// No transaction in progress.
     /// 没有正在进行的事务。
     Idle,
@@ -109,7 +114,8 @@ pub enum TransactionState {
 /// producer.commit_transaction();
 /// ```
 #[derive(Clone)]
-pub struct TransactionalProducer {
+pub struct TransactionalProducer
+{
     /// Underlying producer configuration.
     /// 底层生产者配置。
     config: ProducerConfig,
@@ -135,7 +141,8 @@ pub struct TransactionalProducer {
     pending_group_ids: Vec<String>,
 }
 
-impl TransactionalProducer {
+impl TransactionalProducer
+{
     /// Create a new transactional producer.
     /// 创建新的事务生产者。
     ///
@@ -145,7 +152,8 @@ impl TransactionalProducer {
     ///
     /// `transactional_id` 必须在所有生产者实例中唯一，
     /// 以维护精确一次保证。Kafka 使用此 ID 隔离前代的僵尸实例。
-    pub fn new(config: ProducerConfig, transactional_id: impl Into<String>) -> Self {
+    pub fn new(config: ProducerConfig, transactional_id: impl Into<String>) -> Self
+    {
         Self {
             config,
             transactional_id: transactional_id.into(),
@@ -158,19 +166,22 @@ impl TransactionalProducer {
 
     /// Get the transactional ID.
     /// 获取事务ID。
-    pub fn transactional_id(&self) -> &str {
+    pub fn transactional_id(&self) -> &str
+    {
         &self.transactional_id
     }
 
     /// Get the current transaction state.
     /// 获取当前事务状态。
-    pub fn state(&self) -> &TransactionState {
+    pub fn state(&self) -> &TransactionState
+    {
         &self.state
     }
 
     /// Get the underlying producer configuration.
     /// 获取底层生产者配置。
-    pub fn config(&self) -> &ProducerConfig {
+    pub fn config(&self) -> &ProducerConfig
+    {
         &self.config
     }
 
@@ -181,8 +192,10 @@ impl TransactionalProducer {
     ///
     /// Returns an error if a transaction is already in progress.
     /// 如果事务正在进行中则返回错误。
-    pub fn begin_transaction(&mut self) -> Result<(), String> {
-        if self.state != TransactionState::Idle {
+    pub fn begin_transaction(&mut self) -> Result<(), String>
+    {
+        if self.state != TransactionState::Idle
+        {
             return Err(format!(
                 "Cannot begin transaction: current state is {:?}, expected Idle",
                 self.state
@@ -210,8 +223,10 @@ impl TransactionalProducer {
     ///
     /// Returns an error if no transaction is active.
     /// 如果没有活跃事务则返回错误。
-    pub fn commit_transaction(&mut self) -> Result<(), String> {
-        if self.state != TransactionState::Active {
+    pub fn commit_transaction(&mut self) -> Result<(), String>
+    {
+        if self.state != TransactionState::Active
+        {
             return Err(format!(
                 "Cannot commit transaction: current state is {:?}, expected Active",
                 self.state
@@ -230,7 +245,8 @@ impl TransactionalProducer {
 
         // Mock implementation: simulate flush of all pending records.
         // 模拟实现：模拟刷新所有待处理记录。
-        for record in &self.pending_records {
+        for record in &self.pending_records
+        {
             tracing::debug!(
                 "Flushing record: topic={}, {} bytes",
                 record.topic,
@@ -257,8 +273,10 @@ impl TransactionalProducer {
     ///
     /// Returns an error if no transaction is active.
     /// 如果没有活跃事务则返回错误。
-    pub fn abort_transaction(&mut self) -> Result<(), String> {
-        if self.state != TransactionState::Active {
+    pub fn abort_transaction(&mut self) -> Result<(), String>
+    {
+        if self.state != TransactionState::Active
+        {
             return Err(format!(
                 "Cannot abort transaction: current state is {:?}, expected Active",
                 self.state
@@ -297,8 +315,10 @@ impl TransactionalProducer {
         topic: &str,
         key: Option<&str>,
         value: &[u8],
-    ) -> Result<(), String> {
-        if self.state != TransactionState::Active {
+    ) -> Result<(), String>
+    {
+        if self.state != TransactionState::Active
+        {
             return Err(format!(
                 "Cannot send in transaction: current state is {:?}, expected Active",
                 self.state
@@ -342,8 +362,10 @@ impl TransactionalProducer {
         &mut self,
         offsets: Vec<TransactionOffset>,
         group_id: &str,
-    ) -> Result<(), String> {
-        if self.state != TransactionState::Active {
+    ) -> Result<(), String>
+    {
+        if self.state != TransactionState::Active
+        {
             return Err(format!(
                 "Cannot send offsets to transaction: current state is {:?}, expected Active",
                 self.state
@@ -351,7 +373,8 @@ impl TransactionalProducer {
         }
         tracing::debug!("Adding {} offsets for group '{}' to transaction", offsets.len(), group_id);
         self.pending_offsets.extend(offsets);
-        if !self.pending_group_ids.contains(&group_id.to_string()) {
+        if !self.pending_group_ids.contains(&group_id.to_string())
+        {
             self.pending_group_ids.push(group_id.to_string());
         }
         Ok(())
@@ -359,13 +382,15 @@ impl TransactionalProducer {
 
     /// Get the number of pending records in the current transaction.
     /// 获取当前事务中待处理记录的数量。
-    pub fn pending_count(&self) -> usize {
+    pub fn pending_count(&self) -> usize
+    {
         self.pending_records.len()
     }
 
     /// Get the number of pending offsets in the current transaction.
     /// 获取当前事务中待处理偏移的数量。
-    pub fn pending_offset_count(&self) -> usize {
+    pub fn pending_offset_count(&self) -> usize
+    {
         self.pending_offsets.len()
     }
 }
@@ -378,13 +403,15 @@ impl TransactionalProducer {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     /// Test creating a transactional producer.
     /// 测试创建事务生产者。
     #[test]
-    fn test_new_transactional_producer() {
+    fn test_new_transactional_producer()
+    {
         let producer = TransactionalProducer::new(ProducerConfig::new(), "txn-1");
         assert_eq!(producer.transactional_id(), "txn-1");
         assert_eq!(producer.state(), &TransactionState::Idle);
@@ -394,7 +421,8 @@ mod tests {
     /// Test begin_transaction transitions state to Active.
     /// 测试 begin_transaction 将状态转为 Active。
     #[test]
-    fn test_begin_transaction() {
+    fn test_begin_transaction()
+    {
         let mut producer = TransactionalProducer::new(ProducerConfig::new(), "txn-1");
         producer.begin_transaction().unwrap();
         assert_eq!(producer.state(), &TransactionState::Active);
@@ -403,7 +431,8 @@ mod tests {
     /// Test begin_transaction fails when already active.
     /// 测试在 Active 状态下 begin_transaction 失败。
     #[test]
-    fn test_begin_transaction_already_active() {
+    fn test_begin_transaction_already_active()
+    {
         let mut producer = TransactionalProducer::new(ProducerConfig::new(), "txn-1");
         producer.begin_transaction().unwrap();
         let result = producer.begin_transaction();
@@ -414,7 +443,8 @@ mod tests {
     /// Test commit_transaction transitions state back to Idle.
     /// 测试 commit_transaction 将状态转回 Idle。
     #[test]
-    fn test_commit_transaction() {
+    fn test_commit_transaction()
+    {
         let mut producer = TransactionalProducer::new(ProducerConfig::new(), "txn-1");
         producer.begin_transaction().unwrap();
         producer.commit_transaction().unwrap();
@@ -424,7 +454,8 @@ mod tests {
     /// Test commit_transaction fails when idle.
     /// 测试在 Idle 状态下 commit_transaction 失败。
     #[test]
-    fn test_commit_transaction_when_idle() {
+    fn test_commit_transaction_when_idle()
+    {
         let mut producer = TransactionalProducer::new(ProducerConfig::new(), "txn-1");
         let result = producer.commit_transaction();
         assert!(result.is_err());
@@ -434,7 +465,8 @@ mod tests {
     /// Test abort_transaction discards records and returns to Idle.
     /// 测试 abort_transaction 丢弃记录并返回 Idle。
     #[test]
-    fn test_abort_transaction() {
+    fn test_abort_transaction()
+    {
         let mut producer = TransactionalProducer::new(ProducerConfig::new(), "txn-1");
         producer.begin_transaction().unwrap();
         producer
@@ -450,7 +482,8 @@ mod tests {
     /// Test abort_transaction fails when idle.
     /// 测试在 Idle 状态下 abort_transaction 失败。
     #[test]
-    fn test_abort_transaction_when_idle() {
+    fn test_abort_transaction_when_idle()
+    {
         let mut producer = TransactionalProducer::new(ProducerConfig::new(), "txn-1");
         let result = producer.abort_transaction();
         assert!(result.is_err());
@@ -459,7 +492,8 @@ mod tests {
     /// Test send_in_transaction buffers records.
     /// 测试 send_in_transaction 缓冲记录。
     #[test]
-    fn test_send_in_transaction() {
+    fn test_send_in_transaction()
+    {
         let mut producer = TransactionalProducer::new(ProducerConfig::new(), "txn-1");
         producer.begin_transaction().unwrap();
 
@@ -476,7 +510,8 @@ mod tests {
     /// Test send_in_transaction fails when idle.
     /// 测试在 Idle 状态下 send_in_transaction 失败。
     #[test]
-    fn test_send_in_transaction_when_idle() {
+    fn test_send_in_transaction_when_idle()
+    {
         let mut producer = TransactionalProducer::new(ProducerConfig::new(), "txn-1");
         let result = producer.send_in_transaction("topic", Some("key"), b"value");
         assert!(result.is_err());
@@ -485,7 +520,8 @@ mod tests {
     /// Test send_offsets_to_transaction buffers offsets.
     /// 测试 send_offsets_to_transaction 缓冲偏移。
     #[test]
-    fn test_send_offsets_to_transaction() {
+    fn test_send_offsets_to_transaction()
+    {
         let mut producer = TransactionalProducer::new(ProducerConfig::new(), "txn-1");
         producer.begin_transaction().unwrap();
 
@@ -503,7 +539,8 @@ mod tests {
     /// Test send_offsets_to_transaction fails when idle.
     /// 测试在 Idle 状态下 send_offsets_to_transaction 失败。
     #[test]
-    fn test_send_offsets_to_transaction_when_idle() {
+    fn test_send_offsets_to_transaction_when_idle()
+    {
         let mut producer = TransactionalProducer::new(ProducerConfig::new(), "txn-1");
         let result = producer.send_offsets_to_transaction(vec![], "group");
         assert!(result.is_err());
@@ -512,7 +549,8 @@ mod tests {
     /// Test full transaction lifecycle: begin -> send -> commit.
     /// 测试完整事务生命周期：开始 -> 发送 -> 提交。
     #[test]
-    fn test_full_lifecycle_commit() {
+    fn test_full_lifecycle_commit()
+    {
         let mut producer = TransactionalProducer::new(ProducerConfig::new(), "txn-lifecycle");
 
         producer.begin_transaction().unwrap();
@@ -532,7 +570,8 @@ mod tests {
     /// Test full transaction lifecycle: begin -> send -> abort.
     /// 测试完整事务生命周期：开始 -> 发送 -> 中止。
     #[test]
-    fn test_full_lifecycle_abort() {
+    fn test_full_lifecycle_abort()
+    {
         let mut producer = TransactionalProducer::new(ProducerConfig::new(), "txn-lifecycle");
 
         producer.begin_transaction().unwrap();
@@ -548,7 +587,8 @@ mod tests {
     /// Test multiple sequential transactions.
     /// 测试多个连续事务。
     #[test]
-    fn test_multiple_transactions() {
+    fn test_multiple_transactions()
+    {
         let mut producer = TransactionalProducer::new(ProducerConfig::new(), "txn-multi");
 
         // Transaction 1
@@ -567,7 +607,8 @@ mod tests {
     /// Test TransactionOffset builder.
     /// 测试 TransactionOffset 构建器。
     #[test]
-    fn test_transaction_offset_builder() {
+    fn test_transaction_offset_builder()
+    {
         let offset = TransactionOffset::new("topic", 3, 999).with_metadata("my-meta");
         assert_eq!(offset.topic, "topic");
         assert_eq!(offset.partition, 3);
@@ -578,7 +619,8 @@ mod tests {
     /// Test TransactionOffset without metadata.
     /// 测试不带元数据的 TransactionOffset。
     #[test]
-    fn test_transaction_offset_no_metadata() {
+    fn test_transaction_offset_no_metadata()
+    {
         let offset = TransactionOffset::new("topic", 0, 0);
         assert!(offset.metadata.is_none());
     }
@@ -586,7 +628,8 @@ mod tests {
     /// Test producer clone preserves state.
     /// 测试生产者克隆保留状态。
     #[test]
-    fn test_producer_clone() {
+    fn test_producer_clone()
+    {
         let mut producer = TransactionalProducer::new(ProducerConfig::new(), "txn-clone");
         producer.begin_transaction().unwrap();
         producer
@@ -602,7 +645,8 @@ mod tests {
     /// Test config accessor.
     /// 测试配置访问器。
     #[test]
-    fn test_config_accessor() {
+    fn test_config_accessor()
+    {
         let config = ProducerConfig::new();
         let producer = TransactionalProducer::new(config.clone(), "txn-cfg");
         assert_eq!(producer.config().bootstrap_servers, config.bootstrap_servers);

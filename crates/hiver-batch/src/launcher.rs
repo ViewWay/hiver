@@ -48,16 +48,19 @@ use crate::{
 /// let execution = launcher.run(job).await?;
 /// println!("Job completed: {:?}", execution.status);
 /// ```
-pub struct JobLauncher {
+pub struct JobLauncher
+{
     repository: Arc<InMemoryJobRepository>,
     running_jobs: Arc<RwLock<HashMap<String, bool>>>,
     max_concurrent_jobs: usize,
 }
 
-impl JobLauncher {
+impl JobLauncher
+{
     /// Create new job launcher
     /// 创建新作业启动器
-    pub fn new(repository: InMemoryJobRepository) -> Self {
+    pub fn new(repository: InMemoryJobRepository) -> Self
+    {
         Self {
             repository: Arc::new(repository),
             running_jobs: Arc::new(RwLock::new(HashMap::new())),
@@ -67,7 +70,8 @@ impl JobLauncher {
 
     /// Set max concurrent jobs
     /// 设置最大并发作业数
-    pub fn with_max_concurrent(mut self, max: usize) -> Self {
+    pub fn with_max_concurrent(mut self, max: usize) -> Self
+    {
         self.max_concurrent_jobs = max;
         self
     }
@@ -80,11 +84,13 @@ impl JobLauncher {
     /// ```java
     /// JobExecution jobExecution = jobLauncher.run(job, jobParameters);
     /// ```
-    pub async fn run(&self, job: Job) -> BatchResult<JobExecution> {
+    pub async fn run(&self, job: Job) -> BatchResult<JobExecution>
+    {
         // Check concurrent limit
         {
             let running = self.running_jobs.read().await;
-            if running.len() >= self.max_concurrent_jobs {
+            if running.len() >= self.max_concurrent_jobs
+            {
                 return Err(BatchError::Other("Maximum concurrent jobs limit reached".to_string()));
             }
         }
@@ -118,9 +124,11 @@ impl JobLauncher {
         &self,
         mut job: Job,
         parameters: HashMap<String, String>,
-    ) -> BatchResult<JobExecution> {
+    ) -> BatchResult<JobExecution>
+    {
         // Check if already running with same parameters
-        if self.repository.is_job_running(&job.name).await? {
+        if self.repository.is_job_running(&job.name).await?
+        {
             return Err(BatchError::JobAlreadyRunning {
                 job_name: job.name.clone(),
             });
@@ -134,7 +142,8 @@ impl JobLauncher {
 
     /// Get job execution by ID
     /// 通过ID获取作业执行
-    pub async fn get_execution(&self, id: uuid::Uuid) -> BatchResult<JobExecution> {
+    pub async fn get_execution(&self, id: uuid::Uuid) -> BatchResult<JobExecution>
+    {
         self.repository.get_job_execution(id).await
     }
 
@@ -143,24 +152,30 @@ impl JobLauncher {
     ///
     /// Note: This is a graceful stop request. The job will complete its current chunk.
     /// 注意：这是一个优雅停止请求。作业将完成当前块。
-    pub async fn stop(&self, job_name: &str) -> BatchResult<bool> {
-        if self.repository.is_job_running(job_name).await? {
+    pub async fn stop(&self, job_name: &str) -> BatchResult<bool>
+    {
+        if self.repository.is_job_running(job_name).await?
+        {
             self.running_jobs.write().await.remove(job_name);
             Ok(true)
-        } else {
+        }
+        else
+        {
             Ok(false)
         }
     }
 
     /// Get all running jobs
     /// 获取所有正在运行的作业
-    pub async fn running_jobs(&self) -> Vec<String> {
+    pub async fn running_jobs(&self) -> Vec<String>
+    {
         self.running_jobs.read().await.keys().cloned().collect()
     }
 
     /// Get job execution by job name
     /// 通过作业名称获取作业执行
-    pub async fn get_last_execution(&self, job_name: &str) -> BatchResult<Option<JobExecution>> {
+    pub async fn get_last_execution(&self, job_name: &str) -> BatchResult<Option<JobExecution>>
+    {
         self.repository.get_last_job_execution(job_name).await
     }
 
@@ -172,12 +187,15 @@ impl JobLauncher {
     /// ```java
     /// JobExecution restartedExecution = jobLauncher.run(job, jobExecution.getJobParameters());
     /// ```
-    pub async fn restart(&self, job_name: &str) -> BatchResult<JobExecution> {
+    pub async fn restart(&self, job_name: &str) -> BatchResult<JobExecution>
+    {
         let last_execution = self.repository.get_last_job_execution(job_name).await?;
 
-        let last = match last_execution {
+        let last = match last_execution
+        {
             Some(exec) => exec,
-            None => {
+            None =>
+            {
                 return Err(BatchError::NotFound {
                     resource: "JobExecution".to_string(),
                     id: job_name.to_string(),
@@ -185,13 +203,15 @@ impl JobLauncher {
             },
         };
 
-        if last.status == JobStatus::Completed {
+        if last.status == JobStatus::Completed
+        {
             return Err(BatchError::JobAlreadyComplete {
                 job_name: job_name.to_string(),
             });
         }
 
-        if last.status.is_running() {
+        if last.status.is_running()
+        {
             return Err(BatchError::JobAlreadyRunning {
                 job_name: job_name.to_string(),
             });
@@ -229,14 +249,17 @@ impl JobLauncher {
 ///     return operator;
 /// }
 /// ```
-pub struct JobOperator {
+pub struct JobOperator
+{
     launcher: Arc<Mutex<JobLauncher>>,
 }
 
-impl JobOperator {
+impl JobOperator
+{
     /// Create new job operator
     /// 创建新作业操作器
-    pub fn new(launcher: JobLauncher) -> Self {
+    pub fn new(launcher: JobLauncher) -> Self
+    {
         Self {
             launcher: Arc::new(Mutex::new(launcher)),
         }
@@ -248,11 +271,13 @@ impl JobOperator {
         &self,
         job_name: &str,
         parameters: HashMap<String, String>,
-    ) -> BatchResult<uuid::Uuid> {
+    ) -> BatchResult<uuid::Uuid>
+    {
         let launcher = self.launcher.lock().await;
 
         // Check if already running
-        if launcher.repository.is_job_running(job_name).await? {
+        if launcher.repository.is_job_running(job_name).await?
+        {
             return Err(BatchError::JobAlreadyRunning {
                 job_name: job_name.to_string(),
             });
@@ -269,14 +294,16 @@ impl JobOperator {
 
     /// Restart the last failed execution of a job
     /// 重启作业的最后一次失败执行
-    pub async fn restart(&self, job_name: &str) -> BatchResult<JobExecution> {
+    pub async fn restart(&self, job_name: &str) -> BatchResult<JobExecution>
+    {
         let launcher = self.launcher.lock().await;
         launcher.restart(job_name).await
     }
 
     /// Stop a running job
     /// 停止正在运行的作业
-    pub async fn stop(&self, execution_id: uuid::Uuid) -> BatchResult<bool> {
+    pub async fn stop(&self, execution_id: uuid::Uuid) -> BatchResult<bool>
+    {
         let launcher = self.launcher.lock().await;
 
         let execution = launcher.repository.get_job_execution(execution_id).await?;
@@ -285,7 +312,8 @@ impl JobOperator {
 
     /// Get job execution summary
     /// 获取作业执行摘要
-    pub async fn get_summary(&self, execution_id: uuid::Uuid) -> BatchResult<JobSummary> {
+    pub async fn get_summary(&self, execution_id: uuid::Uuid) -> BatchResult<JobSummary>
+    {
         let launcher = self.launcher.lock().await;
         let execution = launcher.repository.get_job_execution(execution_id).await?;
 
@@ -305,7 +333,8 @@ impl JobOperator {
 /// Job execution summary
 /// 作业执行摘要
 #[derive(Debug, Clone)]
-pub struct JobSummary {
+pub struct JobSummary
+{
     /// Execution ID
     /// 执行ID
     pub id: uuid::Uuid,
@@ -347,14 +376,16 @@ pub struct JobSummary {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::{
         job::JobBuilder, reader::ItemStreamReader, step::StepBuilder, writer::ItemStreamWriter,
     };
 
     #[tokio::test]
-    async fn test_job_launcher() {
+    async fn test_job_launcher()
+    {
         let repository = InMemoryJobRepository::new();
         let launcher = JobLauncher::new(repository);
 
@@ -371,7 +402,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_job_launcher_duplicate() {
+    async fn test_job_launcher_duplicate()
+    {
         let repository = InMemoryJobRepository::new();
         let launcher = JobLauncher::new(repository.clone());
 
@@ -395,7 +427,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_max_concurrent_jobs() {
+    async fn test_max_concurrent_jobs()
+    {
         let repository = InMemoryJobRepository::new();
         let launcher = JobLauncher::new(repository).with_max_concurrent(1);
 

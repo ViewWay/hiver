@@ -26,17 +26,21 @@ use std::sync::Arc;
 /// ```
 /// use hiver_core::aware::BeanNameAware;
 ///
-/// struct MyBean {
+/// struct MyBean
+/// {
 ///     name: String,
 /// }
 ///
-/// impl BeanNameAware for MyBean {
-///     fn set_bean_name(&mut self, name: &str) {
+/// impl BeanNameAware for MyBean
+/// {
+///     fn set_bean_name(&mut self, name: &str)
+///     {
 ///         self.name = name.to_string();
 ///     }
 /// }
 /// ```
-pub trait BeanNameAware {
+pub trait BeanNameAware
+{
     /// Set the bean name assigned by the container.
     /// 设置容器分配的Bean名称。
     fn set_bean_name(&mut self, name: &str);
@@ -67,7 +71,8 @@ pub trait BeanNameAware {
 ///     }
 /// }
 /// ```
-pub trait BeanFactoryAware {
+pub trait BeanFactoryAware
+{
     /// Supply the owning `Container` to this bean.
     /// 将拥有的 `Container` 提供给此Bean。
     fn set_bean_factory(&mut self, container: &crate::Container);
@@ -99,7 +104,8 @@ pub trait BeanFactoryAware {
 ///     }
 /// }
 /// ```
-pub trait ApplicationContextAware {
+pub trait ApplicationContextAware
+{
     /// Supply the owning `ApplicationContext` to this bean.
     /// 将拥有的 `ApplicationContext` 提供给此Bean。
     fn set_application_context(&mut self, ctx: &crate::ApplicationContext);
@@ -107,9 +113,12 @@ pub trait ApplicationContextAware {
 
 // ── Convenience: blanket implementations for wrapper types ──────────────────
 
-impl<T: BeanNameAware> BeanNameAware for Arc<T> {
-    fn set_bean_name(&mut self, name: &str) {
-        if let Some(inner) = Arc::get_mut(self) {
+impl<T: BeanNameAware> BeanNameAware for Arc<T>
+{
+    fn set_bean_name(&mut self, name: &str)
+    {
+        if let Some(inner) = Arc::get_mut(self)
+        {
             inner.set_bean_name(name);
         }
     }
@@ -125,17 +134,22 @@ impl<T: BeanNameAware> BeanNameAware for Arc<T> {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_bean_name_aware() {
-        struct BeanA {
+    fn test_bean_name_aware()
+    {
+        struct BeanA
+        {
             name: String,
         }
 
-        impl BeanNameAware for BeanA {
-            fn set_bean_name(&mut self, name: &str) {
+        impl BeanNameAware for BeanA
+        {
+            fn set_bean_name(&mut self, name: &str)
+            {
                 self.name = name.to_string();
             }
         }
@@ -148,13 +162,17 @@ mod tests {
     }
 
     #[test]
-    fn test_bean_name_aware_multiple() {
-        struct B {
+    fn test_bean_name_aware_multiple()
+    {
+        struct B
+        {
             name: String,
         }
 
-        impl BeanNameAware for B {
-            fn set_bean_name(&mut self, name: &str) {
+        impl BeanNameAware for B
+        {
+            fn set_bean_name(&mut self, name: &str)
+            {
                 self.name = name.to_string();
             }
         }

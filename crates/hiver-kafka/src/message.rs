@@ -18,7 +18,8 @@ use serde::{Deserialize, Serialize};
 /// }
 /// ```
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct KafkaMessage {
+pub struct KafkaMessage
+{
     /// Topic
     /// 主题
     pub topic: String,
@@ -51,7 +52,8 @@ pub struct KafkaMessage {
 /// Message key
 /// 消息键
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub enum MessageKey {
+pub enum MessageKey
+{
     /// String key
     /// 字符串键
     String(String),
@@ -65,11 +67,14 @@ pub enum MessageKey {
     Null,
 }
 
-impl MessageKey {
+impl MessageKey
+{
     /// Get key as bytes
     /// 获取键的字节表示
-    pub fn as_bytes(&self) -> Option<&[u8]> {
-        match self {
+    pub fn as_bytes(&self) -> Option<&[u8]>
+    {
+        match self
+        {
             Self::Bytes(b) => Some(b),
             Self::String(s) => Some(s.as_bytes()),
             Self::Null => None,
@@ -80,7 +85,8 @@ impl MessageKey {
 /// Message value
 /// 消息值
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub enum MessageValue {
+pub enum MessageValue
+{
     /// String value
     /// 字符串值
     String(String),
@@ -94,11 +100,14 @@ pub enum MessageValue {
     Null,
 }
 
-impl MessageValue {
+impl MessageValue
+{
     /// Get value as bytes
     /// 获取值的字节表示
-    pub fn as_bytes(&self) -> Option<&[u8]> {
-        match self {
+    pub fn as_bytes(&self) -> Option<&[u8]>
+    {
+        match self
+        {
             Self::Bytes(b) => Some(b),
             Self::String(s) => Some(s.as_bytes()),
             Self::Null => None,
@@ -107,8 +116,10 @@ impl MessageValue {
 
     /// Get value as string
     /// 获取值的字符串表示
-    pub fn as_string(&self) -> Option<String> {
-        match self {
+    pub fn as_string(&self) -> Option<String>
+    {
+        match self
+        {
             Self::String(s) => Some(s.clone()),
             Self::Bytes(b) => String::from_utf8(b.clone()).ok(),
             Self::Null => None,
@@ -128,16 +139,19 @@ impl MessageValue {
 /// @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long timestamp
 /// ```
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct MessageHeaders {
+pub struct MessageHeaders
+{
     /// Headers
     /// 头
     pub headers: std::collections::HashMap<String, MessageHeaderValue>,
 }
 
-impl MessageHeaders {
+impl MessageHeaders
+{
     /// Create new message headers
     /// 创建新的消息头
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             headers: std::collections::HashMap::new(),
         }
@@ -145,20 +159,24 @@ impl MessageHeaders {
 
     /// Add header
     /// 添加头
-    pub fn with_header(mut self, key: impl Into<String>, value: MessageHeaderValue) -> Self {
+    pub fn with_header(mut self, key: impl Into<String>, value: MessageHeaderValue) -> Self
+    {
         self.headers.insert(key.into(), value);
         self
     }
 
     /// Get header
     /// 获取头
-    pub fn get(&self, key: &str) -> Option<&MessageHeaderValue> {
+    pub fn get(&self, key: &str) -> Option<&MessageHeaderValue>
+    {
         self.headers.get(key)
     }
 }
 
-impl Default for MessageHeaders {
-    fn default() -> Self {
+impl Default for MessageHeaders
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -166,7 +184,8 @@ impl Default for MessageHeaders {
 /// Message header value
 /// 消息头值
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub enum MessageHeaderValue {
+pub enum MessageHeaderValue
+{
     /// String value
     /// 字符串值
     String(String),
@@ -180,15 +199,13 @@ pub enum MessageHeaderValue {
     Int(i64),
 }
 
-impl KafkaMessage {
+impl KafkaMessage
+{
     /// Create new Kafka message
     /// 创建新的Kafka消息
-    pub fn new(
-        topic: impl Into<String>,
-        partition: i32,
-        offset: i64,
-        payload: MessageValue,
-    ) -> Self {
+    pub fn new(topic: impl Into<String>, partition: i32, offset: i64, payload: MessageValue)
+    -> Self
+    {
         Self {
             topic: topic.into(),
             partition,
@@ -202,31 +219,36 @@ impl KafkaMessage {
 
     /// Get topic
     /// 获取主题
-    pub fn topic(&self) -> &str {
+    pub fn topic(&self) -> &str
+    {
         &self.topic
     }
 
     /// Get partition
     /// 获取分区
-    pub fn partition(&self) -> i32 {
+    pub fn partition(&self) -> i32
+    {
         self.partition
     }
 
     /// Get offset
     /// 获取偏移
-    pub fn offset(&self) -> i64 {
+    pub fn offset(&self) -> i64
+    {
         self.offset
     }
 
     /// Get key
     /// 获取键
-    pub fn key(&self) -> Option<&MessageKey> {
+    pub fn key(&self) -> Option<&MessageKey>
+    {
         self.key.as_ref()
     }
 
     /// Get payload
     /// 获取有效载荷
-    pub fn payload(&self) -> &MessageValue {
+    pub fn payload(&self) -> &MessageValue
+    {
         &self.payload
     }
 }
@@ -239,13 +261,15 @@ impl KafkaMessage {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     /// Test KafkaMessage construction and accessors
     /// 测试 KafkaMessage 构造和访问器
     #[test]
-    fn test_kafka_message_construction() {
+    fn test_kafka_message_construction()
+    {
         let msg = KafkaMessage::new("test-topic", 2, 42, MessageValue::String("hello".to_string()));
         assert_eq!(msg.topic(), "test-topic");
         assert_eq!(msg.partition(), 2);
@@ -257,7 +281,8 @@ mod tests {
     /// Test KafkaMessage with key
     /// 测试带键的 KafkaMessage
     #[test]
-    fn test_kafka_message_with_key() {
+    fn test_kafka_message_with_key()
+    {
         let mut msg = KafkaMessage::new("t", 0, 0, MessageValue::Null);
         msg.key = Some(MessageKey::String("my-key".to_string()));
         assert!(msg.key().is_some());
@@ -270,7 +295,8 @@ mod tests {
     /// Test MessageKey variants and as_bytes
     /// 测试 MessageKey 变体和 as_bytes
     #[test]
-    fn test_message_key_as_bytes() {
+    fn test_message_key_as_bytes()
+    {
         let string_key = MessageKey::String("key".to_string());
         assert_eq!(string_key.as_bytes(), Some(b"key".as_slice()));
 
@@ -286,7 +312,8 @@ mod tests {
     /// Test MessageValue as_bytes for all variants
     /// 测试所有变体的 MessageValue as_bytes
     #[test]
-    fn test_message_value_as_bytes() {
+    fn test_message_value_as_bytes()
+    {
         let string_val = MessageValue::String("hello".to_string());
         assert_eq!(string_val.as_bytes(), Some(b"hello".as_slice()));
 
@@ -300,7 +327,8 @@ mod tests {
     /// Test MessageValue as_string for all variants
     /// 测试所有变体的 MessageValue as_string
     #[test]
-    fn test_message_value_as_string() {
+    fn test_message_value_as_string()
+    {
         let string_val = MessageValue::String("world".to_string());
         assert_eq!(string_val.as_string(), Some("world".to_string()));
 
@@ -319,7 +347,8 @@ mod tests {
     /// Test MessageHeaders add and get
     /// 测试 MessageHeaders 添加和获取
     #[test]
-    fn test_message_headers_add_get() {
+    fn test_message_headers_add_get()
+    {
         let headers = MessageHeaders::new()
             .with_header("trace-id", MessageHeaderValue::String("abc-123".to_string()))
             .with_header("retry-count", MessageHeaderValue::Int(3));
@@ -328,11 +357,13 @@ mod tests {
         assert!(headers.get("retry-count").is_some());
         assert!(headers.get("missing").is_none());
 
-        match headers.get("trace-id") {
+        match headers.get("trace-id")
+        {
             Some(MessageHeaderValue::String(v)) => assert_eq!(v, "abc-123"),
             _ => panic!("expected string header"),
         }
-        match headers.get("retry-count") {
+        match headers.get("retry-count")
+        {
             Some(MessageHeaderValue::Int(v)) => assert_eq!(*v, 3),
             _ => panic!("expected int header"),
         }
@@ -341,7 +372,8 @@ mod tests {
     /// Test MessageHeaders default is empty
     /// 测试 MessageHeaders 默认为空
     #[test]
-    fn test_message_headers_default_empty() {
+    fn test_message_headers_default_empty()
+    {
         let headers = MessageHeaders::default();
         assert!(headers.headers.is_empty());
     }
@@ -351,7 +383,8 @@ mod tests {
     /// Test KafkaMessage serde round-trip
     /// 测试 KafkaMessage 序列化往返
     #[test]
-    fn test_kafka_message_serde_roundtrip() {
+    fn test_kafka_message_serde_roundtrip()
+    {
         let msg = KafkaMessage {
             topic: "serde-topic".to_string(),
             partition: 1,
@@ -371,13 +404,15 @@ mod tests {
     }
 
     #[test]
-    fn test_message_header_value_serde() {
+    fn test_message_header_value_serde()
+    {
         let vals = vec![
             MessageHeaderValue::String("s".to_string()),
             MessageHeaderValue::Bytes(vec![1, 2]),
             MessageHeaderValue::Int(-42),
         ];
-        for v in &vals {
+        for v in &vals
+        {
             let json = serde_json::to_string(v).unwrap();
             let restored: MessageHeaderValue = serde_json::from_str(&json).unwrap();
             assert_eq!(*v, restored);

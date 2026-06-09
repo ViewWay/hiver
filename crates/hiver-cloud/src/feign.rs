@@ -36,7 +36,8 @@ use thiserror::Error;
 /// Errors returned by generated Feign clients.
 /// 生成的 Feign 客户端返回的错误。
 #[derive(Debug, Error)]
-pub enum FeignError {
+pub enum FeignError
+{
     /// HTTP transport error (connection refused, timeout, etc.).
     /// HTTP 传输错误（连接拒绝、超时等）。
     #[error("HTTP transport error: {0}")]
@@ -45,7 +46,8 @@ pub enum FeignError {
     /// Server returned a non-2xx status code.
     /// 服务器返回非 2xx 状态码。
     #[error("HTTP {status}: {body}")]
-    HttpStatus {
+    HttpStatus
+    {
         /// HTTP status code.
         status: u16,
         /// Response body text.
@@ -68,10 +70,12 @@ pub enum FeignError {
     Other(String),
 }
 
-impl FeignError {
+impl FeignError
+{
     /// Create a non-successful HTTP status error.
     /// 创建非成功 HTTP 状态错误。
-    pub fn http_status(status: u16, body: impl Into<String>) -> Self {
+    pub fn http_status(status: u16, body: impl Into<String>) -> Self
+    {
         Self::HttpStatus {
             status,
             body: body.into(),
@@ -90,7 +94,8 @@ pub type FeignResult<T> = Result<T, FeignError>;
 /// Configuration for a generated Feign client.
 /// 生成的 Feign 客户端的配置。
 #[derive(Debug, Clone)]
-pub struct FeignClientConfig {
+pub struct FeignClientConfig
+{
     /// Base URL (e.g. `http://user-service`).
     /// 基础 URL（例如 `http://user-service`）。
     pub base_url: String,
@@ -108,10 +113,12 @@ pub struct FeignClientConfig {
     pub default_headers: Vec<(String, String)>,
 }
 
-impl FeignClientConfig {
+impl FeignClientConfig
+{
     /// Create with a base URL and default timeouts.
     /// 使用基础 URL 和默认超时创建。
-    pub fn new(base_url: impl Into<String>) -> Self {
+    pub fn new(base_url: impl Into<String>) -> Self
+    {
         Self {
             base_url: base_url.into(),
             connect_timeout: Duration::from_secs(10),
@@ -123,46 +130,53 @@ impl FeignClientConfig {
 
     /// Set the connection timeout.
     /// 设置连接超时。
-    pub fn connect_timeout(mut self, d: Duration) -> Self {
+    pub fn connect_timeout(mut self, d: Duration) -> Self
+    {
         self.connect_timeout = d;
         self
     }
 
     /// Set the request timeout.
     /// 设置请求超时。
-    pub fn request_timeout(mut self, d: Duration) -> Self {
+    pub fn request_timeout(mut self, d: Duration) -> Self
+    {
         self.request_timeout = d;
         self
     }
 
     /// Set a static Bearer token for all requests.
     /// 为所有请求设置静态 Bearer 令牌。
-    pub fn bearer_token(mut self, token: impl Into<String>) -> Self {
+    pub fn bearer_token(mut self, token: impl Into<String>) -> Self
+    {
         self.bearer_token = Some(token.into());
         self
     }
 
     /// Add a default header for all requests.
     /// 为所有请求添加默认标头。
-    pub fn header(mut self, name: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn header(mut self, name: impl Into<String>, value: impl Into<String>) -> Self
+    {
         self.default_headers.push((name.into(), value.into()));
         self
     }
 
     /// Build a `reqwest::Client` from this config.
     /// 从此配置构建 `reqwest::Client`。
-    pub fn build_client(&self) -> Result<Client, reqwest::Error> {
+    pub fn build_client(&self) -> Result<Client, reqwest::Error>
+    {
         let mut headers = reqwest::header::HeaderMap::new();
         if let Some(token) = &self.bearer_token
             && let Ok(v) = reqwest::header::HeaderValue::from_str(&format!("Bearer {token}"))
         {
             headers.insert(reqwest::header::AUTHORIZATION, v);
         }
-        for (k, v) in &self.default_headers {
+        for (k, v) in &self.default_headers
+        {
             if let (Ok(name), Ok(val)) = (
                 reqwest::header::HeaderName::from_bytes(k.as_bytes()),
                 reqwest::header::HeaderValue::from_str(v),
-            ) {
+            )
+            {
                 headers.insert(name, val);
             }
         }
@@ -190,14 +204,18 @@ where
     T: serde::de::DeserializeOwned,
 {
     let mut req = client.request(method, url);
-    for (k, v) in headers {
+    for (k, v) in headers
+    {
         req = req.header(k, v);
     }
     let resp = req.send().await?;
     let status = resp.status();
-    if status.is_success() {
+    if status.is_success()
+    {
         resp.json::<T>().await.map_err(FeignError::Transport)
-    } else {
+    }
+    else
+    {
         let code = status.as_u16();
         let body = resp.text().await.unwrap_or_default();
         Err(FeignError::http_status(code, body))
@@ -218,14 +236,18 @@ where
     T: serde::de::DeserializeOwned,
 {
     let mut req = client.request(method, url).json(body);
-    for (k, v) in headers {
+    for (k, v) in headers
+    {
         req = req.header(k, v);
     }
     let resp = req.send().await?;
     let status = resp.status();
-    if status.is_success() {
+    if status.is_success()
+    {
         resp.json::<T>().await.map_err(FeignError::Transport)
-    } else {
+    }
+    else
+    {
         let code = status.as_u16();
         let body = resp.text().await.unwrap_or_default();
         Err(FeignError::http_status(code, body))
@@ -239,17 +261,22 @@ pub async fn execute_request_text(
     method: Method,
     url: &str,
     headers: Vec<(&str, &str)>,
-) -> FeignResult<String> {
+) -> FeignResult<String>
+{
     let mut req = client.request(method, url);
-    for (k, v) in headers {
+    for (k, v) in headers
+    {
         req = req.header(k, v);
     }
     let resp = req.send().await?;
     let status = resp.status();
     let body = resp.text().await.unwrap_or_default();
-    if status.is_success() {
+    if status.is_success()
+    {
         Ok(body)
-    } else {
+    }
+    else
+    {
         Err(FeignError::http_status(status.as_u16(), body))
     }
 }
@@ -264,7 +291,8 @@ pub async fn execute_request_text(
 /// Equivalent to Spring Cloud OpenFeign's `Retryer.Default`.
 /// 等价于 Spring Cloud OpenFeign 的 `Retryer.Default`。
 #[derive(Debug, Clone)]
-pub struct RetryConfig {
+pub struct RetryConfig
+{
     /// Maximum number of retry attempts.
     /// 最大重试次数。
     pub max_attempts: u32,
@@ -282,10 +310,12 @@ pub struct RetryConfig {
     pub retry_on_statuses: Vec<u16>,
 }
 
-impl RetryConfig {
+impl RetryConfig
+{
     /// Create a retry config with defaults (3 attempts, 100ms initial, 2x multiplier).
     /// 创建默认重试配置（3 次尝试、100ms 初始、2x 乘数）。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             max_attempts: 3,
             initial_interval: Duration::from_millis(100),
@@ -297,21 +327,24 @@ impl RetryConfig {
 
     /// Set max retry attempts.
     /// 设置最大重试次数。
-    pub fn max_attempts(mut self, n: u32) -> Self {
+    pub fn max_attempts(mut self, n: u32) -> Self
+    {
         self.max_attempts = n;
         self
     }
 
     /// Set initial backoff interval.
     /// 设置初始退避间隔。
-    pub fn initial_interval(mut self, d: Duration) -> Self {
+    pub fn initial_interval(mut self, d: Duration) -> Self
+    {
         self.initial_interval = d;
         self
     }
 
     /// Set retry-on HTTP status codes.
     /// 设置触发重试的 HTTP 状态码。
-    pub fn retry_on_statuses(mut self, statuses: Vec<u16>) -> Self {
+    pub fn retry_on_statuses(mut self, statuses: Vec<u16>) -> Self
+    {
         self.retry_on_statuses = statuses;
         self
     }
@@ -319,7 +352,8 @@ impl RetryConfig {
     /// Calculate backoff duration for the given attempt (0-indexed).
     /// 计算给定尝试次数（0 索引）的退避时间。
     #[allow(clippy::cast_precision_loss)]
-    pub fn backoff_for(&self, attempt: u32) -> Duration {
+    pub fn backoff_for(&self, attempt: u32) -> Duration
+    {
         let exp = self.multiplier.powi(attempt as i32);
         let millis = (self.initial_interval.as_millis() as f64 * exp) as u64;
         Duration::from_millis(millis.min(self.max_interval.as_millis() as u64))
@@ -327,8 +361,10 @@ impl RetryConfig {
 
     /// Whether the given error is retryable.
     /// 判断给定错误是否可重试。
-    pub fn is_retryable(&self, error: &FeignError) -> bool {
-        match error {
+    pub fn is_retryable(&self, error: &FeignError) -> bool
+    {
+        match error
+        {
             FeignError::HttpStatus { status, .. } => self.retry_on_statuses.contains(status),
             FeignError::Transport(_) => true,
             _ => false,
@@ -336,8 +372,10 @@ impl RetryConfig {
     }
 }
 
-impl Default for RetryConfig {
-    fn default() -> Self {
+impl Default for RetryConfig
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -351,7 +389,8 @@ impl Default for RetryConfig {
 ///
 /// Equivalent to Spring Cloud OpenFeign's `@FeignClient(fallback = ...)`.
 /// 等价于 Spring Cloud OpenFeign 的 `@FeignClient(fallback = ...)`。
-pub trait FeignFallback<T>: Send + Sync {
+pub trait FeignFallback<T>: Send + Sync
+{
     /// Return a fallback value when the request fails.
     /// 请求失败时返回降级值。
     fn fallback(&self, error: &FeignError) -> FeignResult<T>;
@@ -359,28 +398,34 @@ pub trait FeignFallback<T>: Send + Sync {
 
 /// A simple fallback that returns a default value.
 /// 返回默认值的简单降级。
-pub struct DefaultFallback<T> {
+pub struct DefaultFallback<T>
+{
     /// The default value to return.
     /// 要返回的默认值。
     pub value: Option<T>,
 }
 
-impl<T: Send + Sync> DefaultFallback<T> {
+impl<T: Send + Sync> DefaultFallback<T>
+{
     /// Create a fallback that returns the given default.
     /// 创建返回给定默认值的降级。
-    pub fn new(value: T) -> Self {
+    pub fn new(value: T) -> Self
+    {
         Self { value: Some(value) }
     }
 
     /// Create a fallback that returns None.
     /// 创建返回 None 的降级。
-    pub fn none() -> Self {
+    pub fn none() -> Self
+    {
         Self { value: None }
     }
 }
 
-impl<T: Send + Sync> FeignFallback<T> for DefaultFallback<T> {
-    fn fallback(&self, _error: &FeignError) -> FeignResult<T> {
+impl<T: Send + Sync> FeignFallback<T> for DefaultFallback<T>
+{
+    fn fallback(&self, _error: &FeignError) -> FeignResult<T>
+    {
         Err(FeignError::Other("no fallback value available".into()))
     }
 }
@@ -394,7 +439,8 @@ impl<T: Send + Sync> FeignFallback<T> for DefaultFallback<T> {
 ///
 /// Equivalent to Spring Cloud OpenFeign's `RequestInterceptor`.
 /// 等价于 Spring Cloud OpenFeign 的 `RequestInterceptor`。
-pub trait FeignRequestInterceptor: Send + Sync {
+pub trait FeignRequestInterceptor: Send + Sync
+{
     /// Modify request headers before the request is sent.
     /// 在请求发送前修改请求头。
     fn intercept(&self, headers: &mut Vec<(String, String)>);
@@ -402,14 +448,17 @@ pub trait FeignRequestInterceptor: Send + Sync {
 
 /// An interceptor that adds a dynamic Bearer token.
 /// 添加动态 Bearer 令牌的拦截器。
-pub struct BearerTokenInterceptor {
+pub struct BearerTokenInterceptor
+{
     token_fn: Box<dyn Fn() -> String + Send + Sync>,
 }
 
-impl BearerTokenInterceptor {
+impl BearerTokenInterceptor
+{
     /// Create a new bearer token interceptor with a static token.
     /// 使用静态令牌创建新的 Bearer 令牌拦截器。
-    pub fn new(token: impl Into<String>) -> Self {
+    pub fn new(token: impl Into<String>) -> Self
+    {
         let token = token.into();
         Self {
             token_fn: Box::new(move || token.clone()),
@@ -418,35 +467,43 @@ impl BearerTokenInterceptor {
 
     /// Create with a dynamic token supplier.
     /// 使用动态令牌提供函数创建。
-    pub fn dynamic<F: Fn() -> String + Send + Sync + 'static>(f: F) -> Self {
+    pub fn dynamic<F: Fn() -> String + Send + Sync + 'static>(f: F) -> Self
+    {
         Self {
             token_fn: Box::new(f),
         }
     }
 }
 
-impl FeignRequestInterceptor for BearerTokenInterceptor {
-    fn intercept(&self, headers: &mut Vec<(String, String)>) {
+impl FeignRequestInterceptor for BearerTokenInterceptor
+{
+    fn intercept(&self, headers: &mut Vec<(String, String)>)
+    {
         headers.push(("Authorization".to_string(), format!("Bearer {}", (self.token_fn)())));
     }
 }
 
 /// An interceptor that adds custom headers.
 /// 添加自定义请求头的拦截器。
-pub struct HeaderInterceptor {
+pub struct HeaderInterceptor
+{
     headers: Vec<(String, String)>,
 }
 
-impl HeaderInterceptor {
+impl HeaderInterceptor
+{
     /// Create a new header interceptor.
     /// 创建新的请求头拦截器。
-    pub fn new(headers: Vec<(String, String)>) -> Self {
+    pub fn new(headers: Vec<(String, String)>) -> Self
+    {
         Self { headers }
     }
 }
 
-impl FeignRequestInterceptor for HeaderInterceptor {
-    fn intercept(&self, headers: &mut Vec<(String, String)>) {
+impl FeignRequestInterceptor for HeaderInterceptor
+{
+    fn intercept(&self, headers: &mut Vec<(String, String)>)
+    {
         headers.extend(self.headers.iter().cloned());
     }
 }
@@ -463,11 +520,13 @@ impl FeignRequestInterceptor for HeaderInterceptor {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_feign_config_builder() {
+    fn test_feign_config_builder()
+    {
         let cfg = FeignClientConfig::new("http://localhost:8080")
             .connect_timeout(Duration::from_secs(5))
             .request_timeout(Duration::from_secs(15))
@@ -480,7 +539,8 @@ mod tests {
     }
 
     #[test]
-    fn test_feign_error_variants() {
+    fn test_feign_error_variants()
+    {
         let e = FeignError::http_status(404, "Not Found");
         assert!(e.to_string().contains("404"));
         let e2 = FeignError::Other("custom".into());
@@ -488,7 +548,8 @@ mod tests {
     }
 
     #[test]
-    fn test_retry_config_defaults() {
+    fn test_retry_config_defaults()
+    {
         let cfg = RetryConfig::new();
         assert_eq!(cfg.max_attempts, 3);
         assert_eq!(cfg.initial_interval, Duration::from_millis(100));
@@ -497,7 +558,8 @@ mod tests {
     }
 
     #[test]
-    fn test_retry_backoff() {
+    fn test_retry_backoff()
+    {
         let cfg = RetryConfig::new();
         assert!(cfg.backoff_for(0) < cfg.backoff_for(1));
         assert!(cfg.backoff_for(1) < cfg.backoff_for(2));
@@ -506,7 +568,8 @@ mod tests {
     }
 
     #[test]
-    fn test_retry_is_retryable() {
+    fn test_retry_is_retryable()
+    {
         let cfg = RetryConfig::new();
         assert!(cfg.is_retryable(&FeignError::http_status(503, "Service Unavailable")));
         assert!(!cfg.is_retryable(&FeignError::http_status(404, "Not Found")));
@@ -514,7 +577,8 @@ mod tests {
     }
 
     #[test]
-    fn test_bearer_token_interceptor() {
+    fn test_bearer_token_interceptor()
+    {
         let interp = BearerTokenInterceptor::new("my-token");
         let mut headers = vec![];
         interp.intercept(&mut headers);
@@ -523,7 +587,8 @@ mod tests {
     }
 
     #[test]
-    fn test_header_interceptor() {
+    fn test_header_interceptor()
+    {
         let interp = HeaderInterceptor::new(vec![("X-Tenant".to_string(), "acme".to_string())]);
         let mut headers = vec![];
         interp.intercept(&mut headers);
@@ -531,7 +596,8 @@ mod tests {
     }
 
     #[test]
-    fn test_default_fallback() {
+    fn test_default_fallback()
+    {
         let fb: DefaultFallback<String> = DefaultFallback::none();
         assert!(fb.fallback(&FeignError::Other("test".into())).is_err());
     }

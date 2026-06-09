@@ -33,7 +33,8 @@ static REQUEST_COUNT: AtomicU64 = AtomicU64::new(0);
 
 /// Simple handler that returns 200 OK
 /// 返回 200 OK 的简单处理程序
-fn handle_request() -> Response {
+fn handle_request() -> Response
+{
     REQUEST_COUNT.fetch_add(1, Ordering::Relaxed);
     Response::build_ok()
         .header("content-type", "text/plain")
@@ -42,11 +43,13 @@ fn handle_request() -> Response {
 
 /// Run the stress test server
 /// 运行压力测试服务器
-async fn run_server(port: u16) -> Result<(), Box<dyn std::error::Error>> {
+async fn run_server(port: u16) -> Result<(), Box<dyn std::error::Error>>
+{
     let listener = TcpListener::bind(format!("127.0.0.1:{}", port)).await?;
     println!("Stress test server listening on port {}", port);
 
-    loop {
+    loop
+    {
         let (stream, _) = listener.accept().await?;
         tokio::spawn(async move {
             use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter};
@@ -56,7 +59,8 @@ async fn run_server(port: u16) -> Result<(), Box<dyn std::error::Error>> {
             let mut writer = BufWriter::new(writer);
 
             let mut line = String::new();
-            if reader.read_line(&mut line).await.is_ok() {
+            if reader.read_line(&mut line).await.is_ok()
+            {
                 let response = handle_request();
                 let status = response.status().as_u16();
                 let body = response.body();
@@ -86,7 +90,8 @@ async fn send_requests(
     port: u16,
     num_requests: u64,
     concurrency: usize,
-) -> Result<Duration, Box<dyn std::error::Error>> {
+) -> Result<Duration, Box<dyn std::error::Error>>
+{
     let start = Instant::now();
     let mut join_set = JoinSet::new();
     let requests_per_task = num_requests / concurrency as u64;
@@ -94,26 +99,30 @@ async fn send_requests(
         .timeout(Duration::from_secs(5))
         .build()?;
 
-    for i in 0..concurrency {
+    for i in 0..concurrency
+    {
         let client = client.clone();
         let url = format!("http://127.0.0.1:{}/", port);
         let count = requests_per_task + u64::from(i < (num_requests % concurrency as u64) as usize);
 
         join_set.spawn(async move {
-            for _ in 0..count {
+            for _ in 0..count
+            {
                 let _ = client.get(&url).send().await;
             }
         });
     }
 
-    while join_set.join_next().await.is_some() {}
+    while join_set.join_next().await.is_some()
+    {}
     Ok(start.elapsed())
 }
 
 /// Main stress test entry point
 /// 主压力测试入口点
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box<dyn std::error::Error>>
+{
     println!("=== Hiver HTTP Server Stress Test / Hiver HTTP 服务器压力测试 ===\n");
 
     // Configuration / 配置
@@ -140,7 +149,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut results = Vec::new();
 
-    for concurrency in concurrency_levels {
+    for concurrency in concurrency_levels
+    {
         REQUEST_COUNT.store(0, Ordering::Relaxed);
 
         print!("Testing with {} concurrent requests...", concurrency);
@@ -170,7 +180,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== Summary / 摘要 ===");
     println!("{:<15} {:<15} {:<15}", "Concurrency", "Throughput", "Avg Latency");
     println!("{}", "-".repeat(45));
-    for (concurrency, qps, latency) in &results {
+    for (concurrency, qps, latency) in &results
+    {
         println!("{:<15} {:<15.2} {:<15.2}ms", concurrency, qps, latency);
     }
 

@@ -45,7 +45,8 @@ use std::{
 /// CSV export error.
 /// CSV 导出错误。
 #[derive(Debug, thiserror::Error)]
-pub enum CsvError {
+pub enum CsvError
+{
     /// I/O error during write.
     /// 写入过程中的 I/O 错误。
     #[error("I/O error: {0}")]
@@ -71,7 +72,8 @@ pub type Result<T> = std::result::Result<T, CsvError>;
 /// Equivalent to Spring's OpenCSV `CSVWriter` settings.
 /// 等价于 Spring 的 OpenCSV `CSVWriter` 设置。
 #[derive(Debug, Clone)]
-pub struct CsvExportConfig {
+pub struct CsvExportConfig
+{
     /// Column headers / 列标题
     pub headers: Vec<String>,
     /// Field delimiter (default: comma) / 字段分隔符（默认：逗号）
@@ -86,8 +88,10 @@ pub struct CsvExportConfig {
     pub include_bom: bool,
 }
 
-impl Default for CsvExportConfig {
-    fn default() -> Self {
+impl Default for CsvExportConfig
+{
+    fn default() -> Self
+    {
         Self {
             headers: Vec::new(),
             delimiter: ',',
@@ -99,23 +103,27 @@ impl Default for CsvExportConfig {
     }
 }
 
-impl CsvExportConfig {
+impl CsvExportConfig
+{
     /// Create a new default configuration.
     /// 创建新的默认配置。
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Add a column header.
     /// 添加列标题。
-    pub fn header(mut self, name: impl Into<String>) -> Self {
+    pub fn header(mut self, name: impl Into<String>) -> Self
+    {
         self.headers.push(name.into());
         self
     }
 
     /// Set multiple column headers.
     /// 设置多个列标题。
-    pub fn headers(mut self, headers: Vec<String>) -> Self {
+    pub fn headers(mut self, headers: Vec<String>) -> Self
+    {
         self.headers = headers;
         self
     }
@@ -125,35 +133,40 @@ impl CsvExportConfig {
     ///
     /// Common values: `,` (default), `\t` (TSV), `;` (European CSV).
     /// 常用值：`,`（默认）、`\t`（TSV）、`;`（欧洲 CSV）。
-    pub fn delimiter(mut self, delimiter: char) -> Self {
+    pub fn delimiter(mut self, delimiter: char) -> Self
+    {
         self.delimiter = delimiter;
         self
     }
 
     /// Set the quote character.
     /// 设置引号字符。
-    pub fn quote_char(mut self, ch: char) -> Self {
+    pub fn quote_char(mut self, ch: char) -> Self
+    {
         self.quote_char = ch;
         self
     }
 
     /// Set the line terminator.
     /// 设置行终止符。
-    pub fn line_terminator(mut self, term: impl Into<String>) -> Self {
+    pub fn line_terminator(mut self, term: impl Into<String>) -> Self
+    {
         self.line_terminator = term.into();
         self
     }
 
     /// Always quote all fields, even if not required.
     /// 总是引用所有字段，即使不需要。
-    pub fn always_quote(mut self, always: bool) -> Self {
+    pub fn always_quote(mut self, always: bool) -> Self
+    {
         self.always_quote = always;
         self
     }
 
     /// Include UTF-8 BOM for Excel compatibility.
     /// 包含 UTF-8 BOM 以兼容 Excel。
-    pub fn include_bom(mut self, include: bool) -> Self {
+    pub fn include_bom(mut self, include: bool) -> Self
+    {
         self.include_bom = include;
         self
     }
@@ -186,15 +199,18 @@ impl CsvExportConfig {
 /// assert!(output.contains("ID,Name"));
 /// assert!(output.contains("1,Alice"));
 /// ```
-pub struct CsvExporter {
+pub struct CsvExporter
+{
     config: CsvExportConfig,
     rows: Vec<Vec<String>>,
 }
 
-impl CsvExporter {
+impl CsvExporter
+{
     /// Create a new CSV exporter with the given configuration.
     /// 使用给定配置创建新的 CSV 导出器。
-    pub fn new(config: CsvExportConfig) -> Self {
+    pub fn new(config: CsvExportConfig) -> Self
+    {
         Self {
             config,
             rows: Vec::new(),
@@ -203,36 +219,42 @@ impl CsvExporter {
 
     /// Add a data row.
     /// 添加数据行。
-    pub fn add_row(&mut self, fields: Vec<impl Into<String>>) {
+    pub fn add_row(&mut self, fields: Vec<impl Into<String>>)
+    {
         self.rows.push(fields.into_iter().map(Into::into).collect());
     }
 
     /// Add a pre-formatted row (already `String`).
     /// 添加预格式化行（已是 `String`）。
-    pub fn add_row_str(&mut self, fields: Vec<String>) {
+    pub fn add_row_str(&mut self, fields: Vec<String>)
+    {
         self.rows.push(fields);
     }
 
     /// Returns the number of data rows (excluding header).
     /// 返回数据行数（不包括标题）。
-    pub fn row_count(&self) -> usize {
+    pub fn row_count(&self) -> usize
+    {
         self.rows.len()
     }
 
     /// Generate the CSV output as a string.
     /// 将 CSV 输出生成为字符串。
-    pub fn to_string(&self) -> Result<String> {
+    pub fn to_string(&self) -> Result<String>
+    {
         let mut buf = String::new();
 
         // UTF-8 BOM for Excel compatibility
         // UTF-8 BOM 用于 Excel 兼容性
-        if self.config.include_bom {
+        if self.config.include_bom
+        {
             buf.push('\u{FEFF}');
         }
 
         // Header row
         // 标题行
-        if !self.config.headers.is_empty() {
+        if !self.config.headers.is_empty()
+        {
             let line = format_csv_line(&self.config.headers, &self.config);
             buf.push_str(&line);
             buf.push_str(&self.config.line_terminator);
@@ -240,7 +262,8 @@ impl CsvExporter {
 
         // Data rows
         // 数据行
-        for row in &self.rows {
+        for row in &self.rows
+        {
             let line = format_csv_line(row, &self.config);
             buf.push_str(&line);
             buf.push_str(&self.config.line_terminator);
@@ -251,13 +274,15 @@ impl CsvExporter {
 
     /// Generate the CSV output as bytes.
     /// 将 CSV 输出生成为字节。
-    pub fn to_bytes(&self) -> Result<Vec<u8>> {
+    pub fn to_bytes(&self) -> Result<Vec<u8>>
+    {
         Ok(self.to_string()?.into_bytes())
     }
 
     /// Write the CSV output to a writer.
     /// 将 CSV 输出写入 writer。
-    pub fn write_to_writer(&self, mut writer: impl Write) -> Result<()> {
+    pub fn write_to_writer(&self, mut writer: impl Write) -> Result<()>
+    {
         let data = self.to_bytes()?;
         writer.write_all(&data)?;
         Ok(())
@@ -265,7 +290,8 @@ impl CsvExporter {
 
     /// Write the CSV output to a file.
     /// 将 CSV 输出写入文件。
-    pub fn write_to(&self, path: impl AsRef<Path>) -> Result<()> {
+    pub fn write_to(&self, path: impl AsRef<Path>) -> Result<()>
+    {
         let data = self.to_bytes()?;
         std::fs::write(path, data)?;
         Ok(())
@@ -302,7 +328,8 @@ impl CsvExporter {
 ///     }
 /// }
 /// ```
-pub trait CsvTable {
+pub trait CsvTable
+{
     /// Return the column headers for this type.
     /// 返回此类型的列标题。
     fn csv_headers() -> Vec<String>;
@@ -323,14 +350,17 @@ pub trait CsvTable {
 /// let data = vec![User { name: "Alice".into(), email: "a@b.com".into() }];
 /// let csv = export_to_csv(&data, CsvExportConfig::new()).unwrap();
 /// ```
-pub fn export_to_csv<T: CsvTable>(data: &[T], config: CsvExportConfig) -> Result<String> {
+pub fn export_to_csv<T: CsvTable>(data: &[T], config: CsvExportConfig) -> Result<String>
+{
     let mut new_config = config;
-    if new_config.headers.is_empty() && !data.is_empty() {
+    if new_config.headers.is_empty() && !data.is_empty()
+    {
         new_config.headers = T::csv_headers();
     }
 
     let mut exporter = CsvExporter::new(new_config);
-    for item in data {
+    for item in data
+    {
         exporter.add_row_str(item.csv_row());
     }
     exporter.to_string()
@@ -342,16 +372,22 @@ pub fn export_to_csv<T: CsvTable>(data: &[T], config: CsvExportConfig) -> Result
 
 /// Format a single CSV line from field values.
 /// 将字段值格式化为单行 CSV。
-fn format_csv_line(fields: &[String], config: &CsvExportConfig) -> String {
+fn format_csv_line(fields: &[String], config: &CsvExportConfig) -> String
+{
     let mut line = String::new();
-    for (i, field) in fields.iter().enumerate() {
-        if i > 0 {
+    for (i, field) in fields.iter().enumerate()
+    {
+        if i > 0
+        {
             line.push(config.delimiter);
         }
-        if config.always_quote || needs_quoting(field, config) {
+        if config.always_quote || needs_quoting(field, config)
+        {
             let quoted = quote_field(field, config);
             line.push_str(&quoted);
-        } else {
+        }
+        else
+        {
             line.push_str(field);
         }
     }
@@ -360,7 +396,8 @@ fn format_csv_line(fields: &[String], config: &CsvExportConfig) -> String {
 
 /// Check if a field value requires quoting per RFC 4180.
 /// 检查字段值是否需要按 RFC 4180 加引号。
-fn needs_quoting(field: &str, config: &CsvExportConfig) -> bool {
+fn needs_quoting(field: &str, config: &CsvExportConfig) -> bool
+{
     field.contains(config.delimiter)
         || field.contains(config.quote_char)
         || field.contains('\n')
@@ -369,7 +406,8 @@ fn needs_quoting(field: &str, config: &CsvExportConfig) -> bool {
 
 /// Quote a field value, escaping internal quote characters.
 /// 引用字段值，转义内部引号字符。
-fn quote_field(field: &str, config: &CsvExportConfig) -> String {
+fn quote_field(field: &str, config: &CsvExportConfig) -> String
+{
     let escaped =
         field.replace(config.quote_char, &format!("{}{}", config.quote_char, config.quote_char));
     format!("{}{}{}", config.quote_char, escaped, config.quote_char)
@@ -386,9 +424,12 @@ fn quote_field(field: &str, config: &CsvExportConfig) -> String {
 /// 等价于 Spring 的 `ResponseEntity` 配合 `Content-Type: text/csv`。
 pub struct Csv(pub CsvExporter);
 
-impl crate::IntoResponse for Csv {
-    fn into_response(self) -> crate::Response {
-        match self.0.to_bytes() {
+impl crate::IntoResponse for Csv
+{
+    fn into_response(self) -> crate::Response
+    {
+        match self.0.to_bytes()
+        {
             Ok(bytes) => crate::Response::builder()
                 .header("content-type", "text/csv; charset=utf-8")
                 .header("content-disposition", "attachment; filename=\"export.csv\"")
@@ -414,11 +455,13 @@ impl crate::IntoResponse for Csv {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_csv_config_builder() {
+    fn test_csv_config_builder()
+    {
         let config = CsvExportConfig::new()
             .header("Name")
             .header("Age")
@@ -433,7 +476,8 @@ mod tests {
     }
 
     #[test]
-    fn test_simple_export() {
+    fn test_simple_export()
+    {
         let config = CsvExportConfig::new().header("ID").header("Name");
 
         let mut exporter = CsvExporter::new(config);
@@ -447,7 +491,8 @@ mod tests {
     }
 
     #[test]
-    fn test_field_quoting() {
+    fn test_field_quoting()
+    {
         let config = CsvExportConfig::new().header("Name");
 
         let mut exporter = CsvExporter::new(config);
@@ -462,7 +507,8 @@ mod tests {
     }
 
     #[test]
-    fn test_always_quote() {
+    fn test_always_quote()
+    {
         let config = CsvExportConfig::new().header("A").always_quote(true);
 
         let mut exporter = CsvExporter::new(config);
@@ -474,7 +520,8 @@ mod tests {
     }
 
     #[test]
-    fn test_tsv_export() {
+    fn test_tsv_export()
+    {
         let config = CsvExportConfig::new()
             .header("Name")
             .header("Value")
@@ -489,7 +536,8 @@ mod tests {
     }
 
     #[test]
-    fn test_bom_output() {
+    fn test_bom_output()
+    {
         let config = CsvExportConfig::new().header("Col").include_bom(true);
 
         let mut exporter = CsvExporter::new(config);
@@ -500,7 +548,8 @@ mod tests {
     }
 
     #[test]
-    fn test_no_bom_by_default() {
+    fn test_no_bom_by_default()
+    {
         let config = CsvExportConfig::new().header("Col");
         let exporter = CsvExporter::new(config);
         let output = exporter.to_string().unwrap();
@@ -508,7 +557,8 @@ mod tests {
     }
 
     #[test]
-    fn test_row_count() {
+    fn test_row_count()
+    {
         let config = CsvExportConfig::new();
         let mut exporter = CsvExporter::new(config);
         assert_eq!(exporter.row_count(), 0);
@@ -518,7 +568,8 @@ mod tests {
     }
 
     #[test]
-    fn test_empty_export() {
+    fn test_empty_export()
+    {
         let config = CsvExportConfig::new().header("Col1");
         let exporter = CsvExporter::new(config);
         let output = exporter.to_string().unwrap();
@@ -526,7 +577,8 @@ mod tests {
     }
 
     #[test]
-    fn test_export_to_bytes() {
+    fn test_export_to_bytes()
+    {
         let config = CsvExportConfig::new().header("A");
         let mut exporter = CsvExporter::new(config);
         exporter.add_row(vec!["1"]);
@@ -535,7 +587,8 @@ mod tests {
     }
 
     #[test]
-    fn test_write_to_file() {
+    fn test_write_to_file()
+    {
         let config = CsvExportConfig::new().header("Name");
         let mut exporter = CsvExporter::new(config);
         exporter.add_row(vec!["Alice"]);
@@ -553,18 +606,23 @@ mod tests {
     }
 
     #[test]
-    fn test_csv_table_trait() {
-        struct Item {
+    fn test_csv_table_trait()
+    {
+        struct Item
+        {
             name: String,
             qty: u32,
         }
 
-        impl CsvTable for Item {
-            fn csv_headers() -> Vec<String> {
+        impl CsvTable for Item
+        {
+            fn csv_headers() -> Vec<String>
+            {
                 vec!["Name".into(), "Quantity".into()]
             }
 
-            fn csv_row(&self) -> Vec<String> {
+            fn csv_row(&self) -> Vec<String>
+            {
                 vec![self.name.clone(), self.qty.to_string()]
             }
         }
@@ -587,7 +645,8 @@ mod tests {
     }
 
     #[test]
-    fn test_needs_quoting() {
+    fn test_needs_quoting()
+    {
         let config = CsvExportConfig::new();
         assert!(needs_quoting("a,b", &config));
         assert!(needs_quoting("a\"b", &config));
@@ -597,7 +656,8 @@ mod tests {
     }
 
     #[test]
-    fn test_quote_field() {
+    fn test_quote_field()
+    {
         let config = CsvExportConfig::new();
         assert_eq!(quote_field("hello", &config), "\"hello\"");
         assert_eq!(quote_field("a\"b", &config), "\"a\"\"b\"");

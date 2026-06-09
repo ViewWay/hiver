@@ -24,7 +24,8 @@ const MIN_EPOLL_SIZE: u32 = 32;
 
 /// Internal state for the epoll driver
 /// epoll driver的内部状态
-struct EpollState {
+struct EpollState
+{
     /// Submission queue head index / 提交队列头索引
     submit_head: AtomicUsize,
     /// Submission queue tail index / 提交队列尾索引
@@ -37,7 +38,8 @@ struct EpollState {
 
 /// Completion queue using interior mutability
 /// 使用内部可变性的完成队列
-struct CompletionQueue {
+struct CompletionQueue
+{
     /// The actual completion entries / 实际完成条目
     entries: Box<[Option<CompletionEntry>]>,
 }
@@ -47,10 +49,12 @@ struct CompletionQueue {
 unsafe impl Send for CompletionQueue {}
 unsafe impl Sync for CompletionQueue {}
 
-impl CompletionQueue {
+impl CompletionQueue
+{
     /// Create a new completion queue
     /// 创建新的完成队列
-    fn new(capacity: usize) -> Self {
+    fn new(capacity: usize) -> Self
+    {
         Self {
             entries: vec![None; capacity].into_boxed_slice(),
         }
@@ -58,7 +62,8 @@ impl CompletionQueue {
 
     /// Get a completion entry at the given position
     /// 获取给定位置的完成条目
-    fn get(&self, index: usize) -> Option<&CompletionEntry> {
+    fn get(&self, index: usize) -> Option<&CompletionEntry>
+    {
         self.entries[index].as_ref()
     }
 
@@ -69,7 +74,8 @@ impl CompletionQueue {
     ///
     /// Caller must ensure exclusive access to this position.
     /// 调用者必须确保对此位置有独占访问权。
-    unsafe fn set(&self, index: usize, entry: Option<CompletionEntry>) {
+    unsafe fn set(&self, index: usize, entry: Option<CompletionEntry>)
+    {
         // SAFETY: We have exclusive access through the ring buffer discipline
         // 我们通过环形缓冲区规则拥有独占访问权
         let ptr = self.entries.as_ptr() as *mut Option<CompletionEntry>;
@@ -82,7 +88,8 @@ impl CompletionQueue {
 ///
 /// Uses a ring buffer pattern for submission and completion queues.
 /// 对提交和完成队列使用环形缓冲区模式。
-pub struct EpollDriver {
+pub struct EpollDriver
+{
     /// Epoll file descriptor / epoll文件描述符
     epoll_fd: RawFd,
     /// Submission queue (ring buffer) / 提交队列（环形缓冲区）
@@ -107,7 +114,8 @@ unsafe impl Send for EpollDriver {}
 // mutability) EpollDriver可以在线程间共享（使用原子操作和内部可变性）
 unsafe impl Sync for EpollDriver {}
 
-impl EpollDriver {
+impl EpollDriver
+{
     /// Create a new epoll driver with default configuration
     /// 使用默认配置创建新的epoll driver
     ///
@@ -115,7 +123,8 @@ impl EpollDriver {
     ///
     /// Returns an error if epoll instance creation fails.
     /// 如果epoll实例创建失败则返回错误。
-    pub fn new() -> std::io::Result<Self> {
+    pub fn new() -> std::io::Result<Self>
+    {
         Self::with_config(crate::driver::DriverConfig::default())
     }
 
@@ -130,7 +139,8 @@ impl EpollDriver {
     /// - 配置无效
     /// - Epoll instance creation fails
     /// - Epoll实例创建失败
-    pub fn with_config(config: crate::driver::DriverConfig) -> std::io::Result<Self> {
+    pub fn with_config(config: crate::driver::DriverConfig) -> std::io::Result<Self>
+    {
         // Create epoll instance
         // 创建epoll实例
         let size = config.entries.max(MIN_EPOLL_SIZE);
@@ -140,7 +150,8 @@ impl EpollDriver {
             libc::epoll_create(size as i32)
         };
 
-        if epoll_fd < 0 {
+        if epoll_fd < 0
+        {
             return Err(std::io::Error::last_os_error());
         }
 
@@ -148,15 +159,18 @@ impl EpollDriver {
         // 设置close-on-exec标志
         unsafe {
             let flags = libc::fcntl(epoll_fd, libc::F_GETFD);
-            if flags >= 0 {
+            if flags >= 0
+            {
                 libc::fcntl(epoll_fd, libc::F_SETFD, flags | libc::FD_CLOEXEC);
             }
         }
 
         // Set CPU affinity if specified
         // 如果指定了，设置CPU亲和性
-        if let Some(_core) = config.cpu_affinity {
-            if let Err(e) = Self::set_cpu_affinity(_core) {
+        if let Some(_core) = config.cpu_affinity
+        {
+            if let Err(e) = Self::set_cpu_affinity(_core)
+            {
                 // Log warning but don't fail
                 // 记录警告但不失败
                 eprintln!("Warning: Failed to set CPU affinity: {}", e);
@@ -184,7 +198,8 @@ impl EpollDriver {
 
     /// Set CPU affinity for the current thread
     /// 为当前线程设置CPU亲和性
-    fn set_cpu_affinity(core: usize) -> std::io::Result<()> {
+    fn set_cpu_affinity(core: usize) -> std::io::Result<()>
+    {
         #[cfg(target_os = "linux")]
         unsafe {
             let mut cpu_set: libc::cpu_set_t = std::mem::zeroed();
@@ -193,7 +208,8 @@ impl EpollDriver {
 
             let result = libc::sched_setaffinity(0, size_of::<libc::cpu_set_t>(), &cpu_set);
 
-            if result < 0 {
+            if result < 0
+            {
                 return Err(std::io::Error::last_os_error());
             }
         }
@@ -204,21 +220,26 @@ impl EpollDriver {
     /// Get the current submission queue position
     /// 获取当前提交队列位置
     #[inline]
-    fn submit_pos(&self, index: usize) -> usize {
+    fn submit_pos(&self, index: usize) -> usize
+    {
         index & self.capacity_mask
     }
 
     /// Get the current completion queue position
     /// 获取当前完成队列位置
     #[inline]
-    fn completion_pos(&self, index: usize) -> usize {
+    fn completion_pos(&self, index: usize) -> usize
+    {
         index & self.capacity_mask
     }
 }
 
-impl Drop for EpollDriver {
-    fn drop(&mut self) {
-        if self.epoll_fd >= 0 {
+impl Drop for EpollDriver
+{
+    fn drop(&mut self)
+    {
+        if self.epoll_fd >= 0
+        {
             unsafe {
                 libc::close(self.epoll_fd);
             }
@@ -226,14 +247,18 @@ impl Drop for EpollDriver {
     }
 }
 
-impl AsRawFd for EpollDriver {
-    fn as_raw_fd(&self) -> RawFd {
+impl AsRawFd for EpollDriver
+{
+    fn as_raw_fd(&self) -> RawFd
+    {
         self.epoll_fd
     }
 }
 
-impl Driver for EpollDriver {
-    fn submit(&self) -> std::io::Result<usize> {
+impl Driver for EpollDriver
+{
+    fn submit(&self) -> std::io::Result<usize>
+    {
         let mut submitted = 0;
         let head = self.state.submit_head.load(Ordering::Acquire);
         let tail = self.state.submit_tail.load(Ordering::Acquire);
@@ -241,12 +266,14 @@ impl Driver for EpollDriver {
         // Process all pending submissions
         // 处理所有挂起的提交
         let mut idx = head;
-        while idx != tail {
+        while idx != tail
+        {
             let pos = self.submit_pos(idx);
             let submit_queue = unsafe { &*self.submit_queue.get() };
             let entry = &submit_queue[pos];
 
-            if entry.fd >= 0 {
+            if entry.fd >= 0
+            {
                 // Convert submit entry to epoll event
                 // 将提交条目转换为epoll事件
                 let mut event = libc::epoll_event {
@@ -256,20 +283,24 @@ impl Driver for EpollDriver {
 
                 // Set event type based on opcode
                 // 根据操作码设置事件类型
-                match entry.opcode {
+                match entry.opcode
+                {
                     crate::driver::opcode::READ => event.events |= libc::EPOLLIN as u32,
                     crate::driver::opcode::WRITE => event.events |= libc::EPOLLOUT as u32,
-                    _ => {},
+                    _ =>
+                    {},
                 }
 
                 let op = libc::EPOLL_CTL_MOD;
                 let result = unsafe { libc::epoll_ctl(self.epoll_fd, op, entry.fd, &mut event) };
 
-                if result < 0 {
+                if result < 0
+                {
                     let err = std::io::Error::last_os_error();
                     // ENOENT means FD not registered, try ADD
                     // ENOENT表示FD未注册，尝试ADD
-                    if err.kind() == std::io::ErrorKind::NotFound {
+                    if err.kind() == std::io::ErrorKind::NotFound
+                    {
                         let add_result = unsafe {
                             libc::epoll_ctl(
                                 self.epoll_fd,
@@ -278,10 +309,13 @@ impl Driver for EpollDriver {
                                 &mut event,
                             )
                         };
-                        if add_result < 0 {
+                        if add_result < 0
+                        {
                             return Err(err);
                         }
-                    } else {
+                    }
+                    else
+                    {
                         return Err(err);
                     }
                 }
@@ -299,11 +333,13 @@ impl Driver for EpollDriver {
         Ok(submitted)
     }
 
-    fn wait(&self) -> std::io::Result<usize> {
+    fn wait(&self) -> std::io::Result<usize>
+    {
         self.wait_internal(None)
     }
 
-    fn wait_timeout(&self, duration: Duration) -> std::io::Result<(usize, bool)> {
+    fn wait_timeout(&self, duration: Duration) -> std::io::Result<(usize, bool)>
+    {
         let timeout_ms = duration.as_millis().min(i32::MAX as u128) as i32;
         let result = self.wait_internal(Some(timeout_ms))?;
 
@@ -315,14 +351,16 @@ impl Driver for EpollDriver {
         Ok((result, head == tail))
     }
 
-    fn get_submission(&self) -> Option<&mut SubmitEntry> {
+    fn get_submission(&self) -> Option<&mut SubmitEntry>
+    {
         let tail = self.state.submit_tail.load(Ordering::Acquire);
         let next_tail = tail + 1;
         let head = self.state.submit_head.load(Ordering::Acquire);
 
         // Check if queue is full
         // 检查队列是否已满
-        if next_tail - head > self.capacity {
+        if next_tail - head > self.capacity
+        {
             return None;
         }
 
@@ -335,11 +373,13 @@ impl Driver for EpollDriver {
         }
     }
 
-    fn get_completion(&self) -> Option<&CompletionEntry> {
+    fn get_completion(&self) -> Option<&CompletionEntry>
+    {
         let head = self.state.completion_head.load(Ordering::Acquire);
         let tail = self.state.completion_tail.load(Ordering::Acquire) as usize;
 
-        if head == tail {
+        if head == tail
+        {
             return None;
         }
 
@@ -347,11 +387,13 @@ impl Driver for EpollDriver {
         self.completion_queue.get(pos)
     }
 
-    fn advance_completion(&self) {
+    fn advance_completion(&self)
+    {
         let head = self.state.completion_head.load(Ordering::Acquire);
         let tail = self.state.completion_tail.load(Ordering::Acquire) as usize;
 
-        if head != tail {
+        if head != tail
+        {
             let pos = self.completion_pos(head);
             // SAFETY: We have exclusive access through the ring buffer discipline
             // 我们通过环形缓冲区规则拥有独占访问权
@@ -366,7 +408,8 @@ impl Driver for EpollDriver {
         }
     }
 
-    fn register(&self, fd: RawFd, interest: Interest) -> std::io::Result<()> {
+    fn register(&self, fd: RawFd, interest: Interest) -> std::io::Result<()>
+    {
         let mut event = libc::epoll_event {
             events: interest.to_epoll_flags(),
             u64: 0,
@@ -374,26 +417,34 @@ impl Driver for EpollDriver {
 
         let result = unsafe { libc::epoll_ctl(self.epoll_fd, libc::EPOLL_CTL_ADD, fd, &mut event) };
 
-        if result < 0 {
+        if result < 0
+        {
             Err(std::io::Error::last_os_error())
-        } else {
+        }
+        else
+        {
             Ok(())
         }
     }
 
-    fn deregister(&self, fd: RawFd) -> std::io::Result<()> {
+    fn deregister(&self, fd: RawFd) -> std::io::Result<()>
+    {
         let mut event = libc::epoll_event { events: 0, u64: 0 };
 
         let result = unsafe { libc::epoll_ctl(self.epoll_fd, libc::EPOLL_CTL_DEL, fd, &mut event) };
 
-        if result < 0 {
+        if result < 0
+        {
             Err(std::io::Error::last_os_error())
-        } else {
+        }
+        else
+        {
             Ok(())
         }
     }
 
-    fn modify(&self, fd: RawFd, interest: Interest) -> std::io::Result<()> {
+    fn modify(&self, fd: RawFd, interest: Interest) -> std::io::Result<()>
+    {
         let mut event = libc::epoll_event {
             events: interest.to_epoll_flags(),
             u64: 0,
@@ -401,22 +452,28 @@ impl Driver for EpollDriver {
 
         let result = unsafe { libc::epoll_ctl(self.epoll_fd, libc::EPOLL_CTL_MOD, fd, &mut event) };
 
-        if result < 0 {
+        if result < 0
+        {
             Err(std::io::Error::last_os_error())
-        } else {
+        }
+        else
+        {
             Ok(())
         }
     }
 
-    fn submission_capacity(&self) -> usize {
+    fn submission_capacity(&self) -> usize
+    {
         self.capacity
     }
 
-    fn completion_capacity(&self) -> usize {
+    fn completion_capacity(&self) -> usize
+    {
         self.capacity
     }
 
-    fn supports_operation(&self, opcode: u8) -> bool {
+    fn supports_operation(&self, opcode: u8) -> bool
+    {
         matches!(
             opcode,
             crate::driver::opcode::READ
@@ -426,17 +483,20 @@ impl Driver for EpollDriver {
     }
 }
 
-impl EpollDriver {
+impl EpollDriver
+{
     /// Internal wait implementation
     /// 内部等待实现
-    fn wait_internal(&self, timeout_ms: Option<i32>) -> std::io::Result<usize> {
+    fn wait_internal(&self, timeout_ms: Option<i32>) -> std::io::Result<usize>
+    {
         let event_buffer = unsafe { &mut *self.event_buffer.get() };
         let ptr = event_buffer.as_mut_ptr();
         let len = event_buffer.len() as i32;
 
         let result = unsafe { libc::epoll_wait(self.epoll_fd, ptr, len, timeout_ms.unwrap_or(-1)) };
 
-        if result < 0 {
+        if result < 0
+        {
             return Err(std::io::Error::last_os_error());
         }
 
@@ -444,20 +504,28 @@ impl EpollDriver {
 
         // Process events into completion queue
         // 将事件处理到完成队列
-        for i in 0..count {
+        for i in 0..count
+        {
             let event = &event_buffer[i];
             let tail = self.state.completion_tail.load(Ordering::Acquire) as usize;
             let pos = self.completion_pos(tail);
 
             // Determine result based on events
             // 根据事件确定结果
-            let result = if event.events & (libc::EPOLLERR | libc::EPOLLHUP) as u32 != 0 {
+            let result = if event.events & (libc::EPOLLERR | libc::EPOLLHUP) as u32 != 0
+            {
                 ERROR_TRANSPORT
-            } else if event.events & libc::EPOLLIN as u32 != 0 {
+            }
+            else if event.events & libc::EPOLLIN as u32 != 0
+            {
                 1 // Readable / 可读
-            } else if event.events & libc::EPOLLOUT as u32 != 0 {
+            }
+            else if event.events & libc::EPOLLOUT as u32 != 0
+            {
                 1 // Writable / 可写
-            } else {
+            }
+            else
+            {
                 0
             };
 
@@ -489,11 +557,13 @@ impl EpollDriver {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_epoll_driver_creation() {
+    fn test_epoll_driver_creation()
+    {
         let driver = EpollDriver::new();
         assert!(driver.is_ok());
 
@@ -503,7 +573,8 @@ mod tests {
     }
 
     #[test]
-    fn test_epoll_driver_with_config() {
+    fn test_epoll_driver_with_config()
+    {
         let config = crate::driver::DriverConfigBuilder::new()
             .entries(128)
             .build();
@@ -518,7 +589,8 @@ mod tests {
     }
 
     #[test]
-    fn test_ring_buffer_positions() {
+    fn test_ring_buffer_positions()
+    {
         let driver = EpollDriver::new().unwrap();
 
         // Test power-of-2 wrapping

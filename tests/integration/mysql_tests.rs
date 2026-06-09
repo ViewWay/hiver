@@ -15,7 +15,8 @@ use testcontainers::{GenericImage, core::IntoContainerPort, runners::AsyncRunner
 /// Test product entity for CRUD operations.
 /// 用于 CRUD 操作的测试产品实体。
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
-struct TestProduct {
+struct TestProduct
+{
     id: i64,
     name: String,
     description: Option<String>,
@@ -26,7 +27,8 @@ struct TestProduct {
 
 /// Helper: start a MySQL container and return pool + container.
 /// 辅助函数：启动 MySQL 容器并返回连接池和容器。
-async fn setup_mysql() -> (MySqlPool, testcontainers::ContainerAsync<GenericImage>) {
+async fn setup_mysql() -> (MySqlPool, testcontainers::ContainerAsync<GenericImage>)
+{
     let container = GenericImage::new("mysql", "8.0")
         .with_env_var("MYSQL_ROOT_PASSWORD", "testpass")
         .with_env_var("MYSQL_DATABASE", "testdb")
@@ -57,7 +59,8 @@ async fn setup_mysql() -> (MySqlPool, testcontainers::ContainerAsync<GenericImag
 
 /// Helper: create the test_products table.
 /// 辅助函数：创建 test_products 表。
-async fn create_test_table(pool: &MySqlPool) {
+async fn create_test_table(pool: &MySqlPool)
+{
     pool.execute(
         r#"
         CREATE TABLE IF NOT EXISTS test_products (
@@ -76,7 +79,8 @@ async fn create_test_table(pool: &MySqlPool) {
 
 /// Helper: seed initial test data.
 /// 辅助函数：插入初始测试数据。
-async fn seed_test_data(pool: &MySqlPool) {
+async fn seed_test_data(pool: &MySqlPool)
+{
     sqlx::query(
         r#"
         INSERT IGNORE INTO test_products (name, description, price, stock, is_available)
@@ -96,7 +100,8 @@ async fn seed_test_data(pool: &MySqlPool) {
 // 测试 1：MySQL 容器启动并接受连接
 // ============================================================
 #[tokio::test]
-async fn test_mysql_container_connectivity() {
+async fn test_mysql_container_connectivity()
+{
     let (pool, _container) = setup_mysql().await;
 
     let row: (String,) = sqlx::query_as("SELECT VERSION()")
@@ -112,7 +117,8 @@ async fn test_mysql_container_connectivity() {
 // 测试 2：创建包含多种列类型的表
 // ============================================================
 #[tokio::test]
-async fn test_mysql_create_table() {
+async fn test_mysql_create_table()
+{
     let (pool, _container) = setup_mysql().await;
     create_test_table(&pool).await;
 
@@ -132,7 +138,8 @@ async fn test_mysql_create_table() {
 // 测试 3：插入并查询单行数据
 // ============================================================
 #[tokio::test]
-async fn test_mysql_insert_and_select() {
+async fn test_mysql_insert_and_select()
+{
     let (pool, _container) = setup_mysql().await;
     create_test_table(&pool).await;
 
@@ -165,7 +172,8 @@ async fn test_mysql_insert_and_select() {
 // 测试 4：更新已有行
 // ============================================================
 #[tokio::test]
-async fn test_mysql_update() {
+async fn test_mysql_update()
+{
     let (pool, _container) = setup_mysql().await;
     create_test_table(&pool).await;
     seed_test_data(&pool).await;
@@ -192,7 +200,8 @@ async fn test_mysql_update() {
 // 测试 5：删除行
 // ============================================================
 #[tokio::test]
-async fn test_mysql_delete() {
+async fn test_mysql_delete()
+{
     let (pool, _container) = setup_mysql().await;
     create_test_table(&pool).await;
     seed_test_data(&pool).await;
@@ -222,7 +231,8 @@ async fn test_mysql_delete() {
 // 测试 6：事务提交
 // ============================================================
 #[tokio::test]
-async fn test_mysql_transaction_commit() {
+async fn test_mysql_transaction_commit()
+{
     let (pool, _container) = setup_mysql().await;
     create_test_table(&pool).await;
 
@@ -257,7 +267,8 @@ async fn test_mysql_transaction_commit() {
 // 测试 7：事务回滚
 // ============================================================
 #[tokio::test]
-async fn test_mysql_transaction_rollback() {
+async fn test_mysql_transaction_rollback()
+{
     let (pool, _container) = setup_mysql().await;
     create_test_table(&pool).await;
 
@@ -286,7 +297,8 @@ async fn test_mysql_transaction_rollback() {
 // 测试 8：使用 LIMIT/OFFSET 分页
 // ============================================================
 #[tokio::test]
-async fn test_mysql_pagination() {
+async fn test_mysql_pagination()
+{
     let (pool, _container) = setup_mysql().await;
     create_test_table(&pool).await;
     seed_test_data(&pool).await;
@@ -311,7 +323,8 @@ async fn test_mysql_pagination() {
 // 测试 9：聚合查询
 // ============================================================
 #[tokio::test]
-async fn test_mysql_aggregation() {
+async fn test_mysql_aggregation()
+{
     let (pool, _container) = setup_mysql().await;
     create_test_table(&pool).await;
     seed_test_data(&pool).await;
@@ -333,7 +346,8 @@ async fn test_mysql_aggregation() {
 // 测试 10：自增 ID 生成
 // ============================================================
 #[tokio::test]
-async fn test_mysql_auto_increment() {
+async fn test_mysql_auto_increment()
+{
     let (pool, _container) = setup_mysql().await;
     create_test_table(&pool).await;
 
@@ -366,7 +380,8 @@ async fn test_mysql_auto_increment() {
 // 测试 11：LIKE 模式匹配
 // ============================================================
 #[tokio::test]
-async fn test_mysql_like_pattern() {
+async fn test_mysql_like_pattern()
+{
     let (pool, _container) = setup_mysql().await;
     create_test_table(&pool).await;
     seed_test_data(&pool).await;
@@ -386,11 +401,13 @@ async fn test_mysql_like_pattern() {
 // 测试 12：通过连接池执行并发查询
 // ============================================================
 #[tokio::test]
-async fn test_mysql_concurrent_queries() {
+async fn test_mysql_concurrent_queries()
+{
     let (pool, _container) = setup_mysql().await;
 
     let mut handles = Vec::new();
-    for i in 0..10 {
+    for i in 0..10
+    {
         let pool_clone = pool.clone();
         handles.push(tokio::spawn(async move {
             let row: (i32,) = sqlx::query_as("SELECT ? AS val")
@@ -403,7 +420,8 @@ async fn test_mysql_concurrent_queries() {
 
     let results: Vec<_> = futures::future::join_all(handles).await;
 
-    for (i, result) in results.into_iter().enumerate() {
+    for (i, result) in results.into_iter().enumerate()
+    {
         let row = result.expect("Query should succeed");
         assert_eq!(row.0, i as i32, "Concurrent query {i} should return correct value");
     }

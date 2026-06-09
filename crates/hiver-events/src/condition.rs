@@ -53,7 +53,8 @@ use std::{any::Any, fmt};
 ///     // Only receives events where status == 'ACTIVE'
 /// }
 /// ```
-pub trait EventCondition: Send + Sync + Any {
+pub trait EventCondition: Send + Sync + Any
+{
     /// Evaluate whether the event matches this condition
     /// 评估事件是否匹配此条件
     ///
@@ -67,8 +68,10 @@ pub trait EventCondition: Send + Sync + Any {
 #[derive(Debug, Clone, Copy, Default)]
 pub struct AlwaysMatchCondition;
 
-impl EventCondition for AlwaysMatchCondition {
-    fn matches(&self, _event: &dyn Any) -> bool {
+impl EventCondition for AlwaysMatchCondition
+{
+    fn matches(&self, _event: &dyn Any) -> bool
+    {
         true
     }
 }
@@ -78,8 +81,10 @@ impl EventCondition for AlwaysMatchCondition {
 #[derive(Debug, Clone, Copy, Default)]
 pub struct NeverMatchCondition;
 
-impl EventCondition for NeverMatchCondition {
-    fn matches(&self, _event: &dyn Any) -> bool {
+impl EventCondition for NeverMatchCondition
+{
+    fn matches(&self, _event: &dyn Any) -> bool
+    {
         false
     }
 }
@@ -91,7 +96,8 @@ impl EventCondition for NeverMatchCondition {
 /// Comparison operators for property conditions
 /// 属性条件的比较运算符
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CompareOp {
+pub enum CompareOp
+{
     /// Equal to / 等于
     Eq,
     /// Not equal to / 不等于
@@ -104,11 +110,14 @@ pub enum CompareOp {
     Contains,
 }
 
-impl CompareOp {
+impl CompareOp
+{
     /// Try to parse a comparison operator from a token string
     /// 尝试从标记字符串解析比较运算符
-    pub fn from_token(token: &str) -> Option<Self> {
-        match token.trim() {
+    pub fn from_token(token: &str) -> Option<Self>
+    {
+        match token.trim()
+        {
             "==" => Some(Self::Eq),
             "!=" => Some(Self::Ne),
             ">" => Some(Self::Gt),
@@ -120,8 +129,10 @@ impl CompareOp {
 
     /// Get the symbolic representation of this operator
     /// 获取此运算符的符号表示
-    pub fn as_symbol(&self) -> &'static str {
-        match self {
+    pub fn as_symbol(&self) -> &'static str
+    {
+        match self
+        {
             Self::Eq => "==",
             Self::Ne => "!=",
             Self::Gt => ">",
@@ -131,8 +142,10 @@ impl CompareOp {
     }
 }
 
-impl fmt::Display for CompareOp {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for CompareOp
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.write_str(self.as_symbol())
     }
 }
@@ -158,7 +171,8 @@ impl fmt::Display for CompareOp {
 /// 此条件需要事件实现 `ConditionPropertyProvider` 才能按路径访问属性。
 /// 没有该实现，只能进行顶层类型匹配。
 #[derive(Debug, Clone)]
-pub struct PropertyCondition {
+pub struct PropertyCondition
+{
     /// The property path (e.g., "status", "user.name")
     /// 属性路径（例如 "status"、"user.name"）
     pub property_path: String,
@@ -172,14 +186,16 @@ pub struct PropertyCondition {
     pub value: String,
 }
 
-impl PropertyCondition {
+impl PropertyCondition
+{
     /// Create a new property condition
     /// 创建新的属性条件
     pub fn new(
         property_path: impl Into<String>,
         operator: CompareOp,
         value: impl Into<String>,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             property_path: property_path.into(),
             operator,
@@ -194,23 +210,33 @@ impl PropertyCondition {
     /// parse as `f64`), falling back to lexicographic string comparison.
     /// 对于 `Gt` 和 `Lt`，先尝试数值比较（如果两个值都能解析为 `f64`），
     /// 然后回退到字典序字符串比较。
-    fn compare_strings(&self, actual: &str) -> bool {
-        match self.operator {
+    fn compare_strings(&self, actual: &str) -> bool
+    {
+        match self.operator
+        {
             CompareOp::Eq => actual == self.value,
             CompareOp::Ne => actual != self.value,
-            CompareOp::Gt => {
+            CompareOp::Gt =>
+            {
                 // Try numeric comparison first
-                if let (Ok(a_num), Ok(b_num)) = (actual.parse::<f64>(), self.value.parse::<f64>()) {
+                if let (Ok(a_num), Ok(b_num)) = (actual.parse::<f64>(), self.value.parse::<f64>())
+                {
                     a_num > b_num
-                } else {
+                }
+                else
+                {
                     actual > self.value.as_str()
                 }
             },
-            CompareOp::Lt => {
+            CompareOp::Lt =>
+            {
                 // Try numeric comparison first
-                if let (Ok(a_num), Ok(b_num)) = (actual.parse::<f64>(), self.value.parse::<f64>()) {
+                if let (Ok(a_num), Ok(b_num)) = (actual.parse::<f64>(), self.value.parse::<f64>())
+                {
                     a_num < b_num
-                } else {
+                }
+                else
+                {
                     actual < self.value.as_str()
                 }
             },
@@ -219,8 +245,10 @@ impl PropertyCondition {
     }
 }
 
-impl EventCondition for PropertyCondition {
-    fn matches(&self, _event: &dyn Any) -> bool {
+impl EventCondition for PropertyCondition
+{
+    fn matches(&self, _event: &dyn Any) -> bool
+    {
         // We cannot directly downcast &dyn Any to dyn ConditionPropertyProvider.
         // Use `evaluate_condition` for typed property-based evaluation.
         // For untyped (dyn Any) matching, this always returns false.
@@ -228,15 +256,18 @@ impl EventCondition for PropertyCondition {
     }
 }
 
-impl PropertyCondition {
+impl PropertyCondition
+{
     /// Evaluate this condition against a typed event that implements
     /// `ConditionPropertyProvider`.
     /// 对实现了 `ConditionPropertyProvider` 的类型化事件求值此条件。
     ///
     /// This is the primary evaluation path for property conditions.
     /// 这是属性条件的主要求值路径。
-    pub fn matches_provider<E: ConditionPropertyProvider>(&self, event: &E) -> bool {
-        if let Some(property_value) = event.get_property(&self.property_path) {
+    pub fn matches_provider<E: ConditionPropertyProvider>(&self, event: &E) -> bool
+    {
+        if let Some(property_value) = event.get_property(&self.property_path)
+        {
             return self.compare_strings(&property_value);
         }
         false
@@ -265,15 +296,19 @@ impl PropertyCondition {
 pub fn evaluate_condition<E: ConditionPropertyProvider + Any>(
     condition: &dyn EventCondition,
     event: &E,
-) -> bool {
+) -> bool
+{
     // Try PropertyCondition first (via Any downcast)
-    if let Some(pc) = (condition as &dyn Any).downcast_ref::<PropertyCondition>() {
+    if let Some(pc) = (condition as &dyn Any).downcast_ref::<PropertyCondition>()
+    {
         return pc.matches_provider(event);
     }
 
     // Try CompositeCondition
-    if let Some(cc) = (condition as &dyn Any).downcast_ref::<CompositeCondition>() {
-        return match cc {
+    if let Some(cc) = (condition as &dyn Any).downcast_ref::<CompositeCondition>()
+    {
+        return match cc
+        {
             CompositeCondition::And(conditions) => conditions
                 .iter()
                 .all(|c| evaluate_condition(c.as_ref(), event)),
@@ -300,7 +335,8 @@ pub fn evaluate_condition<E: ConditionPropertyProvider + Any>(
 ///
 /// 实现此trait的事件可以使用 `PropertyCondition` 进行过滤。
 /// 属性路径使用点号表示法（例如 "user.name"）。
-pub trait ConditionPropertyProvider {
+pub trait ConditionPropertyProvider
+{
     /// Get a property value by its path
     /// 按路径获取属性值
     ///
@@ -321,7 +357,8 @@ pub trait ConditionPropertyProvider {
 /// ```java
 /// @EventListener(condition = "#event.status == 'ACTIVE' and #event.priority > 5")
 /// ```
-pub enum CompositeCondition {
+pub enum CompositeCondition
+{
     /// All conditions must match / 所有条件必须匹配
     And(Vec<Box<dyn EventCondition>>),
 
@@ -332,13 +369,18 @@ pub enum CompositeCondition {
     Not(Box<dyn EventCondition>),
 }
 
-impl fmt::Debug for CompositeCondition {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::And(conditions) => {
+impl fmt::Debug for CompositeCondition
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
+            Self::And(conditions) =>
+            {
                 write!(f, "CompositeCondition::And({} conditions)", conditions.len())
             },
-            Self::Or(conditions) => {
+            Self::Or(conditions) =>
+            {
                 write!(f, "CompositeCondition::Or({} conditions)", conditions.len())
             },
             Self::Not(_) => write!(f, "CompositeCondition::Not(..)"),
@@ -346,9 +388,12 @@ impl fmt::Debug for CompositeCondition {
     }
 }
 
-impl EventCondition for CompositeCondition {
-    fn matches(&self, event: &dyn Any) -> bool {
-        match self {
+impl EventCondition for CompositeCondition
+{
+    fn matches(&self, event: &dyn Any) -> bool
+    {
+        match self
+        {
             Self::And(conditions) => conditions.iter().all(|c| c.matches(event)),
             Self::Or(conditions) => conditions.iter().any(|c| c.matches(event)),
             Self::Not(condition) => !condition.matches(event),
@@ -385,7 +430,8 @@ impl EventCondition for CompositeCondition {
 /// ```
 pub struct ConditionParser;
 
-impl ConditionParser {
+impl ConditionParser
+{
     /// Parse a condition expression string into an `EventCondition`
     /// 将条件表达式字符串解析为 `EventCondition`
     ///
@@ -406,11 +452,13 @@ impl ConditionParser {
     /// // use evaluate_condition() for typed property-based evaluation.
     /// assert_eq!(condition.matches(&42 as &dyn Any), false);
     /// ```
-    pub fn parse(input: &str) -> Result<Box<dyn EventCondition>, ConditionParseError> {
+    pub fn parse(input: &str) -> Result<Box<dyn EventCondition>, ConditionParseError>
+    {
         let tokens = tokenize(input)?;
         let mut parser = ParserState::new(&tokens);
         let condition = parser.parse_or_expr()?;
-        if parser.has_more() {
+        if parser.has_more()
+        {
             return Err(ConditionParseError::UnexpectedToken(
                 parser.peek().unwrap_or("").to_string(),
             ));
@@ -422,7 +470,8 @@ impl ConditionParser {
 /// Error type for condition parsing failures
 /// 条件解析失败的错误类型
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum ConditionParseError {
+pub enum ConditionParseError
+{
     /// Unexpected token encountered
     /// 遇到意外的标记
     UnexpectedToken(String),
@@ -444,9 +493,12 @@ pub enum ConditionParseError {
     UnexpectedEnd,
 }
 
-impl fmt::Display for ConditionParseError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for ConditionParseError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::UnexpectedToken(token) => write!(f, "Unexpected token: '{}'", token),
             Self::ExpectedToken(expected) => write!(f, "Expected: '{}'", expected),
             Self::EmptyExpression => write!(f, "Empty expression"),
@@ -464,9 +516,11 @@ impl std::error::Error for ConditionParseError {}
 
 /// Tokenize an expression string into a list of string tokens
 /// 将表达式字符串标记化为字符串标记列表
-fn tokenize(input: &str) -> Result<Vec<String>, ConditionParseError> {
+fn tokenize(input: &str) -> Result<Vec<String>, ConditionParseError>
+{
     let trimmed = input.trim();
-    if trimmed.is_empty() {
+    if trimmed.is_empty()
+    {
         return Err(ConditionParseError::EmptyExpression);
     }
 
@@ -474,19 +528,22 @@ fn tokenize(input: &str) -> Result<Vec<String>, ConditionParseError> {
     let chars: Vec<char> = trimmed.chars().collect();
     let mut i = 0;
 
-    while i < chars.len() {
+    while i < chars.len()
+    {
         let ch = chars[i];
 
         // Skip whitespace
         // 跳过空白字符
-        if ch.is_whitespace() {
+        if ch.is_whitespace()
+        {
             i += 1;
             continue;
         }
 
         // Parentheses
         // 括号
-        if ch == '(' || ch == ')' {
+        if ch == '(' || ch == ')'
+        {
             tokens.push(ch.to_string());
             i += 1;
             continue;
@@ -494,22 +551,26 @@ fn tokenize(input: &str) -> Result<Vec<String>, ConditionParseError> {
 
         // Comparison operators: ==, !=, >, <
         // 比较运算符：==、!=、>、<
-        if ch == '=' && i + 1 < chars.len() && chars[i + 1] == '=' {
+        if ch == '=' && i + 1 < chars.len() && chars[i + 1] == '='
+        {
             tokens.push("==".to_string());
             i += 2;
             continue;
         }
-        if ch == '!' && i + 1 < chars.len() && chars[i + 1] == '=' {
+        if ch == '!' && i + 1 < chars.len() && chars[i + 1] == '='
+        {
             tokens.push("!=".to_string());
             i += 2;
             continue;
         }
-        if ch == '>' {
+        if ch == '>'
+        {
             tokens.push(">".to_string());
             i += 1;
             continue;
         }
-        if ch == '<' {
+        if ch == '<'
+        {
             tokens.push("<".to_string());
             i += 1;
             continue;
@@ -517,13 +578,16 @@ fn tokenize(input: &str) -> Result<Vec<String>, ConditionParseError> {
 
         // String literal: 'value'
         // 字符串字面量：'value'
-        if ch == '\'' {
+        if ch == '\''
+        {
             let start = i + 1;
             i += 1;
-            while i < chars.len() && chars[i] != '\'' {
+            while i < chars.len() && chars[i] != '\''
+            {
                 i += 1;
             }
-            if i >= chars.len() {
+            if i >= chars.len()
+            {
                 return Err(ConditionParseError::UnclosedParenthesis);
             }
             let value: String = chars[start..i].iter().collect();
@@ -534,7 +598,8 @@ fn tokenize(input: &str) -> Result<Vec<String>, ConditionParseError> {
 
         // Number or identifier
         // 数字或标识符
-        if ch.is_alphanumeric() || ch == '_' || ch == '.' {
+        if ch.is_alphanumeric() || ch == '_' || ch == '.'
+        {
             let start = i;
             while i < chars.len()
                 && (chars[i].is_alphanumeric() || chars[i] == '_' || chars[i] == '.')
@@ -560,37 +625,46 @@ fn tokenize(input: &str) -> Result<Vec<String>, ConditionParseError> {
 
 /// Internal parser state for recursive descent parsing
 /// 用于递归下降解析的内部解析器状态
-struct ParserState<'a> {
+struct ParserState<'a>
+{
     tokens: &'a [String],
     position: usize,
 }
 
-impl<'a> ParserState<'a> {
-    fn new(tokens: &'a [String]) -> Self {
+impl<'a> ParserState<'a>
+{
+    fn new(tokens: &'a [String]) -> Self
+    {
         Self {
             tokens,
             position: 0,
         }
     }
 
-    fn has_more(&self) -> bool {
+    fn has_more(&self) -> bool
+    {
         self.position < self.tokens.len()
     }
 
-    fn peek(&self) -> Option<&'a str> {
+    fn peek(&self) -> Option<&'a str>
+    {
         self.tokens.get(self.position).map(String::as_str)
     }
 
-    fn advance(&mut self) -> Option<&'a str> {
+    fn advance(&mut self) -> Option<&'a str>
+    {
         let token = self.tokens.get(self.position).map(String::as_str);
         self.position += 1;
         token
     }
 
-    fn expect(&mut self, expected: &str) -> Result<(), ConditionParseError> {
-        match self.advance() {
+    fn expect(&mut self, expected: &str) -> Result<(), ConditionParseError>
+    {
+        match self.advance()
+        {
             Some(token) if token == expected => Ok(()),
-            Some(token) => {
+            Some(token) =>
+            {
                 Err(ConditionParseError::ExpectedToken(format!("'{}', got '{}'", expected, token)))
             },
             None => Err(ConditionParseError::UnexpectedEnd),
@@ -598,51 +672,67 @@ impl<'a> ParserState<'a> {
     }
 
     /// or_expr := and_expr ("or" and_expr)*
-    fn parse_or_expr(&mut self) -> Result<Box<dyn EventCondition>, ConditionParseError> {
+    fn parse_or_expr(&mut self) -> Result<Box<dyn EventCondition>, ConditionParseError>
+    {
         let mut conditions = vec![self.parse_and_expr()?];
 
-        while self.peek() == Some("or") {
+        while self.peek() == Some("or")
+        {
             self.advance(); // consume "or"
             conditions.push(self.parse_and_expr()?);
         }
 
-        if conditions.len() == 1 {
+        if conditions.len() == 1
+        {
             Ok(conditions.pop().unwrap())
-        } else {
+        }
+        else
+        {
             Ok(Box::new(CompositeCondition::Or(conditions)))
         }
     }
 
     /// and_expr := not_expr ("and" not_expr)*
-    fn parse_and_expr(&mut self) -> Result<Box<dyn EventCondition>, ConditionParseError> {
+    fn parse_and_expr(&mut self) -> Result<Box<dyn EventCondition>, ConditionParseError>
+    {
         let mut conditions = vec![self.parse_not_expr()?];
 
-        while self.peek() == Some("and") {
+        while self.peek() == Some("and")
+        {
             self.advance(); // consume "and"
             conditions.push(self.parse_not_expr()?);
         }
 
-        if conditions.len() == 1 {
+        if conditions.len() == 1
+        {
             Ok(conditions.pop().unwrap())
-        } else {
+        }
+        else
+        {
             Ok(Box::new(CompositeCondition::And(conditions)))
         }
     }
 
     /// not_expr := "not" not_expr | primary
-    fn parse_not_expr(&mut self) -> Result<Box<dyn EventCondition>, ConditionParseError> {
-        if self.peek() == Some("not") {
+    fn parse_not_expr(&mut self) -> Result<Box<dyn EventCondition>, ConditionParseError>
+    {
+        if self.peek() == Some("not")
+        {
             self.advance(); // consume "not"
             let inner = self.parse_not_expr()?;
             Ok(Box::new(CompositeCondition::Not(inner)))
-        } else {
+        }
+        else
+        {
             self.parse_primary()
         }
     }
 
     /// primary := property_comparison | "(" expression ")"
-    fn parse_primary(&mut self) -> Result<Box<dyn EventCondition>, ConditionParseError> {
-        if self.peek() == Some("(") {
+    fn parse_primary(&mut self) -> Result<Box<dyn EventCondition>, ConditionParseError>
+    {
+        if self.peek() == Some("(")
+        {
             self.advance(); // consume "("
             let expr = self.parse_or_expr()?;
             self.expect(")")?;
@@ -668,9 +758,12 @@ impl<'a> ParserState<'a> {
 
         // Strip surrounding quotes from string literals
         // 去除字符串字面量的外围引号
-        let clean_value = if value.starts_with('\'') && value.ends_with('\'') && value.len() >= 2 {
+        let clean_value = if value.starts_with('\'') && value.ends_with('\'') && value.len() >= 2
+        {
             value[1..value.len() - 1].to_string()
-        } else {
+        }
+        else
+        {
             value
         };
 
@@ -690,20 +783,24 @@ impl<'a> ParserState<'a> {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     // --- Test event that implements ConditionPropertyProvider ---
 
     #[derive(Debug, Clone)]
-    struct UserCreatedEvent {
+    struct UserCreatedEvent
+    {
         username: String,
         status: String,
         priority: i32,
     }
 
-    impl UserCreatedEvent {
-        fn new(username: &str, status: &str, priority: i32) -> Self {
+    impl UserCreatedEvent
+    {
+        fn new(username: &str, status: &str, priority: i32) -> Self
+        {
             Self {
                 username: username.to_string(),
                 status: status.to_string(),
@@ -712,9 +809,12 @@ mod tests {
         }
     }
 
-    impl ConditionPropertyProvider for UserCreatedEvent {
-        fn get_property(&self, path: &str) -> Option<String> {
-            match path {
+    impl ConditionPropertyProvider for UserCreatedEvent
+    {
+        fn get_property(&self, path: &str) -> Option<String>
+        {
+            match path
+            {
                 "username" => Some(self.username.clone()),
                 "status" => Some(self.status.clone()),
                 "priority" => Some(self.priority.to_string()),
@@ -726,13 +826,15 @@ mod tests {
     // --- AlwaysMatch / NeverMatch Tests ---
 
     #[test]
-    fn test_always_match() {
+    fn test_always_match()
+    {
         let condition = AlwaysMatchCondition;
         assert!(condition.matches(&42 as &dyn Any));
     }
 
     #[test]
-    fn test_never_match() {
+    fn test_never_match()
+    {
         let condition = NeverMatchCondition;
         assert!(!condition.matches(&42 as &dyn Any));
     }
@@ -740,7 +842,8 @@ mod tests {
     // --- CompareOp Tests ---
 
     #[test]
-    fn test_compare_op_from_token() {
+    fn test_compare_op_from_token()
+    {
         assert_eq!(CompareOp::from_token("=="), Some(CompareOp::Eq));
         assert_eq!(CompareOp::from_token("!="), Some(CompareOp::Ne));
         assert_eq!(CompareOp::from_token(">"), Some(CompareOp::Gt));
@@ -750,7 +853,8 @@ mod tests {
     }
 
     #[test]
-    fn test_compare_op_display() {
+    fn test_compare_op_display()
+    {
         assert_eq!(CompareOp::Eq.to_string(), "==");
         assert_eq!(CompareOp::Contains.to_string(), "contains");
     }
@@ -758,56 +862,64 @@ mod tests {
     // --- PropertyCondition Tests ---
 
     #[test]
-    fn test_property_condition_eq_match() {
+    fn test_property_condition_eq_match()
+    {
         let event = UserCreatedEvent::new("alice", "active", 5);
         let condition = PropertyCondition::new("status", CompareOp::Eq, "active");
         assert!(condition.matches_provider(&event));
     }
 
     #[test]
-    fn test_property_condition_eq_no_match() {
+    fn test_property_condition_eq_no_match()
+    {
         let event = UserCreatedEvent::new("alice", "inactive", 5);
         let condition = PropertyCondition::new("status", CompareOp::Eq, "active");
         assert!(!condition.matches_provider(&event));
     }
 
     #[test]
-    fn test_property_condition_ne() {
+    fn test_property_condition_ne()
+    {
         let event = UserCreatedEvent::new("bob", "pending", 3);
         let condition = PropertyCondition::new("status", CompareOp::Ne, "deleted");
         assert!(condition.matches_provider(&event));
     }
 
     #[test]
-    fn test_property_condition_gt() {
+    fn test_property_condition_gt()
+    {
         let event = UserCreatedEvent::new("carol", "active", 10);
         let condition = PropertyCondition::new("priority", CompareOp::Gt, "5");
         assert!(condition.matches_provider(&event));
     }
 
     #[test]
-    fn test_property_condition_lt() {
+    fn test_property_condition_lt()
+    {
         let event = UserCreatedEvent::new("dave", "active", 3);
         let condition = PropertyCondition::new("priority", CompareOp::Lt, "5");
         assert!(condition.matches_provider(&event));
     }
 
     #[test]
-    fn test_property_condition_contains() {
+    fn test_property_condition_contains()
+    {
         let event = UserCreatedEvent::new("admin_user", "active", 1);
         let condition = PropertyCondition::new("username", CompareOp::Contains, "admin");
         assert!(condition.matches_provider(&event));
     }
 
     #[test]
-    fn test_property_condition_unknown_property() {
+    fn test_property_condition_unknown_property()
+    {
         let event = UserCreatedEvent::new("eve", "active", 1);
         let condition = PropertyCondition::new("unknown_field", CompareOp::Eq, "value");
         assert!(!condition.matches_provider(&event));
     }
 
     #[test]
-    fn test_property_condition_no_provider() {
+    fn test_property_condition_no_provider()
+    {
         let condition = PropertyCondition::new("status", CompareOp::Eq, "active");
         // A plain i32 does not implement ConditionPropertyProvider,
         // so matches() on dyn Any returns false
@@ -817,7 +929,8 @@ mod tests {
     // --- CompositeCondition Tests ---
 
     #[test]
-    fn test_composite_and_both_match() {
+    fn test_composite_and_both_match()
+    {
         let event = UserCreatedEvent::new("alice", "active", 10);
         let condition = CompositeCondition::And(vec![
             Box::new(PropertyCondition::new("status", CompareOp::Eq, "active")),
@@ -827,7 +940,8 @@ mod tests {
     }
 
     #[test]
-    fn test_composite_and_one_fails() {
+    fn test_composite_and_one_fails()
+    {
         let event = UserCreatedEvent::new("bob", "inactive", 10);
         let condition = CompositeCondition::And(vec![
             Box::new(PropertyCondition::new("status", CompareOp::Eq, "active")),
@@ -837,7 +951,8 @@ mod tests {
     }
 
     #[test]
-    fn test_composite_or_first_matches() {
+    fn test_composite_or_first_matches()
+    {
         let event = UserCreatedEvent::new("carol", "active", 1);
         let condition = CompositeCondition::Or(vec![
             Box::new(PropertyCondition::new("status", CompareOp::Eq, "active")),
@@ -847,7 +962,8 @@ mod tests {
     }
 
     #[test]
-    fn test_composite_or_second_matches() {
+    fn test_composite_or_second_matches()
+    {
         let event = UserCreatedEvent::new("dave", "inactive", 200);
         let condition = CompositeCondition::Or(vec![
             Box::new(PropertyCondition::new("status", CompareOp::Eq, "active")),
@@ -857,7 +973,8 @@ mod tests {
     }
 
     #[test]
-    fn test_composite_or_none_match() {
+    fn test_composite_or_none_match()
+    {
         let event = UserCreatedEvent::new("eve", "inactive", 1);
         let condition = CompositeCondition::Or(vec![
             Box::new(PropertyCondition::new("status", CompareOp::Eq, "active")),
@@ -867,7 +984,8 @@ mod tests {
     }
 
     #[test]
-    fn test_composite_not() {
+    fn test_composite_not()
+    {
         let event = UserCreatedEvent::new("mallory", "deleted", 1);
         let condition = CompositeCondition::Not(Box::new(PropertyCondition::new(
             "status",
@@ -878,7 +996,8 @@ mod tests {
     }
 
     #[test]
-    fn test_composite_not_inverted() {
+    fn test_composite_not_inverted()
+    {
         let event = UserCreatedEvent::new("mallory", "active", 1);
         let condition = CompositeCondition::Not(Box::new(PropertyCondition::new(
             "status",
@@ -891,49 +1010,57 @@ mod tests {
     // --- Tokenizer Tests ---
 
     #[test]
-    fn test_tokenize_simple() {
+    fn test_tokenize_simple()
+    {
         let tokens = tokenize("status == 'active'").unwrap();
         assert_eq!(tokens, vec!["status", "==", "'active'"]);
     }
 
     #[test]
-    fn test_tokenize_number() {
+    fn test_tokenize_number()
+    {
         let tokens = tokenize("priority > 5").unwrap();
         assert_eq!(tokens, vec!["priority", ">", "5"]);
     }
 
     #[test]
-    fn test_tokenize_contains() {
+    fn test_tokenize_contains()
+    {
         let tokens = tokenize("name contains 'test'").unwrap();
         assert_eq!(tokens, vec!["name", "contains", "'test'"]);
     }
 
     #[test]
-    fn test_tokenize_and_or() {
+    fn test_tokenize_and_or()
+    {
         let tokens = tokenize("status == 'active' and priority > 5").unwrap();
         assert_eq!(tokens, vec!["status", "==", "'active'", "and", "priority", ">", "5"]);
     }
 
     #[test]
-    fn test_tokenize_not() {
+    fn test_tokenize_not()
+    {
         let tokens = tokenize("not status == 'deleted'").unwrap();
         assert_eq!(tokens, vec!["not", "status", "==", "'deleted'"]);
     }
 
     #[test]
-    fn test_tokenize_parentheses() {
+    fn test_tokenize_parentheses()
+    {
         let tokens = tokenize("( status == 'active' )").unwrap();
         assert_eq!(tokens, vec!["(", "status", "==", "'active'", ")"]);
     }
 
     #[test]
-    fn test_tokenize_ne() {
+    fn test_tokenize_ne()
+    {
         let tokens = tokenize("status != 'deleted'").unwrap();
         assert_eq!(tokens, vec!["status", "!=", "'deleted'"]);
     }
 
     #[test]
-    fn test_tokenize_empty() {
+    fn test_tokenize_empty()
+    {
         assert!(tokenize("").is_err());
         assert!(tokenize("   ").is_err());
     }
@@ -941,14 +1068,16 @@ mod tests {
     // --- ConditionParser Tests ---
 
     #[test]
-    fn test_parser_simple_eq() {
+    fn test_parser_simple_eq()
+    {
         let condition = ConditionParser::parse("status == 'active'").unwrap();
         let event = UserCreatedEvent::new("alice", "active", 5);
         assert!(evaluate_condition(condition.as_ref(), &event));
     }
 
     #[test]
-    fn test_parser_simple_gt() {
+    fn test_parser_simple_gt()
+    {
         let condition = ConditionParser::parse("priority > 5").unwrap();
         let event = UserCreatedEvent::new("bob", "active", 10);
         assert!(evaluate_condition(condition.as_ref(), &event));
@@ -958,21 +1087,24 @@ mod tests {
     }
 
     #[test]
-    fn test_parser_simple_lt() {
+    fn test_parser_simple_lt()
+    {
         let condition = ConditionParser::parse("priority < 5").unwrap();
         let event = UserCreatedEvent::new("dave", "active", 3);
         assert!(evaluate_condition(condition.as_ref(), &event));
     }
 
     #[test]
-    fn test_parser_contains() {
+    fn test_parser_contains()
+    {
         let condition = ConditionParser::parse("username contains 'admin'").unwrap();
         let event = UserCreatedEvent::new("admin_user", "active", 1);
         assert!(evaluate_condition(condition.as_ref(), &event));
     }
 
     #[test]
-    fn test_parser_ne() {
+    fn test_parser_ne()
+    {
         let condition = ConditionParser::parse("status != 'deleted'").unwrap();
         let event = UserCreatedEvent::new("eve", "active", 1);
         assert!(evaluate_condition(condition.as_ref(), &event));
@@ -982,7 +1114,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parser_and() {
+    fn test_parser_and()
+    {
         let condition = ConditionParser::parse("status == 'active' and priority > 5").unwrap();
         let event = UserCreatedEvent::new("alice", "active", 10);
         assert!(evaluate_condition(condition.as_ref(), &event));
@@ -992,7 +1125,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parser_or() {
+    fn test_parser_or()
+    {
         let condition =
             ConditionParser::parse("status == 'active' or status == 'pending'").unwrap();
         let event = UserCreatedEvent::new("alice", "active", 1);
@@ -1006,7 +1140,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parser_not() {
+    fn test_parser_not()
+    {
         let condition = ConditionParser::parse("not status == 'deleted'").unwrap();
         let event = UserCreatedEvent::new("alice", "active", 1);
         assert!(evaluate_condition(condition.as_ref(), &event));
@@ -1016,14 +1151,16 @@ mod tests {
     }
 
     #[test]
-    fn test_parser_parenthesized() {
+    fn test_parser_parenthesized()
+    {
         let condition = ConditionParser::parse("( status == 'active' )").unwrap();
         let event = UserCreatedEvent::new("alice", "active", 1);
         assert!(evaluate_condition(condition.as_ref(), &event));
     }
 
     #[test]
-    fn test_parser_complex() {
+    fn test_parser_complex()
+    {
         let condition = ConditionParser::parse(
             "status == 'active' and ( priority > 5 or username contains 'admin' )",
         )
@@ -1047,18 +1184,21 @@ mod tests {
     }
 
     #[test]
-    fn test_parser_error_empty() {
+    fn test_parser_error_empty()
+    {
         assert!(ConditionParser::parse("").is_err());
         assert!(ConditionParser::parse("   ").is_err());
     }
 
     #[test]
-    fn test_parser_error_unexpected_token() {
+    fn test_parser_error_unexpected_token()
+    {
         assert!(ConditionParser::parse("status active").is_err());
     }
 
     #[test]
-    fn test_parser_error_unclosed_paren() {
+    fn test_parser_error_unclosed_paren()
+    {
         assert!(ConditionParser::parse("( status == 'active'").is_err());
     }
 }

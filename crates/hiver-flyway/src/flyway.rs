@@ -57,16 +57,19 @@ type MigrationVec = Vec<Migration>;
 /// let info = flyway.info().await?;
 /// println!("Current version: {:?}", info.current_version());
 /// ```
-pub struct Flyway {
+pub struct Flyway
+{
     config: Config,
     pool: Pool<Any>,
     db_type: DatabaseType,
 }
 
-impl Flyway {
+impl Flyway
+{
     /// Create a new Flyway instance
     /// 创建新的 Flyway 实例
-    pub async fn new(config: Config) -> Result<Self> {
+    pub async fn new(config: Config) -> Result<Self>
+    {
         config.validate()?;
 
         let db_type = config.database_type;
@@ -83,13 +86,15 @@ impl Flyway {
 
     /// Create from environment variables
     /// 从环境变量创建
-    pub async fn from_env() -> Result<Self> {
+    pub async fn from_env() -> Result<Self>
+    {
         Self::new(Config::from_env()?).await
     }
 
     /// Get the detected database type
     /// 获取检测到的数据库类型
-    pub fn database_type(&self) -> DatabaseType {
+    pub fn database_type(&self) -> DatabaseType
+    {
         self.db_type
     }
 
@@ -101,7 +106,8 @@ impl Flyway {
     /// ```java
     /// flyway.migrate();
     /// ```
-    pub async fn migrate(&self) -> Result<MigrationResult> {
+    pub async fn migrate(&self) -> Result<MigrationResult>
+    {
         info!("Starting database migration on {}", self.db_type);
 
         let start = Instant::now();
@@ -118,7 +124,8 @@ impl Flyway {
         // Find pending migrations
         let pending = self.find_pending_migrations(&current_info, &migrations)?;
 
-        if pending.is_empty() {
+        if pending.is_empty()
+        {
             info!("No pending migrations to apply");
             return Ok(MigrationResult::success(
                 Vec::new(),
@@ -133,10 +140,13 @@ impl Flyway {
         let mut executed = Vec::new();
         let warnings = Vec::new();
 
-        for &idx in &pending {
+        for &idx in &pending
+        {
             let migration = &migrations[idx];
-            match self.execute_migration(migration).await {
-                Ok(version) => {
+            match self.execute_migration(migration).await
+            {
+                Ok(version) =>
+                {
                     info!(
                         "Applied migration: {} - {}",
                         migration.version(),
@@ -144,7 +154,8 @@ impl Flyway {
                     );
                     executed.push(version);
                 },
-                Err(e) => {
+                Err(e) =>
+                {
                     warn!("Migration failed: {} - {}", migration.version(), e);
                     return Ok(MigrationResult::failed(format!(
                         "Migration {} failed: {}",
@@ -174,10 +185,12 @@ impl Flyway {
     /// ```java
     /// MigrationInfoService infoService = flyway.info();
     /// ```
-    pub async fn info(&self) -> Result<Info> {
+    pub async fn info(&self) -> Result<Info>
+    {
         let schema_exists = self.schema_history_table_exists().await?;
 
-        if !schema_exists {
+        if !schema_exists
+        {
             return Ok(Info::new());
         }
 
@@ -222,18 +235,22 @@ impl Flyway {
     /// ```java
     /// flyway.validate();
     /// ```
-    pub async fn validate(&self) -> Result<()> {
+    pub async fn validate(&self) -> Result<()>
+    {
         let info = self.info().await?;
 
-        if !info.schema_exists {
+        if !info.schema_exists
+        {
             return Err(crate::FlywayError::ValidationError(
                 "Schema history table does not exist".to_string(),
             ));
         }
 
         // Check checksums
-        for entry in &info.all {
-            if let Some(stored_checksum) = entry.checksum {
+        for entry in &info.all
+        {
+            if let Some(stored_checksum) = entry.checksum
+            {
                 // Load migration from file and verify checksum
                 let migrations = self.load_migrations()?;
                 if let Some(migration) = migrations.iter().find(|m| m.version() == &entry.version)
@@ -261,10 +278,12 @@ impl Flyway {
     /// ```java
     /// flyway.baseline();
     /// ```
-    pub async fn baseline(&self) -> Result<BaselineInfo> {
+    pub async fn baseline(&self) -> Result<BaselineInfo>
+    {
         let info = self.info().await?;
 
-        if info.applied_count() > 0 {
+        if info.applied_count() > 0
+        {
             return Err(crate::FlywayError::ValidationError(
                 "Cannot baseline: migrations already applied".to_string(),
             ));
@@ -287,7 +306,8 @@ impl Flyway {
     /// ```java
     /// flyway.clean();
     /// ```
-    pub async fn clean(&self) -> Result<()> {
+    pub async fn clean(&self) -> Result<()>
+    {
         // This is a destructive operation - only allow in development
         #[cfg(debug_assertions)]
         {
@@ -311,14 +331,17 @@ impl Flyway {
 
     /// Get configuration reference
     /// 获取配置引用
-    pub fn config(&self) -> &Config {
+    pub fn config(&self) -> &Config
+    {
         &self.config
     }
 
     /// Ensure schema history table exists
     /// 确保历史表存在
-    async fn ensure_schema_history_table(&self) -> Result<()> {
-        if self.schema_history_table_exists().await? {
+    async fn ensure_schema_history_table(&self) -> Result<()>
+    {
+        if self.schema_history_table_exists().await?
+        {
             return Ok(());
         }
 
@@ -335,7 +358,8 @@ impl Flyway {
 
     /// Check if schema history table exists
     /// 检查历史表是否存在
-    async fn schema_history_table_exists(&self) -> Result<bool> {
+    async fn schema_history_table_exists(&self) -> Result<bool>
+    {
         let query = self.db_type.table_exists_sql(&self.config.table);
 
         let exists: bool = sqlx::query_scalar(&query)
@@ -356,10 +380,12 @@ impl Flyway {
     /// - `V1__init.postgresql.sql` - runs only on PostgreSQL (仅 PostgreSQL)
     /// - `V1__init.mysql.sql` - runs only on MySQL (仅 MySQL)
     /// - `V1__init.sqlite.sql` - runs only on SQLite (仅 SQLite)
-    fn load_migrations(&self) -> Result<MigrationVec> {
+    fn load_migrations(&self) -> Result<MigrationVec>
+    {
         let migrations_dir = self.config.migrations_dir();
 
-        if !migrations_dir.exists() {
+        if !migrations_dir.exists()
+        {
             debug!("Migrations directory does not exist: {:?}", migrations_dir);
             return Ok(Vec::new());
         }
@@ -378,9 +404,11 @@ impl Flyway {
 
         // First pass: identify dialect-specific overrides
         // 第一遍：识别方言特定的覆盖
-        for entry in &entries {
+        for entry in &entries
+        {
             let path = entry.path();
-            if path.is_dir() {
+            if path.is_dir()
+            {
                 continue;
             }
             let file_name = path.file_name().unwrap().to_string_lossy().to_string();
@@ -397,9 +425,11 @@ impl Flyway {
 
         // Second pass: collect applicable migrations
         // 第二遍：收集适用的迁移
-        for entry in &entries {
+        for entry in &entries
+        {
             let path = entry.path();
-            if path.is_dir() || path.file_name().is_none() {
+            if path.is_dir() || path.file_name().is_none()
+            {
                 continue;
             }
 
@@ -408,21 +438,25 @@ impl Flyway {
             if let Some((base_name, description)) =
                 parse_migration_filename_with_dialect(&file_name)
             {
-                let (effective_name, applicable) =
-                    if let Some(dialect) = extract_dialect_suffix(&base_name) {
-                        // Dialect-specific file: only applicable if dialect matches
-                        // 方言特定文件：仅当方言匹配时适用
-                        let applicable = dialect == target_suffix;
-                        let effective_name = strip_dialect_suffix(&base_name);
-                        (effective_name, applicable)
-                    } else {
-                        // Generic file: applicable unless overridden by a dialect-specific file
-                        // 通用文件：除非被方言特定文件覆盖，否则适用
-                        let overridden = dialect_overrides.contains(&base_name);
-                        (base_name, !overridden)
-                    };
+                let (effective_name, applicable) = if let Some(dialect) =
+                    extract_dialect_suffix(&base_name)
+                {
+                    // Dialect-specific file: only applicable if dialect matches
+                    // 方言特定文件：仅当方言匹配时适用
+                    let applicable = dialect == target_suffix;
+                    let effective_name = strip_dialect_suffix(&base_name);
+                    (effective_name, applicable)
+                }
+                else
+                {
+                    // Generic file: applicable unless overridden by a dialect-specific file
+                    // 通用文件：除非被方言特定文件覆盖，否则适用
+                    let overridden = dialect_overrides.contains(&base_name);
+                    (base_name, !overridden)
+                };
 
-                if !applicable {
+                if !applicable
+                {
                     debug!(
                         "Skipping migration {} (not applicable for {})",
                         file_name, self.db_type
@@ -448,7 +482,8 @@ impl Flyway {
     /// 从数据库获取已应用的迁移
     async fn get_applied_migrations(
         &self,
-    ) -> Result<std::collections::HashMap<String, MigrationEntry>> {
+    ) -> Result<std::collections::HashMap<String, MigrationEntry>>
+    {
         let query = format!(
             "SELECT installed_rank, version, description, type, checksum,
                     installed_by, installed_on, execution_time, success
@@ -464,12 +499,16 @@ impl Flyway {
 
         let mut applied = std::collections::HashMap::new();
 
-        for row in rows {
-            let success_val: bool = if self.db_type == DatabaseType::Sqlite {
+        for row in rows
+        {
+            let success_val: bool = if self.db_type == DatabaseType::Sqlite
+            {
                 // SQLite stores booleans as integers
                 let int_val: i32 = row.get("success");
                 int_val != 0
-            } else {
+            }
+            else
+            {
                 row.get("success")
             };
 
@@ -477,7 +516,8 @@ impl Flyway {
                 installed_rank: row.get("installed_rank"),
                 version: row.get("version"),
                 description: row.get("description"),
-                migration_type: match &row.get::<String, _>("type")[..] {
+                migration_type: match &row.get::<String, _>("type")[..]
+                {
                     "SQL" => MigrationType::SQL,
                     "Rust" => MigrationType::Rust,
                     _ => MigrationType::Repeatable,
@@ -500,7 +540,8 @@ impl Flyway {
 
     /// Get current migration info
     /// 获取当前迁移信息
-    async fn get_info(&self) -> Result<Info> {
+    async fn get_info(&self) -> Result<Info>
+    {
         self.info().await
     }
 
@@ -510,11 +551,14 @@ impl Flyway {
         &self,
         current_info: &Info,
         migrations: &[Migration],
-    ) -> Result<Vec<usize>> {
+    ) -> Result<Vec<usize>>
+    {
         let mut pending_indices = Vec::new();
 
-        for (idx, migration) in migrations.iter().enumerate() {
-            if !current_info.is_applied(migration.version()) {
+        for (idx, migration) in migrations.iter().enumerate()
+        {
+            if !current_info.is_applied(migration.version())
+            {
                 pending_indices.push(idx);
             }
         }
@@ -525,7 +569,8 @@ impl Flyway {
 
     /// Execute a single migration
     /// 执行单个迁移
-    async fn execute_migration(&self, migration: &Migration) -> Result<MigratedVersion> {
+    async fn execute_migration(&self, migration: &Migration) -> Result<MigratedVersion>
+    {
         let start = Instant::now();
 
         // Begin transaction
@@ -556,7 +601,8 @@ impl Flyway {
         tx: &mut sqlx::Transaction<'_, Any>,
         migration: &Migration,
         execution_time: i64,
-    ) -> Result<()> {
+    ) -> Result<()>
+    {
         // Get next installed rank
         let rank_query = self.db_type.next_rank_sql(&self.config.table);
         let next_rank: i32 = sqlx::query_scalar(&rank_query)
@@ -569,8 +615,10 @@ impl Flyway {
         // SQLite does not support chrono::DateTime directly; convert to string
         // SQLite 不直接支持 chrono::DateTime；转换为字符串
         let now = Utc::now();
-        match self.db_type {
-            DatabaseType::Sqlite => {
+        match self.db_type
+        {
+            DatabaseType::Sqlite =>
+            {
                 sqlx::query(&insert_query)
                     .bind(next_rank)
                     .bind(migration.version())
@@ -585,7 +633,8 @@ impl Flyway {
                     .await
                     .map_err(|e| crate::FlywayError::MigrationError(e.to_string()))?;
             },
-            DatabaseType::Postgres | DatabaseType::Mysql => {
+            DatabaseType::Postgres | DatabaseType::Mysql =>
+            {
                 sqlx::query(&insert_query)
                     .bind(next_rank)
                     .bind(migration.version())
@@ -607,12 +656,15 @@ impl Flyway {
 
     /// Insert baseline record
     /// 插入基线记录
-    async fn insert_baseline(&self, baseline: &BaselineInfo) -> Result<()> {
+    async fn insert_baseline(&self, baseline: &BaselineInfo) -> Result<()>
+    {
         let query = self.db_type.baseline_insert_sql(&self.config.table);
 
         let now = Utc::now();
-        match self.db_type {
-            DatabaseType::Sqlite => {
+        match self.db_type
+        {
+            DatabaseType::Sqlite =>
+            {
                 sqlx::query(&query)
                     .bind(&baseline.version)
                     .bind(baseline.description.as_deref().unwrap_or("Flyway Baseline"))
@@ -623,7 +675,8 @@ impl Flyway {
                     .await
                     .map_err(|e| crate::FlywayError::MigrationError(e.to_string()))?;
             },
-            DatabaseType::Postgres | DatabaseType::Mysql => {
+            DatabaseType::Postgres | DatabaseType::Mysql =>
+            {
                 sqlx::query(&query)
                     .bind(&baseline.version)
                     .bind(baseline.description.as_deref().unwrap_or("Flyway Baseline"))
@@ -651,33 +704,44 @@ impl Flyway {
 /// - `V1__Description.sqlite.sql` - SQLite-specific (SQLite 专用)
 /// - `V1.1__Description.sql` - Versioned migration with sub-version
 /// - `R__Description.sql` - Repeatable migration
-fn parse_migration_filename_with_dialect(filename: &str) -> Option<(String, String)> {
+fn parse_migration_filename_with_dialect(filename: &str) -> Option<(String, String)>
+{
     // Must end with .sql
-    if !filename.ends_with(".sql") {
+    if !filename.ends_with(".sql")
+    {
         return None;
     }
 
     let without_ext = &filename[..filename.len() - 4];
 
-    if without_ext.starts_with("V") {
+    if without_ext.starts_with("V")
+    {
         // Versioned migration: V1__Description or V1__Description.postgresql
         let parts: Vec<&str> = without_ext.splitn(2, "__").collect();
-        if parts.len() == 2 {
+        if parts.len() == 2
+        {
             Some((parts[0].to_string(), parts[1].to_string()))
-        } else {
+        }
+        else
+        {
             None
         }
-    } else if without_ext.starts_with("R__") {
+    }
+    else if without_ext.starts_with("R__")
+    {
         let description = without_ext.strip_prefix("R__")?;
         Some(("R__".to_string(), description.to_string()))
-    } else {
+    }
+    else
+    {
         None
     }
 }
 
 /// Extract the dialect suffix from a base name like "V1.postgresql"
 /// 从基础名称（如 "V1.postgresql"）中提取方言后缀
-fn extract_dialect_suffix(base_name: &str) -> Option<&str> {
+fn extract_dialect_suffix(base_name: &str) -> Option<&str>
+{
     // Known dialect suffixes
     // 已知的方言后缀
     let suffixes = ["postgresql", "mysql", "sqlite"];
@@ -693,11 +757,15 @@ fn extract_dialect_suffix(base_name: &str) -> Option<&str> {
 
 /// Strip the dialect suffix from a base name: "V1.postgresql" -> "V1"
 /// 去除基础名称中的方言后缀
-fn strip_dialect_suffix(base_name: &str) -> String {
-    if let Some(dialect) = extract_dialect_suffix(base_name) {
+fn strip_dialect_suffix(base_name: &str) -> String
+{
+    if let Some(dialect) = extract_dialect_suffix(base_name)
+    {
         let end = base_name.len() - dialect.len() - 1; // -1 for the dot
         base_name[..end].to_string()
-    } else {
+    }
+    else
+    {
         base_name.to_string()
     }
 }
@@ -705,7 +773,8 @@ fn strip_dialect_suffix(base_name: &str) -> String {
 /// Parse Flyway migration filename (original simple version)
 /// 解析 Flyway 迁移文件名（原始简单版本）
 #[allow(dead_code)] // used in tests; kept for API compatibility with parse_migration_filename_with_dialect
-fn parse_migration_filename(filename: &str) -> Option<(String, String)> {
+fn parse_migration_filename(filename: &str) -> Option<(String, String)>
+{
     parse_migration_filename_with_dialect(filename)
 }
 
@@ -717,11 +786,13 @@ fn parse_migration_filename(filename: &str) -> Option<(String, String)> {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_parse_migration_filename() {
+    fn test_parse_migration_filename()
+    {
         assert_eq!(
             parse_migration_filename("V1__Create_users_table.sql"),
             Some(("V1".to_string(), "Create_users_table".to_string()))
@@ -742,7 +813,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_migration_filename_with_dialect() {
+    fn test_parse_migration_filename_with_dialect()
+    {
         // PostgreSQL-specific migration
         assert_eq!(
             parse_migration_filename_with_dialect("V1__Create_users_table.postgresql.sql"),
@@ -763,7 +835,8 @@ mod tests {
     }
 
     #[test]
-    fn test_extract_dialect_suffix() {
+    fn test_extract_dialect_suffix()
+    {
         assert_eq!(extract_dialect_suffix("V1"), None);
         assert_eq!(extract_dialect_suffix("V1.postgresql"), Some("postgresql"));
         assert_eq!(extract_dialect_suffix("V2.mysql"), Some("mysql"));
@@ -772,7 +845,8 @@ mod tests {
     }
 
     #[test]
-    fn test_strip_dialect_suffix() {
+    fn test_strip_dialect_suffix()
+    {
         assert_eq!(strip_dialect_suffix("V1.postgresql"), "V1");
         assert_eq!(strip_dialect_suffix("V2.mysql"), "V2");
         assert_eq!(strip_dialect_suffix("V1.1"), "V1.1");

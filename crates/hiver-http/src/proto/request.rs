@@ -30,12 +30,14 @@ use crate::{Body, Error, Request, Result};
 /// let ctx = ConnectionContext::new();
 /// let (request, used) = parse_request(data, &ctx)?;
 /// ```
-pub fn parse_request(data: &[u8], ctx: &ConnectionContext) -> Result<(Request, usize)> {
+pub fn parse_request(data: &[u8], ctx: &ConnectionContext) -> Result<(Request, usize)>
+{
     let mut headers = [httparse::EMPTY_HEADER; 64];
     let mut req = HttparseRequest::new(&mut headers);
 
     // Parse the headers
-    let result = req.parse(data).map_err(|e| match e {
+    let result = req.parse(data).map_err(|e| match e
+    {
         httparse::Error::HeaderName => Error::InvalidRequest("Invalid header name".to_string()),
         httparse::Error::HeaderValue => Error::InvalidRequest("Invalid header value".to_string()),
         httparse::Error::NewLine => Error::InvalidRequest("Invalid newline".to_string()),
@@ -45,9 +47,11 @@ pub fn parse_request(data: &[u8], ctx: &ConnectionContext) -> Result<(Request, u
         httparse::Error::TooManyHeaders => Error::InvalidRequest("Too many headers".to_string()),
     })?;
 
-    let bytes_used = match result {
+    let bytes_used = match result
+    {
         httparse::Status::Complete(n) => n,
-        httparse::Status::Partial => {
+        httparse::Status::Partial =>
+        {
             return Err(Error::IncompleteRequest);
         },
     };
@@ -62,7 +66,8 @@ pub fn parse_request(data: &[u8], ctx: &ConnectionContext) -> Result<(Request, u
         .ok_or_else(|| Error::InvalidRequest("Missing path".to_string()))?;
 
     // Parse version
-    let version = match req.version {
+    let version = match req.version
+    {
         Some(0) => HttpVersion::Http10,
         Some(1) | None => HttpVersion::Http11,
         Some(v) => return Err(Error::InvalidRequest(format!("Unsupported HTTP version: {}", v))),
@@ -72,7 +77,8 @@ pub fn parse_request(data: &[u8], ctx: &ConnectionContext) -> Result<(Request, u
     let mut http_builder = http::Request::builder().method(method).uri(path);
 
     // Add headers
-    for header in req.headers.iter() {
+    for header in req.headers.iter()
+    {
         http_builder = http_builder.header(header.name, header.value);
     }
 
@@ -85,9 +91,11 @@ pub fn parse_request(data: &[u8], ctx: &ConnectionContext) -> Result<(Request, u
     let mut request = Request::new(http_request);
 
     // Extract the body if present
-    if bytes_used < data.len() {
+    if bytes_used < data.len()
+    {
         let body_data = data.get(bytes_used..).unwrap_or(&[]);
-        if !body_data.is_empty() {
+        if !body_data.is_empty()
+        {
             // Update the request with the actual body
             let content_length = request
                 .header("content-length")
@@ -103,7 +111,8 @@ pub fn parse_request(data: &[u8], ctx: &ConnectionContext) -> Result<(Request, u
                 .method(request.inner().method().clone())
                 .uri(request.inner().uri().clone());
 
-            for (name, value) in request.inner().headers() {
+            for (name, value) in request.inner().headers()
+            {
                 http_builder = http_builder.header(name, value);
             }
 
@@ -132,17 +141,20 @@ pub fn parse_request(data: &[u8], ctx: &ConnectionContext) -> Result<(Request, u
 /// HTTP request parser with state
 /// 带状态的 HTTP 请求解析器
 #[derive(Debug)]
-pub struct RequestParser {
+pub struct RequestParser
+{
     /// Buffer for incoming data
     buffer: BytesMut,
     /// Connection context
     ctx: ConnectionContext,
 }
 
-impl RequestParser {
+impl RequestParser
+{
     /// Create a new request parser
     /// 创建新的请求解析器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             buffer: BytesMut::with_capacity(8192),
             ctx: ConnectionContext::new(),
@@ -151,7 +163,8 @@ impl RequestParser {
 
     /// Create a new request parser with custom context
     /// 使用自定义上下文创建新的请求解析器
-    pub fn with_context(ctx: ConnectionContext) -> Self {
+    pub fn with_context(ctx: ConnectionContext) -> Self
+    {
         Self {
             buffer: BytesMut::with_capacity(ctx.max_buffer_size()),
             ctx,
@@ -160,8 +173,10 @@ impl RequestParser {
 
     /// Feed data to the parser
     /// 向解析器提供数据
-    pub fn feed(&mut self, data: &[u8]) -> Result<()> {
-        if self.buffer.len() + data.len() > self.ctx.max_buffer_size() {
+    pub fn feed(&mut self, data: &[u8]) -> Result<()>
+    {
+        if self.buffer.len() + data.len() > self.ctx.max_buffer_size()
+        {
             return Err(Error::InvalidRequest("Buffer overflow".to_string()));
         }
         self.buffer.extend_from_slice(data);
@@ -172,9 +187,12 @@ impl RequestParser {
     /// 尝试从缓冲数据解析请求
     ///
     /// Returns `Ok(None)` if more data is needed.
-    pub fn parse(&mut self) -> Result<Option<(Request, usize)>> {
-        match parse_request(&self.buffer, &self.ctx) {
-            Ok((req, used)) => {
+    pub fn parse(&mut self) -> Result<Option<(Request, usize)>>
+    {
+        match parse_request(&self.buffer, &self.ctx)
+        {
+            Ok((req, used)) =>
+            {
                 self.buffer.advance(used);
                 Ok(Some((req, used)))
             },
@@ -185,31 +203,37 @@ impl RequestParser {
 
     /// Get the current buffer length
     /// 获取当前缓冲区长度
-    pub fn buffered_len(&self) -> usize {
+    pub fn buffered_len(&self) -> usize
+    {
         self.buffer.len()
     }
 
     /// Clear the buffer
     /// 清空缓冲区
-    pub fn clear(&mut self) {
+    pub fn clear(&mut self)
+    {
         self.buffer.clear();
     }
 
     /// Get the connection context
     /// 获取连接上下文
-    pub fn context(&self) -> &ConnectionContext {
+    pub fn context(&self) -> &ConnectionContext
+    {
         &self.ctx
     }
 
     /// Get mutable reference to the connection context
     /// 获取连接上下文的可变引用
-    pub fn context_mut(&mut self) -> &mut ConnectionContext {
+    pub fn context_mut(&mut self) -> &mut ConnectionContext
+    {
         &mut self.ctx
     }
 }
 
-impl Default for RequestParser {
-    fn default() -> Self {
+impl Default for RequestParser
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -222,12 +246,14 @@ impl Default for RequestParser {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
     use crate::Method;
 
     #[test]
-    fn test_parse_simple_get() {
+    fn test_parse_simple_get()
+    {
         let data = b"GET / HTTP/1.1\r\nHost: example.com\r\n\r\n";
         let ctx = ConnectionContext::new();
         let (req, used) = parse_request(data, &ctx).unwrap();
@@ -237,7 +263,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_post_with_body() {
+    fn test_parse_post_with_body()
+    {
         let data = b"POST /api HTTP/1.1\r\nHost: example.com\r\nContent-Length: 5\r\n\r\nhello";
         let ctx = ConnectionContext::new();
         let (req, _used) = parse_request(data, &ctx).unwrap();
@@ -246,7 +273,8 @@ mod tests {
     }
 
     #[test]
-    fn test_incomplete_request() {
+    fn test_incomplete_request()
+    {
         let data = b"GET / HTTP/1.1\r\nHost: example.com";
         let ctx = ConnectionContext::new();
         let result = parse_request(data, &ctx);

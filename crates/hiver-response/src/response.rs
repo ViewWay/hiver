@@ -17,7 +17,8 @@ use http::{HeaderMap, HeaderName, HeaderValue, StatusCode};
 ///
 /// 此trait提供了一种统一的方式来将各种类型转换为`HeaderName`。
 /// 它处理静态字符串（使用`from_static`以提高效率）。
-pub trait IntoHeaderName {
+pub trait IntoHeaderName
+{
     /// Convert self into a `HeaderName`
     /// `将self转换为HeaderName`
     fn into_header_name(self) -> HeaderName;
@@ -25,24 +26,30 @@ pub trait IntoHeaderName {
 
 /// Implement for static strings using `from_static` (most efficient)
 /// 使用 `from_static` 为静态字符串实现（最高效）
-impl IntoHeaderName for &'static str {
-    fn into_header_name(self) -> HeaderName {
+impl IntoHeaderName for &'static str
+{
+    fn into_header_name(self) -> HeaderName
+    {
         HeaderName::from_static(self)
     }
 }
 
 /// Implement for `HeaderName` directly (no-op conversion)
 /// 为 `HeaderName` 直接实现（无操作转换）
-impl IntoHeaderName for HeaderName {
-    fn into_header_name(self) -> HeaderName {
+impl IntoHeaderName for HeaderName
+{
+    fn into_header_name(self) -> HeaderName
+    {
         self
     }
 }
 
 /// Implement for `&HeaderName` (clone conversion)
 /// 为 `&HeaderName` 实现（克隆转换）
-impl IntoHeaderName for &HeaderName {
-    fn into_header_name(self) -> HeaderName {
+impl IntoHeaderName for &HeaderName
+{
+    fn into_header_name(self) -> HeaderName
+    {
         self.clone()
     }
 }
@@ -55,7 +62,8 @@ impl IntoHeaderName for &HeaderName {
 ///
 /// 此trait提供了一种统一的方式来将各种类型转换为`HeaderValue`。
 /// 它处理静态字符串（使用`from_static`以提高效率）和动态字符串。
-pub trait IntoHeaderVal {
+pub trait IntoHeaderVal
+{
     /// Convert self into a `HeaderValue`
     /// `将self转换为HeaderValue`
     fn into_header_val(self) -> HeaderValue;
@@ -63,24 +71,30 @@ pub trait IntoHeaderVal {
 
 /// Implement for static strings using `from_static` (most efficient)
 /// 使用 `from_static` 为静态字符串实现（最高效）
-impl IntoHeaderVal for &'static str {
-    fn into_header_val(self) -> HeaderValue {
+impl IntoHeaderVal for &'static str
+{
+    fn into_header_val(self) -> HeaderValue
+    {
         HeaderValue::from_static(self)
     }
 }
 
 /// Implement for String using `try_from` (may fail if invalid)
 /// 使用 `try_from` 为 String 实现（如果无效可能失败）
-impl IntoHeaderVal for String {
-    fn into_header_val(self) -> HeaderValue {
+impl IntoHeaderVal for String
+{
+    fn into_header_val(self) -> HeaderValue
+    {
         HeaderValue::try_from(self).unwrap_or_else(|_| HeaderValue::from_static("<invalid>"))
     }
 }
 
 /// Implement for `&String` using `try_from`
 /// 使用 `try_from` 为 `&String` 实现
-impl IntoHeaderVal for &String {
-    fn into_header_val(self) -> HeaderValue {
+impl IntoHeaderVal for &String
+{
+    fn into_header_val(self) -> HeaderValue
+    {
         HeaderValue::try_from(self.as_str())
             .unwrap_or_else(|_| HeaderValue::from_static("<invalid>"))
     }
@@ -88,16 +102,20 @@ impl IntoHeaderVal for &String {
 
 /// Implement for `HeaderValue` directly (no-op conversion)
 /// 为 `HeaderValue` 直接实现（无操作转换）
-impl IntoHeaderVal for HeaderValue {
-    fn into_header_val(self) -> HeaderValue {
+impl IntoHeaderVal for HeaderValue
+{
+    fn into_header_val(self) -> HeaderValue
+    {
         self
     }
 }
 
 /// Implement for `&HeaderValue` (clone conversion)
 /// 为 `&HeaderValue` 实现（克隆转换）
-impl IntoHeaderVal for &HeaderValue {
-    fn into_header_val(self) -> HeaderValue {
+impl IntoHeaderVal for &HeaderValue
+{
+    fn into_header_val(self) -> HeaderValue
+    {
         self.clone()
     }
 }
@@ -107,14 +125,18 @@ impl IntoHeaderVal for &HeaderValue {
 ///
 /// Used internally by the `header_static` method to specify static strings.
 /// 被 `header_static` 方法内部使用，用于指定静态字符串。
-pub enum HeaderVal {
+pub enum HeaderVal
+{
     /// Static string value / 静态字符串值
     Static(&'static str),
 }
 
-impl IntoHeaderVal for HeaderVal {
-    fn into_header_val(self) -> HeaderValue {
-        match self {
+impl IntoHeaderVal for HeaderVal
+{
+    fn into_header_val(self) -> HeaderValue
+    {
+        match self
+        {
             HeaderVal::Static(s) => HeaderValue::from_static(s),
         }
     }
@@ -141,7 +163,8 @@ pub type Body = Bytes;
 ///     .body(r#"{"message": "Hello"}"#)
 ///     .unwrap();
 /// ```
-pub struct Response {
+pub struct Response
+{
     /// Status code / 状态码
     status: StatusCode,
     /// Response headers / 响应头
@@ -150,13 +173,15 @@ pub struct Response {
     body: Body,
 }
 
-impl Response {
+impl Response
+{
     /// Create a new response with default values
     /// 使用默认值创建新响应
     ///
     /// Default: 200 OK, empty headers, empty body
     /// 默认：200 OK，空头部，空主体
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             status: StatusCode::OK,
             headers: HeaderMap::new(),
@@ -166,55 +191,66 @@ impl Response {
 
     /// Create a response builder
     /// 创建响应构建器
-    pub fn builder() -> ResponseBuilder {
+    pub fn builder() -> ResponseBuilder
+    {
         ResponseBuilder::new()
     }
 
     /// Get the status code
     /// 获取状态码
-    pub fn status(&self) -> StatusCode {
+    pub fn status(&self) -> StatusCode
+    {
         self.status
     }
 
     /// Get the response headers
     /// 获取响应头
-    pub fn headers(&self) -> &HeaderMap {
+    pub fn headers(&self) -> &HeaderMap
+    {
         &self.headers
     }
 
     /// Get the response body
     /// 获取响应体
-    pub fn body(&self) -> &Body {
+    pub fn body(&self) -> &Body
+    {
         &self.body
     }
 
     /// Get a mutable reference to the headers
     /// 获取头的可变引用
-    pub fn headers_mut(&mut self) -> &mut HeaderMap {
+    pub fn headers_mut(&mut self) -> &mut HeaderMap
+    {
         &mut self.headers
     }
 
     /// Set the status code
     /// 设置状态码
-    pub fn set_status(&mut self, status: StatusCode) {
+    pub fn set_status(&mut self, status: StatusCode)
+    {
         self.status = status;
     }
 
     /// Set the body
     /// 设置主体
-    pub fn set_body(&mut self, body: impl Into<Body>) {
+    pub fn set_body(&mut self, body: impl Into<Body>)
+    {
         self.body = body.into();
     }
 }
 
-impl Default for Response {
-    fn default() -> Self {
+impl Default for Response
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
 
-impl From<http::Response<Body>> for Response {
-    fn from(resp: http::Response<Body>) -> Self {
+impl From<http::Response<Body>> for Response
+{
+    fn from(resp: http::Response<Body>) -> Self
+    {
         let (parts, body) = resp.into_parts();
         Self {
             status: parts.status,
@@ -224,8 +260,10 @@ impl From<http::Response<Body>> for Response {
     }
 }
 
-impl From<Response> for http::Response<Body> {
-    fn from(resp: Response) -> Self {
+impl From<Response> for http::Response<Body>
+{
+    fn from(resp: Response) -> Self
+    {
         let mut builder = http::Response::builder().status(resp.status);
 
         // Transfer headers to the standard http::Response builder
@@ -237,8 +275,10 @@ impl From<Response> for http::Response<Body> {
         // header). 注意：`HeaderMap::into_iter()` 产生 (Option<HeaderName>, HeaderValue)
         // 对。 名称是 Option 是因为具有多个值的头部只迭代一次名称。
         // 我们跳过名称为 None 的条目（这些是已见过头部的附加值）。
-        for (maybe_name, value) in resp.headers {
-            if let Some(name) = maybe_name {
+        for (maybe_name, value) in resp.headers
+        {
+            if let Some(name) = maybe_name
+            {
                 builder = builder.header(name, value);
             }
         }
@@ -269,15 +309,18 @@ impl From<Response> for http::Response<Body> {
 ///     .body("Resource created")
 ///     .unwrap();
 /// ```
-pub struct ResponseBuilder {
+pub struct ResponseBuilder
+{
     status: Option<StatusCode>,
     headers: HeaderMap,
 }
 
-impl ResponseBuilder {
+impl ResponseBuilder
+{
     /// Create a new response builder
     /// 创建新的响应构建器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             status: None,
             headers: HeaderMap::new(),
@@ -286,7 +329,8 @@ impl ResponseBuilder {
 
     /// Set the status code
     /// 设置状态码
-    pub fn status(self, status: impl Into<StatusCode>) -> Self {
+    pub fn status(self, status: impl Into<StatusCode>) -> Self
+    {
         Self {
             status: Some(status.into()),
             ..self
@@ -295,7 +339,8 @@ impl ResponseBuilder {
 
     /// Set the status code using `StatusCode` enum
     /// `使用StatusCode枚举设置状态码`
-    pub fn status_code(self, status: StatusCode) -> Self {
+    pub fn status_code(self, status: StatusCode) -> Self
+    {
         Self {
             status: Some(status),
             ..self
@@ -324,7 +369,8 @@ impl ResponseBuilder {
     ///     .body("{}", "[]")
     ///     .unwrap();
     /// ```
-    pub fn header(self, name: impl IntoHeaderName, value: impl IntoHeaderVal) -> Self {
+    pub fn header(self, name: impl IntoHeaderName, value: impl IntoHeaderVal) -> Self
+    {
         let mut headers = self.headers;
         let header_name = name.into_header_name();
         let header_val = value.into_header_val();
@@ -352,13 +398,15 @@ impl ResponseBuilder {
     ///     .body("{}", "[]")
     ///     .unwrap();
     /// ```
-    pub fn header_static(self, name: impl IntoHeaderName, value: &'static str) -> Self {
+    pub fn header_static(self, name: impl IntoHeaderName, value: &'static str) -> Self
+    {
         self.header(name, value)
     }
 
     /// Set the body
     /// 设置主体
-    pub fn body(self, body: impl Into<Body>) -> Result<Response, http::Error> {
+    pub fn body(self, body: impl Into<Body>) -> Result<Response, http::Error>
+    {
         let status = self.status.unwrap_or(StatusCode::OK);
         Ok(Response {
             status,
@@ -369,13 +417,16 @@ impl ResponseBuilder {
 
     /// Build with empty body
     /// 使用空主体构建
-    pub fn finish(self) -> Result<Response, http::Error> {
+    pub fn finish(self) -> Result<Response, http::Error>
+    {
         self.body(Body::new())
     }
 }
 
-impl Default for ResponseBuilder {
-    fn default() -> Self {
+impl Default for ResponseBuilder
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -403,20 +454,25 @@ impl Default for ResponseBuilder {
 ///     }
 /// }
 /// ```
-pub trait IntoResponse {
+pub trait IntoResponse
+{
     /// Convert self into a response
     /// 将self转换为响应
     fn into_response(self) -> Response;
 }
 
-impl IntoResponse for Response {
-    fn into_response(self) -> Response {
+impl IntoResponse for Response
+{
+    fn into_response(self) -> Response
+    {
         self
     }
 }
 
-impl IntoResponse for &'static str {
-    fn into_response(self) -> Response {
+impl IntoResponse for &'static str
+{
+    fn into_response(self) -> Response
+    {
         Response::builder()
             .header("content-type", "text/plain; charset=utf-8")
             .body(self)
@@ -424,8 +480,10 @@ impl IntoResponse for &'static str {
     }
 }
 
-impl IntoResponse for String {
-    fn into_response(self) -> Response {
+impl IntoResponse for String
+{
+    fn into_response(self) -> Response
+    {
         Response::builder()
             .header("content-type", "text/plain; charset=utf-8")
             .body(self)
@@ -433,8 +491,10 @@ impl IntoResponse for String {
     }
 }
 
-impl IntoResponse for &'static [u8] {
-    fn into_response(self) -> Response {
+impl IntoResponse for &'static [u8]
+{
+    fn into_response(self) -> Response
+    {
         Response::builder()
             .header("content-type", "application/octet-stream")
             .body(self)
@@ -442,24 +502,30 @@ impl IntoResponse for &'static [u8] {
     }
 }
 
-impl IntoResponse for Vec<u8> {
-    fn into_response(self) -> Response {
+impl IntoResponse for Vec<u8>
+{
+    fn into_response(self) -> Response
+    {
         Response::builder()
             .body(self)
             .unwrap_or_else(|_| Response::new())
     }
 }
 
-impl IntoResponse for Bytes {
-    fn into_response(self) -> Response {
+impl IntoResponse for Bytes
+{
+    fn into_response(self) -> Response
+    {
         Response::builder()
             .body(self)
             .unwrap_or_else(|_| Response::new())
     }
 }
 
-impl IntoResponse for StatusCode {
-    fn into_response(self) -> Response {
+impl IntoResponse for StatusCode
+{
+    fn into_response(self) -> Response
+    {
         Response::builder()
             .status(self)
             .finish()
@@ -469,7 +535,8 @@ impl IntoResponse for StatusCode {
 
 /// Create a response with the given status code
 /// 使用给定状态码创建响应
-pub fn status(status: StatusCode) -> Response {
+pub fn status(status: StatusCode) -> Response
+{
     Response::builder()
         .status(status)
         .finish()
@@ -484,11 +551,13 @@ pub fn status(status: StatusCode) -> Response {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_response_new() {
+    fn test_response_new()
+    {
         let resp = Response::new();
         assert_eq!(resp.status(), StatusCode::OK);
         assert!(resp.headers().is_empty());
@@ -496,7 +565,8 @@ mod tests {
     }
 
     #[test]
-    fn test_response_builder() {
+    fn test_response_builder()
+    {
         let resp = Response::builder()
             .status(StatusCode::NOT_FOUND)
             .header("x-custom", "test")
@@ -509,14 +579,16 @@ mod tests {
     }
 
     #[test]
-    fn test_into_response_str() {
+    fn test_into_response_str()
+    {
         let resp = "Hello, World!".into_response();
         assert_eq!(resp.status(), StatusCode::OK);
         assert_eq!(resp.body(), "Hello, World!");
     }
 
     #[test]
-    fn test_status_function() {
+    fn test_status_function()
+    {
         let resp = status(StatusCode::CREATED);
         assert_eq!(resp.status(), StatusCode::CREATED);
     }

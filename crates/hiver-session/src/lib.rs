@@ -101,7 +101,8 @@ pub const DEFAULT_SESSION_ID_LENGTH: usize = 32;
 
 /// Re-exports of commonly used types
 /// 常用类型的重新导出
-pub mod prelude {
+pub mod prelude
+{
     #[cfg(feature = "mongodb")]
     pub use super::MongoSessionStore;
     #[cfg(feature = "redis")]

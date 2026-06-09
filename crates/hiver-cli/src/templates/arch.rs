@@ -6,7 +6,8 @@ use std::path::Path;
 /// Supported architecture patterns.
 /// 支持的架构模式。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Architecture {
+pub enum Architecture
+{
     /// Layered Architecture (handler / service / repository / model)
     /// 分层架构
     Layered,
@@ -24,11 +25,14 @@ pub enum Architecture {
     Microservice,
 }
 
-impl Architecture {
+impl Architecture
+{
     /// Parse from string, returns None for unknown values.
     /// 从字符串解析，未知值返回 None。
-    pub fn from_str_opt(s: &str) -> Option<Self> {
-        match s.to_lowercase().as_str() {
+    pub fn from_str_opt(s: &str) -> Option<Self>
+    {
+        match s.to_lowercase().as_str()
+        {
             "layered" => Some(Self::Layered),
             "hexagonal" | "hex" | "ports" => Some(Self::Hexagonal),
             "clean" => Some(Self::Clean),
@@ -40,14 +44,16 @@ impl Architecture {
 
     /// Get all valid architecture names for help text.
     /// 获取所有有效的架构名称，用于帮助文本。
-    pub fn valid_names() -> &'static str {
+    pub fn valid_names() -> &'static str
+    {
         "layered, hexagonal, clean, ddd, microservice"
     }
 }
 
 /// Directory entry to create.
 /// 要创建的目录条目。
-struct DirTemplate {
+struct DirTemplate
+{
     /// Relative path from src/.
     /// 相对于 src/ 的路径。
     path: &'static str,
@@ -62,18 +68,21 @@ pub fn create_arch_dirs(
     base: &Path,
     arch: Architecture,
     modules: &[String],
-) -> Result<(), std::io::Error> {
+) -> Result<(), std::io::Error>
+{
     let src = base.join("src");
     let resources = base.join("resources");
 
     std::fs::create_dir_all(&resources)?;
 
     let entries = arch_entries(arch, modules);
-    for entry in &entries {
+    for entry in &entries
+    {
         let dir = src.join(entry.path);
         std::fs::create_dir_all(&dir)?;
         let mod_path = dir.join("mod.rs");
-        if !mod_path.exists() {
+        if !mod_path.exists()
+        {
             std::fs::write(&mod_path, entry.content)?;
         }
     }
@@ -83,8 +92,10 @@ pub fn create_arch_dirs(
 
 /// Generate main.rs content for the given architecture.
 /// 为指定架构生成 main.rs 内容。
-pub fn generate_arch_main_rs(arch: Architecture, modules: &[String]) -> String {
-    match arch {
+pub fn generate_arch_main_rs(arch: Architecture, modules: &[String]) -> String
+{
+    match arch
+    {
         Architecture::Layered => layered_main_rs(modules),
         Architecture::Hexagonal => hexagonal_main_rs(modules),
         Architecture::Clean => clean_main_rs(modules),
@@ -95,8 +106,10 @@ pub fn generate_arch_main_rs(arch: Architecture, modules: &[String]) -> String {
 
 // ── Architecture templates / 架构模板 ──────────────────────────────
 
-fn arch_entries(arch: Architecture, modules: &[String]) -> Vec<DirTemplate> {
-    match arch {
+fn arch_entries(arch: Architecture, modules: &[String]) -> Vec<DirTemplate>
+{
+    match arch
+    {
         Architecture::Layered => layered_entries(modules),
         Architecture::Hexagonal => hexagonal_entries(modules),
         Architecture::Clean => clean_entries(modules),
@@ -107,7 +120,8 @@ fn arch_entries(arch: Architecture, modules: &[String]) -> Vec<DirTemplate> {
 
 // ── Layered Architecture / 分层架构 ────────────────────────────────
 
-fn layered_entries(_modules: &[String]) -> Vec<DirTemplate> {
+fn layered_entries(_modules: &[String]) -> Vec<DirTemplate>
+{
     vec![
         DirTemplate {
             path: "handler",
@@ -132,7 +146,8 @@ fn layered_entries(_modules: &[String]) -> Vec<DirTemplate> {
     ]
 }
 
-fn layered_main_rs(_modules: &[String]) -> String {
+fn layered_main_rs(_modules: &[String]) -> String
+{
     r#"//! Hiver application (Layered Architecture).
 //! Hiver 应用程序（分层架构）。
 //!
@@ -156,7 +171,8 @@ fn main() {
 
 // ── Hexagonal Architecture / 六角架构 ──────────────────────────────
 
-fn hexagonal_entries(_modules: &[String]) -> Vec<DirTemplate> {
+fn hexagonal_entries(_modules: &[String]) -> Vec<DirTemplate>
+{
     vec![
         DirTemplate {
             path: "domain",
@@ -181,7 +197,8 @@ fn hexagonal_entries(_modules: &[String]) -> Vec<DirTemplate> {
     ]
 }
 
-fn hexagonal_main_rs(_modules: &[String]) -> String {
+fn hexagonal_main_rs(_modules: &[String]) -> String
+{
     r#"//! Hiver application (Hexagonal Architecture).
 //! Hiver 应用程序（六角架构）。
 //!
@@ -203,7 +220,8 @@ fn main() {
 
 // ── Clean Architecture / 整洁架构 ─────────────────────────────────
 
-fn clean_entries(_modules: &[String]) -> Vec<DirTemplate> {
+fn clean_entries(_modules: &[String]) -> Vec<DirTemplate>
+{
     vec![
         DirTemplate {
             path: "domain",
@@ -224,7 +242,8 @@ fn clean_entries(_modules: &[String]) -> Vec<DirTemplate> {
     ]
 }
 
-fn clean_main_rs(_modules: &[String]) -> String {
+fn clean_main_rs(_modules: &[String]) -> String
+{
     r#"//! Hiver application (Clean Architecture).
 //! Hiver 应用程序（整洁架构）。
 //!
@@ -248,7 +267,8 @@ fn main() {
 
 // ── DDD / 领域驱动设计 ─────────────────────────────────────────────
 
-fn ddd_entries(_modules: &[String]) -> Vec<DirTemplate> {
+fn ddd_entries(_modules: &[String]) -> Vec<DirTemplate>
+{
     vec![
         DirTemplate {
             path: "domain",
@@ -285,7 +305,8 @@ fn ddd_entries(_modules: &[String]) -> Vec<DirTemplate> {
     ]
 }
 
-fn ddd_main_rs(_modules: &[String]) -> String {
+fn ddd_main_rs(_modules: &[String]) -> String
+{
     r#"//! Hiver application (Domain-Driven Design).
 //! Hiver 应用程序（领域驱动设计）。
 //!
@@ -308,7 +329,8 @@ fn main() {
 
 // ── Microservice Architecture / 微服务架构 ──────────────────────────
 
-fn microservice_entries(_modules: &[String]) -> Vec<DirTemplate> {
+fn microservice_entries(_modules: &[String]) -> Vec<DirTemplate>
+{
     vec![
         DirTemplate {
             path: "api",
@@ -337,7 +359,8 @@ fn microservice_entries(_modules: &[String]) -> Vec<DirTemplate> {
     ]
 }
 
-fn microservice_main_rs(_modules: &[String]) -> String {
+fn microservice_main_rs(_modules: &[String]) -> String
+{
     r#"//! Hiver application (Microservice Architecture).
 //! Hiver 应用程序（微服务架构）。
 //!

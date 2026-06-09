@@ -6,12 +6,14 @@ use hiver_data_orm::migrations::Migration;
 use crate::data_integration::helpers::*;
 
 #[cfg(test)]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
     #[ignore]
-    fn test_migration_creation() {
+    fn test_migration_creation()
+    {
         let migration = Migration::new("001_create_users")
             .up("CREATE TABLE users (id INTEGER PRIMARY KEY, email TEXT);")
             .down("DROP TABLE users;");
@@ -24,7 +26,8 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_migration_validation() {
+    fn test_migration_validation()
+    {
         let valid_migration = Migration::new("001_test")
             .up("CREATE TABLE test (id INTEGER);")
             .down("DROP TABLE test;");
@@ -39,7 +42,8 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_migration_with_description() {
+    fn test_migration_with_description()
+    {
         let migration = Migration::new("001_test")
             .description("Create test table")
             .up("CREATE TABLE test (id INTEGER);")
@@ -50,7 +54,8 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_migration_with_attributes() {
+    fn test_migration_with_attributes()
+    {
         let migration = Migration::new("001_test")
             .attribute("author", "Hiver")
             .attribute("category", "schema")
@@ -63,7 +68,8 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_migration_version_extraction() {
+    fn test_migration_version_extraction()
+    {
         let m1 = Migration::new("001_create_users");
         assert_eq!(m1.version, "001");
 
@@ -76,7 +82,8 @@ mod tests {
 
     #[tokio::test]
     #[ignore]
-    async fn test_migration_execution() {
+    async fn test_migration_execution()
+    {
         init_test_schema().await.unwrap();
 
         // Tables should exist
@@ -96,7 +103,8 @@ mod tests {
 
     #[tokio::test]
     #[ignore]
-    async fn test_insert_with_schema() {
+    async fn test_insert_with_schema()
+    {
         init_test_schema().await.unwrap();
         cleanup_test_data().await.unwrap();
 

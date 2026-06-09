@@ -23,7 +23,8 @@ use crate::{RedisError, RedisResult};
 /// Hash 操作 — 等价于 Spring 的 `HashOperations`。
 pub struct HashOps;
 
-impl HashOps {
+impl HashOps
+{
     /// Set a field in a hash.
     /// 设置 hash 中的字段。
     pub async fn hset<C: AsyncCommands>(
@@ -31,7 +32,8 @@ impl HashOps {
         key: &str,
         field: &str,
         value: &str,
-    ) -> RedisResult<bool> {
+    ) -> RedisResult<bool>
+    {
         let result: i32 = conn.hset(key, field, value).await?;
         Ok(result > 0)
     }
@@ -42,8 +44,10 @@ impl HashOps {
         conn: &mut C,
         key: &str,
         items: &[(&str, &str)],
-    ) -> RedisResult<()> {
-        for (field, value) in items {
+    ) -> RedisResult<()>
+    {
+        for (field, value) in items
+        {
             conn.hset::<_, _, _, ()>(key, field, value).await?;
         }
         Ok(())
@@ -56,7 +60,8 @@ impl HashOps {
         key: &str,
         field: &str,
         value: &T,
-    ) -> RedisResult<bool> {
+    ) -> RedisResult<bool>
+    {
         let json =
             serde_json::to_string(value).map_err(|e| RedisError::serialization(e.to_string()))?;
         Self::hset(conn, key, field, &json).await
@@ -68,7 +73,8 @@ impl HashOps {
         conn: &mut C,
         key: &str,
         field: &str,
-    ) -> RedisResult<Option<String>> {
+    ) -> RedisResult<Option<String>>
+    {
         let result: Option<String> = conn.hget(key, field).await?;
         Ok(result)
     }
@@ -79,9 +85,12 @@ impl HashOps {
         conn: &mut C,
         key: &str,
         field: &str,
-    ) -> RedisResult<Option<T>> {
-        match Self::hget(conn, key, field).await? {
-            Some(json) => {
+    ) -> RedisResult<Option<T>>
+    {
+        match Self::hget(conn, key, field).await?
+        {
+            Some(json) =>
+            {
                 let value = serde_json::from_str(&json)
                     .map_err(|e| RedisError::deserialization(e.to_string()))?;
                 Ok(Some(value))
@@ -96,7 +105,8 @@ impl HashOps {
         conn: &mut C,
         key: &str,
         fields: &[&str],
-    ) -> RedisResult<u64> {
+    ) -> RedisResult<u64>
+    {
         let result: u64 = conn.hdel(key, fields).await?;
         Ok(result)
     }
@@ -106,7 +116,8 @@ impl HashOps {
     pub async fn hgetall<C: AsyncCommands>(
         conn: &mut C,
         key: &str,
-    ) -> RedisResult<HashMap<String, String>> {
+    ) -> RedisResult<HashMap<String, String>>
+    {
         let result: HashMap<String, String> = conn.hgetall(key).await?;
         Ok(result)
     }
@@ -117,28 +128,32 @@ impl HashOps {
         conn: &mut C,
         key: &str,
         field: &str,
-    ) -> RedisResult<bool> {
+    ) -> RedisResult<bool>
+    {
         let result: i32 = conn.hexists(key, field).await?;
         Ok(result > 0)
     }
 
     /// Get the number of fields in a hash.
     /// 获取 hash 中的字段数量。
-    pub async fn hlen<C: AsyncCommands>(conn: &mut C, key: &str) -> RedisResult<u64> {
+    pub async fn hlen<C: AsyncCommands>(conn: &mut C, key: &str) -> RedisResult<u64>
+    {
         let result: u64 = conn.hlen(key).await?;
         Ok(result)
     }
 
     /// Get all field names in a hash.
     /// 获取 hash 中所有字段名。
-    pub async fn hkeys<C: AsyncCommands>(conn: &mut C, key: &str) -> RedisResult<Vec<String>> {
+    pub async fn hkeys<C: AsyncCommands>(conn: &mut C, key: &str) -> RedisResult<Vec<String>>
+    {
         let result: Vec<String> = conn.hkeys(key).await?;
         Ok(result)
     }
 
     /// Get all values in a hash.
     /// 获取 hash 中所有值。
-    pub async fn hvals<C: AsyncCommands>(conn: &mut C, key: &str) -> RedisResult<Vec<String>> {
+    pub async fn hvals<C: AsyncCommands>(conn: &mut C, key: &str) -> RedisResult<Vec<String>>
+    {
         let result: Vec<String> = conn.hvals(key).await?;
         Ok(result)
     }
@@ -150,7 +165,8 @@ impl HashOps {
         key: &str,
         field: &str,
         delta: i64,
-    ) -> RedisResult<i64> {
+    ) -> RedisResult<i64>
+    {
         let result: i64 = conn.hincr(key, field, delta).await?;
         Ok(result)
     }
@@ -164,7 +180,8 @@ impl HashOps {
 /// Note: Requires `geospatial` feature on the `redis` crate.
 pub struct GeoOps;
 
-impl GeoOps {
+impl GeoOps
+{
     /// Add a geospatial location.
     /// 添加地理位置。
     pub async fn geoadd<C: AsyncCommands>(
@@ -173,7 +190,8 @@ impl GeoOps {
         longitude: f64,
         latitude: f64,
         member: &str,
-    ) -> RedisResult<bool> {
+    ) -> RedisResult<bool>
+    {
         let result: i32 = conn.geo_add(key, (longitude, latitude, member)).await?;
         Ok(result > 0)
     }
@@ -184,7 +202,8 @@ impl GeoOps {
         conn: &mut C,
         key: &str,
         items: &[(f64, f64, &str)],
-    ) -> RedisResult<u64> {
+    ) -> RedisResult<u64>
+    {
         let tuples: Vec<(f64, f64, String)> = items
             .iter()
             .map(|(lon, lat, member)| (*lon, *lat, member.to_string()))
@@ -199,7 +218,8 @@ impl GeoOps {
         conn: &mut C,
         key: &str,
         members: &[&str],
-    ) -> RedisResult<Vec<Option<(f64, f64)>>> {
+    ) -> RedisResult<Vec<Option<(f64, f64)>>>
+    {
         let result: Vec<Option<(f64, f64)>> = conn.geo_pos(key, members).await?;
         Ok(result)
     }
@@ -212,9 +232,11 @@ impl GeoOps {
         member1: &str,
         member2: &str,
         unit: GeoUnit,
-    ) -> RedisResult<Option<f64>> {
+    ) -> RedisResult<Option<f64>>
+    {
         use redis::geo::Unit;
-        let u = match unit {
+        let u = match unit
+        {
             GeoUnit::Meters => Unit::Meters,
             GeoUnit::Kilometers => Unit::Kilometers,
             GeoUnit::Miles => Unit::Miles,
@@ -233,9 +255,11 @@ impl GeoOps {
         latitude: f64,
         radius: f64,
         unit: GeoUnit,
-    ) -> RedisResult<Vec<String>> {
+    ) -> RedisResult<Vec<String>>
+    {
         use redis::geo::{RadiusOptions, RadiusSearchResult, Unit};
-        let u = match unit {
+        let u = match unit
+        {
             GeoUnit::Meters => Unit::Meters,
             GeoUnit::Kilometers => Unit::Kilometers,
             GeoUnit::Miles => Unit::Miles,
@@ -256,9 +280,11 @@ impl GeoOps {
         member: &str,
         radius: f64,
         unit: GeoUnit,
-    ) -> RedisResult<Vec<String>> {
+    ) -> RedisResult<Vec<String>>
+    {
         use redis::geo::{RadiusOptions, RadiusSearchResult, Unit};
-        let u = match unit {
+        let u = match unit
+        {
             GeoUnit::Meters => Unit::Meters,
             GeoUnit::Kilometers => Unit::Kilometers,
             GeoUnit::Miles => Unit::Miles,
@@ -275,7 +301,8 @@ impl GeoOps {
 /// Unit of distance for geo operations.
 /// 地理操作的距离单位。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum GeoUnit {
+pub enum GeoUnit
+{
     /// Meters / 米
     Meters,
     /// Kilometers / 千米
@@ -295,7 +322,8 @@ pub enum GeoUnit {
 /// 使用自动 SHA 缓存执行 Redis Lua 脚本。
 pub struct LuaScript;
 
-impl LuaScript {
+impl LuaScript
+{
     /// Execute a Lua script with KEYS and ARGV.
     /// 使用 KEYS 和 ARGV 执行 Lua 脚本。
     pub async fn eval<C: AsyncCommands>(
@@ -303,13 +331,16 @@ impl LuaScript {
         script: &str,
         keys: &[&str],
         args: &[&str],
-    ) -> RedisResult<redis::Value> {
+    ) -> RedisResult<redis::Value>
+    {
         let mut cmd = redis::cmd("EVAL");
         cmd.arg(script).arg(keys.len());
-        for k in keys {
+        for k in keys
+        {
             cmd.arg(k);
         }
-        for a in args {
+        for a in args
+        {
             cmd.arg(a);
         }
         let result: redis::Value = cmd.query_async(conn).await?;
@@ -323,11 +354,14 @@ impl LuaScript {
         script: &str,
         keys: &[&str],
         args: &[&str],
-    ) -> RedisResult<i64> {
+    ) -> RedisResult<i64>
+    {
         let result = Self::eval(conn, script, keys, args).await?;
-        match result {
+        match result
+        {
             redis::Value::Int(i) => Ok(i),
-            redis::Value::BulkString(data) => {
+            redis::Value::BulkString(data) =>
+            {
                 let s = String::from_utf8(data)
                     .map_err(|e| RedisError::type_mismatch(e.to_string()))?;
                 s.parse::<i64>()
@@ -344,10 +378,13 @@ impl LuaScript {
         script: &str,
         keys: &[&str],
         args: &[&str],
-    ) -> RedisResult<String> {
+    ) -> RedisResult<String>
+    {
         let result = Self::eval(conn, script, keys, args).await?;
-        match result {
-            redis::Value::BulkString(data) => {
+        match result
+        {
+            redis::Value::BulkString(data) =>
+            {
                 String::from_utf8(data).map_err(|e| RedisError::type_mismatch(e.to_string()))
             },
             redis::Value::SimpleString(s) => Ok(s),
@@ -364,17 +401,20 @@ impl LuaScript {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_geo_unit() {
+    fn test_geo_unit()
+    {
         assert_eq!(GeoUnit::Meters, GeoUnit::Meters);
         assert_ne!(GeoUnit::Meters, GeoUnit::Kilometers);
     }
 
     #[test]
-    fn test_lua_script_op() {
+    fn test_lua_script_op()
+    {
         // Just verify struct can be created
         let _ = LuaScript;
     }

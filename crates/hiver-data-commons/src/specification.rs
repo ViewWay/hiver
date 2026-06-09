@@ -47,7 +47,8 @@ use crate::{Page, PageRequest};
 /// let b = SpecValue::Bool(true);
 /// ```
 #[derive(Debug, Clone, PartialEq)]
-pub enum SpecValue {
+pub enum SpecValue
+{
     /// String value / 字符串值
     String(String),
     /// 64-bit integer / 64 位整数
@@ -60,9 +61,12 @@ pub enum SpecValue {
     Null,
 }
 
-impl fmt::Display for SpecValue {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for SpecValue
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             Self::String(s) => write!(f, "'{}'", s.replace('\'', "''")),
             Self::I64(n) => write!(f, "{n}"),
             Self::F64(n) => write!(f, "{n}"),
@@ -89,7 +93,8 @@ impl fmt::Display for SpecValue {
 ///     Predicate::and(Box::new(pred), Box::new(Predicate::gt("age", SpecValue::I64(18))));
 /// ```
 #[derive(Debug, Clone, PartialEq)]
-pub enum Predicate {
+pub enum Predicate
+{
     /// Logical AND of two predicates / 两个谓词的逻辑与
     And(Box<Predicate>, Box<Predicate>),
     /// Logical OR of two predicates / 两个谓词的逻辑或
@@ -122,95 +127,111 @@ pub enum Predicate {
     Between(String, SpecValue, SpecValue),
 }
 
-impl Predicate {
+impl Predicate
+{
     /// Create an equality predicate.
     /// 创建相等谓词。
-    pub fn eq(field: impl Into<String>, value: SpecValue) -> Self {
+    pub fn eq(field: impl Into<String>, value: SpecValue) -> Self
+    {
         Self::Eq(field.into(), value)
     }
 
     /// Create an inequality predicate.
     /// 创建不等谓词。
-    pub fn ne(field: impl Into<String>, value: SpecValue) -> Self {
+    pub fn ne(field: impl Into<String>, value: SpecValue) -> Self
+    {
         Self::Ne(field.into(), value)
     }
 
     /// Create a greater-than predicate.
     /// 创建大于谓词。
-    pub fn gt(field: impl Into<String>, value: SpecValue) -> Self {
+    pub fn gt(field: impl Into<String>, value: SpecValue) -> Self
+    {
         Self::Gt(field.into(), value)
     }
 
     /// Create a less-than predicate.
     /// 创建小于谓词。
-    pub fn lt(field: impl Into<String>, value: SpecValue) -> Self {
+    pub fn lt(field: impl Into<String>, value: SpecValue) -> Self
+    {
         Self::Lt(field.into(), value)
     }
 
     /// Create a greater-than-or-equal predicate.
     /// 创建大于等于谓词。
-    pub fn gte(field: impl Into<String>, value: SpecValue) -> Self {
+    pub fn gte(field: impl Into<String>, value: SpecValue) -> Self
+    {
         Self::Gte(field.into(), value)
     }
 
     /// Create a less-than-or-equal predicate.
     /// 创建小于等于谓词。
-    pub fn lte(field: impl Into<String>, value: SpecValue) -> Self {
+    pub fn lte(field: impl Into<String>, value: SpecValue) -> Self
+    {
         Self::Lte(field.into(), value)
     }
 
     /// Create a LIKE predicate.
     /// 创建 LIKE 谓词。
-    pub fn like(field: impl Into<String>, pattern: impl Into<String>) -> Self {
+    pub fn like(field: impl Into<String>, pattern: impl Into<String>) -> Self
+    {
         Self::Like(field.into(), pattern.into())
     }
 
     /// Create an IN predicate.
     /// 创建 IN 谓词。
-    pub fn in_pred(field: impl Into<String>, values: Vec<SpecValue>) -> Self {
+    pub fn in_pred(field: impl Into<String>, values: Vec<SpecValue>) -> Self
+    {
         Self::In(field.into(), values)
     }
 
     /// Create a NOT IN predicate.
     /// 创建 NOT IN 谓词。
-    pub fn not_in(field: impl Into<String>, values: Vec<SpecValue>) -> Self {
+    pub fn not_in(field: impl Into<String>, values: Vec<SpecValue>) -> Self
+    {
         Self::NotIn(field.into(), values)
     }
 
     /// Create an IS NULL predicate.
     /// 创建 IS NULL 谓词。
-    pub fn is_null(field: impl Into<String>) -> Self {
+    pub fn is_null(field: impl Into<String>) -> Self
+    {
         Self::IsNull(field.into())
     }
 
     /// Create an IS NOT NULL predicate.
     /// 创建 IS NOT NULL 谓词。
-    pub fn is_not_null(field: impl Into<String>) -> Self {
+    pub fn is_not_null(field: impl Into<String>) -> Self
+    {
         Self::IsNotNull(field.into())
     }
 
     /// Create a BETWEEN predicate.
     /// 创建 BETWEEN 谓词。
-    pub fn between(field: impl Into<String>, low: SpecValue, high: SpecValue) -> Self {
+    pub fn between(field: impl Into<String>, low: SpecValue, high: SpecValue) -> Self
+    {
         Self::Between(field.into(), low, high)
     }
 
     /// Create an AND predicate from two predicates.
     /// 从两个谓词创建 AND 谓词。
-    pub fn and(left: Box<Predicate>, right: Box<Predicate>) -> Self {
+    pub fn and(left: Box<Predicate>, right: Box<Predicate>) -> Self
+    {
         Self::And(left, right)
     }
 
     /// Create an OR predicate from two predicates.
     /// 从两个谓词创建 OR 谓词。
-    pub fn or(left: Box<Predicate>, right: Box<Predicate>) -> Self {
+    pub fn or(left: Box<Predicate>, right: Box<Predicate>) -> Self
+    {
         Self::Or(left, right)
     }
 
     /// Create a NOT predicate.
     /// 创建 NOT 谓词。
     #[allow(clippy::should_implement_trait)]
-    pub fn not(inner: Box<Predicate>) -> Self {
+    pub fn not(inner: Box<Predicate>) -> Self
+    {
         Self::Not(inner)
     }
 
@@ -219,8 +240,10 @@ impl Predicate {
     ///
     /// This is useful for debugging and logging.
     /// 用于调试和日志记录。
-    pub fn to_sql(&self) -> String {
-        match self {
+    pub fn to_sql(&self) -> String
+    {
+        match self
+        {
             Self::And(l, r) => format!("({} AND {})", l.to_sql(), r.to_sql()),
             Self::Or(l, r) => format!("({} OR {})", l.to_sql(), r.to_sql()),
             Self::Not(inner) => format!("NOT ({})", inner.to_sql()),
@@ -231,25 +254,30 @@ impl Predicate {
             Self::Lt(field, value) => format!("{} < {}", field, value),
             Self::Lte(field, value) => format!("{} <= {}", field, value),
             Self::Like(field, pattern) => format!("{} LIKE '{}'", field, pattern),
-            Self::In(field, values) => {
+            Self::In(field, values) =>
+            {
                 let vals: Vec<String> = values.iter().map(|v| v.to_string()).collect();
                 format!("{} IN ({})", field, vals.join(", "))
             },
-            Self::NotIn(field, values) => {
+            Self::NotIn(field, values) =>
+            {
                 let vals: Vec<String> = values.iter().map(|v| v.to_string()).collect();
                 format!("{} NOT IN ({})", field, vals.join(", "))
             },
             Self::IsNull(field) => format!("{} IS NULL", field),
             Self::IsNotNull(field) => format!("{} IS NOT NULL", field),
-            Self::Between(field, low, high) => {
+            Self::Between(field, low, high) =>
+            {
                 format!("{} BETWEEN {} AND {}", field, low, high)
             },
         }
     }
 }
 
-impl fmt::Display for Predicate {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for Predicate
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         write!(f, "{}", self.to_sql())
     }
 }
@@ -277,7 +305,8 @@ impl fmt::Display for Predicate {
 ///     }
 /// }
 /// ```
-pub trait Specification: std::fmt::Debug + Send + Sync {
+pub trait Specification: std::fmt::Debug + Send + Sync
+{
     /// Convert this specification into a predicate.
     /// 将此 specification 转换为谓词。
     ///
@@ -293,7 +322,8 @@ impl<F> Specification for F
 where
     F: Fn() -> Option<Predicate> + std::fmt::Debug + Send + Sync,
 {
-    fn to_predicate(&self) -> Option<Predicate> {
+    fn to_predicate(&self) -> Option<Predicate>
+    {
         self()
     }
 }
@@ -317,24 +347,29 @@ where
 /// assert!(spec.to_predicate().is_some());
 /// ```
 #[derive(Debug, Clone)]
-pub struct Specifications {
+pub struct Specifications
+{
     /// Current predicate being built.
     /// 当前正在构建的谓词。
     predicate: Option<Predicate>,
 }
 
-impl Specifications {
+impl Specifications
+{
     /// Start building a new specification with no constraints.
     /// 开始构建没有约束的新 specification。
-    pub fn where_clause() -> Self {
+    pub fn where_clause() -> Self
+    {
         Self { predicate: None }
     }
 
     /// Add an equality condition.
     /// 添加相等条件。
-    pub fn eq(mut self, field: impl Into<String>, value: SpecValue) -> Self {
+    pub fn eq(mut self, field: impl Into<String>, value: SpecValue) -> Self
+    {
         let pred = Predicate::eq(field, value);
-        self.predicate = Some(match self.predicate.take() {
+        self.predicate = Some(match self.predicate.take()
+        {
             Some(existing) => Predicate::and(Box::new(existing), Box::new(pred)),
             None => pred,
         });
@@ -343,9 +378,11 @@ impl Specifications {
 
     /// Add an inequality condition.
     /// 添加不等条件。
-    pub fn ne(mut self, field: impl Into<String>, value: SpecValue) -> Self {
+    pub fn ne(mut self, field: impl Into<String>, value: SpecValue) -> Self
+    {
         let pred = Predicate::ne(field, value);
-        self.predicate = Some(match self.predicate.take() {
+        self.predicate = Some(match self.predicate.take()
+        {
             Some(existing) => Predicate::and(Box::new(existing), Box::new(pred)),
             None => pred,
         });
@@ -354,9 +391,11 @@ impl Specifications {
 
     /// Add a greater-than condition.
     /// 添加大于条件。
-    pub fn gt(mut self, field: impl Into<String>, value: SpecValue) -> Self {
+    pub fn gt(mut self, field: impl Into<String>, value: SpecValue) -> Self
+    {
         let pred = Predicate::gt(field, value);
-        self.predicate = Some(match self.predicate.take() {
+        self.predicate = Some(match self.predicate.take()
+        {
             Some(existing) => Predicate::and(Box::new(existing), Box::new(pred)),
             None => pred,
         });
@@ -365,9 +404,11 @@ impl Specifications {
 
     /// Add a less-than condition.
     /// 添加小于条件。
-    pub fn lt(mut self, field: impl Into<String>, value: SpecValue) -> Self {
+    pub fn lt(mut self, field: impl Into<String>, value: SpecValue) -> Self
+    {
         let pred = Predicate::lt(field, value);
-        self.predicate = Some(match self.predicate.take() {
+        self.predicate = Some(match self.predicate.take()
+        {
             Some(existing) => Predicate::and(Box::new(existing), Box::new(pred)),
             None => pred,
         });
@@ -376,9 +417,11 @@ impl Specifications {
 
     /// Add a greater-than-or-equal condition.
     /// 添加大于等于条件。
-    pub fn gte(mut self, field: impl Into<String>, value: SpecValue) -> Self {
+    pub fn gte(mut self, field: impl Into<String>, value: SpecValue) -> Self
+    {
         let pred = Predicate::gte(field, value);
-        self.predicate = Some(match self.predicate.take() {
+        self.predicate = Some(match self.predicate.take()
+        {
             Some(existing) => Predicate::and(Box::new(existing), Box::new(pred)),
             None => pred,
         });
@@ -387,9 +430,11 @@ impl Specifications {
 
     /// Add a less-than-or-equal condition.
     /// 添加小于等于条件。
-    pub fn lte(mut self, field: impl Into<String>, value: SpecValue) -> Self {
+    pub fn lte(mut self, field: impl Into<String>, value: SpecValue) -> Self
+    {
         let pred = Predicate::lte(field, value);
-        self.predicate = Some(match self.predicate.take() {
+        self.predicate = Some(match self.predicate.take()
+        {
             Some(existing) => Predicate::and(Box::new(existing), Box::new(pred)),
             None => pred,
         });
@@ -398,9 +443,11 @@ impl Specifications {
 
     /// Add a LIKE condition.
     /// 添加 LIKE 条件。
-    pub fn like(mut self, field: impl Into<String>, pattern: impl Into<String>) -> Self {
+    pub fn like(mut self, field: impl Into<String>, pattern: impl Into<String>) -> Self
+    {
         let pred = Predicate::like(field, pattern);
-        self.predicate = Some(match self.predicate.take() {
+        self.predicate = Some(match self.predicate.take()
+        {
             Some(existing) => Predicate::and(Box::new(existing), Box::new(pred)),
             None => pred,
         });
@@ -409,9 +456,11 @@ impl Specifications {
 
     /// Add an IN condition.
     /// 添加 IN 条件。
-    pub fn in_pred(mut self, field: impl Into<String>, values: Vec<SpecValue>) -> Self {
+    pub fn in_pred(mut self, field: impl Into<String>, values: Vec<SpecValue>) -> Self
+    {
         let pred = Predicate::in_pred(field, values);
-        self.predicate = Some(match self.predicate.take() {
+        self.predicate = Some(match self.predicate.take()
+        {
             Some(existing) => Predicate::and(Box::new(existing), Box::new(pred)),
             None => pred,
         });
@@ -420,9 +469,11 @@ impl Specifications {
 
     /// Add a NOT IN condition.
     /// 添加 NOT IN 条件。
-    pub fn not_in(mut self, field: impl Into<String>, values: Vec<SpecValue>) -> Self {
+    pub fn not_in(mut self, field: impl Into<String>, values: Vec<SpecValue>) -> Self
+    {
         let pred = Predicate::not_in(field, values);
-        self.predicate = Some(match self.predicate.take() {
+        self.predicate = Some(match self.predicate.take()
+        {
             Some(existing) => Predicate::and(Box::new(existing), Box::new(pred)),
             None => pred,
         });
@@ -431,9 +482,11 @@ impl Specifications {
 
     /// Add an IS NULL condition.
     /// 添加 IS NULL 条件。
-    pub fn is_null(mut self, field: impl Into<String>) -> Self {
+    pub fn is_null(mut self, field: impl Into<String>) -> Self
+    {
         let pred = Predicate::is_null(field);
-        self.predicate = Some(match self.predicate.take() {
+        self.predicate = Some(match self.predicate.take()
+        {
             Some(existing) => Predicate::and(Box::new(existing), Box::new(pred)),
             None => pred,
         });
@@ -442,9 +495,11 @@ impl Specifications {
 
     /// Add an IS NOT NULL condition.
     /// 添加 IS NOT NULL 条件。
-    pub fn is_not_null(mut self, field: impl Into<String>) -> Self {
+    pub fn is_not_null(mut self, field: impl Into<String>) -> Self
+    {
         let pred = Predicate::is_not_null(field);
-        self.predicate = Some(match self.predicate.take() {
+        self.predicate = Some(match self.predicate.take()
+        {
             Some(existing) => Predicate::and(Box::new(existing), Box::new(pred)),
             None => pred,
         });
@@ -453,9 +508,11 @@ impl Specifications {
 
     /// Add a BETWEEN condition.
     /// 添加 BETWEEN 条件。
-    pub fn between(mut self, field: impl Into<String>, low: SpecValue, high: SpecValue) -> Self {
+    pub fn between(mut self, field: impl Into<String>, low: SpecValue, high: SpecValue) -> Self
+    {
         let pred = Predicate::between(field, low, high);
-        self.predicate = Some(match self.predicate.take() {
+        self.predicate = Some(match self.predicate.take()
+        {
             Some(existing) => Predicate::and(Box::new(existing), Box::new(pred)),
             None => pred,
         });
@@ -464,8 +521,10 @@ impl Specifications {
 
     /// Combine with another specification using AND.
     /// 使用 AND 与另一个 specification 组合。
-    pub fn and(self, other: impl Specification) -> Self {
-        match (self.predicate, other.to_predicate()) {
+    pub fn and(self, other: impl Specification) -> Self
+    {
+        match (self.predicate, other.to_predicate())
+        {
             (Some(left), Some(right)) => Self {
                 predicate: Some(Predicate::and(Box::new(left), Box::new(right))),
             },
@@ -477,8 +536,10 @@ impl Specifications {
 
     /// Combine with another specification using OR.
     /// 使用 OR 与另一个 specification 组合。
-    pub fn or(self, other: impl Specification) -> Self {
-        match (self.predicate, other.to_predicate()) {
+    pub fn or(self, other: impl Specification) -> Self
+    {
+        match (self.predicate, other.to_predicate())
+        {
             (Some(left), Some(right)) => Self {
                 predicate: Some(Predicate::or(Box::new(left), Box::new(right))),
             },
@@ -491,8 +552,10 @@ impl Specifications {
     /// Negate the current specification.
     /// 取反当前 specification。
     #[allow(clippy::should_implement_trait)]
-    pub fn not(self) -> Self {
-        match self.predicate {
+    pub fn not(self) -> Self
+    {
+        match self.predicate
+        {
             Some(p) => Self {
                 predicate: Some(Predicate::not(Box::new(p))),
             },
@@ -502,7 +565,8 @@ impl Specifications {
 
     /// Build the final `Specification` as a concrete object.
     /// 将最终的 `Specification` 构建为具体对象。
-    pub fn build(self) -> BuiltSpecification {
+    pub fn build(self) -> BuiltSpecification
+    {
         BuiltSpecification {
             predicate: self.predicate,
         }
@@ -512,14 +576,17 @@ impl Specifications {
 /// A concrete specification built by [`Specifications`].
 /// 由 [`Specifications`] 构建的具体 specification。
 #[derive(Debug, Clone)]
-pub struct BuiltSpecification {
+pub struct BuiltSpecification
+{
     /// The composed predicate.
     /// 组合后的谓词。
     predicate: Option<Predicate>,
 }
 
-impl Specification for BuiltSpecification {
-    fn to_predicate(&self) -> Option<Predicate> {
+impl Specification for BuiltSpecification
+{
+    fn to_predicate(&self) -> Option<Predicate>
+    {
         self.predicate.clone()
     }
 }
@@ -542,88 +609,103 @@ impl Specification for BuiltSpecification {
 /// ```
 pub struct SpecFactories;
 
-impl SpecFactories {
+impl SpecFactories
+{
     /// Create a specification that always matches (no constraints).
     /// 创建总是匹配的 specification（无约束）。
-    pub fn always() -> AlwaysSpec {
+    pub fn always() -> AlwaysSpec
+    {
         AlwaysSpec
     }
 
     /// Create an equality specification.
     /// 创建相等 specification。
-    pub fn eq(field: impl Into<String>, value: SpecValue) -> SimpleSpec {
+    pub fn eq(field: impl Into<String>, value: SpecValue) -> SimpleSpec
+    {
         SimpleSpec(Predicate::eq(field, value))
     }
 
     /// Create an inequality specification.
     /// 创建不等 specification。
-    pub fn ne(field: impl Into<String>, value: SpecValue) -> SimpleSpec {
+    pub fn ne(field: impl Into<String>, value: SpecValue) -> SimpleSpec
+    {
         SimpleSpec(Predicate::ne(field, value))
     }
 
     /// Create a greater-than specification.
     /// 创建大于 specification。
-    pub fn gt(field: impl Into<String>, value: SpecValue) -> SimpleSpec {
+    pub fn gt(field: impl Into<String>, value: SpecValue) -> SimpleSpec
+    {
         SimpleSpec(Predicate::gt(field, value))
     }
 
     /// Create a less-than specification.
     /// 创建小于 specification。
-    pub fn lt(field: impl Into<String>, value: SpecValue) -> SimpleSpec {
+    pub fn lt(field: impl Into<String>, value: SpecValue) -> SimpleSpec
+    {
         SimpleSpec(Predicate::lt(field, value))
     }
 
     /// Create a greater-than-or-equal specification.
     /// 创建大于等于 specification。
-    pub fn gte(field: impl Into<String>, value: SpecValue) -> SimpleSpec {
+    pub fn gte(field: impl Into<String>, value: SpecValue) -> SimpleSpec
+    {
         SimpleSpec(Predicate::gte(field, value))
     }
 
     /// Create a less-than-or-equal specification.
     /// 创建小于等于 specification。
-    pub fn lte(field: impl Into<String>, value: SpecValue) -> SimpleSpec {
+    pub fn lte(field: impl Into<String>, value: SpecValue) -> SimpleSpec
+    {
         SimpleSpec(Predicate::lte(field, value))
     }
 
     /// Create a LIKE specification.
     /// 创建 LIKE specification。
-    pub fn like(field: impl Into<String>, pattern: impl Into<String>) -> SimpleSpec {
+    pub fn like(field: impl Into<String>, pattern: impl Into<String>) -> SimpleSpec
+    {
         SimpleSpec(Predicate::like(field, pattern))
     }
 
     /// Create an IN specification.
     /// 创建 IN specification。
-    pub fn in_pred(field: impl Into<String>, values: Vec<SpecValue>) -> SimpleSpec {
+    pub fn in_pred(field: impl Into<String>, values: Vec<SpecValue>) -> SimpleSpec
+    {
         SimpleSpec(Predicate::in_pred(field, values))
     }
 
     /// Create a NOT IN specification.
     /// 创建 NOT IN specification。
-    pub fn not_in(field: impl Into<String>, values: Vec<SpecValue>) -> SimpleSpec {
+    pub fn not_in(field: impl Into<String>, values: Vec<SpecValue>) -> SimpleSpec
+    {
         SimpleSpec(Predicate::not_in(field, values))
     }
 
     /// Create an IS NULL specification.
     /// 创建 IS NULL specification。
-    pub fn is_null(field: impl Into<String>) -> SimpleSpec {
+    pub fn is_null(field: impl Into<String>) -> SimpleSpec
+    {
         SimpleSpec(Predicate::is_null(field))
     }
 
     /// Create an IS NOT NULL specification.
     /// 创建 IS NOT NULL specification。
-    pub fn is_not_null(field: impl Into<String>) -> SimpleSpec {
+    pub fn is_not_null(field: impl Into<String>) -> SimpleSpec
+    {
         SimpleSpec(Predicate::is_not_null(field))
     }
 
     /// Create a BETWEEN specification.
     /// 创建 BETWEEN specification。
-    pub fn between(field: impl Into<String>, low: SpecValue, high: SpecValue) -> SimpleSpec {
+    pub fn between(field: impl Into<String>, low: SpecValue, high: SpecValue) -> SimpleSpec
+    {
         SimpleSpec(Predicate::between(field, low, high))
     }
 
     /// Combine two specifications with AND.
     /// 使用 AND 组合两个 specification。
-    pub fn and_spec(s1: impl Specification + 'static, s2: impl Specification + 'static) -> AndSpec {
+    pub fn and_spec(s1: impl Specification + 'static, s2: impl Specification + 'static) -> AndSpec
+    {
         AndSpec {
             left: Box::new(s1),
             right: Box::new(s2),
@@ -632,7 +714,8 @@ impl SpecFactories {
 
     /// Combine two specifications with OR.
     /// 使用 OR 组合两个 specification。
-    pub fn or_spec(s1: impl Specification + 'static, s2: impl Specification + 'static) -> OrSpec {
+    pub fn or_spec(s1: impl Specification + 'static, s2: impl Specification + 'static) -> OrSpec
+    {
         OrSpec {
             left: Box::new(s1),
             right: Box::new(s2),
@@ -641,7 +724,8 @@ impl SpecFactories {
 
     /// Negate a specification.
     /// 取反一个 specification。
-    pub fn not_spec(s: impl Specification + 'static) -> NotSpec {
+    pub fn not_spec(s: impl Specification + 'static) -> NotSpec
+    {
         NotSpec { inner: Box::new(s) }
     }
 }
@@ -651,8 +735,10 @@ impl SpecFactories {
 #[derive(Debug, Clone, Copy, Default)]
 pub struct AlwaysSpec;
 
-impl Specification for AlwaysSpec {
-    fn to_predicate(&self) -> Option<Predicate> {
+impl Specification for AlwaysSpec
+{
+    fn to_predicate(&self) -> Option<Predicate>
+    {
         None
     }
 }
@@ -662,8 +748,10 @@ impl Specification for AlwaysSpec {
 #[derive(Debug, Clone)]
 pub struct SimpleSpec(pub Predicate);
 
-impl Specification for SimpleSpec {
-    fn to_predicate(&self) -> Option<Predicate> {
+impl Specification for SimpleSpec
+{
+    fn to_predicate(&self) -> Option<Predicate>
+    {
         Some(self.0.clone())
     }
 }
@@ -671,14 +759,18 @@ impl Specification for SimpleSpec {
 /// AND composition of two specifications.
 /// 两个 specification 的 AND 组合。
 #[derive(Debug)]
-pub struct AndSpec {
+pub struct AndSpec
+{
     left: Box<dyn Specification>,
     right: Box<dyn Specification>,
 }
 
-impl Specification for AndSpec {
-    fn to_predicate(&self) -> Option<Predicate> {
-        match (self.left.to_predicate(), self.right.to_predicate()) {
+impl Specification for AndSpec
+{
+    fn to_predicate(&self) -> Option<Predicate>
+    {
+        match (self.left.to_predicate(), self.right.to_predicate())
+        {
             (Some(l), Some(r)) => Some(Predicate::and(Box::new(l), Box::new(r))),
             (Some(p), None) => Some(p),
             (None, Some(p)) => Some(p),
@@ -690,14 +782,18 @@ impl Specification for AndSpec {
 /// OR composition of two specifications.
 /// 两个 specification 的 OR 组合。
 #[derive(Debug)]
-pub struct OrSpec {
+pub struct OrSpec
+{
     left: Box<dyn Specification>,
     right: Box<dyn Specification>,
 }
 
-impl Specification for OrSpec {
-    fn to_predicate(&self) -> Option<Predicate> {
-        match (self.left.to_predicate(), self.right.to_predicate()) {
+impl Specification for OrSpec
+{
+    fn to_predicate(&self) -> Option<Predicate>
+    {
+        match (self.left.to_predicate(), self.right.to_predicate())
+        {
             (Some(l), Some(r)) => Some(Predicate::or(Box::new(l), Box::new(r))),
             (Some(p), None) => Some(p),
             (None, Some(p)) => Some(p),
@@ -709,12 +805,15 @@ impl Specification for OrSpec {
 /// NOT composition of a specification.
 /// specification 的 NOT 组合。
 #[derive(Debug)]
-pub struct NotSpec {
+pub struct NotSpec
+{
     inner: Box<dyn Specification>,
 }
 
-impl Specification for NotSpec {
-    fn to_predicate(&self) -> Option<Predicate> {
+impl Specification for NotSpec
+{
+    fn to_predicate(&self) -> Option<Predicate>
+    {
         self.inner
             .to_predicate()
             .map(|p| Predicate::not(Box::new(p)))
@@ -782,11 +881,13 @@ pub trait JpaSpecificationExecutor<T: Send + 'static, ID: Send + Sync + 'static>
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_spec_value_display() {
+    fn test_spec_value_display()
+    {
         assert_eq!(SpecValue::String("hello".into()).to_string(), "'hello'");
         assert_eq!(SpecValue::I64(42).to_string(), "42");
         assert_eq!(SpecValue::Bool(true).to_string(), "true");
@@ -794,19 +895,22 @@ mod tests {
     }
 
     #[test]
-    fn test_predicate_eq() {
+    fn test_predicate_eq()
+    {
         let pred = Predicate::eq("name", SpecValue::String("Alice".into()));
         assert_eq!(pred.to_sql(), "name = 'Alice'");
     }
 
     #[test]
-    fn test_predicate_ne() {
+    fn test_predicate_ne()
+    {
         let pred = Predicate::ne("status", SpecValue::String("deleted".into()));
         assert_eq!(pred.to_sql(), "status != 'deleted'");
     }
 
     #[test]
-    fn test_predicate_gt_lt() {
+    fn test_predicate_gt_lt()
+    {
         let pred = Predicate::gt("age", SpecValue::I64(18));
         assert_eq!(pred.to_sql(), "age > 18");
 
@@ -815,43 +919,46 @@ mod tests {
     }
 
     #[test]
-    fn test_predicate_like() {
+    fn test_predicate_like()
+    {
         let pred = Predicate::like("name", "%Alice%");
         assert_eq!(pred.to_sql(), "name LIKE '%Alice%'");
     }
 
     #[test]
-    fn test_predicate_in() {
-        let pred = Predicate::in_pred(
-            "city",
-            vec![
-                SpecValue::String("Beijing".into()),
-                SpecValue::String("Shanghai".into()),
-            ],
-        );
+    fn test_predicate_in()
+    {
+        let pred = Predicate::in_pred("city", vec![
+            SpecValue::String("Beijing".into()),
+            SpecValue::String("Shanghai".into()),
+        ]);
         assert_eq!(pred.to_sql(), "city IN ('Beijing', 'Shanghai')");
     }
 
     #[test]
-    fn test_predicate_is_null() {
+    fn test_predicate_is_null()
+    {
         let pred = Predicate::is_null("deleted_at");
         assert_eq!(pred.to_sql(), "deleted_at IS NULL");
     }
 
     #[test]
-    fn test_predicate_is_not_null() {
+    fn test_predicate_is_not_null()
+    {
         let pred = Predicate::is_not_null("email");
         assert_eq!(pred.to_sql(), "email IS NOT NULL");
     }
 
     #[test]
-    fn test_predicate_between() {
+    fn test_predicate_between()
+    {
         let pred = Predicate::between("age", SpecValue::I64(18), SpecValue::I64(65));
         assert_eq!(pred.to_sql(), "age BETWEEN 18 AND 65");
     }
 
     #[test]
-    fn test_predicate_and() {
+    fn test_predicate_and()
+    {
         let pred = Predicate::and(
             Box::new(Predicate::eq("status", SpecValue::String("active".into()))),
             Box::new(Predicate::gt("age", SpecValue::I64(18))),
@@ -860,7 +967,8 @@ mod tests {
     }
 
     #[test]
-    fn test_predicate_or() {
+    fn test_predicate_or()
+    {
         let pred = Predicate::or(
             Box::new(Predicate::eq("role", SpecValue::String("admin".into()))),
             Box::new(Predicate::eq("role", SpecValue::String("superadmin".into()))),
@@ -869,27 +977,31 @@ mod tests {
     }
 
     #[test]
-    fn test_predicate_not() {
+    fn test_predicate_not()
+    {
         let pred =
             Predicate::not(Box::new(Predicate::eq("status", SpecValue::String("deleted".into()))));
         assert_eq!(pred.to_sql(), "NOT (status = 'deleted')");
     }
 
     #[test]
-    fn test_specification_always() {
+    fn test_specification_always()
+    {
         let spec = SpecFactories::always();
         assert!(spec.to_predicate().is_none());
     }
 
     #[test]
-    fn test_specification_eq() {
+    fn test_specification_eq()
+    {
         let spec = SpecFactories::eq("name", SpecValue::String("Alice".into()));
         let pred = spec.to_predicate().unwrap();
         assert_eq!(pred.to_sql(), "name = 'Alice'");
     }
 
     #[test]
-    fn test_specification_and_spec() {
+    fn test_specification_and_spec()
+    {
         let s1 = SpecFactories::eq("status", SpecValue::String("active".into()));
         let s2 = SpecFactories::gt("age", SpecValue::I64(18));
         let combined = SpecFactories::and_spec(s1, s2);
@@ -898,7 +1010,8 @@ mod tests {
     }
 
     #[test]
-    fn test_specification_or_spec() {
+    fn test_specification_or_spec()
+    {
         let s1 = SpecFactories::eq("role", SpecValue::String("admin".into()));
         let s2 = SpecFactories::eq("role", SpecValue::String("superadmin".into()));
         let combined = SpecFactories::or_spec(s1, s2);
@@ -907,7 +1020,8 @@ mod tests {
     }
 
     #[test]
-    fn test_specification_not_spec() {
+    fn test_specification_not_spec()
+    {
         let s = SpecFactories::eq("deleted", SpecValue::Bool(true));
         let negated = SpecFactories::not_spec(s);
         let pred = negated.to_predicate().unwrap();
@@ -915,7 +1029,8 @@ mod tests {
     }
 
     #[test]
-    fn test_specifications_builder() {
+    fn test_specifications_builder()
+    {
         let spec = Specifications::where_clause()
             .eq("status", SpecValue::String("active".into()))
             .gt("age", SpecValue::I64(18))
@@ -926,13 +1041,15 @@ mod tests {
     }
 
     #[test]
-    fn test_specifications_builder_empty() {
+    fn test_specifications_builder_empty()
+    {
         let spec = Specifications::where_clause().build();
         assert!(spec.to_predicate().is_none());
     }
 
     #[test]
-    fn test_specifications_builder_and() {
+    fn test_specifications_builder_and()
+    {
         let s1 = Specifications::where_clause()
             .eq("status", SpecValue::String("active".into()))
             .build();
@@ -945,7 +1062,8 @@ mod tests {
     }
 
     #[test]
-    fn test_specifications_builder_or() {
+    fn test_specifications_builder_or()
+    {
         let s1 = Specifications::where_clause()
             .eq("role", SpecValue::String("admin".into()))
             .build();
@@ -958,7 +1076,8 @@ mod tests {
     }
 
     #[test]
-    fn test_specifications_builder_not() {
+    fn test_specifications_builder_not()
+    {
         let spec = Specifications::where_clause()
             .eq("deleted", SpecValue::Bool(true))
             .not()
@@ -968,7 +1087,8 @@ mod tests {
     }
 
     #[test]
-    fn test_specifications_builder_like() {
+    fn test_specifications_builder_like()
+    {
         let spec = Specifications::where_clause()
             .like("name", "%Alice%")
             .build();
@@ -977,22 +1097,21 @@ mod tests {
     }
 
     #[test]
-    fn test_specifications_builder_in() {
+    fn test_specifications_builder_in()
+    {
         let spec = Specifications::where_clause()
-            .in_pred(
-                "city",
-                vec![
-                    SpecValue::String("Beijing".into()),
-                    SpecValue::String("Shanghai".into()),
-                ],
-            )
+            .in_pred("city", vec![
+                SpecValue::String("Beijing".into()),
+                SpecValue::String("Shanghai".into()),
+            ])
             .build();
         let pred = spec.to_predicate().unwrap();
         assert_eq!(pred.to_sql(), "city IN ('Beijing', 'Shanghai')");
     }
 
     #[test]
-    fn test_specifications_builder_between() {
+    fn test_specifications_builder_between()
+    {
         let spec = Specifications::where_clause()
             .between("age", SpecValue::I64(18), SpecValue::I64(65))
             .build();
@@ -1001,14 +1120,16 @@ mod tests {
     }
 
     #[test]
-    fn test_specifications_builder_is_null() {
+    fn test_specifications_builder_is_null()
+    {
         let spec = Specifications::where_clause().is_null("deleted_at").build();
         let pred = spec.to_predicate().unwrap();
         assert_eq!(pred.to_sql(), "deleted_at IS NULL");
     }
 
     #[test]
-    fn test_specifications_builder_is_not_null() {
+    fn test_specifications_builder_is_not_null()
+    {
         let spec = Specifications::where_clause().is_not_null("email").build();
         let pred = spec.to_predicate().unwrap();
         assert_eq!(pred.to_sql(), "email IS NOT NULL");

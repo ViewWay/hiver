@@ -57,7 +57,8 @@ use crate::{IsolationLevel, Propagation, TransactionError, TransactionResult};
 /// )
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TransactionalOptions {
+pub struct TransactionalOptions
+{
     /// Transaction name
     /// 事务名称
     #[serde(default)]
@@ -94,14 +95,17 @@ pub struct TransactionalOptions {
     pub no_rollback_for: Vec<String>,
 }
 
-fn default_read_only() -> bool {
+fn default_read_only() -> bool
+{
     false
 }
 
-impl TransactionalOptions {
+impl TransactionalOptions
+{
     /// Create new transactional options
     /// 创建新的transactional选项
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             name: None,
             propagation: None,
@@ -115,76 +119,90 @@ impl TransactionalOptions {
 
     /// Set transaction name
     /// 设置事务名称
-    pub fn name(mut self, name: impl Into<String>) -> Self {
+    pub fn name(mut self, name: impl Into<String>) -> Self
+    {
         self.name = Some(name.into());
         self
     }
 
     /// Set propagation
     /// 设置传播行为
-    pub fn propagation(mut self, propagation: Propagation) -> Self {
+    pub fn propagation(mut self, propagation: Propagation) -> Self
+    {
         self.propagation = Some(propagation);
         self
     }
 
     /// Set isolation
     /// 设置隔离级别
-    pub fn isolation(mut self, isolation: IsolationLevel) -> Self {
+    pub fn isolation(mut self, isolation: IsolationLevel) -> Self
+    {
         self.isolation = Some(isolation);
         self
     }
 
     /// Set timeout
     /// 设置超时
-    pub fn timeout_secs(mut self, timeout: u64) -> Self {
+    pub fn timeout_secs(mut self, timeout: u64) -> Self
+    {
         self.timeout_secs = Some(timeout);
         self
     }
 
     /// Set read-only
     /// 设置只读
-    pub fn read_only(mut self, read_only: bool) -> Self {
+    pub fn read_only(mut self, read_only: bool) -> Self
+    {
         self.read_only = read_only;
         self
     }
 
     /// Add rollback for exception type
     /// 添加回滚异常类型
-    pub fn rollback_for(mut self, exception: impl Into<String>) -> Self {
+    pub fn rollback_for(mut self, exception: impl Into<String>) -> Self
+    {
         self.rollback_for.push(exception.into());
         self
     }
 
     /// Add no rollback for exception type
     /// 添加不回滚异常类型
-    pub fn no_rollback_for(mut self, exception: impl Into<String>) -> Self {
+    pub fn no_rollback_for(mut self, exception: impl Into<String>) -> Self
+    {
         self.no_rollback_for.push(exception.into());
         self
     }
 
     /// Check if should rollback for error
     /// 检查错误是否应回滚
-    pub fn should_rollback(&self, error: &TransactionError) -> bool {
+    pub fn should_rollback(&self, error: &TransactionError) -> bool
+    {
         // Default behavior: rollback for all errors
-        if self.rollback_for.is_empty() && self.no_rollback_for.is_empty() {
+        if self.rollback_for.is_empty() && self.no_rollback_for.is_empty()
+        {
             return true;
         }
 
         // Check no_rollback_for first
-        for exception in &self.no_rollback_for {
+        for exception in &self.no_rollback_for
+        {
             // Simplified check - in real implementation would use type matching
-            if error.to_string().contains(exception) {
+            if error.to_string().contains(exception)
+            {
                 return false;
             }
         }
 
         // Check rollback_for
-        if self.rollback_for.is_empty() {
+        if self.rollback_for.is_empty()
+        {
             return true;
         }
 
-        for exception in &self.rollback_for {
-            if error.to_string().contains(exception) {
+        for exception in &self.rollback_for
+        {
+            if error.to_string().contains(exception)
+            {
                 return true;
             }
         }
@@ -193,8 +211,10 @@ impl TransactionalOptions {
     }
 }
 
-impl Default for TransactionalOptions {
-    fn default() -> Self {
+impl Default for TransactionalOptions
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -207,7 +227,8 @@ impl Default for TransactionalOptions {
 ///
 /// Equivalent to Spring's @Transactional on a class.
 /// 等价于Spring类上的@Transactional。
-pub trait Transactional {
+pub trait Transactional
+{
     /// Execute a function within a transaction
     /// 在事务中执行函数
     async fn in_transaction<F, T, E>(&self, f: F) -> TransactionResult<T>
@@ -220,7 +241,8 @@ pub trait Transactional {
         // In real implementation, this would use injected transaction manager
         let result = f().await;
 
-        match result {
+        match result
+        {
             Ok(value) => Ok(value),
             Err(e) => Err(e.into()),
         }
@@ -240,11 +262,14 @@ pub trait Transactional {
     {
         let result = f().await;
 
-        match result {
+        match result
+        {
             Ok(value) => Ok(value),
-            Err(e) => {
+            Err(e) =>
+            {
                 let tx_error = e.into();
-                if options.should_rollback(&tx_error) {
+                if options.should_rollback(&tx_error)
+                {
                     return Err(tx_error);
                 }
                 // Even if we don't rollback, the operation failed
@@ -267,7 +292,8 @@ impl<T> Transactional for T where T: Send + Sync {}
 ///
 /// Equivalent to Spring's `TransactionTemplate` with try-with-resources.
 /// 等价于Spring与try-with-resources的TransactionTemplate。
-pub(crate) struct TransactionGuard<'a> {
+pub(crate) struct TransactionGuard<'a>
+{
     /// Transaction status
     /// 事务状态
     status: crate::TransactionStatus,
@@ -281,13 +307,15 @@ pub(crate) struct TransactionGuard<'a> {
     committed: Arc<std::sync::atomic::AtomicBool>,
 }
 
-impl<'a> TransactionGuard<'a> {
+impl<'a> TransactionGuard<'a>
+{
     /// Create a new transaction guard
     /// 创建新的事务守卫
     pub(crate) fn new(
         status: crate::TransactionStatus,
         manager: &'a dyn crate::TransactionManager,
-    ) -> Self {
+    ) -> Self
+    {
         Self {
             status,
             manager,
@@ -297,7 +325,8 @@ impl<'a> TransactionGuard<'a> {
 
     /// Commit the transaction
     /// 提交事务
-    pub(crate) async fn commit(self) -> TransactionResult<()> {
+    pub(crate) async fn commit(self) -> TransactionResult<()>
+    {
         self.committed
             .store(true, std::sync::atomic::Ordering::SeqCst);
         self.manager.commit(self.status.clone()).await
@@ -305,23 +334,29 @@ impl<'a> TransactionGuard<'a> {
 
     /// Rollback the transaction
     /// 回滚事务
-    pub(crate) async fn rollback(self) -> TransactionResult<()> {
+    pub(crate) async fn rollback(self) -> TransactionResult<()>
+    {
         self.manager.rollback(self.status.clone()).await
     }
 
     /// Mark for rollback only
     /// 标记为仅回滚
-    pub(crate) fn set_rollback_only(&self) {
+    pub(crate) fn set_rollback_only(&self)
+    {
         self.status.set_rollback_only();
     }
 }
 
-impl Drop for TransactionGuard<'_> {
-    fn drop(&mut self) {
-        if !self.committed.load(std::sync::atomic::Ordering::SeqCst) {
+impl Drop for TransactionGuard<'_>
+{
+    fn drop(&mut self)
+    {
+        if !self.committed.load(std::sync::atomic::Ordering::SeqCst)
+        {
             // In a real async Drop scenario, we'd need to handle this differently
             // For now, this is a simplified implementation
-            if !self.status.is_completed() {
+            if !self.status.is_completed()
+            {
                 // Would trigger rollback
             }
         }
@@ -336,11 +371,13 @@ impl Drop for TransactionGuard<'_> {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_transactional_options() {
+    fn test_transactional_options()
+    {
         let options = TransactionalOptions::new()
             .name("test_tx")
             .propagation(Propagation::RequiresNew)
@@ -354,7 +391,8 @@ mod tests {
     }
 
     #[test]
-    fn test_should_rollback() {
+    fn test_should_rollback()
+    {
         // Test 1: Default behavior - rollback for all errors
         // 测试 1: 默认行为 - 所有错误都回滚
         let default_options = TransactionalOptions::new();

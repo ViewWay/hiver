@@ -3,12 +3,16 @@
 
 /// Generate Cargo.toml content.
 /// 生成 Cargo.toml 内容。
-pub fn generate_cargo_toml(name: &str, modules: &[String]) -> String {
+pub fn generate_cargo_toml(name: &str, modules: &[String]) -> String
+{
     let mut deps = vec![("hiver-runtime", r#""0.1""#)];
 
-    for module in modules {
-        match module.as_str() {
-            "web" => {
+    for module in modules
+    {
+        match module.as_str()
+        {
+            "web" =>
+            {
                 deps.push(("hiver-http", r#""0.1""#));
                 deps.push(("hiver-router", r#""0.1""#));
                 deps.push(("hiver-middleware", r#""0.1""#));
@@ -18,7 +22,8 @@ pub fn generate_cargo_toml(name: &str, modules: &[String]) -> String {
                 deps.push(("serde_json", r#""0.1""#));
             },
             "security" => deps.push(("hiver-security", r#""0.1""#)),
-            "data" => {
+            "data" =>
+            {
                 deps.push(("hiver-data-rdbc", r#""0.1""#));
                 deps.push(("hiver-data-orm", r#""0.1""#));
                 deps.push(("hiver-tx", r#""0.1""#));
@@ -30,11 +35,13 @@ pub fn generate_cargo_toml(name: &str, modules: &[String]) -> String {
             "graphql" => deps.push(("hiver-graphql", r#""0.1""#)),
             "grpc" => deps.push(("hiver-grpc", r#""0.1""#)),
             "ai" => deps.push(("hiver-ai", r#""0.1""#)),
-            _ => {},
+            _ =>
+            {},
         }
     }
 
-    if !modules.contains(&"web".to_string()) {
+    if !modules.contains(&"web".to_string())
+    {
         deps.push(("serde", r#"{ version = "1", features = ["derive"] }"#));
     }
 
@@ -54,7 +61,8 @@ pub fn generate_cargo_toml(name: &str, modules: &[String]) -> String {
 
 /// Generate application.toml content.
 /// 生成 application.toml 内容。
-pub fn generate_application_toml(modules: &[String]) -> String {
+pub fn generate_application_toml(modules: &[String]) -> String
+{
     let mut config = String::from(
         r##"# Hiver Application Configuration
 # Hiver 应用配置
@@ -71,7 +79,8 @@ mode = "verbose"  # verbose for dev, simple for prod
 "##,
     );
 
-    if modules.contains(&"data".to_string()) {
+    if modules.contains(&"data".to_string())
+    {
         config.push_str(
             r##"[data.source]
 url = "postgresql://localhost:5432/mydb"
@@ -83,7 +92,8 @@ max_connections = 20
         );
     }
 
-    if modules.contains(&"cache".to_string()) {
+    if modules.contains(&"cache".to_string())
+    {
         config.push_str(
             r##"[cache]
 type = "redis"
@@ -93,7 +103,8 @@ url = "redis://localhost:6379"
         );
     }
 
-    if modules.contains(&"security".to_string()) {
+    if modules.contains(&"security".to_string())
+    {
         config.push_str(
             r##"[security]
 jwt_secret = "change-me-in-production"

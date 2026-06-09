@@ -24,7 +24,8 @@ const STATE_WAITING: u8 = 1;
 const STATE_COMPLETED: u8 = 2;
 
 /// Virtual function table for type-erased task operations
-struct TaskVTable {
+struct TaskVTable
+{
     poll: unsafe fn(*const TaskCore) -> bool,
     take_output: unsafe fn(*const TaskCore, *mut ()) -> bool,
     drop_future_and_dealloc: unsafe fn(*const TaskCore),
@@ -33,7 +34,8 @@ struct TaskVTable {
 /// Core task header — always the first field of a `ConcreteTask<F>`.
 /// Manually reference-counted. Layout: `[vtable | id | state | ref_count | scheduler]`.
 #[repr(C)]
-pub(crate) struct TaskCore {
+pub(crate) struct TaskCore
+{
     vtable: &'static TaskVTable,
     id: TaskId,
     state: AtomicU8,
@@ -41,41 +43,49 @@ pub(crate) struct TaskCore {
     scheduler: SchedulerHandle,
 }
 
-impl TaskCore {
+impl TaskCore
+{
     /// Get the task ID.
     /// 获取任务ID。
-    pub(crate) fn id(&self) -> TaskId {
+    pub(crate) fn id(&self) -> TaskId
+    {
         self.id
     }
 
     /// Check if the task has completed.
     /// 检查任务是否已完成。
     #[must_use]
-    pub(crate) fn is_completed(&self) -> bool {
+    pub(crate) fn is_completed(&self) -> bool
+    {
         self.state.load(Ordering::Acquire) == STATE_COMPLETED
     }
 
     #[allow(dead_code)]
-    pub(crate) fn scheduler(&self) -> &SchedulerHandle {
+    pub(crate) fn scheduler(&self) -> &SchedulerHandle
+    {
         &self.scheduler
     }
 
     /// Poll this task via the vtable. Returns true if completed.
-    unsafe fn poll(&self) -> bool {
+    unsafe fn poll(&self) -> bool
+    {
         (self.vtable.poll)(self)
     }
 
     /// Increment reference count. Returns the raw pointer for convenience.
-    fn inc_ref(ptr: *const Self) -> *const Self {
+    fn inc_ref(ptr: *const Self) -> *const Self
+    {
         let core = &unsafe { &*ptr };
         core.ref_count.fetch_add(1, Ordering::Relaxed);
         ptr
     }
 
     /// Decrement reference count. Deallocates if it reaches zero.
-    unsafe fn dec_ref(ptr: *const Self) {
+    unsafe fn dec_ref(ptr: *const Self)
+    {
         let core = &*ptr;
-        if core.ref_count.fetch_sub(1, Ordering::Release) == 1 {
+        if core.ref_count.fetch_sub(1, Ordering::Release) == 1
+        {
             std::sync::atomic::fence(Ordering::Acquire);
             (core.vtable.drop_future_and_dealloc)(ptr);
         }
@@ -85,14 +95,17 @@ impl TaskCore {
 /// Concrete task with a known future type.
 /// Layout: `[TaskCore | Future | Output]`
 #[repr(C)]
-struct ConcreteTask<F: Future + Send + 'static> {
+struct ConcreteTask<F: Future + Send + 'static>
+{
     core: TaskCore,
     future: UnsafeCell<MaybeUninit<F>>,
     output: UnsafeCell<MaybeUninit<F::Output>>,
 }
 
-impl<F: Future + Send + 'static> ConcreteTask<F> {
-    const fn vtable() -> &'static TaskVTable {
+impl<F: Future + Send + 'static> ConcreteTask<F>
+{
+    const fn vtable() -> &'static TaskVTable
+    {
         &TaskVTable {
             poll: Self::poll_impl,
             take_output: Self::take_output_impl,
@@ -100,7 +113,8 @@ impl<F: Future + Send + 'static> ConcreteTask<F> {
         }
     }
 
-    unsafe fn poll_impl(core: *const TaskCore) -> bool {
+    unsafe fn poll_impl(core: *const TaskCore) -> bool
+    {
         let task = &*(core as *const Self);
         let waker = create_task_waker(core);
         let mut cx = Context::from_waker(&waker);
@@ -108,23 +122,28 @@ impl<F: Future + Send + 'static> ConcreteTask<F> {
         let future = &mut *task.future.get();
         let future = Pin::new_unchecked(future.assume_init_mut());
 
-        match future.poll(&mut cx) {
-            Poll::Ready(value) => {
+        match future.poll(&mut cx)
+        {
+            Poll::Ready(value) =>
+            {
                 (*task.output.get()).write(value);
                 task.core.state.store(STATE_COMPLETED, Ordering::Release);
                 std::ptr::drop_in_place((*task.future.get()).as_mut_ptr());
                 true
             },
-            Poll::Pending => {
+            Poll::Pending =>
+            {
                 task.core.state.store(STATE_WAITING, Ordering::Release);
                 false
             },
         }
     }
 
-    unsafe fn take_output_impl(core: *const TaskCore, dest: *mut ()) -> bool {
+    unsafe fn take_output_impl(core: *const TaskCore, dest: *mut ()) -> bool
+    {
         let task = &*(core as *const Self);
-        if task.core.state.load(Ordering::Acquire) != STATE_COMPLETED {
+        if task.core.state.load(Ordering::Acquire) != STATE_COMPLETED
+        {
             return false;
         }
         let output = (*task.output.get()).assume_init_read();
@@ -132,13 +151,16 @@ impl<F: Future + Send + 'static> ConcreteTask<F> {
         true
     }
 
-    unsafe fn drop_future_and_dealloc_impl(core: *const TaskCore) {
+    unsafe fn drop_future_and_dealloc_impl(core: *const TaskCore)
+    {
         let task = core as *mut Self;
         let state = (*task).core.state.load(Ordering::Acquire);
-        if state == STATE_RUNNING || state == STATE_WAITING {
+        if state == STATE_RUNNING || state == STATE_WAITING
+        {
             std::ptr::drop_in_place((*(*task).future.get()).as_mut_ptr());
         }
-        if state == STATE_COMPLETED {
+        if state == STATE_COMPLETED
+        {
             // Output was already taken or needs to be dropped
             // Check if it was consumed by take_output
             // We track this by the output being MaybeUninit —
@@ -156,32 +178,38 @@ impl<F: Future + Send + 'static> ConcreteTask<F> {
 static WAKER_VTABLE: RawWakerVTable =
     RawWakerVTable::new(waker_clone, waker_wake, waker_wake_by_ref, waker_drop);
 
-fn create_task_waker(core: *const TaskCore) -> Waker {
+fn create_task_waker(core: *const TaskCore) -> Waker
+{
     // Increment ref for the waker
     TaskCore::inc_ref(core);
     unsafe { Waker::from_raw(RawWaker::new(core as *const (), &WAKER_VTABLE)) }
 }
 
-unsafe fn waker_clone(data: *const ()) -> RawWaker {
+unsafe fn waker_clone(data: *const ()) -> RawWaker
+{
     TaskCore::inc_ref(data as *const TaskCore);
     RawWaker::new(data, &WAKER_VTABLE)
 }
 
-unsafe fn waker_wake(data: *const ()) {
+unsafe fn waker_wake(data: *const ())
+{
     let core = data as *const TaskCore;
     try_re_enqueue(core);
     TaskCore::dec_ref(core); // consume the waker's ref
 }
 
-unsafe fn waker_wake_by_ref(data: *const ()) {
+unsafe fn waker_wake_by_ref(data: *const ())
+{
     try_re_enqueue(data as *const TaskCore);
 }
 
-unsafe fn waker_drop(data: *const ()) {
+unsafe fn waker_drop(data: *const ())
+{
     TaskCore::dec_ref(data as *const TaskCore);
 }
 
-fn try_re_enqueue(core: *const TaskCore) {
+fn try_re_enqueue(core: *const TaskCore)
+{
     unsafe {
         let c = &*core;
         if c.state
@@ -202,24 +230,31 @@ fn try_re_enqueue(core: *const TaskCore) {
 /// Automatically decrements ref count on drop.
 pub(crate) struct TaskRef(Option<NonNull<TaskCore>>);
 
-impl TaskRef {
-    pub(crate) fn new(ptr: *const TaskCore) -> Self {
+impl TaskRef
+{
+    pub(crate) fn new(ptr: *const TaskCore) -> Self
+    {
         TaskRef(Some(unsafe { NonNull::new_unchecked(ptr.cast_mut()) }))
     }
 
-    pub(crate) fn core(&self) -> Option<&TaskCore> {
+    pub(crate) fn core(&self) -> Option<&TaskCore>
+    {
         self.0.map(|nn| unsafe { nn.as_ref() })
     }
 
     #[allow(dead_code)]
-    pub(crate) fn is_some(&self) -> bool {
+    pub(crate) fn is_some(&self) -> bool
+    {
         self.0.is_some()
     }
 }
 
-impl Drop for TaskRef {
-    fn drop(&mut self) {
-        if let Some(nn) = self.0.take() {
+impl Drop for TaskRef
+{
+    fn drop(&mut self)
+    {
+        if let Some(nn) = self.0.take()
+        {
             unsafe {
                 TaskCore::dec_ref(nn.as_ptr());
             }
@@ -266,7 +301,8 @@ where
 /// # Safety
 ///
 /// `raw_task` must be valid. Caller must have exclusive access.
-pub unsafe fn poll_raw_task(raw_task: RawTask) -> bool {
+pub unsafe fn poll_raw_task(raw_task: RawTask) -> bool
+{
     let core = raw_task as *const TaskCore;
     (*core).poll()
 }
@@ -277,7 +313,8 @@ pub unsafe fn poll_raw_task(raw_task: RawTask) -> bool {
 ///
 /// `raw_task` must be valid. Must only be called when the task just completed
 /// (the scheduler's queue ref is being consumed).
-pub unsafe fn deallocate_completed_task(raw_task: RawTask) {
+pub unsafe fn deallocate_completed_task(raw_task: RawTask)
+{
     TaskCore::dec_ref(raw_task as *const TaskCore);
 }
 
@@ -286,7 +323,8 @@ pub unsafe fn deallocate_completed_task(raw_task: RawTask) {
 /// # Safety
 ///
 /// `core` must point to a completed task.
-pub(crate) unsafe fn read_output<T>(core: &TaskCore) -> Option<T> {
+pub(crate) unsafe fn read_output<T>(core: &TaskCore) -> Option<T>
+{
     let mut output: MaybeUninit<T> = MaybeUninit::uninit();
     let ok = (core.vtable.take_output)(core, &mut output as *mut _ as *mut ());
     if ok { Some(output.assume_init()) } else { None }
@@ -300,11 +338,13 @@ pub(crate) unsafe fn read_output<T>(core: &TaskCore) -> Option<T> {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_sync_future_completes() {
+    fn test_sync_future_completes()
+    {
         let scheduler = SchedulerHandle::new_default();
         let (raw_task, task_ref) = allocate_task(async { 42 }, scheduler);
 
@@ -330,7 +370,8 @@ mod tests {
     }
 
     #[test]
-    fn test_task_id_unique() {
+    fn test_task_id_unique()
+    {
         let scheduler = SchedulerHandle::new_default();
         let (_, ref1) = allocate_task(async {}, scheduler.clone());
         let (_, ref2) = allocate_task(async {}, scheduler);

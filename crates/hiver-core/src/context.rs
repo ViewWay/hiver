@@ -23,7 +23,8 @@ use super::extension::Extensions;
 /// Equivalent to Spring's `HttpServletRequest`.
 /// 等价于Spring的`HttpServletRequest`。
 #[derive(Clone)]
-pub struct RequestContext {
+pub struct RequestContext
+{
     /// Request ID
     /// 请求ID
     pub request_id: String,
@@ -43,18 +44,21 @@ pub struct RequestContext {
 /// This can be used to share data across the request lifecycle.
 /// 这可以用于在请求生命周期中共享数据。
 #[derive(Clone, Default)]
-pub struct State {
+pub struct State
+{
     /// Inner state data
     /// 内部状态数据
     #[allow(dead_code)] // public API scaffolding, field access not yet implemented
     inner: Arc<state::Inner>,
 }
 
-mod state {
+mod state
+{
     /// Inner state representation
     /// 内部状态表示
     #[derive(Default)]
-    pub(crate) struct Inner {
+    pub(crate) struct Inner
+    {
         /// Shared data storage
         /// 共享数据存储
         #[allow(dead_code)] // storage for future shared state accessors
@@ -62,10 +66,12 @@ mod state {
     }
 }
 
-impl RequestContext {
+impl RequestContext
+{
     /// Create a new request context
     /// 创建新请求上下文
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             request_id: uuid::Uuid::new_v4().to_string(),
             extensions: Extensions::new(),
@@ -75,19 +81,23 @@ impl RequestContext {
 
     /// Get a value from extensions
     /// 从扩展中获取值
-    pub fn get<T: Send + Sync + 'static>(&self) -> Option<&T> {
+    pub fn get<T: Send + Sync + 'static>(&self) -> Option<&T>
+    {
         self.extensions.get()
     }
 
     /// Insert a value into extensions
     /// 向扩展中插入值
-    pub fn insert<T: Send + Sync + 'static>(&mut self, val: T) {
+    pub fn insert<T: Send + Sync + 'static>(&mut self, val: T)
+    {
         self.extensions.insert(val);
     }
 }
 
-impl Default for RequestContext {
-    fn default() -> Self {
+impl Default for RequestContext
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }

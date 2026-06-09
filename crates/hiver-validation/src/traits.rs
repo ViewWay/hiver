@@ -37,7 +37,8 @@ use crate::{ValidationContext, ValidationErrors, ValidationResult};
 ///
 /// 实现此 trait 以支持自定义验证逻辑
 /// Implement this trait for custom validation logic
-pub trait Validate: fmt::Debug {
+pub trait Validate: fmt::Debug
+{
     /// 执行验证 / Perform validation
     ///
     /// # 返回 / Returns
@@ -51,7 +52,8 @@ pub trait Validate: fmt::Debug {
 ///
 /// 用于验证单个字段的值
 /// Used for validating individual field values
-pub trait ValidateField {
+pub trait ValidateField
+{
     /// 验证字符串字段 / Validate string field
     fn validate_string(
         &self,
@@ -71,7 +73,8 @@ pub trait ValidateField {
 
 /// 字段级验证错误 / Field-level validation error
 #[derive(Debug, Clone)]
-pub struct ValidationError {
+pub struct ValidationError
+{
     /// Field name that failed validation
     /// 验证失败的字段名
     pub field: String,
@@ -83,10 +86,12 @@ pub struct ValidationError {
     pub code: String,
 }
 
-impl ValidationError {
+impl ValidationError
+{
     /// Create a new validation error
     /// 创建新的验证错误
-    pub fn new(field: impl Into<String>, message: impl Into<String>) -> Self {
+    pub fn new(field: impl Into<String>, message: impl Into<String>) -> Self
+    {
         Self {
             field: field.into(),
             message: message.into(),
@@ -96,14 +101,17 @@ impl ValidationError {
 
     /// Set a custom error code
     /// 设置自定义错误代码
-    pub fn with_code(mut self, code: impl Into<String>) -> Self {
+    pub fn with_code(mut self, code: impl Into<String>) -> Self
+    {
         self.code = code.into();
         self
     }
 }
 
-impl fmt::Display for ValidationError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Display for ValidationError
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         write!(f, "{}: {}", self.field, self.message)
     }
 }
@@ -111,7 +119,8 @@ impl fmt::Display for ValidationError {
 impl std::error::Error for ValidationError {}
 
 /// 可选值验证 / Optional value validation
-pub trait ValidateOptional {
+pub trait ValidateOptional
+{
     /// The wrapped item type
     /// 包装的项类型
     type Item;
@@ -122,15 +131,18 @@ pub trait ValidateOptional {
         F: FnOnce(&Self::Item) -> Result<(), ValidationErrors>;
 }
 
-impl<T> ValidateOptional for Option<T> {
+impl<T> ValidateOptional for Option<T>
+{
     type Item = T;
 
     fn validate_optional<F>(self, validator: F) -> ValidationResult<T>
     where
         F: FnOnce(&T) -> Result<(), ValidationErrors>,
     {
-        match self {
-            Some(value) => {
+        match self
+        {
+            Some(value) =>
+            {
                 validator(&value)?;
                 Ok(value)
             },
@@ -140,7 +152,8 @@ impl<T> ValidateOptional for Option<T> {
 }
 
 /// 集合验证 / Collection validation
-pub trait ValidateCollection {
+pub trait ValidateCollection
+{
     /// The item type in the collection
     /// 集合中的项类型
     type Item;
@@ -164,17 +177,24 @@ where
         let mut errors = ValidationErrors::new();
         let mut results = Vec::new();
 
-        for item in self {
-            if let Err(e) = validator(&item) {
+        for item in self
+        {
+            if let Err(e) = validator(&item)
+            {
                 errors.merge(e);
-            } else {
+            }
+            else
+            {
                 results.push(item);
             }
         }
 
-        if errors.has_errors() {
+        if errors.has_errors()
+        {
             Err(errors)
-        } else {
+        }
+        else
+        {
             Ok(results)
         }
     }
@@ -188,30 +208,37 @@ where
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use serde::Deserialize;
 
     use super::*;
 
     #[derive(Debug, Deserialize)]
-    struct TestRequest {
+    struct TestRequest
+    {
         username: String,
         email: String,
     }
 
-    impl Validate for TestRequest {
-        fn validate(&self) -> Result<(), ValidationErrors> {
+    impl Validate for TestRequest
+    {
+        fn validate(&self) -> Result<(), ValidationErrors>
+        {
             let mut errors = ValidationErrors::new();
 
-            if self.username.is_empty() {
+            if self.username.is_empty()
+            {
                 errors.add("username", "Username is required");
             }
 
-            if self.email.is_empty() {
+            if self.email.is_empty()
+            {
                 errors.add("email", "Email is required");
             }
 
-            if errors.has_errors() {
+            if errors.has_errors()
+            {
                 return Err(errors);
             }
 
@@ -220,7 +247,8 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_trait() {
+    fn test_validate_trait()
+    {
         let request = TestRequest {
             username: String::new(),
             email: String::new(),
@@ -234,14 +262,18 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_optional() {
+    fn test_validate_optional()
+    {
         let value: Option<String> = Some("test".to_string());
         let result = value.validate_optional(|v| {
-            if v.is_empty() {
+            if v.is_empty()
+            {
                 let mut errors = ValidationErrors::new();
                 errors.add("value", "Cannot be empty");
                 Err(errors)
-            } else {
+            }
+            else
+            {
                 Ok(())
             }
         });

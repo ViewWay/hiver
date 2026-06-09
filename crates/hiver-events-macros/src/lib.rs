@@ -32,16 +32,19 @@ use syn::{FnArg, ItemFn, Type, parse_macro_input};
 /// - `order`: Execution order (lower = higher priority), default 0
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn EventListener(args: TokenStream, input: TokenStream) -> TokenStream {
+pub fn EventListener(args: TokenStream, input: TokenStream) -> TokenStream
+{
     let input_fn = parse_macro_input!(input as ItemFn);
 
     // Parse arguments (simple key=value parsing)
     let args_str = args.to_string();
     let mut order: i32 = 0;
 
-    for pair in args_str.split(',') {
+    for pair in args_str.split(',')
+    {
         let pair = pair.trim();
-        if let Some((key, value)) = pair.split_once('=') {
+        if let Some((key, value)) = pair.split_once('=')
+        {
             let key = key.trim();
             let value = value.trim();
             if key == "order"
@@ -64,9 +67,12 @@ pub fn EventListener(args: TokenStream, input: TokenStream) -> TokenStream {
     let is_async = input_fn.sig.asyncness.is_some();
 
     // Generate the implementation
-    let expanded = if is_async {
+    let expanded = if is_async
+    {
         generate_async_listener(&input_fn, fn_name, fn_inputs, _fn_output, event_type, order)
-    } else {
+    }
+    else
+    {
         generate_sync_listener(&input_fn, fn_name, fn_inputs, _fn_output, event_type, order)
     };
 
@@ -90,7 +96,8 @@ pub fn EventListener(args: TokenStream, input: TokenStream) -> TokenStream {
 /// ```
 #[proc_macro_attribute]
 #[allow(non_snake_case)]
-pub fn TransactionalEventListener(args: TokenStream, input: TokenStream) -> TokenStream {
+pub fn TransactionalEventListener(args: TokenStream, input: TokenStream) -> TokenStream
+{
     let input_fn = parse_macro_input!(input as ItemFn);
 
     // Parse arguments
@@ -98,14 +105,18 @@ pub fn TransactionalEventListener(args: TokenStream, input: TokenStream) -> Toke
     let mut phase = String::from("after_commit");
     let mut order: i32 = 0;
 
-    for pair in args_str.split(',') {
+    for pair in args_str.split(',')
+    {
         let pair = pair.trim();
-        if let Some((key, value)) = pair.split_once('=') {
+        if let Some((key, value)) = pair.split_once('=')
+        {
             let key = key.trim();
             let value = value.trim();
-            if key == "phase" {
+            if key == "phase"
+            {
                 phase = value.to_string();
-            } else if key == "order"
+            }
+            else if key == "order"
                 && let Ok(val) = value.parse::<i32>()
             {
                 order = val;
@@ -125,11 +136,14 @@ pub fn TransactionalEventListener(args: TokenStream, input: TokenStream) -> Toke
     let is_async = input_fn.sig.asyncness.is_some();
 
     // Generate the implementation with transactional support
-    let expanded = if is_async {
+    let expanded = if is_async
+    {
         generate_transactional_listener_async(
             &input_fn, fn_name, fn_inputs, _fn_output, event_type, order, phase,
         )
-    } else {
+    }
+    else
+    {
         generate_transactional_listener_sync(
             &input_fn, fn_name, fn_inputs, _fn_output, event_type, order, phase,
         )
@@ -140,8 +154,10 @@ pub fn TransactionalEventListener(args: TokenStream, input: TokenStream) -> Toke
 
 /// Find the event type from function parameters
 /// 从函数参数中查找事件类型
-fn find_event_type(inputs: &syn::punctuated::Punctuated<FnArg, syn::token::Comma>) -> Option<Type> {
-    for arg in inputs {
+fn find_event_type(inputs: &syn::punctuated::Punctuated<FnArg, syn::token::Comma>) -> Option<Type>
+{
+    for arg in inputs
+    {
         if let FnArg::Typed(pat) = arg
             && let Type::Path(type_path) = &*pat.ty
             && let Some(segment) = type_path.path.segments.first()
@@ -163,8 +179,10 @@ fn generate_async_listener(
     _fn_output: &syn::ReturnType,
     event_type: Option<Type>,
     order: i32,
-) -> proc_macro2::TokenStream {
-    if let Some(evt) = event_type {
+) -> proc_macro2::TokenStream
+{
+    if let Some(evt) = event_type
+    {
         quote! {
             // Original function (unchanged)
             #input_fn
@@ -176,7 +194,9 @@ fn generate_async_listener(
                 pub const EVENT_TYPE: &str = stringify!(#evt);
             }
         }
-    } else {
+    }
+    else
+    {
         quote! {
             compile_error!("EventListener function must have an event parameter");
             #input_fn
@@ -193,8 +213,10 @@ fn generate_sync_listener(
     _fn_output: &syn::ReturnType,
     event_type: Option<Type>,
     order: i32,
-) -> proc_macro2::TokenStream {
-    if let Some(evt) = event_type {
+) -> proc_macro2::TokenStream
+{
+    if let Some(evt) = event_type
+    {
         quote! {
             // Original function (unchanged)
             #input_fn
@@ -205,7 +227,9 @@ fn generate_sync_listener(
                 pub const EVENT_TYPE: &str = stringify!(#evt);
             }
         }
-    } else {
+    }
+    else
+    {
         quote! {
             compile_error!("EventListener function must have an event parameter");
             #input_fn
@@ -223,8 +247,10 @@ fn generate_transactional_listener_async(
     event_type: Option<Type>,
     order: i32,
     _phase: String,
-) -> proc_macro2::TokenStream {
-    if let Some(_evt) = event_type {
+) -> proc_macro2::TokenStream
+{
+    if let Some(_evt) = event_type
+    {
         quote! {
             // Original function (unchanged)
             #input_fn
@@ -235,7 +261,9 @@ fn generate_transactional_listener_async(
                 pub const PHASE: &str = #_phase;
             }
         }
-    } else {
+    }
+    else
+    {
         quote! {
             compile_error!("TransactionalEventListener function must have an event parameter");
             #input_fn
@@ -253,8 +281,10 @@ fn generate_transactional_listener_sync(
     event_type: Option<Type>,
     order: i32,
     _phase: String,
-) -> proc_macro2::TokenStream {
-    if let Some(_evt) = event_type {
+) -> proc_macro2::TokenStream
+{
+    if let Some(_evt) = event_type
+    {
         quote! {
             // Original function (unchanged)
             #input_fn
@@ -265,7 +295,9 @@ fn generate_transactional_listener_sync(
                 pub const PHASE: &str = #_phase;
             }
         }
-    } else {
+    }
+    else
+    {
         quote! {
             compile_error!("TransactionalEventListener function must have an event parameter");
             #input_fn

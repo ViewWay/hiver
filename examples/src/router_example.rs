@@ -28,7 +28,8 @@ use hiver_http::{Body, Response, StatusCode, content_type, header};
 use hiver_router::Router;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box<dyn std::error::Error>>
+{
     println!("=== Hiver Router Example / Hiver路由器示例 ===\n");
 
     // 1. Basic Router / 基本路由器
@@ -75,7 +76,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ///
 /// Demonstrates creating a basic router.
 /// 演示创建基本路由器。
-fn basic_router_example() {
+fn basic_router_example()
+{
     let _router = Router::new();
     println!("  Created new Router");
     println!("  Router is ready for route registration");
@@ -85,7 +87,8 @@ fn basic_router_example() {
 ///
 /// Lists all supported HTTP methods.
 /// 列出所有支持的HTTP方法。
-fn http_methods_example() {
+fn http_methods_example()
+{
     println!("  Router supports the following methods:");
     println!("    .get(path, handler)      -> @GetMapping");
     println!("    .post(path, handler)     -> @PostMapping");
@@ -102,7 +105,8 @@ fn http_methods_example() {
 ///
 /// Equivalent to Spring's `@PathVariable` annotation.
 /// 等价于 Spring 的 `@PathVariable` 注解。
-fn path_parameters_example() {
+fn path_parameters_example()
+{
     println!("  Path parameters use :param syntax:");
     println!("    \"/users/:id\"         -> Extract id as path parameter");
     println!("    \"/posts/:post_id/comments/:comment_id\" -> Multiple params");
@@ -116,7 +120,8 @@ fn path_parameters_example() {
 ///
 /// Demonstrates chaining multiple route definitions.
 /// 演示链式定义多个路由。
-fn chaining_routes_example() {
+fn chaining_routes_example()
+{
     println!("  Routes can be chained:");
     println!("    Router::new()");
     println!("        .get(\"/users\", list_users)");
@@ -130,7 +135,8 @@ fn chaining_routes_example() {
 ///
 /// Demonstrates a complete REST API setup.
 /// 演示完整的REST API设置。
-fn rest_api_example() {
+fn rest_api_example()
+{
     println!("  Complete REST API for users resource:");
     println!();
     println!("  GET    /users           -> List all users");
@@ -165,7 +171,8 @@ fn rest_api_example() {
 ///
 /// Demonstrates different types of response handlers.
 /// 演示不同类型的响应处理器。
-fn response_handler_examples() {
+fn response_handler_examples()
+{
     println!("  Handler types:");
     println!("    Static responses - Fixed text/bytes returned directly");
     println!("    Function handlers - Async functions returning Response");
@@ -181,7 +188,8 @@ fn response_handler_examples() {
 /// Example handler: List all users / 示例处理器：列出所有用户
 ///
 /// Spring: @GetMapping("/users")
-fn list_users_response() -> Response {
+fn list_users_response() -> Response
+{
     let users = r#"[
         {"id": 1, "name": "Alice", "email": "alice@example.com"},
         {"id": 2, "name": "Bob", "email": "bob@example.com"},
@@ -198,7 +206,8 @@ fn list_users_response() -> Response {
 /// Example handler: Get user by ID / 示例处理器：通过ID获取用户
 ///
 /// Spring: @GetMapping("/users/{id}")
-fn get_user_response(id: u64) -> Response {
+fn get_user_response(id: u64) -> Response
+{
     let user = format!(r#"{{"id":{},"name":"Alice","email":"alice@example.com"}}"#, id);
 
     Response::builder()
@@ -211,7 +220,8 @@ fn get_user_response(id: u64) -> Response {
 /// Example handler: Create user / 示例处理器：创建用户
 ///
 /// Spring: @PostMapping("/users")
-fn create_user_response() -> Response {
+fn create_user_response() -> Response
+{
     let user = r#"{"id": 1, "name": "New User", "email": "new@example.com"}"#;
 
     Response::builder()
@@ -225,7 +235,8 @@ fn create_user_response() -> Response {
 /// Example handler: Update user / 示例处理器：更新用户
 ///
 /// Spring: @PutMapping("/users/{id}")
-fn update_user_response(id: u64) -> Response {
+fn update_user_response(id: u64) -> Response
+{
     let user = format!(r#"{{"id":{},"name":"Updated User","email":"updated@example.com"}}"#, id);
 
     Response::builder()
@@ -238,7 +249,8 @@ fn update_user_response(id: u64) -> Response {
 /// Example handler: Delete user / 示例处理器：删除用户
 ///
 /// Spring: @DeleteMapping("/users/{id}")
-fn delete_user_response() -> Response {
+fn delete_user_response() -> Response
+{
     Response::builder()
         .status(StatusCode::NO_CONTENT)
         .body(Body::empty())
@@ -248,7 +260,8 @@ fn delete_user_response() -> Response {
 /// Example handler: Health check / 示例处理器：健康检查
 ///
 /// Spring: @GetMapping("/actuator/health")
-fn health_check_response() -> Response {
+fn health_check_response() -> Response
+{
     let health = r#"{"status":"UP","timestamp":"2024-01-01T00:00:00Z"}"#;
 
     Response::builder()
@@ -259,7 +272,8 @@ fn health_check_response() -> Response {
 }
 
 /// Example handler: Error response / 示例处理器：错误响应
-fn not_found_response() -> Response {
+fn not_found_response() -> Response
+{
     let error = r#"{"error":"Not Found","message":"Resource not found"}"#;
 
     Response::builder()
@@ -277,7 +291,8 @@ fn not_found_response() -> Response {
 ///
 /// Demonstrates organizing routes with hierarchical paths.
 /// 演示使用分层路径组织路由。
-fn nested_routes_example() {
+fn nested_routes_example()
+{
     println!("  Nested routes for hierarchical resources:");
     println!();
     println!("  GET    /api/users/:id/posts           -> Get user's posts");
@@ -290,7 +305,8 @@ fn nested_routes_example() {
 }
 
 /// Example: API versioning / 示例：API版本控制
-fn api_versioning_example() {
+fn api_versioning_example()
+{
     println!("  API versioning patterns:");
     println!();
     println!("  URL-based versioning:");
@@ -302,7 +318,8 @@ fn api_versioning_example() {
 }
 
 /// Example: Resource routing / 示例：资源路由
-fn resource_routing_example() {
+fn resource_routing_example()
+{
     println!("  Resource routing follows REST conventions:");
     println!();
     println!("  /users          -> GET (list), POST (create)");

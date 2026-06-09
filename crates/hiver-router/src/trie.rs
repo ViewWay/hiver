@@ -23,7 +23,8 @@ use super::{Method, route::Handler};
 ///
 /// 这等价于Spring的`AntPathMatcher`结合`@RequestMapping`进行路径模式匹配。
 #[derive(Clone, Debug)]
-pub struct TrieRouter {
+pub struct TrieRouter
+{
     /// Per-method routers for efficient matching
     /// 每个方法一个路由器以提高效率
     get: matchit::Router<MethodRoute>,
@@ -38,7 +39,8 @@ pub struct TrieRouter {
 /// A route that can be called
 /// 可调用的路由
 #[derive(Clone, Debug)]
-pub struct MethodRoute {
+pub struct MethodRoute
+{
     /// The handler for this route
     /// 此路由的处理程序
     pub handler: Handler,
@@ -47,10 +49,12 @@ pub struct MethodRoute {
     pub param_names: Vec<String>,
 }
 
-impl TrieRouter {
+impl TrieRouter
+{
     /// Create a new trie router
     /// 创建新的 Trie 路由器
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self {
             get: matchit::Router::new(),
             post: matchit::Router::new(),
@@ -80,7 +84,8 @@ impl TrieRouter {
     /// let mut router = TrieRouter::new();
     /// router.insert("/users/{id}", Method::GET, get_user_handler);
     /// ```
-    pub fn insert(&mut self, path: &str, method: Method, handler: Handler) -> Result<()> {
+    pub fn insert(&mut self, path: &str, method: Method, handler: Handler) -> Result<()>
+    {
         // Convert path to matchit format (uses :param instead of {param})
         // matchit uses :param style which we already use
         let router = self.router_for_method_mut(method);
@@ -96,13 +101,10 @@ impl TrieRouter {
             .collect();
 
         router
-            .insert(
-                path,
-                MethodRoute {
-                    handler,
-                    param_names,
-                },
-            )
+            .insert(path, MethodRoute {
+                handler,
+                param_names,
+            })
             .map_err(|e| {
                 hiver_http::Error::InvalidRequest(format!("Invalid route pattern: {}", e))
             })?;
@@ -121,7 +123,8 @@ impl TrieRouter {
         &self,
         method: Method,
         path: &str,
-    ) -> Option<(Handler, HashMap<String, String>)> {
+    ) -> Option<(Handler, HashMap<String, String>)>
+    {
         let router = self.router_for_method(method)?;
         let matched = router.at(path).ok()?;
 
@@ -136,8 +139,10 @@ impl TrieRouter {
 
     /// Get the router for a specific method (mutable)
     /// 获取特定方法的路由器（可变）
-    fn router_for_method_mut(&mut self, method: Method) -> &mut matchit::Router<MethodRoute> {
-        match method {
+    fn router_for_method_mut(&mut self, method: Method) -> &mut matchit::Router<MethodRoute>
+    {
+        match method
+        {
             Method::POST => &mut self.post,
             Method::PUT => &mut self.put,
             Method::DELETE => &mut self.delete,
@@ -152,8 +157,10 @@ impl TrieRouter {
 
     /// Get the router for a specific method
     /// 获取特定方法的路由器
-    fn router_for_method(&self, method: Method) -> Option<&matchit::Router<MethodRoute>> {
-        match method {
+    fn router_for_method(&self, method: Method) -> Option<&matchit::Router<MethodRoute>>
+    {
+        match method
+        {
             Method::POST => Some(&self.post),
             Method::PUT => Some(&self.put),
             Method::DELETE => Some(&self.delete),
@@ -169,15 +176,18 @@ impl TrieRouter {
     ///
     /// Note: This returns an empty vector as matchit doesn't expose
     /// the list of registered routes. Use route testing instead.
-    pub fn routes(&self, _method: Method) -> Vec<String> {
+    pub fn routes(&self, _method: Method) -> Vec<String>
+    {
         // matchit Router doesn't expose a way to iterate over registered routes
         // Users should test routes via match_request instead
         Vec::new()
     }
 }
 
-impl Default for TrieRouter {
-    fn default() -> Self {
+impl Default for TrieRouter
+{
+    fn default() -> Self
+    {
         Self::new()
     }
 }
@@ -187,8 +197,10 @@ impl Default for TrieRouter {
 ///
 /// This allows the Router to be used directly with the Server.
 /// 这使得 Router 可以直接与 Server 一起使用。
-impl hiver_http::HttpService for TrieRouter {
-    fn call(&self, req: Request) -> impl Future<Output = Result<Response>> + Send {
+impl hiver_http::HttpService for TrieRouter
+{
+    fn call(&self, req: Request) -> impl Future<Output = Result<Response>> + Send
+    {
         // Match the route first, then create the appropriate future
         let method = req.method();
         let path = req.path().to_string();
@@ -198,8 +210,10 @@ impl hiver_http::HttpService for TrieRouter {
         // Call the handler with the request and path parameters
         // 使用请求和路径参数调用处理程序
         async move {
-            match matched {
-                Some((handler, params)) => {
+            match matched
+            {
+                Some((handler, params)) =>
+                {
                     // Log the matched route (when tracing is available)
                     // 记录匹配的路由（当tracing可用时）
                     // tracing::debug!("Matched route: {} {} with params: {:?}", method, path,
@@ -227,11 +241,13 @@ impl hiver_http::HttpService for TrieRouter {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_simple_route() {
+    fn test_simple_route()
+    {
         let mut router = TrieRouter::new();
         let handler = Handler::Static("Hello");
         router.insert("/hello", Method::GET, handler).unwrap();
@@ -241,7 +257,8 @@ mod tests {
     }
 
     #[test]
-    fn test_param_route() {
+    fn test_param_route()
+    {
         let mut router = TrieRouter::new();
         let handler = Handler::Static("User");
         router.insert("/users/{id}", Method::GET, handler).unwrap();
@@ -254,7 +271,8 @@ mod tests {
     }
 
     #[test]
-    fn test_multiple_params() {
+    fn test_multiple_params()
+    {
         let mut router = TrieRouter::new();
         let handler = Handler::Static("Post");
         router
@@ -270,7 +288,8 @@ mod tests {
     }
 
     #[test]
-    fn test_method_specific() {
+    fn test_method_specific()
+    {
         let mut router = TrieRouter::new();
         let get_handler = Handler::Static("GET");
         let post_handler = Handler::Static("POST");
@@ -288,7 +307,8 @@ mod tests {
     }
 
     #[test]
-    fn test_wildcard_route() {
+    fn test_wildcard_route()
+    {
         let mut router = TrieRouter::new();
         let handler = Handler::Static("Catch all");
         router.insert("/{*path}", Method::GET, handler).unwrap();

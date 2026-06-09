@@ -36,7 +36,8 @@ use hiver_observability::log::{LogLevel, LogMode, Logger, LoggerConfig};
 use tracing::{debug, error, info, trace, warn};
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> anyhow::Result<()>
+{
     // 获取 profile
     // Get profile
     let profile = std::env::var("HIVER_PROFILE").ok();
@@ -74,7 +75,8 @@ async fn main() -> anyhow::Result<()> {
 
 /// 打印 Banner
 /// Print banner
-fn print_banner(profile: &Option<String>) {
+fn print_banner(profile: &Option<String>)
+{
     let banner = r"
   _   _                      ___  ____
  | \ | | _____  ___   _ ___ / _ \/ ___|
@@ -91,19 +93,23 @@ fn print_banner(profile: &Option<String>) {
 
 /// 启动信息收集器
 /// Startup info collector
-struct StartupInfo {
+struct StartupInfo
+{
     start_time: std::time::Instant,
     profile: Option<String>,
 }
 
-impl StartupInfo {
-    fn new(profile: Option<String>) -> Self {
+impl StartupInfo
+{
+    fn new(profile: Option<String>) -> Self
+    {
         println!(
             "\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Application : Starting Hiver \
              Logging Demo",
             format_timestamp()
         );
-        if let Some(ref profile) = profile {
+        if let Some(ref profile) = profile
+        {
             println!(
                 "\x1b[32mINFO\x1b[0m {} --- [           main] hiver.Application : Active profile: \
                  {}",
@@ -118,7 +124,8 @@ impl StartupInfo {
         }
     }
 
-    fn print_started(&self) {
+    fn print_started(&self)
+    {
         let elapsed = self.start_time.elapsed().as_millis();
         println!();
         println!(
@@ -134,7 +141,8 @@ impl StartupInfo {
 
 /// 初始化日志系统
 /// Initialize logging system
-fn init_logging(profile: &Option<String>) -> anyhow::Result<()> {
+fn init_logging(profile: &Option<String>) -> anyhow::Result<()>
+{
     // 从环境变量获取配置
     // Get configuration from environment
     let level = std::env::var("HIVER_LOG_LEVEL")
@@ -142,9 +150,12 @@ fn init_logging(profile: &Option<String>) -> anyhow::Result<()> {
         .and_then(|s| LogLevel::from_str(&s))
         .unwrap_or(LogLevel::Info);
 
-    let mode = if let Ok(mode_str) = std::env::var("HIVER_LOG_MODE") {
+    let mode = if let Ok(mode_str) = std::env::var("HIVER_LOG_MODE")
+    {
         LogMode::from_str(&mode_str).unwrap_or(LogMode::from_profile(profile.as_deref()))
-    } else {
+    }
+    else
+    {
         LogMode::from_profile(profile.as_deref())
     };
 
@@ -176,7 +187,8 @@ fn init_logging(profile: &Option<String>) -> anyhow::Result<()> {
 
 /// 演示不同日志级别
 /// Demonstrate different log levels
-fn demo_log_levels() {
+fn demo_log_levels()
+{
     info!(target: "hiver.demo", "=== Log Level Demo ===");
 
     trace!(target: "hiver.demo", "This is a TRACE message - most detailed");
@@ -190,7 +202,8 @@ fn demo_log_levels() {
 
 /// 演示运行时日志
 /// Demonstrate runtime logging
-async fn demo_runtime_logging() {
+async fn demo_runtime_logging()
+{
     info!(target: "hiver.runtime", "=== Runtime Logging Demo ===");
 
     // 模拟业务逻辑
@@ -211,7 +224,8 @@ async fn demo_runtime_logging() {
 
 /// 模拟获取用户
 /// Simulate fetching users
-async fn fetch_users() -> Vec<String> {
+async fn fetch_users() -> Vec<String>
+{
     debug!(target: "hiver.database", "Querying users from database...");
     tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
     vec![
@@ -223,7 +237,8 @@ async fn fetch_users() -> Vec<String> {
 
 /// 模拟处理订单
 /// Simulate processing orders
-async fn process_orders(users: &[String]) -> usize {
+async fn process_orders(users: &[String]) -> usize
+{
     debug!(target: "hiver.service", "Processing orders for {} users", users.len());
     tokio::time::sleep(tokio::time::Duration::from_millis(20)).await;
     users.len() * 2
@@ -231,7 +246,8 @@ async fn process_orders(users: &[String]) -> usize {
 
 /// 演示 HTTP 请求日志
 /// Demonstrate HTTP request logging
-fn demo_http_logging() {
+fn demo_http_logging()
+{
     info!(target: "hiver.http", "=== HTTP Request Logging Demo ===");
 
     // 模拟 HTTP 请求日志
@@ -251,7 +267,8 @@ fn demo_http_logging() {
 
 /// 格式化时间戳
 /// Format timestamp
-fn format_timestamp() -> String {
+fn format_timestamp() -> String
+{
     use std::time::{SystemTime, UNIX_EPOCH};
     let duration = SystemTime::now()
         .duration_since(UNIX_EPOCH)

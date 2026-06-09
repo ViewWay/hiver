@@ -11,7 +11,8 @@ use colored::Colorize;
 /// Prompt style configuration
 /// 提示符样式配置
 #[derive(Debug, Clone)]
-pub struct PromptStyle {
+pub struct PromptStyle
+{
     /// Prompt prefix / 提示符前缀
     pub prefix: String,
     /// Prompt suffix / 提示符后缀
@@ -24,8 +25,10 @@ pub struct PromptStyle {
     pub app_name: String,
 }
 
-impl Default for PromptStyle {
-    fn default() -> Self {
+impl Default for PromptStyle
+{
+    fn default() -> Self
+    {
         Self {
             prefix: "hiver".to_string(),
             suffix: "> ".to_string(),
@@ -36,55 +39,67 @@ impl Default for PromptStyle {
     }
 }
 
-impl PromptStyle {
+impl PromptStyle
+{
     /// Create a new prompt style / 创建新的提示符样式
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Set the prefix / 设置前缀
-    pub fn prefix(mut self, prefix: &str) -> Self {
+    pub fn prefix(mut self, prefix: &str) -> Self
+    {
         self.prefix = prefix.to_string();
         self
     }
 
     /// Set the suffix / 设置后缀
-    pub fn suffix(mut self, suffix: &str) -> Self {
+    pub fn suffix(mut self, suffix: &str) -> Self
+    {
         self.suffix = suffix.to_string();
         self
     }
 
     /// Set the color / 设置颜色
-    pub fn color(mut self, color: PromptColor) -> Self {
+    pub fn color(mut self, color: PromptColor) -> Self
+    {
         self.color = color;
         self
     }
 
     /// Set the application name / 设置应用名称
-    pub fn app_name(mut self, name: &str) -> Self {
+    pub fn app_name(mut self, name: &str) -> Self
+    {
         self.app_name = name.to_string();
         self.prefix = name.to_string();
         self
     }
 
     /// Show timestamp / 显示时间戳
-    pub fn show_timestamp(mut self, show: bool) -> Self {
+    pub fn show_timestamp(mut self, show: bool) -> Self
+    {
         self.show_timestamp = show;
         self
     }
 
     /// Render the prompt string / 渲染提示符字符串
-    pub fn render(&self) -> String {
-        let base = if self.show_timestamp {
+    pub fn render(&self) -> String
+    {
+        let base = if self.show_timestamp
+        {
             let ts = std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap_or_default();
             format!("{} [{:.0}]", self.prefix, ts.as_secs())
-        } else {
+        }
+        else
+        {
             self.prefix.clone()
         };
 
-        let colored_base = match self.color {
+        let colored_base = match self.color
+        {
             PromptColor::Cyan => base.cyan().bold().to_string(),
             PromptColor::Green => base.green().bold().to_string(),
             PromptColor::Yellow => base.yellow().bold().to_string(),
@@ -102,7 +117,8 @@ impl PromptStyle {
 /// Prompt color options
 /// 提示符颜色选项
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum PromptColor {
+pub enum PromptColor
+{
     /// Cyan (default) / 青色（默认）
     #[default]
     Cyan,
@@ -125,15 +141,18 @@ pub enum PromptColor {
 /// Banner displayed at shell startup
 /// Shell启动时显示的横幅
 #[derive(Debug, Clone)]
-pub struct Banner {
+pub struct Banner
+{
     /// Banner lines / 横幅行
     pub lines: Vec<String>,
     /// Whether to show the banner / 是否显示横幅
     pub enabled: bool,
 }
 
-impl Default for Banner {
-    fn default() -> Self {
+impl Default for Banner
+{
+    fn default() -> Self
+    {
         Self {
             lines: vec![
                 format!("{}", "  _   _                     ".bright_black()),
@@ -148,14 +167,17 @@ impl Default for Banner {
     }
 }
 
-impl Banner {
+impl Banner
+{
     /// Create a new banner / 创建新横幅
-    pub fn new() -> Self {
+    pub fn new() -> Self
+    {
         Self::default()
     }
 
     /// Create a custom banner / 创建自定义横幅
-    pub fn custom(lines: &[&str]) -> Self {
+    pub fn custom(lines: &[&str]) -> Self
+    {
         Self {
             lines: lines.iter().map(ToString::to_string).collect(),
             enabled: true,
@@ -163,7 +185,8 @@ impl Banner {
     }
 
     /// Disable the banner / 禁用横幅
-    pub fn disabled() -> Self {
+    pub fn disabled() -> Self
+    {
         Self {
             lines: Vec::new(),
             enabled: false,
@@ -171,14 +194,17 @@ impl Banner {
     }
 
     /// Set enabled / 设置启用
-    pub fn enabled(mut self, enabled: bool) -> Self {
+    pub fn enabled(mut self, enabled: bool) -> Self
+    {
         self.enabled = enabled;
         self
     }
 
     /// Render the banner / 渲染横幅
-    pub fn render(&self) -> String {
-        if !self.enabled {
+    pub fn render(&self) -> String
+    {
+        if !self.enabled
+        {
             return String::new();
         }
 

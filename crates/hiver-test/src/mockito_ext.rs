@@ -75,7 +75,8 @@ use crate::mock_bean::MockRegistry;
 /// # Type Parameters / 类型参数
 ///
 /// * `T` - The trait or concrete type being mocked. 被模拟的trait或具体类型。
-pub struct MockBeanWrapper<T: ?Sized> {
+pub struct MockBeanWrapper<T: ?Sized>
+{
     /// The mock implementation.
     /// 模拟实现。
     mock: Arc<T>,
@@ -89,7 +90,8 @@ pub struct MockBeanWrapper<T: ?Sized> {
     registry: MockRegistry,
 }
 
-impl<T: ?Sized> MockBeanWrapper<T> {
+impl<T: ?Sized> MockBeanWrapper<T>
+{
     /// Create a new mock bean wrapper.
     /// 创建新的模拟bean包装器。
     ///
@@ -98,7 +100,8 @@ impl<T: ?Sized> MockBeanWrapper<T> {
     /// * `bean_name` - The name under which the mock is registered. 模拟注册的名称。
     /// * `mock` - The mock implementation. 模拟实现。
     /// * `registry` - The registry to register the mock in. 注册模拟的注册表。
-    pub fn new(bean_name: impl Into<String>, mock: Arc<T>, registry: &MockRegistry) -> Self {
+    pub fn new(bean_name: impl Into<String>, mock: Arc<T>, registry: &MockRegistry) -> Self
+    {
         Self {
             mock,
             bean_name: bean_name.into(),
@@ -108,19 +111,23 @@ impl<T: ?Sized> MockBeanWrapper<T> {
 
     /// Get a reference to the underlying mock.
     /// 获取底层模拟的引用。
-    pub fn mock(&self) -> &Arc<T> {
+    pub fn mock(&self) -> &Arc<T>
+    {
         &self.mock
     }
 
     /// Get the bean name this mock is registered under.
     /// 获取此模拟注册的bean名称。
-    pub fn bean_name(&self) -> &str {
+    pub fn bean_name(&self) -> &str
+    {
         &self.bean_name
     }
 }
 
-impl<T: ?Sized + fmt::Debug> fmt::Debug for MockBeanWrapper<T> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl<T: ?Sized + fmt::Debug> fmt::Debug for MockBeanWrapper<T>
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.debug_struct("MockBeanWrapper")
             .field("bean_name", &self.bean_name)
             .field("mock", &self.mock)
@@ -148,7 +155,8 @@ impl<T: ?Sized + fmt::Debug> fmt::Debug for MockBeanWrapper<T> {
 /// helper.when("userService", "findById")
 ///     .then_return(Box::new(some_user));
 /// ```
-pub struct MockInteraction<'a> {
+pub struct MockInteraction<'a>
+{
     /// Reference to the parent helper for registration.
     /// 父帮助器的引用，用于注册。
     helper: &'a MockitoHelper,
@@ -162,7 +170,8 @@ pub struct MockInteraction<'a> {
     method_name: String,
 }
 
-impl MockInteraction<'_> {
+impl MockInteraction<'_>
+{
     /// Register a return value for this mock interaction.
     /// 为此模拟交互注册返回值。
     ///
@@ -170,7 +179,8 @@ impl MockInteraction<'_> {
     /// whenever the mocked method is called.
     ///
     /// 值被包装在 `Box<dyn Any>` 中，每当模拟方法被调用时都会返回。
-    pub async fn then_return(self, value: Box<dyn Any + Send + Sync>) {
+    pub async fn then_return(self, value: Box<dyn Any + Send + Sync>)
+    {
         let shared: Arc<dyn Any + Send + Sync> = Arc::from(value);
         self.helper
             .registry
@@ -188,7 +198,8 @@ impl MockInteraction<'_> {
     ///
     /// The value is wrapped in `Arc` so that it can be returned on every call.
     /// 值被包装在 `Arc` 中，以便在每次调用时都能返回。
-    pub async fn then_return_clone<T: Clone + Any + Send + Sync + 'static>(self, value: T) {
+    pub async fn then_return_clone<T: Clone + Any + Send + Sync + 'static>(self, value: T)
+    {
         let shared = Arc::new(value);
         self.helper
             .registry
@@ -207,7 +218,8 @@ impl MockInteraction<'_> {
     >(
         self,
         f: F,
-    ) {
+    )
+    {
         self.helper
             .registry
             .register_mock(&self.bean_name, &self.method_name, move |args| {
@@ -272,16 +284,19 @@ impl MockInteraction<'_> {
 /// // 重置模拟。
 /// mock.reset("userService", "findById").await;
 /// ```
-pub struct MockitoHelper {
+pub struct MockitoHelper
+{
     /// The underlying mock registry.
     /// 底层模拟注册表。
     registry: MockRegistry,
 }
 
-impl MockitoHelper {
+impl MockitoHelper
+{
     /// Create a new Mockito helper backed by the given registry.
     /// 创建由给定注册表支持的新Mockito帮助器。
-    pub fn new(registry: &MockRegistry) -> Self {
+    pub fn new(registry: &MockRegistry) -> Self
+    {
         Self {
             registry: registry.clone(),
         }
@@ -289,7 +304,8 @@ impl MockitoHelper {
 
     /// Create a new Mockito helper backed by the global mock registry.
     /// 创建由全局模拟注册表支持的新Mockito帮助器。
-    pub fn global() -> Self {
+    pub fn global() -> Self
+    {
         Self {
             registry: crate::mock_bean::global_mock_registry().clone(),
         }
@@ -302,7 +318,8 @@ impl MockitoHelper {
     /// `then_return()` or `then_answer()`.
     ///
     /// 返回可以与 `then_return()` 或 `then_answer()` 链接的 [`MockInteraction`]。
-    pub fn when(&self, bean_name: &str, method_name: &str) -> MockInteraction<'_> {
+    pub fn when(&self, bean_name: &str, method_name: &str) -> MockInteraction<'_>
+    {
         MockInteraction {
             helper: self,
             bean_name: bean_name.to_string(),
@@ -322,7 +339,8 @@ impl MockitoHelper {
         bean_name: &str,
         method_name: &str,
         args: Vec<Arc<dyn Any + Send + Sync>>,
-    ) -> Option<T> {
+    ) -> Option<T>
+    {
         let result = self
             .registry
             .call_mock(bean_name, method_name, args)
@@ -336,7 +354,8 @@ impl MockitoHelper {
     ///
     /// Equivalent to Mockito's `verify(mock).method()`.
     /// 等价于Mockito的 `verify(mock).method()`。
-    pub async fn verify(&self, bean_name: &str, method_name: &str) -> bool {
+    pub async fn verify(&self, bean_name: &str, method_name: &str) -> bool
+    {
         self.registry.verify_called(bean_name, method_name).await
     }
 
@@ -345,13 +364,15 @@ impl MockitoHelper {
     ///
     /// Equivalent to Mockito's `verify(mock, times(n)).method()`.
     /// 等价于Mockito的 `verify(mock, times(n)).method()`。
-    pub async fn call_count(&self, bean_name: &str, method_name: &str) -> usize {
+    pub async fn call_count(&self, bean_name: &str, method_name: &str) -> usize
+    {
         self.registry.call_count(bean_name, method_name).await
     }
 
     /// Verify that a mocked method was called exactly `n` times.
     /// 验证模拟方法恰好被调用了 `n` 次。
-    pub async fn verify_times(&self, bean_name: &str, method_name: &str, expected: usize) -> bool {
+    pub async fn verify_times(&self, bean_name: &str, method_name: &str, expected: usize) -> bool
+    {
         self.registry
             .verify_call_count(bean_name, method_name, expected)
             .await
@@ -362,25 +383,30 @@ impl MockitoHelper {
     ///
     /// Equivalent to Mockito's `reset(mock)`.
     /// 等价于Mockito的 `reset(mock)`。
-    pub async fn reset(&self, bean_name: &str, method_name: &str) {
+    pub async fn reset(&self, bean_name: &str, method_name: &str)
+    {
         self.registry.reset_mock(bean_name, method_name).await;
     }
 
     /// Reset all mocks.
     /// 重置所有模拟。
-    pub async fn reset_all(&self) {
+    pub async fn reset_all(&self)
+    {
         self.registry.reset_all().await;
     }
 
     /// Get a reference to the underlying mock registry.
     /// 获取底层模拟注册表的引用。
-    pub fn registry(&self) -> &MockRegistry {
+    pub fn registry(&self) -> &MockRegistry
+    {
         &self.registry
     }
 }
 
-impl fmt::Debug for MockitoHelper {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl fmt::Debug for MockitoHelper
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
         f.debug_struct("MockitoHelper").finish()
     }
 }
@@ -397,11 +423,13 @@ impl fmt::Debug for MockitoHelper {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[tokio::test]
-    async fn test_when_then_return_clone_string() {
+    async fn test_when_then_return_clone_string()
+    {
         let registry = MockRegistry::new();
         let mock = MockitoHelper::new(&registry);
 
@@ -414,7 +442,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_when_then_return_clone_multiple_calls() {
+    async fn test_when_then_return_clone_multiple_calls()
+    {
         let registry = MockRegistry::new();
         let mock = MockitoHelper::new(&registry);
 
@@ -431,7 +460,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_when_then_answer_with_function() {
+    async fn test_when_then_answer_with_function()
+    {
         let registry = MockRegistry::new();
         let mock = MockitoHelper::new(&registry);
 
@@ -459,7 +489,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_verify_called() {
+    async fn test_verify_called()
+    {
         let registry = MockRegistry::new();
         let mock = MockitoHelper::new(&registry);
 
@@ -479,7 +510,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_call_count_and_verify_times() {
+    async fn test_call_count_and_verify_times()
+    {
         let registry = MockRegistry::new();
         let mock = MockitoHelper::new(&registry);
 
@@ -487,7 +519,8 @@ mod tests {
             .then_return_clone("pong".to_string())
             .await;
 
-        for _ in 0..3 {
+        for _ in 0..3
+        {
             let _: Option<String> = mock.call("service", "ping", vec![]).await;
         }
 
@@ -497,7 +530,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_reset_mock() {
+    async fn test_reset_mock()
+    {
         let registry = MockRegistry::new();
         let mock = MockitoHelper::new(&registry);
 
@@ -511,7 +545,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_reset_all() {
+    async fn test_reset_all()
+    {
         let registry = MockRegistry::new();
         let mock = MockitoHelper::new(&registry);
 
@@ -528,7 +563,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_call_unregistered_returns_none() {
+    async fn test_call_unregistered_returns_none()
+    {
         let registry = MockRegistry::new();
         let mock = MockitoHelper::new(&registry);
 
@@ -537,7 +573,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_mock_bean_wrapper_debug() {
+    async fn test_mock_bean_wrapper_debug()
+    {
         let registry = MockRegistry::new();
         let wrapper = MockBeanWrapper::new("testBean", Arc::new(String::from("mock")), &registry);
 
@@ -547,7 +584,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_mock_bean_wrapper_accessors() {
+    async fn test_mock_bean_wrapper_accessors()
+    {
         let registry = MockRegistry::new();
         let wrapper = MockBeanWrapper::new("myService", Arc::new(99_i32), &registry);
 
@@ -556,7 +594,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_global_helper() {
+    async fn test_global_helper()
+    {
         let mock = MockitoHelper::global();
         // Verify it was created without panicking.
         // 验证创建时没有panic。
@@ -564,7 +603,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_mock_interaction_with_option_type() {
+    async fn test_mock_interaction_with_option_type()
+    {
         let registry = MockRegistry::new();
         let mock = MockitoHelper::new(&registry);
 
@@ -579,7 +619,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_mock_interaction_with_vec_type() {
+    async fn test_mock_interaction_with_vec_type()
+    {
         let registry = MockRegistry::new();
         let mock = MockitoHelper::new(&registry);
 
@@ -592,7 +633,8 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_then_answer_with_args() {
+    async fn test_then_answer_with_args()
+    {
         let registry = MockRegistry::new();
         let mock = MockitoHelper::new(&registry);
 

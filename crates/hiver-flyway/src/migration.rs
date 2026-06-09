@@ -8,7 +8,8 @@ use crate::{Checksum, Description, Version};
 /// Migration execution result
 /// 迁移执行结果
 #[derive(Debug, Clone, PartialEq)]
-pub struct MigratedVersion {
+pub struct MigratedVersion
+{
     /// Migration version
     /// 迁移版本
     pub version: Version,
@@ -29,7 +30,8 @@ pub struct MigratedVersion {
 /// Migration type
 /// 迁移类型
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum MigrationType {
+pub enum MigrationType
+{
     /// SQL-based migration
     /// SQL 迁移
     SQL,
@@ -43,9 +45,12 @@ pub enum MigrationType {
     Repeatable,
 }
 
-impl fmt::Display for MigrationType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
+impl fmt::Display for MigrationType
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+        match self
+        {
             MigrationType::SQL => write!(f, "SQL"),
             MigrationType::Rust => write!(f, "Rust"),
             MigrationType::Repeatable => write!(f, "Repeatable"),
@@ -56,50 +61,63 @@ impl fmt::Display for MigrationType {
 /// Migration enum - uses enum instead of trait object for dyn-compatibility
 /// 迁移枚举 - 使用枚举而非 trait object 以支持 dyn 兼容性
 #[derive(Clone)]
-pub enum Migration {
+pub enum Migration
+{
     /// SQL migration
     /// SQL 迁移
     Sql(SqlMigration),
 }
 
-impl Migration {
+impl Migration
+{
     /// Get migration version
     /// 获取迁移版本
-    pub fn version(&self) -> &Version {
-        match self {
+    pub fn version(&self) -> &Version
+    {
+        match self
+        {
             Migration::Sql(m) => &m.version,
         }
     }
 
     /// Get migration description
     /// 获取迁移描述
-    pub fn description(&self) -> &Description {
-        match self {
+    pub fn description(&self) -> &Description
+    {
+        match self
+        {
             Migration::Sql(m) => &m.description,
         }
     }
 
     /// Get migration type
     /// 获取迁移类型
-    pub fn migration_type(&self) -> MigrationType {
-        match self {
+    pub fn migration_type(&self) -> MigrationType
+    {
+        match self
+        {
             Migration::Sql(_) => MigrationType::SQL,
         }
     }
 
     /// Get checksum
     /// 获取校验和
-    pub fn checksum(&self) -> Option<Checksum> {
-        match self {
+    pub fn checksum(&self) -> Option<Checksum>
+    {
+        match self
+        {
             Migration::Sql(m) => m.checksum,
         }
     }
 
     /// Execute the migration on a database-agnostic transaction
     /// 在数据库无关的事务上执行迁移
-    pub async fn execute_on(&self, tx: &mut sqlx::Transaction<'_, sqlx::Any>) -> crate::Result<()> {
-        match self {
-            Migration::Sql(m) => {
+    pub async fn execute_on(&self, tx: &mut sqlx::Transaction<'_, sqlx::Any>) -> crate::Result<()>
+    {
+        match self
+        {
+            Migration::Sql(m) =>
+            {
                 sqlx::query(&m.sql)
                     .execute(tx.as_mut())
                     .await
@@ -113,7 +131,8 @@ impl Migration {
 /// SQL migration from file content
 /// 来自文件内容的 SQL 迁移
 #[derive(Clone)]
-pub struct SqlMigration {
+pub struct SqlMigration
+{
     /// Version
     pub version: Version,
     /// Description
@@ -124,10 +143,12 @@ pub struct SqlMigration {
     pub checksum: Option<Checksum>,
 }
 
-impl SqlMigration {
+impl SqlMigration
+{
     /// Create a new SQL migration
     /// 创建新的 SQL 迁移
-    pub fn new(version: Version, description: Description, sql: String) -> Self {
+    pub fn new(version: Version, description: Description, sql: String) -> Self
+    {
         let checksum = Some(calc_checksum(&sql));
         Self {
             version,
@@ -139,20 +160,24 @@ impl SqlMigration {
 
     /// Create from file content
     /// 从文件内容创建
-    pub fn from_file(version: Version, description: Description, sql: String) -> Self {
+    pub fn from_file(version: Version, description: Description, sql: String) -> Self
+    {
         Self::new(version, description, sql)
     }
 }
 
-impl From<SqlMigration> for Migration {
-    fn from(m: SqlMigration) -> Self {
+impl From<SqlMigration> for Migration
+{
+    fn from(m: SqlMigration) -> Self
+    {
         Migration::Sql(m)
     }
 }
 
 /// Calculate checksum for SQL content
 /// 计算 SQL 内容的校验和
-fn calc_checksum(sql: &str) -> Checksum {
+fn calc_checksum(sql: &str) -> Checksum
+{
     use std::{
         collections::hash_map::DefaultHasher,
         hash::{Hash, Hasher},
@@ -171,11 +196,13 @@ fn calc_checksum(sql: &str) -> Checksum {
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
-mod tests {
+mod tests
+{
     use super::*;
 
     #[test]
-    fn test_sql_migration_creation() {
+    fn test_sql_migration_creation()
+    {
         let migration = SqlMigration::new(
             "V1".to_string(),
             "Create users table".to_string(),
@@ -188,14 +215,16 @@ mod tests {
     }
 
     #[test]
-    fn test_migration_type_display() {
+    fn test_migration_type_display()
+    {
         assert_eq!(MigrationType::SQL.to_string(), "SQL");
         assert_eq!(MigrationType::Rust.to_string(), "Rust");
         assert_eq!(MigrationType::Repeatable.to_string(), "Repeatable");
     }
 
     #[test]
-    fn test_checksum_calculation() {
+    fn test_checksum_calculation()
+    {
         let sql1 = "CREATE TABLE users (id INT PRIMARY KEY);";
         let sql2 = "CREATE TABLE users (id INT PRIMARY KEY);   ";
         let sql3 = "CREATE TABLE users (id INT);";
@@ -211,7 +240,8 @@ mod tests {
     }
 
     #[test]
-    fn test_migration_enum() {
+    fn test_migration_enum()
+    {
         let sql_migration = SqlMigration::new(
             "V1".to_string(),
             "Create users table".to_string(),
