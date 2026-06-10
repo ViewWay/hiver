@@ -301,3 +301,9 @@ mod tests
         assert!(config.condition());
     }
 }
+
+::inventory::submit! {
+    crate::core::autoconfig::AutoConfigurationEntry {
+        factory: || Box::new(CoreAutoConfiguration::new()),
+    }
+}

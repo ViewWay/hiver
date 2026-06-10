@@ -26,13 +26,9 @@ pub fn hiver_main(_attr: TokenStream, item: TokenStream) -> TokenStream
         impl #name {
             pub fn run() -> anyhow::Result<()> {
                 use hiver_starter::core::{
-                    ApplicationContext, AutoConfigurationLoader,
-                    AutoConfigurationRegistry, CoreAutoConfiguration,
-                    AutoConfiguration, logging,
-                };
-                use hiver_starter::web::{
-                    WebServerAutoConfiguration, RouterAutoConfiguration,
-                    MiddlewareAutoConfiguration,
+                    ApplicationContext, AutoConfiguration,
+                    autoconfig::collect_auto_configurations,
+                    logging,
                 };
                 use std::time::Instant;
 
@@ -65,12 +61,7 @@ pub fn hiver_main(_attr: TokenStream, item: TokenStream) -> TokenStream
                 let mut registry = AutoConfigurationRegistry::new();
                 let _ = registry.load_from_defaults();
 
-                let mut configs: Vec<Box<dyn AutoConfiguration>> = vec![
-                    Box::new(CoreAutoConfiguration::new()),
-                    Box::new(WebServerAutoConfiguration::from_config(&ctx)),
-                    Box::new(RouterAutoConfiguration::new()),
-                    Box::new(MiddlewareAutoConfiguration::from_config(&ctx)),
-                ];
+                let mut configs = AutoConfigurationLoader::collect_auto_configurations();
 
                 configs.sort_by_key(|c| c.order());
 

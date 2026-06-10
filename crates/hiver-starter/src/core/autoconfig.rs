@@ -328,3 +328,45 @@ mod tests
         assert!(order::SERVER_CONFIG < order::SECURITY_CONFIG);
     }
 }
+
+// ============================================================================
+// Inventory-based Auto-Configuration Discovery
+// 基于 Inventory 的自动配置发现
+// ============================================================================
+
+/// Compile-time auto-configuration entry submitted via `inventory::submit!`.
+/// 通过 `inventory::submit!` 在编译时提交的自动配置条目。
+///
+/// Equivalent to Spring Boot's `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`.
+/// 等价于 Spring Boot 的 `META-INF/spring/...AutoConfiguration.imports`。
+///
+/// Third-party crates can contribute auto-configurations by adding
+/// `inventory::submit! { AutoConfigurationEntry { factory: || Box::new(MyConfig::new()) } }`
+/// in their library. The main application will automatically discover and apply them.
+///
+/// 第三方 crate 可以通过在库中添加 `inventory::submit!` 贡献自动配置。
+/// 主应用会自动发现并应用它们。
+pub struct AutoConfigurationEntry
+{
+    /// Factory function that creates the auto-configuration instance.
+    /// 创建自动配置实例的工厂函数。
+    pub factory: fn() -> Box<dyn AutoConfiguration>,
+}
+
+inventory::collect!(AutoConfigurationEntry);
+
+/// Collect all inventory-registered auto-configurations, sort by order, and apply.
+/// 收集所有 inventory 注册的自动配置，按优先级排序并应用。
+///
+/// Equivalent to Spring Boot's `AutoConfigurationImportSelector`.
+/// 等价于 Spring Boot 的 `AutoConfigurationImportSelector`。
+pub fn collect_auto_configurations() -> Vec<Box<dyn AutoConfiguration>>
+{
+    let entries: Vec<&AutoConfigurationEntry> = inventory::iter::<AutoConfigurationEntry>().collect();
+    let mut configs: Vec<Box<dyn AutoConfiguration>> = entries
+        .into_iter()
+        .map(|entry| (entry.factory)())
+        .collect();
+    configs.sort_by_key(|c| c.order());
+    configs
+}

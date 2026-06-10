@@ -723,3 +723,21 @@ mod tests
         assert!(config.timeout_enabled);
     }
 }
+
+::inventory::submit! {
+    crate::core::autoconfig::AutoConfigurationEntry {
+        factory: || Box::new(WebServerAutoConfiguration::new()),
+    }
+}
+
+::inventory::submit! {
+    crate::core::autoconfig::AutoConfigurationEntry {
+        factory: || Box::new(RouterAutoConfiguration::new()),
+    }
+}
+
+::inventory::submit! {
+    crate::core::autoconfig::AutoConfigurationEntry {
+        factory: || Box::new(MiddlewareAutoConfiguration::new()),
+    }
+}
