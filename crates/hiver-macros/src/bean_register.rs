@@ -5,7 +5,8 @@ use quote::{format_ident, quote};
 use syn::{Field, Fields, ItemStruct, Type};
 
 /// Extract inner type `T` from `Arc<T>` / `std::sync::Arc<T>`.
-fn extract_arc_inner(ty: &Type) -> Option<&Type>
+/// 从 `Arc<T>` / `std::sync::Arc<T>` 提取内部类型 `T`。
+pub fn extract_arc_inner(ty: &Type) -> Option<&Type>
 {
     let Type::Path(type_path) = ty
     else
@@ -14,6 +15,32 @@ fn extract_arc_inner(ty: &Type) -> Option<&Type>
     };
     let seg = type_path.path.segments.last()?;
     if seg.ident != "Arc"
+    {
+        return None;
+    }
+    let syn::PathArguments::AngleBracketed(args) = &seg.arguments
+    else
+    {
+        return None;
+    };
+    match args.args.first()?
+    {
+        syn::GenericArgument::Type(inner) => Some(inner),
+        _ => None,
+    }
+}
+
+/// Extract inner type `T` from `Result<T, E>`.
+/// 从 `Result<T, E>` 提取内部类型 `T`。
+pub fn extract_result_ok_type(ty: &Type) -> Option<&Type>
+{
+    let Type::Path(type_path) = ty
+    else
+    {
+        return None;
+    };
+    let seg = type_path.path.segments.last()?;
+    if seg.ident != "Result"
     {
         return None;
     }
@@ -234,7 +261,9 @@ pub fn generate_bean_registration(input: &ItemStruct, scope: TokenStream2) -> To
     }
 }
 
-fn to_camel_case(name: &str) -> String
+/// Convert a PascalCase identifier to camelCase bean name.
+/// 将 PascalCase 标识符转换为 camelCase Bean 名称。
+pub fn to_camel_case(name: &str) -> String
 {
     let mut chars = name.chars();
     match chars.next()

@@ -5,12 +5,23 @@
 //!
 //! 参考 Spring Boot 的 @`ComponentScan`。
 //! Based on Spring Boot's @`ComponentScan`.
+//!
+//! In Hiver, component discovery is performed at compile time via `inventory::submit!`
+//! (from `#[service]`, `#[component]`, `#[bean]`, `#[configuration]` macros).
+//! The scanner introspects these registered beans rather than scanning source files.
+//!
+//! 在 Hiver 中，组件发现通过 `inventory::submit!` 在编译时完成
+//! （来自 `#[service]`、`#[component]`、`#[bean]`、`#[configuration]` 宏）。
+//! 扫描器检查这些已注册的 Bean，而非扫描源文件。
 
 use std::collections::HashMap;
 
 use anyhow::Result;
 
-use super::container::ApplicationContext;
+use super::{
+    container::ApplicationContext,
+    registry::BeanDescriptor,
+};
 
 // ============================================================================
 // 组件类型 / Component Types
@@ -151,15 +162,21 @@ pub enum ComponentScope
 /// 组件扫描器
 /// Component scanner
 ///
-/// 自动扫描并注册应用中的组件。
-/// Automatically scans and registers components in the application.
+/// Introspects beans registered at compile time via `inventory::submit!`.
+/// 在编译时通过 `inventory::submit!` 注册的 Bean 进行内省。
 ///
-/// 参考 Spring Boot 的 @`ComponentScan`。
-/// Based on Spring Boot's @`ComponentScan`.
+/// Unlike Spring Boot's classpath scanning, Hiver collects all beans at link time
+/// via the `inventory` crate. The scanner converts `BeanDescriptor` entries into
+/// `ComponentDefinition` for introspection (e.g., actuator endpoints).
+///
+/// 与 Spring Boot 的 classpath 扫描不同，Hiver 通过 `inventory` crate
+/// 在链接时收集所有 Bean。扫描器将 `BeanDescriptor` 条目转换为
+/// `ComponentDefinition` 以供内省（如 actuator 端点）。
 #[derive(Debug)]
 pub struct ComponentScanner
 {
-    /// 基础包名
+    /// 基础包名（保留用于日志过滤，不影响 inventory 发现）
+    /// Base package names (kept for log filtering; does not affect inventory discovery)
     pub base_packages: Vec<String>,
 
     /// 要扫描的组件类型
@@ -225,36 +242,46 @@ impl ComponentScanner
         self
     }
 
-    /// 扫描组件
-    /// Scan components
+    /// 扫描组件 — 从 inventory 收集编译时注册的 Bean。
+    /// Scan components — collect compile-time registered beans from inventory.
     ///
-    /// 这个方法会扫描指定包下的所有组件，并注册到应用上下文中。
-    /// This method scans all components under the specified packages and registers them to the
-    /// application context.
+    /// This method iterates `inventory::iter::<BeanDescriptor>()` to produce
+    /// a list of `ComponentDefinition` for introspection purposes.
+    /// The actual bean instantiation happens in
+    /// `ApplicationContext::instantiate_beans_from_inventory()`.
     ///
-    /// # Implementation Notes / 实现说明
-    ///
-    /// True runtime component scanning in Rust requires:
-    /// Rust 中真正的运行时组件扫描需要：
-    ///
-    /// 1. **Source file parsing**: Parse Rust source files to find struct definitions with
-    ///    component attributes. **源文件解析**：解析 Rust 源文件以查找带有组件属性的结构体定义。
-    ///
-    /// 2. **Attribute parsing**: Extract metadata from procedural macro attributes like
-    ///    `#[Controller]`, `#[Service]`, etc. **属性解析**：从过程宏属性中提取元数据，如
-    ///    `#[Controller]`、`#[Service]` 等。
-    ///
-    /// 3. **Type information**: Build type information for dependency injection.
-    ///    **类型信息**：构建依赖注入的类型信息。
-    ///
-    /// Recommended approach: Use the `inventory` crate or build-time code
-    ///    generation with `build.rs`.
-    ///    推荐方法：使用 `inventory` crate 或通过 `build.rs` 进行构建时代码生成。
+    /// 此方法遍历 `inventory::iter::<BeanDescriptor>()` 生成
+    /// `ComponentDefinition` 列表供内省使用。
+    /// 实际的 Bean 实例化在
+    /// `ApplicationContext::instantiate_beans_from_inventory()` 中进行。
     pub fn scan(&self, _ctx: &mut ApplicationContext) -> Result<Vec<ComponentDefinition>>
     {
-        let components = Vec::new();
-
         tracing::debug!("Scanning components in packages: {:?}", self.base_packages);
+
+        let descriptors: Vec<&BeanDescriptor> = inventory::iter::<BeanDescriptor>().collect();
+        tracing::debug!("Found {} beans via inventory", descriptors.len());
+
+        let components: Vec<ComponentDefinition> = descriptors
+            .into_iter()
+            .map(|desc| {
+                let scope = match desc.scope
+                {
+                    super::registry::BeanScope::Singleton => ComponentScope::Singleton,
+                    super::registry::BeanScope::Prototype => ComponentScope::Prototype,
+                    super::registry::BeanScope::Request => ComponentScope::Request,
+                };
+                ComponentDefinition {
+                    name: desc.name.to_string(),
+                    // inventory beans default to Component type
+                    component_type: ComponentType::Component,
+                    type_name: format!("{:?}", (desc.type_id)()),
+                    scope,
+                    is_lazy: false,
+                    is_primary: false,
+                    depends_on: Vec::new(),
+                }
+            })
+            .collect();
 
         Ok(components)
     }
@@ -288,25 +315,8 @@ impl ComponentScanner
             component.component_type.name()
         );
 
-        // Implementation Note: This requires reflection or code generation support
-        // 实现说明：这需要反射或代码生成支持
-        //
-        // In Rust, true runtime component discovery requires either:
-        // 在 Rust 中，真正的运行时组件发现需要以下之一：
-        //
-        // 1. **Procedural Macros** (Recommended / 推荐): Use attributes like `#[Component]` that
-        //    generate registration code at compile time. 使用 `#[Component]`
-        //    等属性在编译时生成注册代码。
-        //
-        // 2. **Build Script**: Scan source files during build and generate registration code.
-        //    在构建期间扫描源文件并生成注册代码。
-        //
-        // 3. **Manual Registration**: Users manually register components using the `registry!`
-        //    macro or similar. 用户使用 `registry!` 宏或类似方式手动注册组件。
-        //
-        // Current implementation returns Ok(()) as a placeholder.
-        // 当前实现返回 Ok(()) 作为占位符。
-
+        // Actual registration is done by ApplicationContext::instantiate_beans_from_inventory()
+        // 实际注册由 ApplicationContext::instantiate_beans_from_inventory() 完成
         Ok(())
     }
 }

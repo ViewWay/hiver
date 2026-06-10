@@ -64,6 +64,13 @@ pub enum SpelExpr
     LiteralNumber(f64),
     /// String literal.
     LiteralString(String),
+    /// Property access (`#user.name` or `principal.name`).
+    /// 属性访问（`#user.name` 或 `principal.name`）。
+    PropertyAccess(Box<SpelExpr>, String),
+    /// `isAuthenticated()` check.
+    IsAuthenticated,
+    /// `isAnonymous()` check.
+    IsAnonymous,
 }
 
 impl fmt::Display for SpelExpr
@@ -101,6 +108,9 @@ impl fmt::Display for SpelExpr
             Self::LiteralBool(b) => write!(f, "{b}"),
             Self::LiteralNumber(n) => write!(f, "{n}"),
             Self::LiteralString(s) => write!(f, "'{s}'"),
+            Self::PropertyAccess(obj, prop) => write!(f, "{obj}.{prop}"),
+            Self::IsAuthenticated => write!(f, "isAuthenticated()"),
+            Self::IsAnonymous => write!(f, "isAnonymous()"),
         }
     }
 }
@@ -126,6 +136,7 @@ enum Token
     GtEq,
     LtEq,
     Bang,
+    Dot,
 }
 
 #[allow(clippy::indexing_slicing)]
@@ -199,6 +210,11 @@ fn tokenize(input: &str) -> Result<Vec<Token>, SpelError>
             '!' =>
             {
                 tokens.push(Token::Bang);
+                pos += 1;
+            },
+            '.' =>
+            {
+                tokens.push(Token::Dot);
                 pos += 1;
             },
             '>' if pos + 1 < chars.len() && chars[pos + 1] == '=' =>
@@ -376,7 +392,22 @@ impl Parser
             Some(Token::Variable(name)) =>
             {
                 self.advance();
-                Ok(SpelExpr::Variable(name))
+                let mut expr = SpelExpr::Variable(name);
+                // Parse property access chain: #user.name.age
+                while matches!(self.peek(), Some(Token::Dot))
+                {
+                    self.advance();
+                    match self.peek().cloned()
+                    {
+                        Some(Token::Ident(prop)) =>
+                        {
+                            self.advance();
+                            expr = SpelExpr::PropertyAccess(Box::new(expr), prop);
+                        },
+                        _ => return Err(SpelError::Parse("expected property name after '.'".into())),
+                    }
+                }
+                Ok(expr)
             },
             Some(Token::StringLit(s)) =>
             {
@@ -398,6 +429,18 @@ impl Parser
                     "hasAnyRole" => self.parse_has_any_role(),
                     "permitAll" => Ok(SpelExpr::PermitAll),
                     "denyAll" => Ok(SpelExpr::DenyAll),
+                    "isAuthenticated" =>
+                    {
+                        self.expect_lparen()?;
+                        self.expect_rparen()?;
+                        Ok(SpelExpr::IsAuthenticated)
+                    },
+                    "isAnonymous" =>
+                    {
+                        self.expect_lparen()?;
+                        self.expect_rparen()?;
+                        Ok(SpelExpr::IsAnonymous)
+                    },
                     "true" => Ok(SpelExpr::LiteralBool(true)),
                     "false" => Ok(SpelExpr::LiteralBool(false)),
                     other => Err(SpelError::Parse(format!("unknown identifier: '{other}'"))),
