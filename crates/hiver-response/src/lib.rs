@@ -40,6 +40,7 @@ pub mod html;
 pub mod json;
 pub mod pdf;
 pub mod response;
+pub mod response_entity;
 pub mod result;
 #[cfg(feature = "sse")]
 pub mod sse;
