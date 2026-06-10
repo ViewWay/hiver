@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"sleep 120 && gh run view 27214426270 --json conclusion,jobs --jq '{conclusion, jobs: [.jobs[] | {name, conclusion}]}' 2>/dev/null\",\"description\":\"Wait 2min then check final CI result\"}",
+  "error": "Exit code 143",
+  "timestamp": "2026-06-09T14:55:38.419Z",
+  "retry_count": 1
+}

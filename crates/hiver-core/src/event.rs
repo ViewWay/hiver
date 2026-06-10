@@ -33,6 +33,44 @@ pub trait ApplicationEvent: Any + Send + Sync
     }
 }
 
+// ============================================================================
+// Container lifecycle events / 容器生命周期事件
+// ============================================================================
+
+/// Event fired when the ApplicationContext is fully refreshed.
+/// ApplicationContext 完全刷新后触发的事件。
+///
+/// Equivalent to Spring's `ContextRefreshedEvent`.
+#[derive(Debug)]
+pub struct ContextRefreshedEvent
+{
+    /// Number of beans registered.
+    pub bean_count: usize,
+}
+
+impl ApplicationEvent for ContextRefreshedEvent
+{
+    fn event_name(&self) -> &str
+    {
+        "ContextRefreshedEvent"
+    }
+}
+
+/// Event fired when the ApplicationContext is closed.
+/// ApplicationContext 关闭时触发的事件。
+///
+/// Equivalent to Spring's `ContextClosedEvent`.
+#[derive(Debug)]
+pub struct ContextClosedEvent;
+
+impl ApplicationEvent for ContextClosedEvent
+{
+    fn event_name(&self) -> &str
+    {
+        "ContextClosedEvent"
+    }
+}
+
 /// Type-erased event handler
 /// 类型擦除的事件处理器
 type EventHandler = Arc<dyn Fn(&dyn Any) -> Result<()> + Send + Sync>;

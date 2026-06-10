@@ -60,7 +60,7 @@ pub use conversion::{
     ConversionService, Converter, DefaultConversionService, parse_duration, resolve_placeholders,
 };
 pub use error::{Error, ErrorKind, Result};
-pub use event::{ApplicationEvent, ApplicationEventPublisher};
+pub use event::{ApplicationEvent, ApplicationEventPublisher, ContextRefreshedEvent, ContextClosedEvent};
 pub use extension::Extensions;
 pub use reactive::{Flux, Mono};
 pub use reflect::{ContainerReflectExt, ReflectContainer};
