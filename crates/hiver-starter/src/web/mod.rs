@@ -50,6 +50,7 @@ pub use hiver_http::{
 /// Automatically configures HTTP server including port, host address,
 /// worker threads, etc.
 ///
+pub mod route_registry;
 /// 参考 Spring Boot 的 `ServletWebServerFactoryAutoConfiguration`。
 /// Based on Spring Boot's `ServletWebServerFactoryAutoConfiguration`.
 ///
@@ -463,15 +464,9 @@ impl AutoConfiguration for RouterAutoConfiguration
 
     fn configure(&self, _ctx: &mut ApplicationContext) -> anyhow::Result<()>
     {
-        // Spring Boot 风格：不在启动时打印详细配置
-        // Spring Boot style: Don't print detailed config during startup
-        //
-        // Route scanning requires:
-        // 路由扫描需要：
-        // 1. Collect route handlers from modules annotated with route attributes
-        //    从带有路由属性的模块收集路由处理器
-        // 2. Build a Router from collected routes 从收集的路由构建 Router
-        // 3. Register the Router to the ApplicationContext 将 Router 注册到 ApplicationContext
+        let router = self::route_registry::collect_routes();
+        _ctx.register_bean(router);
+        tracing::info!("Router auto-configuration complete");
         Ok(())
     }
 }
@@ -610,6 +605,7 @@ impl AutoConfiguration for MiddlewareAutoConfiguration
     clippy::items_after_statements,
     clippy::assertions_on_constants
 )]
+
 mod tests
 {
     use super::*;

@@ -22,7 +22,7 @@ fn parse_route_path(attr: &TokenStream) -> syn::Result<String>
 }
 
 macro_rules! impl_route_macro {
-    ($name:ident, $method:ident) => {
+    ($name:ident, $method:ident, $http_method:expr) => {
         pub fn $name(attr: TokenStream, item: TokenStream) -> TokenStream
         {
             let input = parse_macro_input!(item as ItemFn);
@@ -34,13 +34,30 @@ macro_rules! impl_route_macro {
                 Err(e) => return TokenStream::from(e.to_compile_error()),
             };
 
+            let register_fn = quote::format_ident!("__hiver_route_register_{}", func_name);
+
             let expanded = quote! {
                 #input
 
+                #[allow(non_snake_case)]
+                fn #register_fn(router: hiver_router::Router) -> hiver_router::Router {
+                    router.route(#path, hiver_http::Method::$method, #func_name)
+                }
+
                 #[automatically_derived]
                 impl #func_name {
+                    /// Register this route onto a Router.
+                    /// 将此路由注册到 Router 上。
                     pub fn register_route(router: hiver_router::Router) -> hiver_router::Router {
-                        router.route(#path, hiver_http::Method::$method, #func_name)
+                        #register_fn(router)
+                    }
+                }
+
+                ::inventory::submit! {
+                    ::hiver_starter::web::route_registry::RouteDescriptor {
+                        method: ::hiver_starter::web::route_registry::HttpMethod::$http_method,
+                        path: #path,
+                        register: #register_fn,
                     }
                 }
             };
@@ -50,14 +67,14 @@ macro_rules! impl_route_macro {
     };
 }
 
-impl_route_macro!(get, GET);
-impl_route_macro!(post, POST);
-impl_route_macro!(put, PUT);
-impl_route_macro!(delete, DELETE);
-impl_route_macro!(patch, PATCH);
-impl_route_macro!(head, HEAD);
-impl_route_macro!(options, OPTIONS);
-impl_route_macro!(trace, TRACE);
+impl_route_macro!(get, GET, Get);
+impl_route_macro!(post, POST, Post);
+impl_route_macro!(put, PUT, Put);
+impl_route_macro!(delete, DELETE, Delete);
+impl_route_macro!(patch, PATCH, Patch);
+impl_route_macro!(head, HEAD, Head);
+impl_route_macro!(options, OPTIONS, Options);
+impl_route_macro!(trace, TRACE, Trace);
 
 pub fn request_mapping(attr: TokenStream, item: TokenStream) -> TokenStream
 {
