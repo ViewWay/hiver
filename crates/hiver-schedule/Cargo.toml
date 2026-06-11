@@ -42,9 +42,8 @@ async-trait = { workspace = true }
 chrono = { workspace = true }
 time = { workspace = true }
 
-# Scheduling / 调度
-# Equivalent to: Spring @Scheduled, TaskScheduler
-tokio-cron-scheduler = { workspace = true }
+# Scheduling / 调度 — replaced by built-in CronExpression parser
+# Previously used tokio-cron-scheduler; now uses hiver-schedule's own cron module.
 
 # Tracing / 追踪
 # Equivalent to: Spring Scheduling logging

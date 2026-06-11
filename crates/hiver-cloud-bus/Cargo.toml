@@ -1,0 +1,32 @@
+[package]
+name = "hiver-cloud-bus"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+description = """Spring Cloud Bus equivalent for Hiver Framework.
+Hiver框架的Spring Cloud Bus等价功能。
+Distributed event propagation across service instances."""
+homepage = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+categories = { workspace = true }
+
+[lints]
+workspace = true
+
+[dependencies]
+tokio = { workspace = true, features = ["sync", "time", "rt"] }
+async-trait = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+thiserror = { workspace = true }
+hiver-cloud-stream = { path = "../hiver-cloud-stream", version = "0.1.0-alpha.6", optional = true }
+
+[features]
+default = []
+stream = ["dep:hiver-cloud-stream"]
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

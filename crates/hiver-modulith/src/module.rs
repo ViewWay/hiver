@@ -48,7 +48,7 @@ pub struct ModuleMetadata
 impl ModuleMetadata
 {
     /// Build metadata from a Module trait object.
-    pub fn from_module<M: Module>(module: &M) -> Self
+    pub fn from_module<M: Module + ?Sized>(module: &M) -> Self
     {
         Self {
             name: module.name().to_string(),

@@ -1,13 +1,13 @@
 [package]
-name = "hiver-modulith"
+name = "hiver-data-rest"
 version = { workspace = true }
 authors = { workspace = true }
 edition = { workspace = true }
 rust-version = { workspace = true }
 description = """
-Modular monolith support for Hiver Framework.
-Hiver框架的模块化单体支持。
-Equivalent to: Spring Modulith
+Spring Data REST equivalent for Hiver Framework.
+Hiver框架的Spring Data REST等价功能。
+Auto-generates type-safe REST handlers from Repository traits.
 """
 homepage = { workspace = true }
 repository = { workspace = true }
@@ -20,25 +20,22 @@ categories = { workspace = true }
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
-[features]
-default = []
-
 [lints]
 workspace = true
 
 [dependencies]
-hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
-serde = { workspace = true }
-serde_json = { workspace = true }
-thiserror = { workspace = true }
-anyhow = { workspace = true }
+# Data layer / 数据层
+hiver-data-commons = { path = "../hiver-data-commons", version = "0.1.0-alpha.6" }
+
+# Async / 异步
 async-trait = { workspace = true }
-futures = { workspace = true }
+
+# Serialization / 序列化
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+
+# Tracing / 追踪
 tracing = { workspace = true }
-chrono = { workspace = true }
-once_cell = { workspace = true }
-tokio = { workspace = true, features = ["sync", "macros", "rt"] }
-inventory = { workspace = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

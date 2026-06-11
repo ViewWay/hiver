@@ -21,7 +21,7 @@ impl ModuleRegistry
     }
 
     /// Register a module.
-    pub fn register<M: Module>(&self, module: &M)
+    pub fn register<M: Module + ?Sized>(&self, module: &M)
     {
         let meta = ModuleMetadata::from_module(module);
         self.modules
@@ -84,7 +84,7 @@ mod tests
     struct CustomerModule;
     impl Module for CustomerModule
     {
-        fn name(&self) -> &'static str
+        fn name(&self) -> &str
         {
             "customer"
         }
@@ -98,7 +98,7 @@ mod tests
     struct OrderModule;
     impl Module for OrderModule
     {
-        fn name(&self) -> &'static str
+        fn name(&self) -> &str
         {
             "order"
         }

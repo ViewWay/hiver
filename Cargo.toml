@@ -59,10 +59,16 @@ members = [
     "crates/hiver-shell-macros",
     "crates/hiver-ws",
     "crates/hiver-ai",
+    "crates/hiver-mcp",
     "crates/hiver-agent",
     "crates/hiver-lombok",
     "crates/hiver-spel",
     "crates/hiver-modulith",
+    "crates/hiver-mail",
+    "crates/hiver-data-rest",
+    "crates/hiver-cloud-stream",
+    "crates/hiver-cloud-bus",
+    "crates/hiver-devtools",
     "crates/hiver-cli",
     "tests",
     "examples",
@@ -122,6 +128,13 @@ bytes-utils = "0.1"
 # Multipart / Multipart
 # Equivalent to: Spring MultipartFile
 multer = "3.1"
+
+# File watching / 文件监控
+# Equivalent to: Spring Boot DevTools live reload
+notify = "8"
+
+# Testing / 测试
+tempfile = "3"
 
 # Utilities / 工具
 ulid = "1.1"

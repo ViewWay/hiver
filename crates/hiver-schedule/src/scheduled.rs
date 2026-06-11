@@ -12,13 +12,14 @@
 
 use std::{sync::Arc, time::Duration};
 
+use chrono::Utc;
 use tokio::{
     task::JoinHandle,
     time::{interval, sleep},
 };
 use tracing::info;
 
-use crate::DEFAULT_INITIAL_DELAY_MS;
+use crate::{CronExpression, DEFAULT_INITIAL_DELAY_MS, ScheduleStatistics, TaskState, TaskStateTracker};
 
 /// Task function type / 任务函数类型
 pub type TaskFn = Arc<dyn Fn() + Send + Sync + 'static>;
@@ -205,6 +206,14 @@ impl std::fmt::Debug for ScheduledTask
 ///     // Scheduled tasks will be automatically detected
 /// }
 /// ```
+///
+/// # Rust Advantage / Rust优势
+///
+/// Uses Hiver's own `CronExpression` for cron scheduling — no external
+/// scheduler dependency. Compile-time cron validation via proc-macro.
+///
+/// 使用 Hiver 自研的 `CronExpression` 进行 cron 调度 — 无外部调度器依赖。
+/// 可通过过程宏实现编译时 cron 验证。
 pub struct TaskScheduler
 {
     /// Running state
@@ -214,6 +223,14 @@ pub struct TaskScheduler
     /// Task handles for cancellation
     /// 任务句柄用于取消
     handles: Arc<tokio::sync::RwLock<Vec<JoinHandle<()>>>>,
+
+    /// Task state tracker for lifecycle monitoring.
+    /// 任务状态跟踪器，用于生命周期监控。
+    tracker: Arc<TaskStateTracker>,
+
+    /// Aggregate schedule statistics.
+    /// 聚合调度统计。
+    stats: Arc<ScheduleStatistics>,
 }
 
 impl TaskScheduler
@@ -225,7 +242,23 @@ impl TaskScheduler
         Self {
             running: Arc::new(tokio::sync::RwLock::new(false)),
             handles: Arc::new(tokio::sync::RwLock::new(Vec::new())),
+            tracker: Arc::new(TaskStateTracker::new()),
+            stats: Arc::new(ScheduleStatistics::new()),
         }
+    }
+
+    /// Get a reference to the task state tracker.
+    /// 获取任务状态跟踪器的引用。
+    pub fn tracker(&self) -> &TaskStateTracker
+    {
+        &self.tracker
+    }
+
+    /// Get a reference to the schedule statistics.
+    /// 获取调度统计的引用。
+    pub fn stats(&self) -> &ScheduleStatistics
+    {
+        &self.stats
     }
 
     /// Schedule a task to run
@@ -237,11 +270,15 @@ impl TaskScheduler
             return Err("Scheduler is not running".to_string());
         }
 
+        // Register task with tracker
+        self.tracker.register(&task.name).await;
+        self.tracker.set_running(&task.name).await;
+
         let handle = match task.schedule_type.clone()
         {
             ScheduleType::FixedRate(duration) => self.spawn_fixed_rate_task(task, duration),
             ScheduleType::FixedDelay(duration) => self.spawn_fixed_delay_task(task, duration),
-            ScheduleType::Cron(expression) => self.spawn_cron_task(&task, &expression),
+            ScheduleType::Cron(expression) => self.spawn_cron_task(&task, &expression)?,
         };
 
         let mut handles = self.handles.write().await;
@@ -302,80 +339,89 @@ impl TaskScheduler
         })
     }
 
-    /// Spawn a cron task using `tokio-cron-scheduler`.
-    /// 使用 `tokio-cron-scheduler` 生成 cron 任务。
+    /// Spawn a cron task using Hiver's own `CronExpression`.
+    /// 使用 Hiver 自研的 `CronExpression` 生成 cron 任务。
     ///
     /// Equivalent to Spring's `@Scheduled(cron = "...")`.
     /// 等价于 Spring 的 `@Scheduled(cron = "...")`。
-    #[allow(clippy::expect_used)]
-    fn spawn_cron_task(&self, task: &ScheduledTask, expression: &str) -> JoinHandle<()>
+    ///
+    /// # Rust Advantage / Rust优势
+    ///
+    /// Cron expression is parsed once at schedule time; `next_after()` computes
+    /// each fire time in O(1) amortised — no polling, no external scheduler.
+    ///
+    /// Cron 表达式在调度时只解析一次；`next_after()` 以 O(1) 摊销复杂度
+    /// 计算每次触发时间 — 无轮询，无外部调度器。
+    fn spawn_cron_task(&self, task: &ScheduledTask, expression: &str) -> Result<JoinHandle<()>, String>
     {
+        let cron = CronExpression::parse(expression)
+            .map_err(|e| format!("invalid cron expression '{}': {}", expression, e))?;
+
         let task_name = task.name.clone();
         let running = self.running.clone();
         let async_fn = task.async_task_fn.clone();
         let initial_delay = task.initial_delay;
-        let expression_owned = expression.to_string();
+        let tracker = self.tracker.clone();
+        let stats = self.stats.clone();
 
-        tokio::spawn(async move {
-            if async_fn.is_none()
-            {
-                tracing::warn!("Cron task {} has no async fn set — nothing to execute", task_name);
-                return;
-            }
+        if async_fn.is_none()
+        {
+            return Err(format!(
+                "Cron task '{}' has no async fn set — nothing to execute",
+                task_name
+            ));
+        }
 
-            let scheduler = match tokio_cron_scheduler::JobScheduler::new().await
-            {
-                Ok(s) => s,
-                Err(e) =>
-                {
-                    tracing::error!("Failed to create cron scheduler for {}: {}", task_name, e);
-                    return;
-                },
-            };
-
-            let name_clone = task_name.clone();
-            let job = match tokio_cron_scheduler::Job::new_async(
-                &expression_owned,
-                move |_uuid, _lock| {
-                    let inner_fn = async_fn.clone().expect("async fn was checked above");
-                    Box::pin(async move { inner_fn().await })
-                },
-            )
-            {
-                Ok(j) => j,
-                Err(e) =>
-                {
-                    tracing::error!("Failed to create cron job for {}: {}", task_name, e);
-                    return;
-                },
-            };
-
-            if let Err(e) = scheduler.add(job).await
-            {
-                tracing::error!("Failed to add cron job for {}: {}", task_name, e);
-                return;
-            }
-
+        let handle = tokio::spawn(async move {
             // Initial delay
             if !initial_delay.is_zero()
             {
                 sleep(initial_delay).await;
             }
 
-            if let Err(e) = scheduler.start().await
-            {
-                tracing::error!("Failed to start cron scheduler for {}: {}", task_name, e);
-                return;
-            }
+            info!("Cron task started: {} ({})", task_name, cron.source());
 
-            tracing::info!("Cron task started: {} ({})", name_clone, expression_owned);
-
-            // Wait until shutdown
             while *running.read().await
             {
-                sleep(Duration::from_secs(1)).await;
+                // Calculate next fire time
+                let now = Utc::now();
+                let Some(next) = cron.next_after(&now) else
+                {
+                    tracing::warn!(
+                        "Cron task {}: no future fire time for '{}', stopping",
+                        task_name,
+                        cron.source()
+                    );
+                    break;
+                };
+
+                // Sleep until next fire time
+                let delay = (next - now).to_std().unwrap_or(Duration::ZERO);
+                sleep(delay).await;
+
+                if !*running.read().await
+                {
+                    break;
+                }
+
+                // Execute task with timing
+                tracker.set_running(&task_name).await;
+                let start = std::time::Instant::now();
+
+                if let Some(ref f) = async_fn
+                {
+                    f().await;
+                }
+
+                let elapsed = start.elapsed().as_millis() as u64;
+                stats.record_success(elapsed);
             }
-        })
+
+            tracker.set_completed(&task_name).await;
+            info!("Cron task stopped: {}", task_name);
+        });
+
+        Ok(handle)
     }
 
     /// Run the scheduler
@@ -391,6 +437,12 @@ impl TaskScheduler
     pub async fn shutdown(&self)
     {
         *self.running.write().await = false;
+
+        // Cancel all tracked tasks
+        for name in self.tracker.task_names().await
+        {
+            self.tracker.set_cancelled(&name).await;
+        }
 
         // Abort all running tasks
         let mut handles = self.handles.write().await;

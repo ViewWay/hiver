@@ -1,0 +1,33 @@
+[package]
+name = "hiver-mcp"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = """
+Model Context Protocol (MCP) support for Hiver Framework.
+Provides MCP server and client with tool/resource/prompt primitives over JSON-RPC 2.0.
+Hiver框架的MCP支持，提供基于JSON-RPC 2.0的服务器和客户端实现。
+Equivalent to: Spring AI MCP
+"""
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+hiver-ai = { path = "../hiver-ai", version = "0.1.0-alpha.6" }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+async-trait = { workspace = true }
+tokio = { workspace = true, features = ["full", "io-std"] }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+futures = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros"] }
+
+[lints]
+workspace = true

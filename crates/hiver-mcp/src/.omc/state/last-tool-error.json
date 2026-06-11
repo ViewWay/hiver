@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cargo test -p hiver-retry 2>&1\",\"timeout\":120000,\"description\":\"Test enhanced hiver-retry\"}",
+  "error": "Exit code 101\n   Compiling hashbrown v0.14.5\n   Compiling futures-executor v0.3.32\n   Compiling tokio v1.52.3\n   Compiling security-framework v3.7.0\n   Compiling tracing-serde v0.2.0\n   Compiling protobuf-support v3.7.2\n   Compiling opentelemetry v0.31.0\n   Compiling evmap v11.0.0\n   Compiling erased-serde v0.3.31\n   Compiling chrono v0.4.44\n   Compiling serde_urlencoded v0.7.1\n   Compiling tower v0.5.3\n   Compiling hiver-retry-macros v0.1.0-alpha.6 (/Users/yimiliya/RustroverProjects/hiver/crate...",
+  "timestamp": "2026-06-10T23:57:06.599Z",
+  "retry_count": 1
+}
