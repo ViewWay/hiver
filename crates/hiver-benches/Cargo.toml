@@ -15,9 +15,25 @@ hiver-router = { path = "../hiver-router" }
 hiver-extractors = { path = "../hiver-extractors" }
 hiver-security = { path = "../hiver-security" }
 hiver-data-orm = { path = "../hiver-data-orm" }
+hiver-devtools = { path = "../hiver-devtools" }
+hiver-cloud-bus = { path = "../hiver-cloud-bus", features = ["stream"] }
+hiver-cloud-stream = { path = "../hiver-cloud-stream" }
 criterion = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
+
+[[bench]]
+name = "devtools"
+harness = false
+
+[[bench]]
+name = "cloud_bus"
+harness = false
+
+[[bench]]
+name = "cloud_stream"
+harness = false
 
 # Benchmarks are disabled (files have .disabled suffix).
 # Run `mv X.rs.disabled X.rs` to enable a specific benchmark.
