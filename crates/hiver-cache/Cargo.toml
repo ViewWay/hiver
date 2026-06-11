@@ -71,7 +71,7 @@ dashmap = { workspace = true }
 once_cell = { workspace = true }
 
 # Redis cache backend (optional) / Redis 缓存后端（可选）
-redis = { version = "0.27", features = ["aio", "tokio-comp", "connection-manager"], optional = true }
+redis = { version = "1.2", features = ["aio", "tokio-comp", "connection-manager"], optional = true }
 hiver-data-redis = { path = "../hiver-data-redis", version = "0.1.0-alpha.6", optional = true }
 
 # MessagePack serialization (optional) / MessagePack 序列化（可选）
