@@ -15,12 +15,14 @@
 #![warn(missing_docs)]
 #![allow(unreachable_pub)]
 
+mod dependency;
 mod event;
 mod lifecycle;
 mod module;
 mod registry;
 mod verify;
 
+pub use dependency::{DependencyGraph, ModuleDependency};
 pub use event::{DomainEvent, EventHandler, EventPublisher, InMemoryEventPublisher};
 pub use lifecycle::{
     LifecycleModule, ModuleDescriptor, ModulePhase, collect_modules,
@@ -34,9 +36,9 @@ pub use verify::{VerificationResult, verify_modules};
 pub mod prelude
 {
     pub use crate::{
-        DomainEvent, EventHandler, EventPublisher, InMemoryEventPublisher, LifecycleModule,
-        Module, ModuleDescriptor, ModuleMetadata, ModulePhase, ModuleRegistry,
-        VerificationResult, collect_modules, verify_modules,
+        DependencyGraph, DomainEvent, EventHandler, EventPublisher, InMemoryEventPublisher,
+        LifecycleModule, Module, ModuleDependency, ModuleDescriptor, ModuleMetadata, ModulePhase,
+        ModuleRegistry, VerificationResult, collect_modules, verify_modules,
     };
 }
 
