@@ -145,7 +145,7 @@ pub enum BuildStatus
 ///         .watch_dir("src")
 ///         .watch_dir("crates");
 ///
-///     let rebuilder = AutoRebuilder::start(config).unwrap();
+///     let mut rebuilder = AutoRebuilder::start(config).unwrap();
 ///
 ///     // In your app loop:
 ///     loop {
