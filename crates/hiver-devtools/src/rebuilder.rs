@@ -260,7 +260,7 @@ impl AutoRebuilder
                 }
             }
 
-            while running2.load(Ordering::Relaxed)
+            while running2.load(Ordering::Acquire)
             {
                 std::thread::sleep(Duration::from_millis(100));
             }
@@ -271,7 +271,7 @@ impl AutoRebuilder
         tokio::spawn(async move {
             let mut last_change: Option<tokio::time::Instant> = None;
 
-            while running.load(Ordering::Relaxed)
+            while running.load(Ordering::Acquire)
             {
                 match timeout(Duration::from_millis(50), change_rx.recv()).await
                 {

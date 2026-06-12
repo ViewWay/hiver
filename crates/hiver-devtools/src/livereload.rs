@@ -200,6 +200,12 @@ impl LiveReloadServer
                 break;
             }
         }
+
+        // Cleanup: remove dead clients whose receivers have been dropped.
+        // 清理：移除接收端已关闭的死客户端。
+        drop(rx);
+        let mut clients = clients.write().await;
+        clients.retain(|client| !client.tx.is_closed());
     }
 }
 

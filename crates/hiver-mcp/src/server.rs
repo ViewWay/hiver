@@ -218,11 +218,25 @@ impl McpServer
                 Err(e) =>
                 {
                     error!(error = %e, "Error dispatching message");
-                    // If we can extract the request ID, send an error response
                     if let Some(resp) = self.error_response_for_raw(&line, &e)
                     {
                         let json = serde_json::to_string(&resp)?;
                         transport.send(&json).await?;
+                    }
+                    else
+                    {
+                        // Failed to extract request ID (malformed JSON or notification).
+                        // 无法提取请求 ID（格式错误的 JSON 或通知）。
+                        if matches!(e, McpError::JsonError(_))
+                        {
+                            let fallback = JsonRpcResponse::error(
+                                JsonRpcId::Number(0),
+                                crate::message::PARSE_ERROR,
+                                e.to_string(),
+                            );
+                            let json = serde_json::to_string(&fallback)?;
+                            transport.send(&json).await?;
+                        }
                     }
                 }
             }

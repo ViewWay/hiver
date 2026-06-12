@@ -271,17 +271,45 @@ fn tokenize(input: &str) -> Result<Vec<Token>, SpelError>
 // Recursive descent parser / 递归下降解析器
 // ============================================================
 
+/// Maximum nesting depth to prevent stack overflow from malicious input.
+/// 防止恶意输入导致栈溢出的最大嵌套深度。
+const MAX_DEPTH: usize = 64;
+
 struct Parser
 {
     tokens: Vec<Token>,
     pos: usize,
+    depth: usize,
 }
 
 impl Parser
 {
     fn new(tokens: Vec<Token>) -> Self
     {
-        Self { tokens, pos: 0 }
+        Self {
+            tokens,
+            pos: 0,
+            depth: 0,
+        }
+    }
+
+    /// Increment depth and check against MAX_DEPTH.
+    fn enter_scope(&mut self) -> Result<(), SpelError>
+    {
+        self.depth += 1;
+        if self.depth > MAX_DEPTH
+        {
+            return Err(SpelError::Parse(format!(
+                "Expression too deeply nested (max {MAX_DEPTH})"
+            )));
+        }
+        Ok(())
+    }
+
+    /// Decrement depth after leaving a nested scope.
+    fn leave_scope(&mut self)
+    {
+        self.depth -= 1;
     }
 
     fn peek(&self) -> Option<&Token>
@@ -363,14 +391,18 @@ impl Parser
         {
             Some(Token::Bang) =>
             {
+                self.enter_scope()?;
                 self.advance();
                 let expr = self.parse_not()?;
+                self.leave_scope();
                 Ok(SpelExpr::Not(Box::new(expr)))
             },
             Some(Token::Ident(s)) if s == "not" =>
             {
+                self.enter_scope()?;
                 self.advance();
                 let expr = self.parse_not()?;
+                self.leave_scope();
                 Ok(SpelExpr::Not(Box::new(expr)))
             },
             _ => self.parse_primary(),
@@ -383,12 +415,14 @@ impl Parser
         match self.peek().cloned()
         {
             Some(Token::LParen) =>
-            {
-                self.advance();
-                let expr = self.parse_or()?;
-                self.expect_rparen()?;
-                Ok(expr)
-            },
+                {
+                    self.enter_scope()?;
+                    self.advance();
+                    let expr = self.parse_or()?;
+                    self.leave_scope();
+                    self.expect_rparen()?;
+                    Ok(expr)
+                },
             Some(Token::Variable(name)) =>
             {
                 self.advance();

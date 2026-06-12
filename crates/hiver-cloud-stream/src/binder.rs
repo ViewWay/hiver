@@ -147,23 +147,19 @@ impl StreamBinder for InMemoryBinder
 {
     async fn create_producer(&self, destination: &str) -> StreamResult<Box<dyn StreamProducer>>
     {
-        let dests = self.destinations.read().await;
-        if !dests.contains_key(destination)
-        {
-            drop(dests);
-            self.destinations.write().await.insert(destination.to_string(), tokio::sync::Mutex::new(std::collections::VecDeque::new()));
-        }
+        let mut dests = self.destinations.write().await;
+        dests
+            .entry(destination.to_string())
+            .or_insert_with(|| tokio::sync::Mutex::new(std::collections::VecDeque::new()));
         Ok(Box::new(InMemoryProducer { dest: destination.to_string(), destinations: self.destinations.clone() }))
     }
 
     async fn create_consumer(&self, destination: &str, _group: &str) -> StreamResult<Box<dyn StreamConsumer>>
     {
-        let dests = self.destinations.read().await;
-        if !dests.contains_key(destination)
-        {
-            drop(dests);
-            self.destinations.write().await.insert(destination.to_string(), tokio::sync::Mutex::new(std::collections::VecDeque::new()));
-        }
+        let mut dests = self.destinations.write().await;
+        dests
+            .entry(destination.to_string())
+            .or_insert_with(|| tokio::sync::Mutex::new(std::collections::VecDeque::new()));
         Ok(Box::new(InMemoryConsumer { dest: destination.to_string(), destinations: self.destinations.clone() }))
     }
 

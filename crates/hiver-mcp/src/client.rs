@@ -321,10 +321,10 @@ impl McpClient
         let json = serde_json::to_string(&req)?;
         debug!(method, id, "Sending request");
 
-        self.transport.write().await.send(&json).await?;
-
-        // Read response
+        // Hold write lock across send + receive to prevent interleaving.
         let mut transport = self.transport.write().await;
+        transport.send(&json).await?;
+
         let Some(line) = transport.receive().await? else
         {
             return Err(McpError::TransportError("Transport closed while waiting for response".into()));
@@ -348,7 +348,6 @@ impl McpClient
             JsonRpcMessage::Notification(_) =>
             {
                 // Got a notification instead of response — read again
-                // (simplified: in production, handle notification queue)
                 let Some(line2) = transport.receive().await? else
                 {
                     return Err(McpError::TransportError("Transport closed".into()));

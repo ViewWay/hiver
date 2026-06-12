@@ -6,6 +6,10 @@ use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader, Lines};
 
 use crate::error::McpError;
 
+/// Maximum message size in bytes (4 MB). Prevents OOM from unbounded messages.
+/// 最大消息大小（4 MB）。防止无限制消息导致 OOM。
+const MAX_MESSAGE_SIZE: usize = 4 * 1024 * 1024;
+
 // ============================================================
 // Transport Trait / Transport Trait（策略模式）
 // ============================================================
@@ -89,10 +93,23 @@ impl Transport for StdioTransport
 
     async fn receive(&mut self) -> Result<Option<String>, McpError>
     {
-        self.lines
+        let line = self
+            .lines
             .next_line()
             .await
-            .map_err(|e| McpError::TransportError(e.to_string()))
+            .map_err(|e| McpError::TransportError(e.to_string()))?;
+
+        match line
+        {
+            Some(l) if l.len() > MAX_MESSAGE_SIZE =>
+            {
+                Err(McpError::TransportError(format!(
+                    "Message too large: {} bytes (max {MAX_MESSAGE_SIZE})",
+                    l.len()
+                )))
+            }
+            other => Ok(other),
+        }
     }
 
     async fn close(&mut self) -> Result<(), McpError>
@@ -173,10 +190,23 @@ impl Transport for ChildProcessTransport
 
     async fn receive(&mut self) -> Result<Option<String>, McpError>
     {
-        self.lines
+        let line = self
+            .lines
             .next_line()
             .await
-            .map_err(|e| McpError::TransportError(e.to_string()))
+            .map_err(|e| McpError::TransportError(e.to_string()))?;
+
+        match line
+        {
+            Some(l) if l.len() > MAX_MESSAGE_SIZE =>
+            {
+                Err(McpError::TransportError(format!(
+                    "Message too large: {} bytes (max {MAX_MESSAGE_SIZE})",
+                    l.len()
+                )))
+            }
+            other => Ok(other),
+        }
     }
 
     async fn close(&mut self) -> Result<(), McpError>
@@ -250,10 +280,23 @@ impl Transport for MemoryTransport
 
     async fn receive(&mut self) -> Result<Option<String>, McpError>
     {
-        self.lines
+        let line = self
+            .lines
             .next_line()
             .await
-            .map_err(|e| McpError::TransportError(e.to_string()))
+            .map_err(|e| McpError::TransportError(e.to_string()))?;
+
+        match line
+        {
+            Some(l) if l.len() > MAX_MESSAGE_SIZE =>
+            {
+                Err(McpError::TransportError(format!(
+                    "Message too large: {} bytes (max {MAX_MESSAGE_SIZE})",
+                    l.len()
+                )))
+            }
+            other => Ok(other),
+        }
     }
 
     async fn close(&mut self) -> Result<(), McpError>
