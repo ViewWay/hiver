@@ -27,6 +27,7 @@ pub fn hiver_main(_attr: TokenStream, item: TokenStream) -> TokenStream
             pub fn run() -> anyhow::Result<()> {
                 use hiver_starter::core::{
                     ApplicationContext, AutoConfiguration,
+                    AutoConfigurationLoader, AutoConfigurationRegistry,
                     autoconfig::collect_auto_configurations,
                     logging,
                 };
@@ -61,7 +62,7 @@ pub fn hiver_main(_attr: TokenStream, item: TokenStream) -> TokenStream
                 let mut registry = AutoConfigurationRegistry::new();
                 let _ = registry.load_from_defaults();
 
-                let mut configs = AutoConfigurationLoader::collect_auto_configurations();
+                let mut configs = collect_auto_configurations();
 
                 configs.sort_by_key(|c| c.order());
 
