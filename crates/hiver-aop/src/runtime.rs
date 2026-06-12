@@ -772,7 +772,7 @@ pub struct AspectRegistry
 
     /// Pointcut to callable advice mapping
     /// 切点到可调用通知的映射
-    callable_advices: RwLock<Vec<CallableAdvice>>,
+    callable_advices: std::sync::RwLock<Vec<CallableAdvice>>,
 }
 
 /// Type-erased callable advice closures.
@@ -840,7 +840,7 @@ impl AspectRegistry
         Self {
             aspects: RwLock::new(HashMap::new()),
             pointcuts: RwLock::new(Vec::new()),
-            callable_advices: RwLock::new(Vec::new()),
+            callable_advices: std::sync::RwLock::new(Vec::new()),
         }
     }
 
@@ -920,7 +920,7 @@ impl AspectRegistry
         advice: impl Fn(&JoinPoint) + Send + Sync + 'static,
     )
     {
-        let mut advices = self.callable_advices.blocking_write();
+        let mut advices = self.callable_advices.write().unwrap();
         let fn_ptr: BeforeFn = Arc::new(advice);
         advices.push(CallableAdvice {
             pointcut,
@@ -937,7 +937,7 @@ impl AspectRegistry
         advice: impl Fn(&JoinPoint) + Send + Sync + 'static,
     )
     {
-        let mut advices = self.callable_advices.blocking_write();
+        let mut advices = self.callable_advices.write().unwrap();
         let fn_ptr: AfterFn = Arc::new(advice);
         advices.push(CallableAdvice {
             pointcut,
@@ -954,7 +954,7 @@ impl AspectRegistry
         advice: impl Fn(&mut ProceedingJoinPoint) + Send + Sync + 'static,
     )
     {
-        let mut advices = self.callable_advices.blocking_write();
+        let mut advices = self.callable_advices.write().unwrap();
         let fn_ptr: AroundFn = Arc::new(advice);
         advices.push(CallableAdvice {
             pointcut,
@@ -971,7 +971,7 @@ impl AspectRegistry
         advice: impl Fn(&JoinPoint, &Arc<dyn Any + Send + Sync>) + Send + Sync + 'static,
     )
     {
-        let mut advices = self.callable_advices.blocking_write();
+        let mut advices = self.callable_advices.write().unwrap();
         let fn_ptr: AfterReturningFn = Arc::new(advice);
         advices.push(CallableAdvice {
             pointcut,
@@ -984,7 +984,7 @@ impl AspectRegistry
     /// 从所有匹配连接点的可调用通知构建拦截链。
     pub fn build_chain(&self, join_point: &JoinPoint) -> InterceptChain
     {
-        let advices = self.callable_advices.blocking_read();
+        let advices = self.callable_advices.read().unwrap();
         let mut chain = InterceptChain::new();
 
         for advice in advices.iter()

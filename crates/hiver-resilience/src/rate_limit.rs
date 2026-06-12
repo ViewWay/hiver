@@ -248,10 +248,27 @@ impl TokenBucketState
 
         if tokens_to_add > 0
         {
-            let current = self.tokens.load(Ordering::Relaxed);
-            let new_count = (current + tokens_to_add).min(self.capacity);
-            self.tokens.store(new_count, Ordering::Relaxed);
-            *last = Instant::now();
+            // Atomic CAS loop to avoid TOCTOU race on token count.
+            // 原子 CAS 循环避免 token 计数的 TOCTOU 竞态。
+            let mut current = self.tokens.load(Ordering::Relaxed);
+            loop
+            {
+                let new_count = (current + tokens_to_add).min(self.capacity);
+                match self.tokens.compare_exchange_weak(
+                    current,
+                    new_count,
+                    Ordering::AcqRel,
+                    Ordering::Relaxed,
+                )
+                {
+                    Ok(_) =>
+                    {
+                        *last = Instant::now();
+                        break;
+                    }
+                    Err(actual) => current = actual,
+                }
+            }
         }
 
         // Try to consume a token
