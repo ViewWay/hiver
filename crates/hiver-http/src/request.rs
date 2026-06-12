@@ -55,7 +55,13 @@ impl From<&http::Method> for Method
             "OPTIONS" => Method::OPTIONS,
             "TRACE" => Method::TRACE,
             "CONNECT" => Method::CONNECT,
-            _ => Method::GET, // Default fallback
+            _ =>
+            {
+                // Unknown methods are logged instead of silently mapping to GET.
+                // 未知方法记录日志，而不是静默映射为 GET。
+                tracing::warn!("Unknown HTTP method '{}' received, treating as GET", method.as_str());
+                Method::GET
+            }
         }
     }
 }

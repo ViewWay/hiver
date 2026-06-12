@@ -148,36 +148,40 @@ pub fn parse_query_string(query: &str) -> HashMap<String, String>
     params
 }
 
-/// Simple URL decode
-/// 简单的URL解码
+/// URL decode supporting multi-byte UTF-8 (%XX sequences).
+/// URL 解码，支持多字节 UTF-8（%XX 序列）。
 pub fn url_decode(input: &str) -> String
 {
-    let mut result = String::new();
+    let mut bytes = Vec::new();
     let mut chars = input.chars().peekable();
 
     while let Some(c) = chars.next()
     {
         if c == '+'
         {
-            result.push(' ');
+            bytes.push(b' ');
         }
         else if c == '%'
         {
             let hex: String = chars.by_ref().take(2).collect();
             if hex.len() == 2
                 && let Ok(byte) = u8::from_str_radix(&hex, 16)
-                && let Some(decoded) = char::from_u32(byte as u32)
             {
-                result.push(decoded);
+                bytes.push(byte);
+            }
+            else
+            {
+                bytes.extend(b"%");
+                bytes.extend(hex.as_bytes());
             }
         }
         else
         {
-            result.push(c);
+            bytes.extend(c.to_string().as_bytes());
         }
     }
 
-    result
+    String::from_utf8(bytes).unwrap_or_else(|_| input.to_string())
 }
 
 /// Single query parameter extractor.

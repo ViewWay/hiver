@@ -99,11 +99,17 @@ macro_rules! impl_from_request_single {
                     let path_vars = req.path_vars().clone();
 
                     Box::pin(async move {
-                        // Get the first path variable
-                        let value = path_vars
-                            .values()
-                            .next()
-                            .ok_or_else(|| ExtractorError::Missing("path parameter".to_string()))?;
+                        // Get the first path variable by sorted key for deterministic order.
+                    // 按排序后的键获取第一个路径变量，确保确定性顺序。
+                    let mut keys: Vec<_> = path_vars.keys().collect();
+                    keys.sort();
+                    let first_key = keys
+                        .into_iter()
+                        .next()
+                        .ok_or_else(|| ExtractorError::Missing("path parameter".to_string()))?;
+                    let value = path_vars
+                        .get(first_key)
+                        .ok_or_else(|| ExtractorError::Missing("path parameter".to_string()))?;
 
                         <$ty as FromStr>::from_str(value)
                             .map_err(|e| ExtractorError::Invalid(format!("{}: {}", value, e)))
