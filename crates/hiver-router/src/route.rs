@@ -9,7 +9,7 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use std::{collections::HashMap, fmt, future::Future, pin::Pin};
+use std::{collections::HashMap, fmt, future::Future, pin::Pin, sync::Arc};
 
 use hiver_http::{Body, Request, Response, Result, StatusCode};
 
@@ -188,7 +188,7 @@ pub enum Handler
 
     /// A boxed async handler (for dynamic registration)
     /// 装箱的异步处理程序（用于动态注册）
-    BoxedAsync(BoxedAsyncHandler),
+    BoxedAsync(Arc<BoxedAsyncHandler>),
 
     /// A static string response (for simple routes)
     /// 静态字符串响应（用于简单路由）
@@ -239,7 +239,7 @@ impl Handler
             + Sync
             + 'static,
     {
-        Self::BoxedAsync(Box::new(f))
+        Self::BoxedAsync(Arc::new(Box::new(f)))
     }
 
     /// Call the handler with the given request and path parameters
@@ -294,7 +294,7 @@ impl Handler
             {
                 // Call the sync function and return empty response
                 // 调用同步函数并返回空响应
-                let _ = f; // Suppress unused warning
+                f();
                 Box::pin(async move {
                     Ok(Response::builder()
                         .status(StatusCode::OK)
@@ -341,9 +341,10 @@ impl Clone for Handler
         {
             Handler::Fn(f) => Handler::Fn(*f),
             Handler::Async(f) => Handler::Async(*f),
-            // BoxedAsync cannot be cloned, return Unimplemented instead
-            // BoxedAsync 无法克隆，返回 Unimplemented 代替
-            Handler::BoxedAsync(_) | Handler::Unimplemented => Handler::Unimplemented,
+            // BoxedAsync: Arc clone preserves the handler instead of becoming Unimplemented.
+            // BoxedAsync：Arc 克隆保留处理程序，而不是变成 Unimplemented。
+            Handler::BoxedAsync(f) => Handler::BoxedAsync(f.clone()),
+            Handler::Unimplemented => Handler::Unimplemented,
             Handler::Static(s) => Handler::Static(s),
             Handler::StaticBytes(b) => Handler::StaticBytes(b),
         }

@@ -418,12 +418,27 @@ pub struct JwtUtil;
 
 impl JwtUtil
 {
-    /// Get JWT secret key from environment or use default
-    /// 从环境变量获取JWT密钥或使用默认值
+    /// Get JWT secret key from environment variable.
+    /// 从环境变量获取 JWT 密钥。
+    ///
+    /// # Panics / 恐慌
+    ///
+    /// Panics if `JWT_SECRET` is not set. This is intentional —
+    /// production deployments MUST configure a strong secret.
+    /// 如果未设置 `JWT_SECRET` 则 panic。这是故意的 —
+    /// 生产部署必须配置一个强密钥。
     fn get_secret() -> String
     {
-        env::var("JWT_SECRET")
-            .unwrap_or_else(|_| "hiver-jwt-secret-key-change-in-production-2024".to_string())
+        #[cfg(test)]
+        {
+            env::var("JWT_SECRET")
+                .unwrap_or_else(|_| "hiver-test-secret-key-for-unit-tests-only".to_string())
+        }
+        #[cfg(not(test))]
+        {
+            env::var("JWT_SECRET")
+                .expect("FATAL: JWT_SECRET environment variable must be set before starting the server")
+        }
     }
 
     /// Get default token expiration in hours
@@ -681,7 +696,9 @@ impl JwtUtil
     /// A tuple of (token_string, was_refreshed) / 一个元组（令牌字符串，是否已刷新）
     pub fn refresh_if_needed(token: &str, threshold_secs: i64) -> SecurityResult<(String, bool)>
     {
-        let claims = Self::decode_without_validation(token)?;
+        // Verify signature first — do NOT trust unverified claims.
+        // 先验证签名 — 不要信任未验证的 claims。
+        let claims = Self::verify_token(token)?;
 
         let now = Utc::now().timestamp();
         let remaining = claims.exp - now;

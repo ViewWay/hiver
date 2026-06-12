@@ -449,8 +449,8 @@ impl RememberMeAuthentication
     /// 创建记住我认证
     pub fn new(key: &str) -> Self
     {
-        use md5::{Digest, Md5};
-        let hash = Md5::digest(key.as_bytes());
+        use sha2::{Digest, Sha256};
+        let hash = Sha256::digest(key.as_bytes());
         Self {
             key_hash: hex::encode(hash),
         }
@@ -460,9 +460,13 @@ impl RememberMeAuthentication
     /// 验证记住我密钥
     pub fn verify(&self, key: &str) -> bool
     {
-        use md5::{Digest, Md5};
-        let hash = Md5::digest(key.as_bytes());
-        hex::encode(hash) == self.key_hash
+        use sha2::{Digest, Sha256};
+        let hash = Sha256::digest(key.as_bytes());
+        // Constant-time comparison to prevent timing attacks.
+        // 常量时间比较以防止时序攻击。
+        use subtle::ConstantTimeEq;
+        let computed = hex::encode(hash);
+        computed.as_bytes().ct_eq(self.key_hash.as_bytes()).into()
     }
 }
 

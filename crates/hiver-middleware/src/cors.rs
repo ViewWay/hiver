@@ -289,14 +289,31 @@ where
 
             // Handle normal request - add CORS headers to response
             // 处理普通请求 - 向响应添加CORS headers
+            let origin = req.header("Origin").map(|s| s.to_string());
             let response = next.call(req, state).await;
 
-            if let Ok(ref _resp) = response
+            match response
             {
-                tracing::debug!("CORS headers added to response");
+                Ok(resp) =>
+                {
+                    let cors_headers = add_cors_headers(&config, origin.as_deref());
+                    let status = resp.status();
+                    let mut builder = Response::builder().status(status);
+                    // Preserve existing headers
+                    for (key, value) in resp.headers()
+                    {
+                        builder = builder.header(key.as_str(), value.as_str());
+                    }
+                    // Add CORS headers
+                    for (key, value) in cors_headers
+                    {
+                        builder = builder.header(key, value);
+                    }
+                    tracing::debug!("CORS headers added to response");
+                    builder.body(resp.into_body())
+                }
+                other => other,
             }
-
-            response
         })
     }
 }

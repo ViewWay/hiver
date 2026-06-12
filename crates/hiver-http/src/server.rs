@@ -176,8 +176,11 @@ impl Server
 
         let service = Arc::new(service);
         let config = self.config.clone();
+        let connection_count = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+        let max_conns = config.max_connections;
 
-        // Accept connections loop
+        // Accept connections loop — enforce max_connections via atomic counter.
+        // 连接接受循环 — 通过原子计数器强制执行最大连接数。
         loop
         {
             match listener.accept().await
@@ -185,7 +188,24 @@ impl Server
                 Ok((stream, peer_addr)) =>
                 {
                     let service = service.clone();
-                    spawn(handle_connection(stream, peer_addr, service, config.clone()));
+                    let config = config.clone();
+                    let count = connection_count.clone();
+                    let current = count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                    if current >= max_conns
+                    {
+                        count.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
+                        tracing::warn!(
+                            "Max connections ({}) reached, rejecting {}",
+                            max_conns, peer_addr
+                        );
+                        drop(stream);
+                        continue;
+                    }
+
+                    spawn(async move {
+                        handle_connection(stream, peer_addr, service, config).await;
+                        count.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
+                    });
                 },
                 Err(e) =>
                 {
