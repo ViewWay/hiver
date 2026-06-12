@@ -25,6 +25,15 @@ hiver-core = { path = "../crates/hiver-core" }
 hiver-config = { path = "../crates/hiver-config" }
 hiver-modulith = { path = "../crates/hiver-modulith" }
 hiver-state-machine = { path = "../crates/hiver-state-machine" }
+hiver-http = { path = "../crates/hiver-http" }
+hiver-router = { path = "../crates/hiver-router" }
+hiver-extractors = { path = "../crates/hiver-extractors" }
+hiver-response = { path = "../crates/hiver-response" }
+hiver-mcp = { path = "../crates/hiver-mcp" }
+hiver-cloud-bus = { path = "../crates/hiver-cloud-bus", features = ["stream"] }
+hiver-cloud-stream = { path = "../crates/hiver-cloud-stream" }
+hiver-spel = { path = "../crates/hiver-spel" }
+hiver-devtools = { path = "../crates/hiver-devtools" }
 
 # Async runtime
 tokio = { workspace = true, features = ["full"] }
@@ -100,3 +109,7 @@ required-features = ["integration-tests"]
 [[test]]
 name = "cross_crate"
 path = "cross_crate_tests.rs"
+
+[[test]]
+name = "e2e"
+path = "e2e_tests.rs"
