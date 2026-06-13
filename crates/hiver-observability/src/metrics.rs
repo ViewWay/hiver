@@ -337,11 +337,15 @@ impl Gauge
         self.value.fetch_add(1, Ordering::Relaxed);
     }
 
-    /// Decrement by 1
-    /// 减少1
+    /// Decrement by 1 (saturating, won't underflow).
+    /// 减少1（饱和操作，不会下溢）。
     pub fn decrement(&self)
     {
-        self.value.fetch_sub(1, Ordering::Relaxed);
+        self.value.fetch_update(
+            Ordering::AcqRel,
+            Ordering::Relaxed,
+            |v| if v > 0 { Some(v - 1) } else { None },
+        ).ok();
     }
 
     /// Add a specific amount

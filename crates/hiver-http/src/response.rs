@@ -79,7 +79,13 @@ impl Response
     /// 获取header值
     pub fn header(&self, name: &str) -> Option<&str>
     {
-        self.headers.get(name).map(String::as_str)
+        // Case-insensitive header lookup per HTTP spec.
+        // 按 HTTP 规范大小写不敏感的 header 查找。
+        let name_lower = name.to_lowercase();
+        self.headers
+            .iter()
+            .find(|(k, _)| k.to_lowercase() == name_lower)
+            .map(|(_, v)| v.as_str())
     }
 
     /// Get all headers
