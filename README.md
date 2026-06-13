@@ -49,10 +49,12 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-hiver-runtime = "0.1"
-hiver-http = { version = "0.1", features = ["full"] }
-hiver-router = "0.1"
-hiver-observability = "0.1"
+# Hiver is not yet published to crates.io — use a git dependency for now.
+# Hiver 尚未发布到 crates.io，暂用 git 依赖。
+hiver-runtime = { git = "https://github.com/ViewWay/hiver" }
+hiver-http = { git = "https://github.com/ViewWay/hiver", features = ["full"] }
+hiver-router = { git = "https://github.com/ViewWay/hiver" }
+hiver-observability = { git = "https://github.com/ViewWay/hiver" }
 ```
 
 ### Basic HTTP Server
