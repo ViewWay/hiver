@@ -32,7 +32,7 @@ jobs:
       - name: Build test binaries
         run: cargo test --workspace --no-fail-fast --no-run
 
-      - name: Probe io_uring availability (diagnose EINVAL: code vs environment)
+      - name: Probe io_uring availability (diagnose EINVAL, code vs environment)
         run: |
           cat > /tmp/probe.c <<'CEOF'
           #include <linux/io_uring.h>
