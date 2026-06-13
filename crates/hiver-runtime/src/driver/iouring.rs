@@ -41,40 +41,54 @@ struct IoUringParams
     cq_entries: u32,
     /// Flags / 标志
     flags: u32,
+    /// SQ thread CPU affinity / SQ 线程 CPU 亲和性
+    sq_thread_cpu: u32,
+    /// SQ thread idle timeout (ms) / SQ 线程空闲超时（毫秒）
+    sq_thread_idle: u32,
+    /// Features (kernel output, must be 0 on input) / 特性（内核输出，输入必须为 0）
+    features: u32,
+    /// Worker queue fd (for IORING_SETUP_ATTACH_WQ) / 工作队列 fd
+    wq_fd: u32,
     /// Reserved fields / 保留字段
-    _resv: [u32; 5],
-    /// Submission queue ring buffer offset / 提交队列环形缓冲区偏移
-    sq_off: IoUringOffsets,
-    /// Completion queue ring buffer offset / 完成队列环形缓冲区偏移
-    cq_off: IoUringOffsets,
+    _resv: [u32; 3],
+    /// Submission queue ring buffer offsets / 提交队列环形缓冲区偏移
+    sq_off: SqOffsets,
+    /// Completion queue ring buffer offsets / 完成队列环形缓冲区偏移
+    cq_off: CqOffsets,
 }
 
-/// io_uring offsets for ring buffer access
-/// io_uring环形缓冲区访问的偏移量
+/// SQ ring buffer offsets — matches kernel `struct io_sqring_offsets`.
+/// SQ 环形缓冲区偏移——匹配内核 `struct io_sqring_offsets`。
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]
-struct IoUringOffsets
+struct SqOffsets
 {
-    /// Head index / 头索引
     head: u32,
-    /// Tail index / 尾索引
     tail: u32,
-    /// Ring mask / 环形掩码
     ring_mask: u32,
-    /// Ring entries count / 环形条目数
     ring_entries: u32,
-    /// Flags / 标志
     flags: u32,
-    /// Dropped entries / 丢弃的条目
     dropped: u32,
-    /// Array offset / 数组偏移
     array: u32,
-    /// Overflow count / 溢出计数
+    _resv1: u32,
+    _resv2: u64,
+}
+
+/// CQ ring buffer offsets — matches kernel `struct io_cqring_offsets`.
+/// CQ 环形缓冲区偏移——匹配内核 `struct io_cqring_offsets`。
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Default)]
+struct CqOffsets
+{
+    head: u32,
+    tail: u32,
+    ring_mask: u32,
+    ring_entries: u32,
     overflow: u32,
-    /// CQEs offset / 完成队列条目偏移
     cqes: u32,
-    /// Reserved fields / 保留字段
-    _resv: [u32; 2],
+    flags: u32,
+    _resv1: u32,
+    _resv2: u64,
 }
 
 /// io_uring submission queue entry (SQE)
@@ -338,7 +352,7 @@ impl IoUringDriver
 
         let cq_ring_size = unsafe {
             // Size = cq_off.cqes + cq_entries * sizeof(cqe)
-            (params.cq_off.array as usize) + (params.cq_entries as usize) * 16
+            (params.cq_off.cqes as usize) + (params.cq_entries as usize) * 16
         };
 
         let sqes_size = (params.sq_entries as usize) * size_of::<SubmissionQueueEntry>();
