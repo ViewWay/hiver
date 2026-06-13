@@ -319,14 +319,16 @@ impl IoUringDriver
     {
         let entries = config.entries.max(MIN_IOURING_SIZE);
 
-        // Setup io_uring parameters
-        // 设置io_uring参数
-        let mut params = IoUringParams {
-            sq_entries: entries,
-            cq_entries: entries,
-            flags: 0, // No flags for now / 目前无标志
-            ..Default::default()
-        };
+        // Per io_uring_setup(2): io_uring_params must be ZEROED on input.
+        // The kernel fills sq_entries/cq_entries/offsets. `entries` is passed
+        // as the first syscall argument (below). Setting sq_entries/cq_entries
+        // on input causes EINVAL on Linux — confirmed by debug-sigsegv probe
+        // (zeroed params succeed, hiver's non-zero input failed).
+        // 依 io_uring_setup(2)：io_uring_params 输入必须清零。
+        // 内核填充 sq_entries/cq_entries/offsets。`entries` 作为下方 syscall 第一参数。
+        // 输入设 sq_entries/cq_entries 在 Linux 上导致 EINVAL
+        //（debug-sigsegv probe 已证实：zeroed params 成功，hiver 非 0 输入失败）。
+        let mut params = IoUringParams::default();
 
         // Create io_uring instance
         // 创建io_uring实例
