@@ -32,104 +32,49 @@ This index provides a structured overview of all Hiver documentation.
 - Complete implementation roadmap / 完整实施路线图
 - Phase-by-phase breakdown / 分阶段细分
 - Timeline and milestones / 时间表和里程碑
-- 18-month production plan / 18 个月生产计划
-
-**Status**: 35% complete, targeting 70% (Month 6), 85% (Month 12)
-**状态**: 35% 完成，目标 70%（第 6 个月），85%（第 12 个月）
 
 ### Strategic Analysis / 战略分析
 
 1. **[STRATEGY-OVERVIEW.md](./STRATEGY-OVERVIEW.md)** - Visual strategy with ASCII art / 可视化战略（ASCII 图）
-   - Current state assessment / 当前状态评估
-   - Implementation phases / 实施阶段
-   - Success metrics / 成功指标
-   - Feature comparison matrix / 功能对比矩阵
 
-2. **[MISSING-FEATURES-QUICK-REF.md](./MISSING-FEATURES-QUICK-REF.md)** - Quick reference guide / 快速参考指南
-   - Top 20 most critical features / 20 个最关键功能
-   - Implementation checklist / 实施检查清单
-   - Priority matrix (P0, P1, P2, P3) / 优先级矩阵
+### Spring 对标（权威 / Authoritative）
 
-### Gap Analysis / 差距分析
-
-1. **[spring-boot-gap-analysis.md](./spring-boot-gap-analysis.md)** - Spring Boot vs Hiver comparison
-   - 12 major feature areas / 12 个主要功能领域
-   - Completion percentage by layer / 按层完成度百分比
-   - Data layer at 0% (critical) / 数据层 0%（关键）
-
-2. **[spring-ecosystem-gap-analysis.md](./spring-ecosystem-gap-analysis.md)** - Full Spring ecosystem comparison
-   - Spring Boot, Framework, Security, Cloud, Batch, Integration / 全家桶对比
-   - 55 missing features identified / 识别出 55 个缺失功能
-   - Prioritized implementation plan / 优先实施计划
-
-3. **[spring-missing-features.md](./spring-missing-features.md)** - 89 additional missing features
-   - Deep dive into hidden features / 深入分析隐藏功能
-   - 14 additional Spring projects analyzed / 分析了 14 个额外的 Spring 项目
-   - Complete feature inventory / 完整功能清单
+> ⚠️ 旧的 gap 分析文档（`spring-boot-gap-analysis` / `spring-missing-features` / `spring-features-gap-analysis` / `spring-ecosystem-gap-analysis` / `MISSING-FEATURES-QUICK-REF`）已于 **2026-06-13 删除**——实测证伪（声称缺失的多数已实现，或反向过度乐观）。
+>
+> **唯一的 Spring 差距分析：[SPRING-GAP-VERIFIED-2026-06-13.md](./reports/SPRING-GAP-VERIFIED-2026-06-13.md)**（基于 codegraph 实测，11 项核心能力验证）
 
 ---
 
 ## 🏗️ Implementation Plans / 实施计划
 
-### Data Layer (P0 - Blocking) / 数据层（P0 - 阻塞）
+### Data Layer / 数据层
 
-**Core Implementation / 核心实施**:
-
-1. **[hiver-data-full-implementation.md](./hiver-data-full-implementation.md)** - Complete Data Layer plan
-   - hiver-data-commons (Repository abstractions) / Repository 抽象
-   - hiver-data-rdbc (R2DBC support) / R2DBC 支持
-   - hiver-data-orm (SeaORM/Diesel/SQLx) / ORM 集成
-   - hiver-data-migrations (Flyway-like) / 数据库迁移
-   - Target API design and examples / 目标 API 设计和示例
-
-2. **[implementation-roadmap-data.md](./implementation-roadmap-data.md)** - Data Layer detailed roadmap
-   - Phase 8 breakdown (6 months) / 第 8 阶段细分（6 个月）
-   - Crate structure and file organization / Crate 结构和文件组织
-   - Example CRUD applications / 示例 CRUD 应用
-
-3. **[DATA-LAYER-ADDENDUM.md](./DATA-LAYER-ADDENDUM.md)** - MyBatis-Plus support
-   - Dual data layer strategy / 双数据层策略
-   - hiver-lombok (#[Data] macro) / Lombok 风格宏
-   - hiver-data-mybatisplus (BaseMapper, QueryWrapper) / MyBatis-Plus 核心功能
-   - hiver-scan (@MapperScan) / 组件扫描
-
-**Style Guides / 风格指南**:
-
-4. **[hiver-mybatis-plus-style.md](./hiver-mybatis-plus-style.md)** - MyBatis-Plus style development
-   - Complete MyBatis-Plus API parity / 完整 MyBatis-Plus API 对等
-   - QueryWrapper reference / QueryWrapper 参考
-   - Migration examples from Java / 从 Java 迁移示例
-   - 6-month implementation plan / 6 个月实施计划
+1. **[hiver-data-full-implementation.md](./hiver-data-full-implementation.md)** - Complete Data Layer plan / 完整数据层计划
+2. **[implementation-roadmap-data.md](./implementation-roadmap-data.md)** - Data Layer detailed roadmap / 数据层详细路线图
+3. **[DATA-LAYER-ADDENDUM.md](./DATA-LAYER-ADDENDUM.md)** - MyBatis-Plus support / MyBatis-Plus 支持
+4. **[hiver-mybatis-plus-style.md](./hiver-mybatis-plus-style.md)** - MyBatis-Plus style development / MyBatis-Plus 风格开发
 
 ### Other Layers / 其他层
 
-**Already in MASTER-ROADMAP.md**:
-- Phase 9: Core Framework (autoconfigure, @Autowired, @Valid, @Aspect)
-- Phase 10: Security & Testing
-- Phase 11: Messaging & Cache
-- Phase 12: Documentation & API
+See MASTER-ROADMAP.md Phases / 见 MASTER-ROADMAP.md 各阶段。
 
 ---
 
 ## 📊 Comparison Documents / 对比文档
 
-### Feature Comparison / 功能对比
+| Document / 文档 | Scope / 范围 |
+|----------------|------------|
+| [SPRING-GAP-VERIFIED-2026-06-13.md](./reports/SPRING-GAP-VERIFIED-2026-06-13.md) | Spring 差距（代码实测，**权威**）/ Spring gap (code-verified, **authoritative**) |
+| [SPRING-COMPARISON.md](./SPRING-COMPARISON.md) | Hiver vs Spring 全生态模块对照 / Full ecosystem module mapping |
 
-| Document / 文档 | Scope / 范围 | Features / 功能数 |
-|----------------|------------|----------------|
-| [spring-boot-gap-analysis.md](./spring-boot-gap-analysis.md) | Core Spring Boot / 核心 Spring Boot | 12 layers, 55 features / 12 层，55 个功能 |
-| [spring-ecosystem-gap-analysis.md](./spring-ecosystem-gap-analysis.md) | Full ecosystem / 完整生态系统 | 8 major areas / 8 个主要领域 |
-| [spring-missing-features.md](./spring-missing-features.md) | Deep dive / 深入分析 | 89 additional / 89 个额外功能 |
-| [MISSING-FEATURES-QUICK-REF.md](./MISSING-FEATURES-QUICK-REF.md) | Quick reference / 快速参考 | Top 48 features / 前 48 个功能 |
+### Performance Targets / 性能目标（设计指标，非实测 / Design targets, not measured）
 
-### Performance Comparison / 性能对比
-
-| Metric / 指标 | Spring Boot | Hiver | Improvement / 提升 |
-|--------------|-------------|-------|-------------------|
-| Startup time / 启动时间 | 2-5s | ~100ms | **20-50x faster** |
-| Memory (idle) / 内存（空闲） | ~200MB | ~10MB | **20x less** |
-| QPS (simple GET) / QPS（简单 GET） | ~10K | ~1M+ | **100x more** |
-| P99 latency / P99 延迟 | ~50ms | <1ms | **50x faster** |
+| Metric / 指标 | Spring Boot | Hiver (target) |
+|--------------|-------------|-------|
+| Startup time / 启动时间 | 2-5s | ~100ms |
+| Memory (idle) / 内存（空闲） | ~200MB | ~10MB |
+| QPS (simple GET) | ~10K | ~1M+ |
+| P99 latency / P99 延迟 | ~50ms | <1ms |
 
 ---
 
@@ -137,83 +82,34 @@ This index provides a structured overview of all Hiver documentation.
 
 ### For Project Planning / 项目规划
 
-**Read in order / 按顺序阅读**:
-1. STRATEGY-OVERVIEW.md (high-level strategy / 高层战略)
-2. MASTER-ROADMAP.md (detailed roadmap / 详细路线图)
-3. MISSING-FEATURES-QUICK-REF.md (quick checklist / 快速检查清单)
+1. STRATEGY-OVERVIEW.md (high-level / 高层战略)
+2. MASTER-ROADMAP.md (roadmap / 路线图)
+3. reports/SPRING-GAP-VERIFIED-2026-06-13.md (真实差距 / verified gaps)
 
 ### For Implementation / 实施
 
 **Data Layer / 数据层**:
-1. hiver-data-full-implementation.md (Spring Data style / Spring Data 风格)
-2. hiver-mybatis-plus-style.md (MyBatis-Plus style / MyBatis-Plus 风格)
-3. DATA-LAYER-ADDENDUM.md (dual strategy / 双策略)
-
-**Other Layers / 其他层**:
-- See MASTER-ROADMAP.md Phases 9-12
+1. hiver-data-full-implementation.md
+2. hiver-mybatis-plus-style.md
+3. DATA-LAYER-ADDENDUM.md
 
 ### For Migration / 迁移
 
-**From Spring Boot / 从 Spring Boot**:
-1. MIGRATION-GUIDE.md (complete guide / 完整指南)
-2. hiver-mybatis-plus-style.md (if using MyBatis-Plus / 如果使用 MyBatis-Plus)
-
-### For Understanding Gaps / 理解差距
-
-**Quick overview / 快速概览**:
-- MISSING-FEATURES-QUICK-REF.md (top 48 / 前 48 个)
-
-**Detailed analysis / 详细分析**:
-- spring-boot-gap-analysis.md (core features / 核心功能)
-- spring-ecosystem-gap-analysis.md (full ecosystem / 完整生态系统)
-- spring-missing-features.md (89 additional / 89 个额外功能)
+1. MIGRATION-GUIDE.md
+2. hiver-mybatis-plus-style.md
 
 ---
 
-## 📈 Project Status Dashboard / 项目状态仪表板
+## 📈 Project Status / 项目状态
 
-### Completion Metrics / 完成度指标
-
-```
-Overall Completion: 45%
-总体完成度：45%
-
-├─ Web Layer:          ████████████████████████░░░░  85%  ✅
-├─ Data Layer:         ██████████████░░░░░░░░░░░░░░  55%  ⚠️ (8.1 commons ✅, 8.2 rdbc ✅, 8.3 orm ✅, refactoring WIP)
-├─ Security Layer:     ████████████░░░░░░░░░░░░░░░░  40%  ⚠️
-├─ Cache Layer:        ████████░░░░░░░░░░░░░░░░░░░░  30%  ⚠️
-├─ Messaging:          █░░░░░░░░░░░░░░░░░░░░░░░░░░░█   0%  ❌
-├─ Configuration:      ████████████████░░░░░░░░░░░░  60%  ⚠️
-├─ Testing:            ██░░░░░░░░░░░░░░░░░░░░░░░░░░  10%  ❌
-└─ Documentation:      ██░░░░░░░░░░░░░░░░░░░░░░░░░░  15%  ⚠️
-```
-
-### Timeline Targets / 时间表目标
-
-| Milestone / 里程碑 | Target / 目标 | Date / 日期 | Completion / 完成度 |
-|------------------|-------------|-----------|-------------------|
-| **Current / 当前** | Phase 8: Data Layer (in progress) | Month 0 | 45% |
-| **MVP / 最小可行** | Phase 8-9: Data + Framework | Month 6 | **70%** ✅ Production-ready |
-| **Full Featured / 功能完整** | Phase 10-11: Security + Messaging | Month 12 | **85%** ✅ Spring Boot parity |
-| **Enterprise / 企业级** | Phase 12+: Advanced features | Month 18+ | **95%+** ✅ Superior |
-
-### Missing Features Count / 缺失功能数量
-
-| Priority / 优先级 | Count / 数量 | Time / 时间 | Status / 状态 |
-|-----------------|------------|-----------|---------------|
-| **P0** (Blocking) / 阻塞 | 18 features | 14.5 months | 🔴 Must implement / 必须实现 |
-| **P1** (Important) / 重要 | 10 features | 9.5 months | 🟡 Should implement / 应该实现 |
-| **P2** (Enhanced) / 增强 | 10 features | 10.5 months | 🟢 Nice to have / 最好有 |
-| **P3** (Advanced) / 高级 | 10 features | 12.5 months | 🔵 Future / 未来 |
-| **Total / 总计** | **48 features** | **47 months** | ~4 years (solo) / ~4 年（单人） |
-
-### Top 5 Critical Blockers / 前 5 个关键阻塞
-
-1. 🔴 **hiver-data-orm** (2 months) - ORM abstraction and ActiveRecord pattern / ORM 抽象和 ActiveRecord 模式
-2. 🔴 **hiver-autoconfigure** (1 month) - Too much boilerplate / 样板代码太多
-3. 🔴 **@Autowired** (1 month) - Manual DI is tedious / 手动 DI 很繁琐
-4. 🟡 **hiver-lombok** (0.5 months) - Too much getter/setter code / getter/setter 代码太多
-5. 🟡 **Integration testing** (1 month) - End-to-end test coverage / 端到端测试覆盖
+> ⚠️ 旧的"完成度仪表板 / 缺失功能统计（48 功能/47 个月）/ Top 5 Blockers"区块基于已删除的失真 gap 文档，**已移除**。
+>
+> 真实状态（2026-06-13 校准）：
+> - 版本 `0.1.0-alpha.6`，**crates.io 未发布**
+> - 功能广度：70 crate，Spring 核心能力 11/11 实测存在（见 SPRING-GAP-VERIFIED）
+> - 真实 P0：runtime SIGSEGV（内存安全 bug）+ 发布 crates.io，**而非补功能**
+>
+> 详见 [SPRING-GAP-VERIFIED-2026-06-13.md](./reports/SPRING-GAP-VERIFIED-2026-06-13.md)。
 
 ---
 
@@ -223,32 +119,24 @@ Overall Completion: 45%
 
 ```
 docs/
-├── MASTER-*.md                      # Master documents / 主文档
-├── STRATEGY-*.md                    # Strategy documents / 战略文档
-├── MISSING-FEATURES-*.md            # Feature gap analysis / 功能差距分析
-├── spring-*.md                      # Spring comparison / Spring 对比
-├── hiver-*-*.md                     # Hiver-specific docs / Hiver 特定文档
-├── implementation-*.md              # Implementation plans / 实施计划
-├── MIGRATION-*.md                   # Migration guides / 迁移指南
-└── *-addendum.md                    # Addendums / 附录
+├── MASTER-*.md                        # Master documents / 主文档
+├── STRATEGY-*.md                      # Strategy documents / 战略文档
+├── reports/SPRING-GAP-VERIFIED-*.md   # Spring gap (verified) / Spring 差距（实测）
+├── SPRING-COMPARISON.md               # Spring module mapping / Spring 模块对照
+├── spring-boot/                       # Spring reference / Spring 参考资料
+├── hiver-*-*.md                       # Hiver-specific docs / Hiver 特定文档
+├── implementation-*.md                # Implementation plans / 实施计划
+├── MIGRATION-*.md                     # Migration guides / 迁移指南
+└── *-addendum.md                      # Addendums / 附录
 ```
 
 ### Language Support / 语言支持
 
 All documents are **bilingual** (English and Chinese) / 所有文档都是 **双语的**（英文和中文）
 
-```
-# Section Title / 章节标题
-Content in English / 英文内容
-
-中文内容
-```
-
 ---
 
 ## 🔍 Search Tips / 搜索提示
-
-### Find What You Need / 找到你需要的内容
 
 **"I want to..." / "我想要..."**:
 
@@ -256,30 +144,18 @@ Content in English / 英文内容
 |-----------|-------------------|
 | Understand the project / 了解项目 | STRATEGY-OVERVIEW.md |
 | See the roadmap / 查看路线图 | MASTER-ROADMAP.md |
-| Start implementing / 开始实施 | MISSING-FEATURES-QUICK-REF.md |
+| See real Spring gaps / 查看真实 Spring 差距 | reports/SPRING-GAP-VERIFIED-2026-06-13.md |
 | Build Data Layer / 构建数据层 | hiver-data-full-implementation.md |
 | Use MyBatis-Plus style / 使用 MyBatis-Plus 风格 | hiver-mybatis-plus-style.md |
 | Migrate from Spring Boot / 从 Spring Boot 迁移 | MIGRATION-GUIDE.md |
-| Compare with Spring / 与 Spring 对比 | spring-boot-gap-analysis.md |
-| See all missing features / 查看所有缺失功能 | spring-missing-features.md |
 
 ---
 
 ## 📝 Contributing / 贡献
 
-### Adding New Documentation / 添加新文档
-
 1. Follow naming convention / 遵循命名约定
 2. Use bilingual format / 使用双语格式
-3. Update this index / 更新此索引
-4. Add to relevant section / 添加到相关章节
-
-### Updating Existing Documents / 更新现有文档
-
-1. Keep bilingual format / 保持双语格式
-2. Update status/progress / 更新状态/进度
-3. Regenerate this index if needed / 如需要重新生成此索引
-4. Commit with clear message / 提交时附上清晰信息
+3. Update this index when adding docs / 添加文档时更新此索引
 
 ---
 
@@ -296,7 +172,6 @@ Content in English / 英文内容
 - **GitHub**: https://github.com/ViewWay/hiver
 - **Issues**: https://github.com/ViewWay/hiver/issues
 - **Discussions**: https://github.com/ViewWay/hiver/discussions
-- **Rust Docs**: https://doc.rust-lang.org/
 
 ---
 
@@ -305,7 +180,7 @@ Content in English / 英文内容
 ### For First-Time Visitors / 首次访问者
 
 1. **STRATEGY-OVERVIEW.md** (5 min) - Get the big picture / 了解大局
-2. **MISSING-FEATURES-QUICK-REF.md** (10 min) - See what's missing / 查看缺失内容
+2. **reports/SPRING-GAP-VERIFIED-2026-06-13.md** (10 min) - Real Spring gaps / 真实 Spring 差距
 3. **MASTER-ROADMAP.md** (20 min) - Understand the plan / 理解计划
 
 ### For Developers / 开发者
@@ -318,11 +193,9 @@ Content in English / 英文内容
 
 1. **CLAUDE.md** (10 min) - Project guidelines / 项目指南
 2. **MASTER-ROADMAP.md** (20 min) - Implementation plan / 实施计划
-3. **spring-missing-features.md** (30 min) - Deep dive / 深入分析
+3. **reports/SPRING-GAP-VERIFIED-2026-06-13.md** (15 min) - Verified gaps / 已验证差距
 
 ---
 
-**Last Updated / 最后更新**: 2026-05-31
-**Document Count / 文档数量**: 12 major documents / 12 个主要文档
-**Total Pages / 总页数**: ~500+ pages / ~500+ 页
+**Last Updated / 最后更新**: 2026-06-13
 **Status / 状态**: 🚧 Actively maintained / 积极维护中

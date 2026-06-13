@@ -103,7 +103,6 @@ docs/
 |--------------|-------------------|
 | [MISSING-FEATURES.md](reports/MISSING-FEATURES.md) | Missing features list / 缺失功能列表 |
 | [MISSING-FEATURES-PROGRESS.md](reports/MISSING-FEATURES-PROGRESS.md) | Missing features progress / 缺失功能进度 |
-| [MISSING-FEATURES-QUICK-REF.md](reports/MISSING-FEATURES-QUICK-REF.md) | Missing features quick reference / 缺失功能快速参考 |
 | [FINAL-PROGRESS-REPORT.md](reports/FINAL-PROGRESS-REPORT.md) | Final progress report / 最终进度报告 |
 | [RUNTIME-INTEGRATION-PROGRESS.md](reports/RUNTIME-INTEGRATION-PROGRESS.md) | Runtime integration progress / 运行时集成进度 |
 | [README-UPDATE-REPORT.md](reports/README-UPDATE-REPORT.md) | README update report / README 更新报告 |
@@ -159,11 +158,8 @@ docs/
 
 | Document / 文档 | Description / 描述 |
 |----------------|-------------------|
+| [SPRING-GAP-VERIFIED-2026-06-13.md](reports/SPRING-GAP-VERIFIED-2026-06-13.md) | Spring gaps (code-verified, authoritative) / Spring 差距（代码实测，权威） |
 | [spring-comparison.md](spring-boot/spring-comparison.md) | Spring Boot vs Hiver comparison / Spring Boot vs Hiver 对比 |
-| [spring-boot-gap-analysis.md](spring-boot/spring-boot-gap-analysis.md) | Spring Boot gap analysis / Spring Boot 差距分析 |
-| [spring-ecosystem-gap-analysis.md](spring-boot/spring-ecosystem-gap-analysis.md) | Spring ecosystem gap analysis / Spring 生态系统差距分析 |
-| [spring-features-gap-analysis.md](spring-boot/spring-features-gap-analysis.md) | Spring features gap analysis / Spring 功能差距分析 |
-| [spring-missing-features.md](spring-boot/spring-missing-features.md) | Spring missing features / Spring 缺失功能 |
 | [spring-modules-deep-analysis.md](spring-boot/spring-modules-deep-analysis.md) | Spring modules deep analysis / Spring 模块深度分析 |
 | [spring-boot-logging.md](spring-boot/spring-boot-logging.md) | Spring Boot logging / Spring Boot 日志 |
 

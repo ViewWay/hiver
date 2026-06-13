@@ -650,10 +650,8 @@ Hiver has achieved / Hiver 已实现：
 
 ### Internal Documents / 内部文档
 - [hiver-data-full-implementation.md](./hiver-data-full-implementation.md)
-- [spring-ecosystem-gap-analysis.md](./spring-ecosystem-gap-analysis.md)
-- [spring-missing-features.md](./spring-missing-features.md)
 - [implementation-roadmap-data.md](./implementation-roadmap-data.md)
-- [spring-boot-gap-analysis.md](./spring-boot-gap-analysis.md)
+- [SPRING-GAP-VERIFIED-2026-06-13.md](../reports/SPRING-GAP-VERIFIED-2026-06-13.md) — Spring gaps (code-verified) / Spring 差距（实测，取代已删除的旧 gap 文档）
 
 ---
 

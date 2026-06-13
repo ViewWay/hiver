@@ -9,14 +9,15 @@
 
 ## ⚠️ 取代声明 / Supersedes
 
-本报告基于**代码实测**，取代以下已失真的旧 gap 文档（旧文档保留仅作历史参考）：
+本报告基于**代码实测**，取代以下已失真的旧 gap 文档。这些旧文档已于 **2026-06-13 删除**（git 历史可查）：
 
-| 旧文档 | 状态 |
+| 已删除的旧文档 | 失真类型 |
 |---|---|
-| `docs/spring-boot/spring-boot-gap-analysis.md` | ❌ 已证伪（~80% 评估失效） |
-| `docs/spring-boot/spring-missing-features.md` | ❌ 已证伪（"89 项缺失"多数已实现） |
-| `docs/spring-boot/spring-features-gap-analysis.md` | ⚠️ 未逐一核验，同期同类，**假定同样失真** |
-| `docs/spring-boot/spring-ecosystem-gap-analysis.md` | ⚠️ 未逐一核验，同期同类，**假定同样失真** |
+| `docs/spring-boot/spring-boot-gap-analysis.md` | 低估（~80% 评估失效） |
+| `docs/spring-boot/spring-missing-features.md` | 低估（"89 项缺失"多数已实现） |
+| `docs/spring-boot/spring-features-gap-analysis.md` | 低估（2026-01-24 早期，待实现项现全有） |
+| `docs/spring-boot/spring-ecosystem-gap-analysis.md` | **反向过度乐观**（声称 95-100% 完成） |
+| `docs/reports/MISSING-FEATURES-QUICK-REF.md` | 失真派生摘要（Top 20 缺失均已实现） |
 
 旧文档声称的"缺失功能"与实际 70-crate 代码库大面积矛盾，会误导优先级决策。**任何引用旧 gap 文档的规划/计划都应改引用本报告。**
 
