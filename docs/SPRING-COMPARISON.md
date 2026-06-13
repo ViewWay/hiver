@@ -1,10 +1,10 @@
 # Hiver vs Spring 全生态对标文档
 # Hiver vs Spring Full Ecosystem Comparison
 
-> **Hiver** 是一个用 Rust 编写的生产级 Web 框架，设计理念对标 Spring 全家桶。
-> **Hiver** is a production-grade web framework written in Rust, designed to mirror the Spring ecosystem.
+> **Hiver** 是一个用 Rust 编写的 **alpha 阶段** Web 框架，设计理念对标 Spring 全家桶。
+> **Hiver** is an alpha-stage web framework written in Rust, designed to mirror the Spring ecosystem. (`0.1.0-alpha.6`, not production-stable.)
 >
-> 最后更新 / Last updated: 2026-06-01 | 62 crates | Phase 8 (Data Layer)
+> 最后更新 / Last updated: 2026-06-13 | 70 crates | Phase 8 (Data Layer) | 2026-06-13 校准
 
 ---
 

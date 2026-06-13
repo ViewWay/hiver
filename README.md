@@ -24,7 +24,7 @@
 
 # Hiver Framework
 
-Hiver is a production-grade, high-availability web framework written in Rust with a custom async runtime. Unlike other frameworks that use Tokio, Hiver features a custom async runtime built from scratch using io-uring for maximum performance.
+Hiver is an **alpha-stage** web framework written in Rust with a custom async runtime, aiming to mirror the Spring ecosystem. Unlike other frameworks that use Tokio, Hiver features a custom async runtime built from scratch using io-uring for maximum performance. **Not yet production-ready** (`0.1.0-alpha.6`) — see [project status](#-project-status).
 
 ## 🎯 Features
 
@@ -546,7 +546,7 @@ cargo clippy --workspace -- -D warnings
 
 > **⚠️ Alpha Version**
 >
-> Hiver is currently in **Phase 8: Data Layer** (in progress). Phases 0–7 are complete. The framework now spans **62 crates** covering the full Spring Boot feature set — from runtime and web layer through data, security, messaging, cloud, AI, and enterprise patterns.
+> Hiver is **alpha** software (`0.1.0-alpha.6`, not yet on crates.io). Currently in **Phase 8: Data Layer** (in progress). Phases 0–7 feature work is done (code-level), but **not production-stable** — runtime has a known SIGSEGV under workspace parallel tests. The framework spans **70 crates** covering the Spring Boot feature surface. See [verified gap report](docs/reports/SPRING-GAP-VERIFIED-2026-06-13.md) and [roadmap](docs/superpowers/plans/2026-06-13-development-roadmap.md).
 
 | Phase | Status | Description |
 |-------|--------|-------------|

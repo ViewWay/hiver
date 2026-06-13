@@ -104,7 +104,7 @@ Phase 6: Web3              [Month 15-19]  ████████████�
 ├── RPC Client (RpcClient with HTTP support, JSON-RPC calls)
 └── Smart Contract Interface (Contract, FunctionSelector, ERC20, ERC721)
 
-Phase 7: Production Ready  [Month 18-24]  ████████████████████   100%
+Phase 7: Hardening  [Month 18-24]  ████████████████████   code-level done (NOT "production ready" — runtime SIGSEGV pending)
 ├── Performance Optimization ✅
 ├── Security Audit ✅
 ├── Documentation ✅
@@ -124,7 +124,7 @@ Phase 7: Production Ready  [Month 18-24]  ████████████�
 │   ├── hiver-micrometer (Metrics Collection) ✅
 │   ├── hiver-integration (Enterprise Integration Patterns) ✅
 │   └── hiver-state-machine (State Machine Framework) ✅
-└── v1.0 Release (Pending - awaiting final release)
+└── v1.0 Release (Far — current 0.1.0-alpha.6; need runtime SIGSEGV fix + crates.io publish first)
 ```
 
 ---
@@ -637,7 +637,7 @@ hiver-web3/
 
 ---
 
-### Phase 7: Production Ready / 生产就绪 [Month 18-24]
+### Phase 7: Hardening / 硬化 [Month 18-24]（非"生产就绪" — runtime SIGSEGV 待修）
 
 **目标**: 生产级优化和发布
 
@@ -671,7 +671,7 @@ hiver-web3/
 
 #### Notes / 备注
 
-All Phase 7 development tasks completed successfully. The framework is production-ready pending final v1.0 release.
+All Phase 7 development tasks completed (code-level). The framework is **NOT production-ready** — runtime has a known SIGSEGV, and is not yet published to crates.io. See `docs/superpowers/plans/2026-06-13-development-roadmap.md`.
 所有第7阶段开发任务已成功完成。框架已生产就绪，等待最终 v1.0 版本发布。
 
 **Completed Items**:

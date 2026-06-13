@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Hiver** is a production-grade, high-availability web framework written in Rust.
+**Hiver** is an alpha-stage web framework written in Rust (`0.1.0-alpha.6`, not production-stable).
 
 ### Key Features
 
@@ -16,18 +16,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Project Status
 
+**Version**: `0.1.0-alpha.6` — **尚未发布到 crates.io**
 **Phase**: Data Layer (Phase 8, in progress)
-**Estimated Timeline**: 18-24 months to v1.0
+**Maturity**: **Alpha** — 功能广度已覆盖 Spring 核心模块（70 crate），但**非生产稳定**。
 
-**Completed Phases (0-7):**
+> ⚠️ **诚实定位（2026-06-13 校准）**：早期文档曾宣称 "production-ready / All Development Complete / v1.0"，已校正。真实状态见：
+> - `docs/reports/SPRING-GAP-VERIFIED-2026-06-13.md`（功能广度实测）
+> - `docs/superpowers/plans/2026-06-13-development-roadmap.md`（开发路线图）
+
+**Feature work done (Phase 0-7, 代码层面 — 非"生产就绪"):**
 - **Phase 0**: Foundation (CI/CD, documentation infrastructure)
-- **Phase 1**: Runtime Core (io-uring/epoll/kqueue drivers, thread-per-core scheduler, timer wheel, MPSC channels, benchmarks)
+- **Phase 1**: Runtime Core (io-uring/epoll/kqueue drivers, thread-per-core scheduler, timer wheel, MPSC channels, benchmarks) — ⚠️ 有 SIGSEGV 待修
 - **Phase 2**: HTTP Core (HTTP/1.1 server, router, extractors, middleware system)
 - **Phase 3**: Middleware & Extensions (CORS, compression, timeout, WebSocket, SSE)
 - **Phase 4**: Resilience (circuit breaker, retry, rate limiter, service discovery)
 - **Phase 5**: Observability (distributed tracing, metrics, structured logging)
 - **Phase 6**: Web3 Support (chain abstraction, wallet management, transactions, RPC client, smart contracts)
-- **Phase 7**: Production Ready (performance optimization, security audit, documentation, examples)
+- **Phase 7**: Hardening (performance optimization, security audit, documentation, examples) — ⚠️ 未达"Production Ready"
 
 **In Progress:**
 - **Phase 8**: Data Layer (6 months, P0 blocking)
@@ -36,13 +41,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - 8.3 hiver-data-orm: ORM abstraction, ActiveRecord, Model derive, QueryBuilder, Relationships, Migrations, SeaORM/Diesel/SQLx bridges ✅
   - Pre-existing code in mapper/executor/query_runtime modules needs structural refactoring
 
-**All Development Complete:**
-- Performance optimization (TechEmpower benchmarks, stress tests, fuzzing)
-- Security audit (dependency vulnerabilities fixed, SECURITY_AUDIT.md)
-- Complete documentation (README with annotated example, API docs, tutorial, migration guide)
-- Example applications (core, http, router, resilience, starter, logging, benchmarks)
-- Runtime benchmark suite with Criterion (P1-13)
-- v1.0 release (pending final tag and publication)
+**Known P0 blockers（阻塞采用）:**
+- runtime SIGSEGV（workspace 并行触发，内存安全 bug，见路线图 Phase 0.1）
+- crates.io 未发布（见路线图 Phase 1）
+
+**v1.0**: 远未到来。当前重心是稳基石 + 发布（路线图 Phase 0-1），而非补功能——功能广度已达标。
 
 ## Documentation
 
@@ -51,12 +54,12 @@ All design and API documentation is located in `docs/`:
 | Document | Description |
 |----------|-------------|
 | `docs/design-spec.md` | Coding standards, naming conventions, API design principles |
-| `docs/design/implementation-plan.md` | Detailed 7-phase implementation plan (all phases 100% complete) |
+| `docs/design/implementation-plan.md` | Detailed phased implementation plan（任务级进度跟踪；整体非"生产就绪"）|
 | `docs/SECURITY_AUDIT.md` | Security vulnerability tracking and fixes |
 | `README.md` | Comprehensive annotated examples |
 | `docs/book/` | In-depth documentation book |
 
-## Project Structure (Planned)
+## Project Structure（核心 crate 示意；实际 70 个 crate 见 `docs/CODEMAP.md`）
 
 ```
 hiver/
@@ -380,7 +383,7 @@ cargo fuzz run compression
 5. **Phase 4** (5mo): Resilience & HA
 6. **Phase 5** (5mo): Observability
 7. **Phase 6** (5mo): Web3 Support
-8. **Phase 7** (6mo): Production Ready
+8. **Phase 7** (6mo): Hardening (not "Production Ready" — runtime SIGSEGV pending)
 
 See `docs/implementation-plan.md` for details.
 
