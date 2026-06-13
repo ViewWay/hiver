@@ -32,6 +32,27 @@ jobs:
       - name: Build test binaries
         run: cargo test --workspace --no-fail-fast --no-run
 
+      - name: Probe io_uring availability (diagnose EINVAL: code vs environment)
+        run: |
+          cat > /tmp/probe.c <<'CEOF'
+          #include <linux/io_uring.h>
+          #include <sys/syscall.h>
+          #include <unistd.h>
+          #include <string.h>
+          #include <stdio.h>
+          #include <errno.h>
+          int main(void) {
+              struct io_uring_params p;
+              memset(&p, 0, sizeof(p));
+              long fd = syscall(SYS_io_uring_setup, 256, &p);
+              if (fd < 0) { printf("PROBE_RESULT: io_uring_setup(256, zeroed) FAILED errno=%d (%s)\n", errno, strerror(errno)); return 1; }
+              printf("PROBE_RESULT: io_uring_setup(256, zeroed) OK fd=%ld sq_entries=%u cq_entries=%u\n", fd, p.sq_entries, p.cq_entries);
+              close((int)fd);
+              return 0;
+          }
+          CEOF
+          gcc /tmp/probe.c -o /tmp/probe && /tmp/probe || true
+
       - name: Run workspace tests (up to 5x — UB is probabilistic)
         run: |
           ulimit -c unlimited
