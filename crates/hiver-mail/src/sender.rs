@@ -63,6 +63,7 @@ pub trait MailSender: Send + Sync
 /// ```rust,no_run
 /// use hiver_mail::config::MailConfig;
 /// use hiver_mail::sender::SmtpMailSender;
+/// use hiver_mail::sender::MailSender;
 /// use hiver_mail::message::MailMessage;
 ///
 /// # async fn example() -> hiver_mail::error::MailResult<()> {
