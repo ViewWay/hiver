@@ -344,17 +344,17 @@ struct StateData
     /// 当前电路状态
     state: AtomicU64, // Stored as u64: 0=Closed, 1=Open, 2=HalfOpen
 
-    /// When the circuit was opened
-    /// 电路何时打开
-    opened_at: Option<Instant>,
+    /// When the circuit was opened (protected by mutex for thread safety).
+    /// 电路何时打开（用 mutex 保护线程安全）。
+    opened_at: std::sync::Mutex<Option<Instant>>,
 
-    /// Successful calls in `HalfOpen` state
-    /// `HalfOpen状态下的成功调用数`
-    half_open_success_count: usize,
+    /// Successful calls in `HalfOpen` state (atomic for concurrent access).
+    /// `HalfOpen` 状态下的成功调用数（原子操作支持并发访问）。
+    half_open_success_count: AtomicU64,
 
-    /// Total calls in `HalfOpen` state
-    /// `HalfOpen状态下的总调用数`
-    half_open_total_count: usize,
+    /// Total calls in `HalfOpen` state (atomic for concurrent access).
+    /// `HalfOpen` 状态下的总调用数（原子操作支持并发访问）。
+    half_open_total_count: AtomicU64,
 }
 
 impl StateData
@@ -363,9 +363,9 @@ impl StateData
     {
         Self {
             state: AtomicU64::new(0), // Closed
-            opened_at: None,
-            half_open_success_count: 0,
-            half_open_total_count: 0,
+            opened_at: std::sync::Mutex::new(None),
+            half_open_success_count: AtomicU64::new(0),
+            half_open_total_count: AtomicU64::new(0),
         }
     }
 
@@ -391,13 +391,13 @@ impl StateData
         self.state.store(value, Ordering::Release);
         if state == CircuitState::Open
         {
-            self.opened_at = Some(Instant::now());
+            *self.opened_at.lock().unwrap() = Some(Instant::now());
         }
     }
 
     fn should_attempt_reset(&self, open_duration: Duration) -> bool
     {
-        if let Some(opened) = self.opened_at
+        if let Some(opened) = *self.opened_at.lock().unwrap()
         {
             opened.elapsed() >= open_duration
         }
@@ -475,8 +475,8 @@ impl CircuitBreaker
         if current == CircuitState::Open && data.should_attempt_reset(self.config.open_duration)
         {
             data.set_state(CircuitState::HalfOpen);
-            data.half_open_success_count = 0;
-            data.half_open_total_count = 0;
+            data.half_open_success_count.store(0, Ordering::Relaxed);
+            data.half_open_total_count.store(0, Ordering::Relaxed);
             CircuitState::HalfOpen
         }
         else
@@ -547,14 +547,14 @@ impl CircuitBreaker
             },
             CircuitState::HalfOpen =>
             {
-                data.half_open_success_count += 1;
-                data.half_open_total_count += 1;
+                data.half_open_success_count.fetch_add(1, Ordering::Relaxed);
+                data.half_open_total_count.fetch_add(1, Ordering::Relaxed);
 
-                if data.half_open_success_count >= self.config.permitted_calls_in_half_open
+                if data.half_open_success_count.load(Ordering::Relaxed) >= self.config.permitted_calls_in_half_open
                 {
                     data.set_state(CircuitState::Closed);
                 }
-                else if data.half_open_total_count >= self.config.max_calls_in_half_open
+                else if data.half_open_total_count.load(Ordering::Relaxed) >= self.config.max_calls_in_half_open
                 {
                     data.set_state(CircuitState::Open);
                 }
@@ -590,7 +590,7 @@ impl CircuitBreaker
             },
             CircuitState::HalfOpen =>
             {
-                data.half_open_total_count += 1;
+                data.half_open_total_count.fetch_add(1, Ordering::Relaxed);
                 // Any failure in HalfOpen trips back to Open
                 data.set_state(CircuitState::Open);
             },
@@ -611,8 +611,8 @@ impl CircuitBreaker
     {
         let mut data = self.state_data.lock().expect("lock poisoned");
         data.set_state(CircuitState::Closed);
-        data.half_open_success_count = 0;
-        data.half_open_total_count = 0;
+        data.half_open_success_count.store(0, Ordering::Relaxed);
+        data.half_open_total_count.store(0, Ordering::Relaxed);
     }
 
     /// Get current metrics
