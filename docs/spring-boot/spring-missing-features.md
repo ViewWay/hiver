@@ -1,5 +1,10 @@
 # Spring 隐藏的宝藏 - Hiver 缺失的关键功能分析
 
+> ## ⚠️ DEPRECATED — 此文档已失真，请勿引用
+> 本文档列出的"89 项缺失功能"多数**实际已实现**（Repository/findByXxx/@Conditional/@PreAuthorize/AOP/Cacheable/Batch/EIP Aggregator/AutoConfiguration/MockBean 等 11 项已实测证伪）。
+> **取代文档：[`docs/reports/SPRING-GAP-VERIFIED-2026-06-13.md`](../reports/SPRING-GAP-VERIFIED-2026-06-13.md)**（基于代码实测，2026-06-13）
+> 本文档保留仅作历史参考。
+
 基于 Spring 生态系统的深度分析，挖掘出那些**不显眼但至关重要**的功能。
 
 ## 🔍 Part 1: Spring Boot DevTools & 开发者体验

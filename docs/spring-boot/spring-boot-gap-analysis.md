@@ -1,5 +1,10 @@
 # Spring Boot vs Hiver - 功能对比分析 / 功能差距分析
 
+> ## ⚠️ DEPRECATED — 此文档已失真，请勿引用
+> 本文档评估的约 80% "❌ 缺失"功能**实际已实现**（crate 创建于 Jun 5-12，本文档写于其前）。
+> **取代文档：[`docs/reports/SPRING-GAP-VERIFIED-2026-06-13.md`](../reports/SPRING-GAP-VERIFIED-2026-06-13.md)**（基于代码实测，2026-06-13）
+> 本文档保留仅作历史参考。
+
 ## 📊 完整功能栈对比 / 完整功能栈对比
 
 ### 1. Web Layer / Web 层
