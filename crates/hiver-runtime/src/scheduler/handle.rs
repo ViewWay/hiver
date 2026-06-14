@@ -322,6 +322,10 @@ unsafe fn clone_waker(data: *const ()) -> RawWaker
 {
     let handle = Arc::from_raw(data as *const SchedulerHandle);
     let ptr = Arc::into_raw(handle.clone()) as *const ();
+    // Keep the original `data`'s strong ref — clone must not consume it.
+    // Without this forget, `handle` drops and decrements the original waker's
+    // refcount on every clone, causing a UAF (macOS SIGSEGV / Linux tcache).
+    std::mem::forget(handle);
     RawWaker::new(ptr, &VTABLE)
 }
 
