@@ -385,7 +385,7 @@ impl IoUringDriver
                 libc::PROT_READ | libc::PROT_WRITE,
                 libc::MAP_SHARED | libc::MAP_POPULATE,
                 ring_fd,
-                sq_ring_size as libc::off_t, // Completion queue ring is after submission queue
+                0x1000_0000, // IORING_OFF_CQ_RING — kernel-defined magic offset (not sq_ring_size)
             ) as *mut u8
         };
 
@@ -405,7 +405,7 @@ impl IoUringDriver
                 libc::PROT_READ | libc::PROT_WRITE,
                 libc::MAP_SHARED | libc::MAP_POPULATE,
                 ring_fd,
-                0x8000_0000_usize as libc::off_t, // SQEs are at this offset (IORING_OFF_SQES)
+                0x8000_0000, // IORING_OFF_SQES — kernel-defined magic offset (was 0x80000000, extra zero)
             ) as *mut SubmissionQueueEntry
         };
 
