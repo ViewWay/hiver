@@ -655,14 +655,34 @@ impl Driver for IoUringDriver
             tv_nsec: duration.subsec_nanos() as libc::c_long,
         };
 
+        // io_uring_enter timeout requires IORING_ENTER_EXT_ARG (kernel 5.11+)
+        // with struct io_uring_get_events_arg { sigmask, sigmask_sz, pad, ts }.
+        // The previous call passed &ts as the sigset_t* AND omitted the 6th
+        // arg (sigsz) — valgrind reported "io_uring_enter(sigsz) contains
+        // uninitialised byte(s)". EXT_ARG is the correct kernel API for timeout.
+        #[repr(C)]
+        struct IoUringGetEventsArg
+        {
+            sigmask: u64,
+            sigmask_sz: u32,
+            pad: u32,
+            ts: libc::timespec,
+        }
+        let arg = IoUringGetEventsArg {
+            sigmask: 0,
+            sigmask_sz: 0,
+            pad: 0,
+            ts,
+        };
         let result = unsafe {
             libc::syscall(
                 426, // __NR_io_uring_enter
                 self.ring_fd as libc::c_long,
-                0, // to_submit
-                1, // min_complete
-                2, // flags: IORING_ENTER_GETEVENTS | IORING_ENTER_TIMEOUT
-                &ts as *const _ as *const libc::sigset_t,
+                0,   // to_submit
+                1,   // min_complete
+                9,   // flags: IORING_ENTER_GETEVENTS(1) | IORING_ENTER_EXT_ARG(8)
+                &arg as *const _ as *const libc::c_void,
+                core::mem::size_of::<IoUringGetEventsArg>(),
             ) as libc::c_long
         };
 
