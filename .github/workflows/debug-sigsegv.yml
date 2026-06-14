@@ -53,6 +53,15 @@ jobs:
           CEOF
           gcc /tmp/probe.c -o /tmp/probe && /tmp/probe || true
 
+      - name: Valgrind runtime --lib (locate heap corruption / bad free / UAF)
+        run: |
+          sudo apt-get install -y valgrind
+          cargo test -p hiver-runtime --lib --no-run
+          BIN=$(find target/debug/deps -maxdepth 1 -name 'hiver_runtime-*' -type f ! -name '*.d' | head -1)
+          echo "=== valgrind on $BIN ==="
+          valgrind --error-exitcode=99 --leak-check=no \
+            "$BIN" --test-threads=1 2>&1 | grep -iE 'Invalid|uninitialised|Address |freed|ERROR SUMMARY|tcache|bad|by 0x|at 0x' | head -50 || true
+
       - name: Run workspace tests (up to 5x — UB is probabilistic)
         run: |
           ulimit -c unlimited
