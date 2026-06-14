@@ -667,13 +667,13 @@ impl Driver for IoUringDriver
             sigmask: u64,
             sigmask_sz: u32,
             pad: u32,
-            ts: libc::timespec,
+            ts: u64, // pointer to __kernel_timespec (kernel uapi: __u64, NOT embedded timespec)
         }
         let arg = IoUringGetEventsArg {
             sigmask: 0,
             sigmask_sz: 0,
             pad: 0,
-            ts,
+            ts: &ts as *const _ as u64,
         };
         let result = unsafe {
             libc::syscall(
