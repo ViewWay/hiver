@@ -3,10 +3,10 @@
 use std::sync::Arc;
 
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-
 use hiver_cloud_bus::{BusEvent, BusEventType, CloudBus, LocalBus};
 
-fn bench_local_bus_publish(c: &mut Criterion) {
+fn bench_local_bus_publish(c: &mut Criterion)
+{
     let rt = tokio::runtime::Runtime::new().unwrap();
     let bus = LocalBus::new();
     let count = Arc::new(std::sync::atomic::AtomicUsize::new(0));
@@ -28,13 +28,15 @@ fn bench_local_bus_publish(c: &mut Criterion) {
     });
 }
 
-fn bench_event_creation(c: &mut Criterion) {
+fn bench_event_creation(c: &mut Criterion)
+{
     c.bench_function("bus_event_config_refresh", |b| {
         b.iter(|| black_box(BusEvent::config_refresh(black_box("service-1"))));
     });
 }
 
-fn bench_event_serialization(c: &mut Criterion) {
+fn bench_event_serialization(c: &mut Criterion)
+{
     let event = BusEvent::config_refresh("svc")
         .with_header("region", "us-east-1")
         .with_payload(serde_json::json!({"keys": ["a", "b"]}));

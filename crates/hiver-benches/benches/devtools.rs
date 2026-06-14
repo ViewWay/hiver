@@ -3,19 +3,22 @@
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use hiver_devtools::{BuildInfo, Profile};
 
-fn bench_profile_detection(c: &mut Criterion) {
+fn bench_profile_detection(c: &mut Criterion)
+{
     c.bench_function("profile_current", |b| {
         b.iter(|| black_box(Profile::current()));
     });
 }
 
-fn bench_build_info(c: &mut Criterion) {
+fn bench_build_info(c: &mut Criterion)
+{
     c.bench_function("build_info_new", |b| {
         b.iter(|| black_box(BuildInfo::new()));
     });
 }
 
-fn bench_config_parse(c: &mut Criterion) {
+fn bench_config_parse(c: &mut Criterion)
+{
     let json = r#"{"server.port":8080,"db.url":"postgres://localhost","db.pool.max":10,"debug":true,"logging.level":"info"}"#;
     c.bench_function("config_parse_json_5_keys", |b| {
         b.iter(|| {
@@ -26,7 +29,8 @@ fn bench_config_parse(c: &mut Criterion) {
     });
 }
 
-fn bench_bus_event_serialize(c: &mut Criterion) {
+fn bench_bus_event_serialize(c: &mut Criterion)
+{
     let event = hiver_cloud_bus::BusEvent::config_refresh("bench-service")
         .with_header("region", "us-east-1")
         .with_payload(serde_json::json!({"keys": ["a", "b", "c"]}));
@@ -35,7 +39,8 @@ fn bench_bus_event_serialize(c: &mut Criterion) {
     });
 }
 
-fn bench_bus_event_deserialize(c: &mut Criterion) {
+fn bench_bus_event_deserialize(c: &mut Criterion)
+{
     let event = hiver_cloud_bus::BusEvent::config_refresh("bench-service")
         .with_header("region", "us-east-1");
     let bytes = event.to_bytes().unwrap();

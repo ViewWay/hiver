@@ -3,13 +3,15 @@
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use hiver_cloud_stream::StreamMessage;
 
-fn bench_stream_message_create(c: &mut Criterion) {
+fn bench_stream_message_create(c: &mut Criterion)
+{
     c.bench_function("stream_message_new", |b| {
         b.iter(|| black_box(StreamMessage::new(b"hello world".to_vec())));
     });
 }
 
-fn bench_stream_message_json(c: &mut Criterion) {
+fn bench_stream_message_json(c: &mut Criterion)
+{
     c.bench_function("stream_message_from_json", |b| {
         b.iter(|| {
             let data = serde_json::json!({"name": "test", "value": 42});
@@ -18,7 +20,8 @@ fn bench_stream_message_json(c: &mut Criterion) {
     });
 }
 
-fn bench_stream_message_builder(c: &mut Criterion) {
+fn bench_stream_message_builder(c: &mut Criterion)
+{
     c.bench_function("stream_message_builder_chain", |b| {
         b.iter(|| {
             black_box(
