@@ -689,7 +689,15 @@ impl Driver for IoUringDriver
 
         if result < 0
         {
-            return Err(std::io::Error::last_os_error());
+            let err = std::io::Error::last_os_error();
+            // io_uring_enter(GETEVENTS + timeout) returns -ETIME when the timeout
+            // expires with no completions — this is a NORMAL timeout, not an error.
+            // run_once already treats timed_out as normal idle; returning Err here
+            // aborted block_on whenever a pure-computation task had no I/O event.
+            if err.raw_os_error() == Some(libc::ETIMEDOUT) {
+                return Ok((0, true)); // 0 completions, timed out
+            }
+            return Err(err);
         }
 
         // Process completion queue
