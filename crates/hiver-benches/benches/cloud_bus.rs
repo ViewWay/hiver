@@ -46,5 +46,10 @@ fn bench_event_serialization(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, bench_local_bus_publish, bench_event_creation, bench_event_serialization);
+criterion_group!(
+    benches,
+    bench_local_bus_publish,
+    bench_event_creation,
+    bench_event_serialization
+);
 criterion_main!(benches);
