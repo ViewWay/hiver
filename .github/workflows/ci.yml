@@ -82,12 +82,9 @@ jobs:
 
       - name: Run tests / 运行测试
         run: |
-          cargo test --workspace --lib --exclude hiver-benches --exclude hiver-runtime -- --test-threads=1
-          # Runtime tests depend on io_uring struct layouts which vary by kernel version.
-          # Run them with continue-on-error since they may fail on different kernels.
-          # Runtime 测试依赖 io_uring 结构体布局，因内核版本而异。
-          # 使用 continue-on-error 运行，因为它们可能在不同内核上失败。
-          cargo test -p hiver-runtime --lib -- --test-threads=1 || true
+          cargo test --workspace --lib --exclude hiver-benches -- --test-threads=1
+          # Runtime tests now pass: io_uring mmap offsets (IORING_OFF_CQ_RING/SQES) fixed.
+          # Runtime 测试现已通过：io_uring mmap offset（IORING_OFF_CQ_RING/SQES）已修复。
 
   audit:
     name: Security Audit
