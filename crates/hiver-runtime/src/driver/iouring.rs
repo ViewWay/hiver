@@ -385,7 +385,7 @@ impl IoUringDriver
                 libc::PROT_READ | libc::PROT_WRITE,
                 libc::MAP_SHARED | libc::MAP_POPULATE,
                 ring_fd,
-                0x1000_0000, // IORING_OFF_CQ_RING — kernel-defined magic offset (not sq_ring_size)
+                0x800_0000, // IORING_OFF_CQ_RING — kernel-defined magic offset (not sq_ring_size)
             ) as *mut u8
         };
 
@@ -405,7 +405,7 @@ impl IoUringDriver
                 libc::PROT_READ | libc::PROT_WRITE,
                 libc::MAP_SHARED | libc::MAP_POPULATE,
                 ring_fd,
-                0x8000_0000, // IORING_OFF_SQES — kernel-defined magic offset (was 0x80000000, extra zero)
+                0x1000_0000, // IORING_OFF_SQES — kernel-defined magic offset (was 0x80000000)
             ) as *mut SubmissionQueueEntry
         };
 
