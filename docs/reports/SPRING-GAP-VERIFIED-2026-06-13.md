@@ -80,14 +80,16 @@
 - `CLAUDE.md`："Phase 0-7 全部 100% 完成 / production-ready / v1.0" vs 实际 `0.1.0-alpha.6`
 - `CLAUDE.md` `## Project Structure` 列 16 crate vs 实际 70
 
-### 🟡 未验证深水区（本轮 11 项之外，仍可能薄）
+### Phase 3 深水区验证结果（2026-06-14 grep 实测，取代上方"待验证"）
 
-虽 crate 存在，以下 Spring 难点 hiver 可能只有骨架：
+| 项 | 验证证据 | 结论 |
+|---|---|---|
+| **ORM 关联映射** | `data-orm` 仅 `Relationship` 错误类型（error.rs:31），无 @OneToMany/ManyToOne/lazy/eager 任何实现 | 🔴 **仅骨架**（真缺口） |
+| **OAuth2 全流程** | `authorization_server.rs`(2027行)+`oauth2.rs`(1732行)=3759行；`GrantType` 含 AuthorizationCode(+PKCE)/ClientCredentials/RefreshToken | 🟢 **深度实现**（非缺口） |
+| **预置 starter** | `starter/src/core/` 13 文件（autoconfig/autoconfigure_processor/bean_factory_post_processor/bean_post_processor/condition_evaluator/condition/container/loader/registry/scanner） | 🟡 **机制完整**（per-feature starter 数量另查） |
+| **响应式深度** | `async` 仅 `oneshot::channel`（task.rs），无 backpressure/broadcast/stream/sink/Subject | 🔴 **仅骨架**（真缺口） |
 
-- **ORM 关联映射**（@OneToMany 懒加载 / N+1）—— ORM 最深水区；方法名查询虽深，关联关系映射待核
-- **OAuth2 全流程**（授权码 / 客户端凭据 / 资源服务器端到端）
-- **预置 starter 数量**（autoconfigure 机制完整，但开箱即用的 starter 够不够多）
-- **WebFlux 级响应式深度**（背压 / 广播 / DataBuffer）
+**校准反转**：OAuth2 比预期深（已完成深水区，非缺口）；ORM 关联 + 响应式 比预期浅（真骨架缺口，待补）。
 
 ### 🟢 结构性差距（不可短期补）
 
