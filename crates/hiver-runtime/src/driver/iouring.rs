@@ -521,10 +521,12 @@ impl IoUringDriver
                 426, // __NR_io_uring_enter
                 self.ring_fd as libc::c_long,
                 to_submit as libc::c_long,
-                0, // min_complete
-                1, // flags: IORING_ENTER_GETEVENTS
+                0,                                      // min_complete
+                1,                                      // flags: IORING_ENTER_GETEVENTS
                 std::ptr::null_mut::<libc::sigset_t>(), // sig: NULL (no signal mask)
-                0, // sigsz: 0 (was missing — uninitialised 6th arg caused EINVAL on spawn submit)
+                0,                                      /* sigsz: 0 (was missing — uninitialised
+                                                         * 6th arg caused EINVAL on spawn
+                                                         * submit) */
             ) as libc::c_long
         };
 
@@ -679,9 +681,9 @@ impl Driver for IoUringDriver
             libc::syscall(
                 426, // __NR_io_uring_enter
                 self.ring_fd as libc::c_long,
-                0,   // to_submit
-                1,   // min_complete
-                9,   // flags: IORING_ENTER_GETEVENTS(1) | IORING_ENTER_EXT_ARG(8)
+                0, // to_submit
+                1, // min_complete
+                9, // flags: IORING_ENTER_GETEVENTS(1) | IORING_ENTER_EXT_ARG(8)
                 &arg as *const _ as *const libc::c_void,
                 core::mem::size_of::<IoUringGetEventsArg>(),
             ) as libc::c_long
@@ -694,7 +696,8 @@ impl Driver for IoUringDriver
             // expires with no completions — this is a NORMAL timeout, not an error.
             // run_once already treats timed_out as normal idle; returning Err here
             // aborted block_on whenever a pure-computation task had no I/O event.
-            if err.raw_os_error() == Some(libc::ETIMEDOUT) {
+            if err.raw_os_error() == Some(libc::ETIMEDOUT)
+            {
                 return Ok((0, true)); // 0 completions, timed out
             }
             return Err(err);
