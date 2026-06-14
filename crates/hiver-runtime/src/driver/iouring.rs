@@ -523,7 +523,8 @@ impl IoUringDriver
                 to_submit as libc::c_long,
                 0, // min_complete
                 1, // flags: IORING_ENTER_GETEVENTS
-                std::ptr::null_mut::<libc::sigset_t>(),
+                std::ptr::null_mut::<libc::sigset_t>(), // sig: NULL (no signal mask)
+                0, // sigsz: 0 (was missing — uninitialised 6th arg caused EINVAL on spawn submit)
             ) as libc::c_long
         };
 
