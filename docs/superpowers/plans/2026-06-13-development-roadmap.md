@@ -66,19 +66,21 @@
 
 ## Phase 1 — 发布到 crates.io（P0，阻塞采用）
 
-> **依赖：Phase 0 完成**——不发布有已知 SIGSEGV 的版本。
+> **依赖：Phase 0 完成** ✅（runtime 基石已稳定）
 
 ### 子任务
 
-- 1.1 发布元数据：补全各 crate `Cargo.toml` 的 `description`/`categories`/`keywords`（`cargo_common_metadata` lint）
-- 1.2 核验 `.github/workflows/auto-publish.yml` + `release.yml`（已有，确认可用）
-- 1.3 dry-run：`cargo publish --dry-run`（在 CI 跑）
-- 1.4 发布 `0.1.0-alpha.6`（或修正后的版本）到 crates.io
-- 1.5 README 改回 crates.io 版本号（撤销本次的 git 依赖临时方案）
+- 1.1 发布元数据 ✅ **无需补全**：实测所有 crate 经 `[workspace.package]` 继承完整元数据（version/license=`MIT OR Apache-2.0`/authors/repository/homepage/keywords/categories）。初判"22 crate 缺 license"是误报（漏看 `license.workspace = true`）。
+- 1.2 核验 `release.yml` + `auto-publish.yml` ✅ **已修正**：原矩阵漏列 7 个发布 crate（devtools/mail/mcp/cloud-stream/cloud-bus/data-rest/aop-macros），现已补齐，覆盖 69/70（hiver-benches `publish=false` 正确跳过）。依赖层级逐一核实，cloud-stream 在 cloud-bus 之前。
+- 1.3 dry-run ⏸️ 受 `本地不编译` 约束不本地跑；编译验证依赖 CI build job（已绿），元数据校验依赖 crates.io 服务端（发布时即时反馈）。
+- 1.4 发布 `0.1.0-alpha.6` 到 crates.io ⏸️ **待执行**：`git tag v0.1.0-alpha.6 && git push --tags`（需 `CRATES_TOKEN`，在 GitHub Secrets）。由维护者择时执行。
+- 1.5 README 改回 crates.io 版本号 ✅ **已完成**（commit `70e2829`）：git 依赖临时方案 → crates.io version 声明；SIGSEGV 过时声明已更新。
 
 **Skill:** `superpowers:writing-plans`（步骤明确，可 bite-sized TDD 化）→ `executing-plans`
 
-**验收：** `cargo add hiver-runtime` 在干净环境能装上并编译
+**验收：** `cargo add hiver-runtime` 在干净环境能装上并编译（发布后即可验证）
+
+> **状态：发布准备就绪（1.1/1.2/1.5 完成），待 tag 触发实际发布（1.4）。**
 
 ---
 
@@ -159,17 +161,24 @@ Phase 0 (稳基石) ──必须──▶ Phase 1 (发布)
                         Phase 5 (成熟度)
 ```
 
-**关键路径：** ~~Phase 0.1 (SIGSEGV)~~ ✅ → **Phase 1 (发布) ← 当前可启动** → 可采用
+**关键路径：** ~~Phase 0.1 (SIGSEGV)~~ ✅ → ~~Phase 1 发布准备~~ ✅ → **Phase 1.4 实际发布（待 tag）** → 可采用
 
 ---
 
 ## 立即可启动 / Immediate
 
-**Phase 1：发布到 crates.io**（用 `writing-plans` skill）
+**Phase 1.4：触发 crates.io 发布**（维护者操作）
 
-Phase 0.1 已完成，runtime 基石稳定。当前唯一阻塞采用的是未发布状态。Phase 1 步骤明确（发布元数据补全 → dry-run → 发布），适合 writing-plans → executing-plans 流程。
+Phase 0.1 完成，Phase 1 发布准备（元数据核验、release.yml 补全 7 crate、README 更新）已完成。唯一待执行步骤：
+
+```
+git tag v0.1.0-alpha.6 && git push --tags
+```
+
+这将触发 `release.yml`，按依赖层级顺序发布 69 个 crate（`max-parallel: 1`）。需 `CRATES_TOKEN`（已在 GitHub Secrets）。发布后 `cargo add hiver-runtime` 在干净环境可用即为达标。
 
 > Phase 0.2（jsonwebtoken CVE）可并行调查，但非发布阻塞项（取决于是否被 release 流程的 audit 拦截）。
+> Phase 2（文档诚实化）可立即并行启动，不依赖发布。
 
 ---
 
