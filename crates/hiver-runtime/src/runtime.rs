@@ -812,4 +812,67 @@ mod tests
         let result = runtime.block_on(async {});
         assert!(result.is_ok());
     }
+
+    /// Regression guard for the io_uring_enter ETIME-vs-ETIMEDOUT bug.
+    /// io_uring_enter ETIME 与 ETIMEDOUT 混淆的回归守护。
+    ///
+    /// `wait_timeout` must return `Ok((n, true))` — NOT `Err` — when the
+    /// kernel reports the timeout via -ETIME (errno 62). A previous fix
+    /// compared against `libc::ETIMEDOUT` (errno 110), which never matched,
+    /// so `block_on` aborted with `Os { code: 62, "Timer expired" }` on
+    /// every pure-computation spawn. This test forces that code path with
+    /// a 1ms park_timeout and many spawns so a timeout is near-certain;
+    /// if the errno check regresses, `block_on().unwrap()` panics here.
+    /// `wait_timeout` 在内核以 -ETIME（errno 62）报告超时时必须返回
+    /// `Ok((n, true))`，而非 `Err`。之前的修复错误地与 `libc::ETIMEDOUT`
+    /// （errno 110）比较，永不匹配，导致每次纯计算 spawn 都因
+    /// `Os { code: 62, "Timer expired" }` 中止 block_on。本测试用 1ms
+    /// park_timeout 和大量 spawn 强制触发该路径；若 errno 判断回退，
+    /// `block_on().unwrap()` 会在此 panic。
+    #[test]
+    fn test_block_on_survives_driver_wait_timeout()
+    {
+        use std::sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        };
+
+        // 1ms park: run_once's driver.wait_timeout will frequently time out
+        // while the scheduler worker completes spawned tasks, exercising the
+        // timeout-as-normal-idle path on every iteration.
+        // 1ms 休眠：run_once 的 driver.wait_timeout 会频繁超时，同时调度器
+        // worker 完成已 spawn 的任务，从而在每次迭代都触发"超时即正常空闲"路径。
+        let config = RuntimeConfig {
+            park_timeout: Duration::from_millis(1),
+            ..RuntimeConfig::default()
+        };
+        let mut runtime = Runtime::with_config(config).unwrap();
+
+        let counter = Arc::new(AtomicUsize::new(0));
+
+        runtime
+            .block_on(async {
+                // 50 spawns spread across many run_once iterations make a
+                // driver timeout almost certain; if ETIME is mishandled as
+                // an error, block_on returns Err and unwrap() fails here.
+                // 50 次 spawn 分散在多次 run_once 迭代中，几乎必然触发一次
+                // driver 超时；若 ETIME 被误判为错误，block_on 返回 Err，
+                // 此处 unwrap() 失败。
+                let mut handles = vec![];
+                for _ in 0..50
+                {
+                    let c = counter.clone();
+                    handles.push(crate::task::spawn(async move {
+                        c.fetch_add(1, Ordering::Relaxed);
+                    }));
+                }
+                for h in handles
+                {
+                    let _ = h.wait().await;
+                }
+            })
+            .unwrap();
+
+        assert_eq!(counter.load(Ordering::Relaxed), 50);
+    }
 }
