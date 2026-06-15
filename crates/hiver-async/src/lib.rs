@@ -55,11 +55,13 @@
 )]
 mod tests;
 
+pub mod backpressure;
 mod config;
 mod error;
 mod executor;
 mod task;
 
+pub use backpressure::{Backpressure, Permit};
 pub use config::{ExecutionMode, RejectionPolicy, TaskExecutorConfig};
 pub use error::{AsyncError, AsyncResult};
 pub use executor::{AsyncTaskExecutor, TaskExecutor};
