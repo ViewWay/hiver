@@ -84,7 +84,7 @@
 
 | 项 | 验证证据 | 结论 |
 |---|---|---|
-| **ORM 关联映射** | `data-orm` 仅 `Relationship` 错误类型（error.rs:31），无 @OneToMany/ManyToOne/lazy/eager 任何实现 | 🔴 **仅骨架**（真缺口） |
+| **ORM 关联映射** | `relationships.rs` **864 行**：HasMany/HasOne/BelongsTo/ManyToMany + `Relation` metadata + `OnDelete` + `load()`（实际 fetch 相关记录）；无自动 lazy/eager preload（N+1 优化缺） | 🟡 **有实现，缺 lazy/eager**（之前误判骨架——grep snake_case 漏 PascalCase） |
 | **OAuth2 全流程** | `authorization_server.rs`(2027行)+`oauth2.rs`(1732行)=3759行；`GrantType` 含 AuthorizationCode(+PKCE)/ClientCredentials/RefreshToken | 🟢 **深度实现**（非缺口） |
 | **预置 starter** | `starter/src/core/` 13 文件（autoconfig/autoconfigure_processor/bean_factory_post_processor/bean_post_processor/condition_evaluator/condition/container/loader/registry/scanner） | 🟡 **机制完整**（per-feature starter 数量另查） |
 | **响应式深度** | `async` 仅 `oneshot::channel`（task.rs），无 backpressure/broadcast/stream/sink/Subject | 🔴 **仅骨架**（真缺口） |
