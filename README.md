@@ -49,12 +49,12 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-# Hiver is not yet published to crates.io — use a git dependency for now.
-# Hiver 尚未发布到 crates.io，暂用 git 依赖。
-hiver-runtime = { git = "https://github.com/ViewWay/hiver" }
-hiver-http = { git = "https://github.com/ViewWay/hiver", features = ["full"] }
-hiver-router = { git = "https://github.com/ViewWay/hiver" }
-hiver-observability = { git = "https://github.com/ViewWay/hiver" }
+# Published to crates.io (0.1.0-alpha.6)
+# 已发布到 crates.io（0.1.0-alpha.6）
+hiver-runtime = "0.1.0-alpha.6"
+hiver-http = { version = "0.1.0-alpha.6", features = ["full"] }
+hiver-router = "0.1.0-alpha.6"
+hiver-observability = "0.1.0-alpha.6"
 ```
 
 ### Basic HTTP Server
@@ -546,7 +546,7 @@ cargo clippy --workspace -- -D warnings
 
 > **⚠️ Alpha Version**
 >
-> Hiver is **alpha** software (`0.1.0-alpha.6`, not yet on crates.io). Currently in **Phase 8: Data Layer** (in progress). Phases 0–7 feature work is done (code-level), but **not production-stable** — runtime has a known SIGSEGV under workspace parallel tests. The framework spans **70 crates** covering the Spring Boot feature surface. See [verified gap report](docs/reports/SPRING-GAP-VERIFIED-2026-06-13.md) and [roadmap](docs/superpowers/plans/2026-06-13-development-roadmap.md).
+> Hiver is **alpha** software (`0.1.0-alpha.6`). Currently in **Phase 8: Data Layer** (in progress). Phases 0–7 feature work is done (code-level), but **not production-stable**. The custom async runtime is stable under `cargo test --workspace` (4 UBs fixed, Phase 0.1 complete). The framework spans **70 crates** covering the Spring Boot feature surface. See [verified gap report](docs/reports/SPRING-GAP-VERIFIED-2026-06-13.md) and [roadmap](docs/superpowers/plans/2026-06-13-development-roadmap.md).
 
 | Phase | Status | Description |
 |-------|--------|-------------|
