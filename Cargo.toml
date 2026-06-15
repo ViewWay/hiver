@@ -212,7 +212,7 @@ diesel = { version = "2.3", features = ["postgres", "mysql", "sqlite"] }
 
 # Transaction Management / 事务管理
 # Equivalent to: Spring Transaction Management
-tokio-postgres = "0.7"
+tokio-postgres = "0.7.18"
 
 # Security / 安全
 # Equivalent to: Spring Security
