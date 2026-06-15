@@ -1,24 +1,26 @@
 //! MCP Client — connects to MCP servers and invokes tools/resources/prompts.
 //! MCP 客户端 — 连接到 MCP 服务器并调用工具/资源/提示。
 
-use std::collections::HashMap;
-use std::sync::atomic::{AtomicI64, Ordering};
-
+use std::{
+    collections::HashMap,
+    sync::atomic::{AtomicI64, Ordering},
+};
 
 use tokio::sync::RwLock;
 use tracing::{debug, info};
 
-use crate::error::McpError;
-use crate::message::{
-    parse_message, JsonRpcId, JsonRpcMessage, JsonRpcRequest, JsonRpcResponse,
-    METHOD_INITIALIZE, METHOD_PING, METHOD_PROMPTS_GET, METHOD_PROMPTS_LIST,
-    METHOD_RESOURCES_LIST, METHOD_RESOURCES_READ, METHOD_TOOLS_CALL, METHOD_TOOLS_LIST,
-    NOTIFICATION_INITIALIZED,
-};
-use crate::transport::Transport;
-use crate::types::{
-    ClientCapabilities, GetPromptResult, InitializeResult, Prompt, ReadResourceResult, Resource,
-    ServerCapabilities, Tool, MCP_PROTOCOL_VERSION,
+use crate::{
+    error::McpError,
+    message::{
+        JsonRpcId, JsonRpcMessage, JsonRpcRequest, JsonRpcResponse, METHOD_INITIALIZE, METHOD_PING,
+        METHOD_PROMPTS_GET, METHOD_PROMPTS_LIST, METHOD_RESOURCES_LIST, METHOD_RESOURCES_READ,
+        METHOD_TOOLS_CALL, METHOD_TOOLS_LIST, NOTIFICATION_INITIALIZED, parse_message,
+    },
+    transport::Transport,
+    types::{
+        ClientCapabilities, GetPromptResult, InitializeResult, MCP_PROTOCOL_VERSION, Prompt,
+        ReadResourceResult, Resource, ServerCapabilities, Tool,
+    },
 };
 
 // ============================================================
@@ -80,10 +82,7 @@ impl McpClient
     /// 1. Sends `initialize` request
     /// 2. Receives server capabilities
     /// 3. Sends `notifications/initialized`
-    pub async fn connect<T: Transport + 'static>(
-        &self,
-        transport: T,
-    ) -> Result<(), McpError>
+    pub async fn connect<T: Transport + 'static>(&self, transport: T) -> Result<(), McpError>
     {
         *self.transport.write().await = Box::new(transport);
         self.initialize().await?;
@@ -129,7 +128,11 @@ impl McpClient
 
         let resp = self.send_request(METHOD_TOOLS_LIST, None).await?;
         let tools: Vec<Tool> = serde_json::from_value(
-            resp.result.unwrap_or_default().get("tools").cloned().unwrap_or_default(),
+            resp.result
+                .unwrap_or_default()
+                .get("tools")
+                .cloned()
+                .unwrap_or_default(),
         )?;
         Ok(tools)
     }
@@ -172,7 +175,11 @@ impl McpClient
 
         let resp = self.send_request(METHOD_RESOURCES_LIST, None).await?;
         let resources: Vec<Resource> = serde_json::from_value(
-            resp.result.unwrap_or_default().get("resources").cloned().unwrap_or_default(),
+            resp.result
+                .unwrap_or_default()
+                .get("resources")
+                .cloned()
+                .unwrap_or_default(),
         )?;
         Ok(resources)
     }
@@ -184,7 +191,9 @@ impl McpClient
         self.require_initialized().await?;
 
         let params = serde_json::json!({ "uri": uri });
-        let resp = self.send_request(METHOD_RESOURCES_READ, Some(params)).await?;
+        let resp = self
+            .send_request(METHOD_RESOURCES_READ, Some(params))
+            .await?;
 
         if let Some(error) = resp.error
         {
@@ -207,7 +216,11 @@ impl McpClient
 
         let resp = self.send_request(METHOD_PROMPTS_LIST, None).await?;
         let prompts: Vec<Prompt> = serde_json::from_value(
-            resp.result.unwrap_or_default().get("prompts").cloned().unwrap_or_default(),
+            resp.result
+                .unwrap_or_default()
+                .get("prompts")
+                .cloned()
+                .unwrap_or_default(),
         )?;
         Ok(prompts)
     }
@@ -266,10 +279,7 @@ impl McpClient
 
         if let Some(error) = resp.error
         {
-            return Err(McpError::ProtocolError(format!(
-                "Initialize failed: {}",
-                error.message
-            )));
+            return Err(McpError::ProtocolError(format!("Initialize failed: {}", error.message)));
         }
 
         let init_result: InitializeResult =
@@ -325,9 +335,12 @@ impl McpClient
         let mut transport = self.transport.write().await;
         transport.send(&json).await?;
 
-        let Some(line) = transport.receive().await? else
+        let Some(line) = transport.receive().await?
+        else
         {
-            return Err(McpError::TransportError("Transport closed while waiting for response".into()));
+            return Err(McpError::TransportError(
+                "Transport closed while waiting for response".into(),
+            ));
         };
 
         let message = parse_message(&line)?;
@@ -344,11 +357,12 @@ impl McpClient
                     )));
                 }
                 Ok(resp)
-            }
+            },
             JsonRpcMessage::Notification(_) =>
             {
                 // Got a notification instead of response — read again
-                let Some(line2) = transport.receive().await? else
+                let Some(line2) = transport.receive().await?
+                else
                 {
                     return Err(McpError::TransportError("Transport closed".into()));
                 };
@@ -358,7 +372,7 @@ impl McpClient
                     JsonRpcMessage::Response(resp) => Ok(resp),
                     _ => Err(McpError::ProtocolError("Expected response".into())),
                 }
-            }
+            },
             _ => Err(McpError::ProtocolError("Expected response".into())),
         }
     }
@@ -392,10 +406,12 @@ impl Transport for NoopTransport
     {
         Err(McpError::TransportError("Not connected".into()))
     }
+
     async fn receive(&mut self) -> Result<Option<String>, McpError>
     {
         Err(McpError::TransportError("Not connected".into()))
     }
+
     async fn close(&mut self) -> Result<(), McpError>
     {
         Ok(())
@@ -406,10 +422,12 @@ impl Transport for NoopTransport
 mod tests
 {
     use super::*;
-    use crate::registry::{FunctionTool, StaticPrompt, StaticTextResource};
-    use crate::server::McpServer;
-    use crate::transport::MemoryTransport;
-    use crate::types::CallToolResult;
+    use crate::{
+        registry::{FunctionTool, StaticPrompt, StaticTextResource},
+        server::McpServer,
+        transport::MemoryTransport,
+        types::CallToolResult,
+    };
 
     /// Sets up a server + client connected via in-memory transport.
     async fn setup_connected() -> (McpClient, tokio::task::JoinHandle<()>)

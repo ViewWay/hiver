@@ -6,7 +6,8 @@
 
 use bytes::Bytes;
 use http::{HeaderMap, HeaderValue, StatusCode};
-use crate::response::{Response, IntoResponse};
+
+use crate::response::{IntoResponse, Response};
 
 /// Spring-style generic response entity with status, headers, and body.
 /// Spring 风格的泛型响应实体，包含状态码、头部和请求体。
@@ -51,7 +52,8 @@ impl<T> ResponseEntity<T>
     /// HTTP 200 OK (no body).
     /// HTTP 200 OK（无请求体）。
     pub fn ok() -> Self
-    where T: Default
+    where
+        T: Default,
     {
         Self::status(StatusCode::OK)
     }
@@ -220,19 +222,16 @@ impl<T: serde::Serialize> IntoResponse for ResponseEntity<T>
     {
         let body = match &self.body
         {
-            Some(data) =>
+            Some(data) => match serde_json::to_vec(data)
             {
-                match serde_json::to_vec(data)
+                Ok(bytes) => Bytes::from(bytes),
+                Err(e) =>
                 {
-                    Ok(bytes) => Bytes::from(bytes),
-                    Err(e) =>
-                    {
-                        return Response::builder()
-                            .status(StatusCode::INTERNAL_SERVER_ERROR)
-                            .body(Bytes::from(format!("{{\"error\":\" serialization failed: {e}\"}}")))
-                            .unwrap_or_else(|_| Response::new());
-                    },
-                }
+                    return Response::builder()
+                        .status(StatusCode::INTERNAL_SERVER_ERROR)
+                        .body(Bytes::from(format!("{{\"error\":\" serialization failed: {e}\"}}")))
+                        .unwrap_or_else(|_| Response::new());
+                },
             },
             None => Bytes::new(),
         };

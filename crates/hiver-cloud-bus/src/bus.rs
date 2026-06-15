@@ -3,8 +3,7 @@
 
 use async_trait::async_trait;
 
-use crate::error::BusResult;
-use crate::event::BusEvent;
+use crate::{error::BusResult, event::BusEvent};
 
 /// Event handler callback type.
 pub type EventHandler = Box<dyn Fn(&BusEvent) + Send + Sync>;

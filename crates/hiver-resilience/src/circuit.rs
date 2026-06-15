@@ -550,11 +550,13 @@ impl CircuitBreaker
                 data.half_open_success_count.fetch_add(1, Ordering::Relaxed);
                 data.half_open_total_count.fetch_add(1, Ordering::Relaxed);
 
-                if data.half_open_success_count.load(Ordering::Relaxed) >= self.config.permitted_calls_in_half_open as u64
+                if data.half_open_success_count.load(Ordering::Relaxed)
+                    >= self.config.permitted_calls_in_half_open as u64
                 {
                     data.set_state(CircuitState::Closed);
                 }
-                else if data.half_open_total_count.load(Ordering::Relaxed) >= self.config.max_calls_in_half_open as u64
+                else if data.half_open_total_count.load(Ordering::Relaxed)
+                    >= self.config.max_calls_in_half_open as u64
                 {
                     data.set_state(CircuitState::Open);
                 }

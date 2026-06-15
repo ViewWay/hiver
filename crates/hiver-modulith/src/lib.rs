@@ -24,9 +24,7 @@ mod verify;
 
 pub use dependency::{DependencyGraph, ModuleDependency};
 pub use event::{DomainEvent, EventHandler, EventPublisher, InMemoryEventPublisher};
-pub use lifecycle::{
-    LifecycleModule, ModuleDescriptor, ModulePhase, collect_modules,
-};
+pub use lifecycle::{LifecycleModule, ModuleDescriptor, ModulePhase, collect_modules};
 pub use module::{Module, ModuleMetadata};
 pub use registry::ModuleRegistry;
 pub use verify::{VerificationResult, verify_modules};

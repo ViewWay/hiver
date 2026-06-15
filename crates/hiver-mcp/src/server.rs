@@ -1,26 +1,25 @@
 //! MCP Server implementation — dispatches JSON-RPC requests to registered handlers.
 //! MCP 服务器实现 — 将 JSON-RPC 请求派发到已注册的处理器。
 
-use std::collections::HashMap;
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 use tokio::sync::RwLock;
 use tracing::{debug, error, info, warn};
 
-use crate::error::McpError;
-use crate::lifecycle::ServerLifecycle;
-use crate::message::{
-    parse_message, JsonRpcId, JsonRpcMessage, JsonRpcRequest, JsonRpcResponse,
-    METHOD_INITIALIZE, METHOD_PING, METHOD_PROMPTS_GET, METHOD_PROMPTS_LIST,
-    METHOD_RESOURCES_LIST, METHOD_RESOURCES_READ, METHOD_TOOLS_CALL, METHOD_TOOLS_LIST,
-    NOTIFICATION_INITIALIZED,
-};
-use crate::registry::{PromptRegistry, ResourceRegistry, ToolRegistry};
-use crate::transport::Transport;
-use crate::types::{
-    ClientCapabilities, Implementation, InitializeResult,
-    PromptsCapability, ResourcesCapability, ServerCapabilities, ToolsCapability,
-    MCP_PROTOCOL_VERSION,
+use crate::{
+    error::McpError,
+    lifecycle::ServerLifecycle,
+    message::{
+        JsonRpcId, JsonRpcMessage, JsonRpcRequest, JsonRpcResponse, METHOD_INITIALIZE, METHOD_PING,
+        METHOD_PROMPTS_GET, METHOD_PROMPTS_LIST, METHOD_RESOURCES_LIST, METHOD_RESOURCES_READ,
+        METHOD_TOOLS_CALL, METHOD_TOOLS_LIST, NOTIFICATION_INITIALIZED, parse_message,
+    },
+    registry::{PromptRegistry, ResourceRegistry, ToolRegistry},
+    transport::Transport,
+    types::{
+        ClientCapabilities, Implementation, InitializeResult, MCP_PROTOCOL_VERSION,
+        PromptsCapability, ResourcesCapability, ServerCapabilities, ToolsCapability,
+    },
 };
 
 // ============================================================
@@ -196,7 +195,8 @@ impl McpServer
 
         loop
         {
-            let Some(line) = transport.receive().await? else
+            let Some(line) = transport.receive().await?
+            else
             {
                 debug!("Transport closed");
                 break;
@@ -210,11 +210,11 @@ impl McpServer
                 {
                     let json = serde_json::to_string(&response)?;
                     transport.send(&json).await?;
-                }
+                },
                 Ok(None) =>
                 {
                     // Notification — no response needed
-                }
+                },
                 Err(e) =>
                 {
                     error!(error = %e, "Error dispatching message");
@@ -238,7 +238,7 @@ impl McpServer
                             transport.send(&json).await?;
                         }
                     }
-                }
+                },
             }
         }
 
@@ -264,17 +264,17 @@ impl McpServer
             {
                 let response = self.handle_request(req).await?;
                 Ok(Some(response))
-            }
+            },
             JsonRpcMessage::Notification(notif) =>
             {
                 self.handle_notification(notif).await?;
                 Ok(None)
-            }
+            },
             JsonRpcMessage::Response(_) =>
             {
                 // Servers don't expect responses — ignore silently
                 Ok(None)
-            }
+            },
         }
     }
 
@@ -301,7 +301,7 @@ impl McpServer
                     crate::message::METHOD_NOT_FOUND,
                     format!("Unknown method: {}", req.method),
                 ))
-            }
+            },
         }
     }
 
@@ -319,11 +319,11 @@ impl McpServer
                 let mut state = self.state.write().await;
                 *state = state.complete_initialize()?;
                 info!("Client initialized — server ready");
-            }
+            },
             other =>
             {
                 debug!(method = other, "Unhandled notification");
-            }
+            },
         }
         Ok(())
     }
@@ -333,10 +333,7 @@ impl McpServer
     // ================================================================
 
     /// Handles `initialize` request.
-    async fn handle_initialize(
-        &self,
-        req: JsonRpcRequest,
-    ) -> Result<JsonRpcResponse, McpError>
+    async fn handle_initialize(&self, req: JsonRpcRequest) -> Result<JsonRpcResponse, McpError>
     {
         {
             let mut state = self.state.write().await;
@@ -354,7 +351,9 @@ impl McpServer
 
         let tools_cap = if !self.tools.is_empty().await
         {
-            Some(ToolsCapability { list_changed: false })
+            Some(ToolsCapability {
+                list_changed: false,
+            })
         }
         else
         {
@@ -373,7 +372,9 @@ impl McpServer
         };
         let prompts_cap = if !self.prompts.is_empty().await
         {
-            Some(PromptsCapability { list_changed: false })
+            Some(PromptsCapability {
+                list_changed: false,
+            })
         }
         else
         {
@@ -396,10 +397,7 @@ impl McpServer
     }
 
     /// Handles `tools/list`.
-    async fn handle_tools_list(
-        &self,
-        req: JsonRpcRequest,
-    ) -> Result<JsonRpcResponse, McpError>
+    async fn handle_tools_list(&self, req: JsonRpcRequest) -> Result<JsonRpcResponse, McpError>
     {
         let state = self.state.read().await;
         if !state.is_ready()
@@ -408,17 +406,11 @@ impl McpServer
         }
 
         let tools = self.tools.list_definitions().await;
-        Ok(JsonRpcResponse::ok(
-            req.id,
-            serde_json::json!({ "tools": tools }),
-        ))
+        Ok(JsonRpcResponse::ok(req.id, serde_json::json!({ "tools": tools })))
     }
 
     /// Handles `tools/call`.
-    async fn handle_tools_call(
-        &self,
-        req: JsonRpcRequest,
-    ) -> Result<JsonRpcResponse, McpError>
+    async fn handle_tools_call(&self, req: JsonRpcRequest) -> Result<JsonRpcResponse, McpError>
     {
         let state = self.state.read().await;
         if !state.is_ready()
@@ -447,10 +439,8 @@ impl McpServer
     }
 
     /// Handles `resources/list`.
-    async fn handle_resources_list(
-        &self,
-        req: JsonRpcRequest,
-    ) -> Result<JsonRpcResponse, McpError>
+    async fn handle_resources_list(&self, req: JsonRpcRequest)
+    -> Result<JsonRpcResponse, McpError>
     {
         let state = self.state.read().await;
         if !state.is_ready()
@@ -459,17 +449,12 @@ impl McpServer
         }
 
         let resources = self.resources.list_definitions().await;
-        Ok(JsonRpcResponse::ok(
-            req.id,
-            serde_json::json!({ "resources": resources }),
-        ))
+        Ok(JsonRpcResponse::ok(req.id, serde_json::json!({ "resources": resources })))
     }
 
     /// Handles `resources/read`.
-    async fn handle_resources_read(
-        &self,
-        req: JsonRpcRequest,
-    ) -> Result<JsonRpcResponse, McpError>
+    async fn handle_resources_read(&self, req: JsonRpcRequest)
+    -> Result<JsonRpcResponse, McpError>
     {
         let state = self.state.read().await;
         if !state.is_ready()
@@ -493,10 +478,7 @@ impl McpServer
     }
 
     /// Handles `prompts/list`.
-    async fn handle_prompts_list(
-        &self,
-        req: JsonRpcRequest,
-    ) -> Result<JsonRpcResponse, McpError>
+    async fn handle_prompts_list(&self, req: JsonRpcRequest) -> Result<JsonRpcResponse, McpError>
     {
         let state = self.state.read().await;
         if !state.is_ready()
@@ -505,17 +487,11 @@ impl McpServer
         }
 
         let prompts = self.prompts.list_definitions().await;
-        Ok(JsonRpcResponse::ok(
-            req.id,
-            serde_json::json!({ "prompts": prompts }),
-        ))
+        Ok(JsonRpcResponse::ok(req.id, serde_json::json!({ "prompts": prompts })))
     }
 
     /// Handles `prompts/get`.
-    async fn handle_prompts_get(
-        &self,
-        req: JsonRpcRequest,
-    ) -> Result<JsonRpcResponse, McpError>
+    async fn handle_prompts_get(&self, req: JsonRpcRequest) -> Result<JsonRpcResponse, McpError>
     {
         let state = self.state.read().await;
         if !state.is_ready()
@@ -567,9 +543,11 @@ impl McpServer
 mod tests
 {
     use super::*;
-    use crate::registry::{FunctionTool, StaticPrompt, StaticTextResource};
-    use crate::types::CallToolResult;
-    use crate::transport::MemoryTransport;
+    use crate::{
+        registry::{FunctionTool, StaticPrompt, StaticTextResource},
+        transport::MemoryTransport,
+        types::CallToolResult,
+    };
 
     async fn setup_test_server() -> (McpServer, MemoryTransport, MemoryTransport)
     {
@@ -663,24 +641,33 @@ mod tests
 
         // Initialize first
         client
-            .send(&serde_json::to_string(&serde_json::json!({
-                "jsonrpc": "2.0", "id": 1, "method": "initialize",
-                "params": {"protocolVersion": "2025-03-26", "capabilities": {},
-                    "clientInfo": {"name": "test", "version": "1.0"}}
-            })).unwrap())
+            .send(
+                &serde_json::to_string(&serde_json::json!({
+                    "jsonrpc": "2.0", "id": 1, "method": "initialize",
+                    "params": {"protocolVersion": "2025-03-26", "capabilities": {},
+                        "clientInfo": {"name": "test", "version": "1.0"}}
+                }))
+                .unwrap(),
+            )
             .await
             .unwrap();
         let _ = client.receive().await.unwrap();
         client
-            .send(&serde_json::json!({"jsonrpc":"2.0","method":"notifications/initialized"}).to_string())
+            .send(
+                &serde_json::json!({"jsonrpc":"2.0","method":"notifications/initialized"})
+                    .to_string(),
+            )
             .await
             .unwrap();
 
         // List tools
         client
-            .send(&serde_json::to_string(&serde_json::json!({
-                "jsonrpc": "2.0", "id": 2, "method": "tools/list"
-            })).unwrap())
+            .send(
+                &serde_json::to_string(&serde_json::json!({
+                    "jsonrpc": "2.0", "id": 2, "method": "tools/list"
+                }))
+                .unwrap(),
+            )
             .await
             .unwrap();
         let resp = client.receive().await.unwrap().unwrap();
@@ -703,25 +690,34 @@ mod tests
 
         // Initialize
         client
-            .send(&serde_json::to_string(&serde_json::json!({
-                "jsonrpc": "2.0", "id": 1, "method": "initialize",
-                "params": {"protocolVersion": "2025-03-26", "capabilities": {},
-                    "clientInfo": {"name": "test", "version": "1.0"}}
-            })).unwrap())
+            .send(
+                &serde_json::to_string(&serde_json::json!({
+                    "jsonrpc": "2.0", "id": 1, "method": "initialize",
+                    "params": {"protocolVersion": "2025-03-26", "capabilities": {},
+                        "clientInfo": {"name": "test", "version": "1.0"}}
+                }))
+                .unwrap(),
+            )
             .await
             .unwrap();
         let _ = client.receive().await.unwrap();
         client
-            .send(&serde_json::json!({"jsonrpc":"2.0","method":"notifications/initialized"}).to_string())
+            .send(
+                &serde_json::json!({"jsonrpc":"2.0","method":"notifications/initialized"})
+                    .to_string(),
+            )
             .await
             .unwrap();
 
         // Call tool
         client
-            .send(&serde_json::to_string(&serde_json::json!({
-                "jsonrpc": "2.0", "id": 3, "method": "tools/call",
-                "params": {"name": "echo", "arguments": {"text": "hello MCP"}}
-            })).unwrap())
+            .send(
+                &serde_json::to_string(&serde_json::json!({
+                    "jsonrpc": "2.0", "id": 3, "method": "tools/call",
+                    "params": {"name": "echo", "arguments": {"text": "hello MCP"}}
+                }))
+                .unwrap(),
+            )
             .await
             .unwrap();
         let resp = client.receive().await.unwrap().unwrap();
@@ -743,25 +739,34 @@ mod tests
 
         // Initialize
         client
-            .send(&serde_json::to_string(&serde_json::json!({
-                "jsonrpc": "2.0", "id": 1, "method": "initialize",
-                "params": {"protocolVersion": "2025-03-26", "capabilities": {},
-                    "clientInfo": {"name": "test", "version": "1.0"}}
-            })).unwrap())
+            .send(
+                &serde_json::to_string(&serde_json::json!({
+                    "jsonrpc": "2.0", "id": 1, "method": "initialize",
+                    "params": {"protocolVersion": "2025-03-26", "capabilities": {},
+                        "clientInfo": {"name": "test", "version": "1.0"}}
+                }))
+                .unwrap(),
+            )
             .await
             .unwrap();
         let _ = client.receive().await.unwrap();
         client
-            .send(&serde_json::json!({"jsonrpc":"2.0","method":"notifications/initialized"}).to_string())
+            .send(
+                &serde_json::json!({"jsonrpc":"2.0","method":"notifications/initialized"})
+                    .to_string(),
+            )
             .await
             .unwrap();
 
         // Read resource
         client
-            .send(&serde_json::to_string(&serde_json::json!({
-                "jsonrpc": "2.0", "id": 4, "method": "resources/read",
-                "params": {"uri": "test:///hello"}
-            })).unwrap())
+            .send(
+                &serde_json::to_string(&serde_json::json!({
+                    "jsonrpc": "2.0", "id": 4, "method": "resources/read",
+                    "params": {"uri": "test:///hello"}
+                }))
+                .unwrap(),
+            )
             .await
             .unwrap();
         let resp = client.receive().await.unwrap().unwrap();
@@ -782,25 +787,34 @@ mod tests
 
         // Initialize
         client
-            .send(&serde_json::to_string(&serde_json::json!({
-                "jsonrpc": "2.0", "id": 1, "method": "initialize",
-                "params": {"protocolVersion": "2025-03-26", "capabilities": {},
-                    "clientInfo": {"name": "test", "version": "1.0"}}
-            })).unwrap())
+            .send(
+                &serde_json::to_string(&serde_json::json!({
+                    "jsonrpc": "2.0", "id": 1, "method": "initialize",
+                    "params": {"protocolVersion": "2025-03-26", "capabilities": {},
+                        "clientInfo": {"name": "test", "version": "1.0"}}
+                }))
+                .unwrap(),
+            )
             .await
             .unwrap();
         let _ = client.receive().await.unwrap();
         client
-            .send(&serde_json::json!({"jsonrpc":"2.0","method":"notifications/initialized"}).to_string())
+            .send(
+                &serde_json::json!({"jsonrpc":"2.0","method":"notifications/initialized"})
+                    .to_string(),
+            )
             .await
             .unwrap();
 
         // Get prompt
         client
-            .send(&serde_json::to_string(&serde_json::json!({
-                "jsonrpc": "2.0", "id": 5, "method": "prompts/get",
-                "params": {"name": "greet", "arguments": {"name": "Alice"}}
-            })).unwrap())
+            .send(
+                &serde_json::to_string(&serde_json::json!({
+                    "jsonrpc": "2.0", "id": 5, "method": "prompts/get",
+                    "params": {"name": "greet", "arguments": {"name": "Alice"}}
+                }))
+                .unwrap(),
+            )
             .await
             .unwrap();
         let resp = client.receive().await.unwrap().unwrap();
@@ -821,24 +835,33 @@ mod tests
 
         // Initialize
         client
-            .send(&serde_json::to_string(&serde_json::json!({
-                "jsonrpc": "2.0", "id": 1, "method": "initialize",
-                "params": {"protocolVersion": "2025-03-26", "capabilities": {},
-                    "clientInfo": {"name": "test", "version": "1.0"}}
-            })).unwrap())
+            .send(
+                &serde_json::to_string(&serde_json::json!({
+                    "jsonrpc": "2.0", "id": 1, "method": "initialize",
+                    "params": {"protocolVersion": "2025-03-26", "capabilities": {},
+                        "clientInfo": {"name": "test", "version": "1.0"}}
+                }))
+                .unwrap(),
+            )
             .await
             .unwrap();
         let _ = client.receive().await.unwrap();
         client
-            .send(&serde_json::json!({"jsonrpc":"2.0","method":"notifications/initialized"}).to_string())
+            .send(
+                &serde_json::json!({"jsonrpc":"2.0","method":"notifications/initialized"})
+                    .to_string(),
+            )
             .await
             .unwrap();
 
         // Ping
         client
-            .send(&serde_json::to_string(&serde_json::json!({
-                "jsonrpc": "2.0", "id": 6, "method": "ping"
-            })).unwrap())
+            .send(
+                &serde_json::to_string(&serde_json::json!({
+                    "jsonrpc": "2.0", "id": 6, "method": "ping"
+                }))
+                .unwrap(),
+            )
             .await
             .unwrap();
         let resp = client.receive().await.unwrap().unwrap();
@@ -859,24 +882,33 @@ mod tests
 
         // Initialize
         client
-            .send(&serde_json::to_string(&serde_json::json!({
-                "jsonrpc": "2.0", "id": 1, "method": "initialize",
-                "params": {"protocolVersion": "2025-03-26", "capabilities": {},
-                    "clientInfo": {"name": "test", "version": "1.0"}}
-            })).unwrap())
+            .send(
+                &serde_json::to_string(&serde_json::json!({
+                    "jsonrpc": "2.0", "id": 1, "method": "initialize",
+                    "params": {"protocolVersion": "2025-03-26", "capabilities": {},
+                        "clientInfo": {"name": "test", "version": "1.0"}}
+                }))
+                .unwrap(),
+            )
             .await
             .unwrap();
         let _ = client.receive().await.unwrap();
         client
-            .send(&serde_json::json!({"jsonrpc":"2.0","method":"notifications/initialized"}).to_string())
+            .send(
+                &serde_json::json!({"jsonrpc":"2.0","method":"notifications/initialized"})
+                    .to_string(),
+            )
             .await
             .unwrap();
 
         // Unknown method
         client
-            .send(&serde_json::to_string(&serde_json::json!({
-                "jsonrpc": "2.0", "id": 7, "method": "nonexistent"
-            })).unwrap())
+            .send(
+                &serde_json::to_string(&serde_json::json!({
+                    "jsonrpc": "2.0", "id": 7, "method": "nonexistent"
+                }))
+                .unwrap(),
+            )
             .await
             .unwrap();
         let resp = client.receive().await.unwrap().unwrap();
@@ -897,25 +929,34 @@ mod tests
 
         // Initialize
         client
-            .send(&serde_json::to_string(&serde_json::json!({
-                "jsonrpc": "2.0", "id": 1, "method": "initialize",
-                "params": {"protocolVersion": "2025-03-26", "capabilities": {},
-                    "clientInfo": {"name": "test", "version": "1.0"}}
-            })).unwrap())
+            .send(
+                &serde_json::to_string(&serde_json::json!({
+                    "jsonrpc": "2.0", "id": 1, "method": "initialize",
+                    "params": {"protocolVersion": "2025-03-26", "capabilities": {},
+                        "clientInfo": {"name": "test", "version": "1.0"}}
+                }))
+                .unwrap(),
+            )
             .await
             .unwrap();
         let _ = client.receive().await.unwrap();
         client
-            .send(&serde_json::json!({"jsonrpc":"2.0","method":"notifications/initialized"}).to_string())
+            .send(
+                &serde_json::json!({"jsonrpc":"2.0","method":"notifications/initialized"})
+                    .to_string(),
+            )
             .await
             .unwrap();
 
         // Call nonexistent tool
         client
-            .send(&serde_json::to_string(&serde_json::json!({
-                "jsonrpc": "2.0", "id": 8, "method": "tools/call",
-                "params": {"name": "nonexistent"}
-            })).unwrap())
+            .send(
+                &serde_json::to_string(&serde_json::json!({
+                    "jsonrpc": "2.0", "id": 8, "method": "tools/call",
+                    "params": {"name": "nonexistent"}
+                }))
+                .unwrap(),
+            )
             .await
             .unwrap();
         let resp = client.receive().await.unwrap().unwrap();

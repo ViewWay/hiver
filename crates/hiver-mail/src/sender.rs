@@ -3,12 +3,17 @@
 
 use std::sync::Arc;
 
-use lettre::{AsyncSmtpTransport, AsyncTransport, Tokio1Executor, transport::smtp::authentication::Credentials};
+use lettre::{
+    AsyncSmtpTransport, AsyncTransport, Tokio1Executor,
+    transport::smtp::authentication::Credentials,
+};
 use tokio::sync::RwLock;
 
-use crate::config::{MailConfig, TlsMode};
-use crate::error::{MailError, MailResult};
-use crate::message::MailMessage;
+use crate::{
+    config::{MailConfig, TlsMode},
+    error::{MailError, MailResult},
+    message::MailMessage,
+};
 
 /// Async mail sender trait — equivalent to Spring's `MailSender` / `JavaMailSender`.
 /// 异步邮件发送器 trait — 等价于 Spring 的 `MailSender` / `JavaMailSender`。
@@ -61,10 +66,11 @@ pub trait MailSender: Send + Sync
 /// # Example / 示例
 ///
 /// ```rust,no_run
-/// use hiver_mail::config::MailConfig;
-/// use hiver_mail::sender::SmtpMailSender;
-/// use hiver_mail::sender::MailSender;
-/// use hiver_mail::message::MailMessage;
+/// use hiver_mail::{
+///     config::MailConfig,
+///     message::MailMessage,
+///     sender::{MailSender, SmtpMailSender},
+/// };
 ///
 /// # async fn example() -> hiver_mail::error::MailResult<()> {
 /// let config = MailConfig::builder()
@@ -126,29 +132,18 @@ impl SmtpMailSender
         Ok(())
     }
 
-    fn build_transport(
-        config: &MailConfig,
-    ) -> MailResult<AsyncSmtpTransport<Tokio1Executor>>
+    fn build_transport(config: &MailConfig) -> MailResult<AsyncSmtpTransport<Tokio1Executor>>
     {
         let mut builder = match config.tls_mode
         {
-            TlsMode::None =>
-            {
-                AsyncSmtpTransport::<Tokio1Executor>::builder_dangerous(&config.host)
-                    .port(config.port)
-            }
-            TlsMode::StartTls =>
-            {
-                AsyncSmtpTransport::<Tokio1Executor>::starttls_relay(&config.host)
-                    .map_err(|e| MailError::Transport(format!("TLS setup failed: {}", e)))?
-                    .port(config.port)
-            }
-            TlsMode::Tls =>
-            {
-                AsyncSmtpTransport::<Tokio1Executor>::relay(&config.host)
-                    .map_err(|e| MailError::Transport(format!("TLS setup failed: {}", e)))?
-                    .port(config.port)
-            }
+            TlsMode::None => AsyncSmtpTransport::<Tokio1Executor>::builder_dangerous(&config.host)
+                .port(config.port),
+            TlsMode::StartTls => AsyncSmtpTransport::<Tokio1Executor>::starttls_relay(&config.host)
+                .map_err(|e| MailError::Transport(format!("TLS setup failed: {}", e)))?
+                .port(config.port),
+            TlsMode::Tls => AsyncSmtpTransport::<Tokio1Executor>::relay(&config.host)
+                .map_err(|e| MailError::Transport(format!("TLS setup failed: {}", e)))?
+                .port(config.port),
         };
 
         if let (Some(user), Some(pass)) = (&config.username, &config.password)

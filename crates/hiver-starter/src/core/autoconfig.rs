@@ -337,7 +337,8 @@ mod tests
 /// Compile-time auto-configuration entry submitted via `inventory::submit!`.
 /// 通过 `inventory::submit!` 在编译时提交的自动配置条目。
 ///
-/// Equivalent to Spring Boot's `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`.
+/// Equivalent to Spring Boot's
+/// `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`.
 /// 等价于 Spring Boot 的 `META-INF/spring/...AutoConfiguration.imports`。
 ///
 /// Third-party crates can contribute auto-configurations by adding
@@ -362,11 +363,10 @@ inventory::collect!(AutoConfigurationEntry);
 /// 等价于 Spring Boot 的 `AutoConfigurationImportSelector`。
 pub fn collect_auto_configurations() -> Vec<Box<dyn AutoConfiguration>>
 {
-    let entries: Vec<&AutoConfigurationEntry> = inventory::iter::<AutoConfigurationEntry>().collect();
-    let mut configs: Vec<Box<dyn AutoConfiguration>> = entries
-        .into_iter()
-        .map(|entry| (entry.factory)())
-        .collect();
+    let entries: Vec<&AutoConfigurationEntry> =
+        inventory::iter::<AutoConfigurationEntry>().collect();
+    let mut configs: Vec<Box<dyn AutoConfiguration>> =
+        entries.into_iter().map(|entry| (entry.factory)()).collect();
     configs.sort_by_key(|c| c.order());
     configs
 }

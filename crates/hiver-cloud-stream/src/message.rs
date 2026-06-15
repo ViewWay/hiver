@@ -132,9 +132,16 @@ mod tests
     fn test_json_payload()
     {
         #[derive(Serialize, Deserialize, Debug, PartialEq)]
-        struct User { name: String, age: u32 }
+        struct User
+        {
+            name: String,
+            age: u32,
+        }
 
-        let user = User { name: "alice".to_string(), age: 30 };
+        let user = User {
+            name: "alice".to_string(),
+            age: 30,
+        };
         let msg = StreamMessage::from_json(&user).unwrap();
         let decoded: User = msg.as_json().unwrap();
         assert_eq!(decoded, user);

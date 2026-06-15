@@ -1,12 +1,15 @@
 //! Task state tracking and schedule statistics — async-native, no thread pool.
 //! 任务状态跟踪和调度统计 — async 原生，无线程池。
 
-use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
-use std::sync::Arc;
+use std::{
+    collections::HashMap,
+    sync::{
+        Arc,
+        atomic::{AtomicU64, AtomicUsize, Ordering},
+    },
+};
 
 use tokio::sync::RwLock;
-
-use std::collections::HashMap;
 
 /// State of a scheduled task.
 /// 定时任务的状态。
@@ -83,7 +86,8 @@ impl ScheduleStatistics
     {
         self.total_executions.fetch_add(1, Ordering::Relaxed);
         self.success_count.fetch_add(1, Ordering::Relaxed);
-        self.total_execution_ms.fetch_add(elapsed_ms, Ordering::Relaxed);
+        self.total_execution_ms
+            .fetch_add(elapsed_ms, Ordering::Relaxed);
     }
 
     /// Records a failed execution.
@@ -92,7 +96,8 @@ impl ScheduleStatistics
     {
         self.total_executions.fetch_add(1, Ordering::Relaxed);
         self.failure_count.fetch_add(1, Ordering::Relaxed);
-        self.total_execution_ms.fetch_add(elapsed_ms, Ordering::Relaxed);
+        self.total_execution_ms
+            .fetch_add(elapsed_ms, Ordering::Relaxed);
     }
 
     /// Returns the average execution time in milliseconds.

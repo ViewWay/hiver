@@ -59,9 +59,12 @@ impl From<&http::Method> for Method
             {
                 // Unknown methods are logged instead of silently mapping to GET.
                 // 未知方法记录日志，而不是静默映射为 GET。
-                tracing::warn!("Unknown HTTP method '{}' received, treating as GET", method.as_str());
+                tracing::warn!(
+                    "Unknown HTTP method '{}' received, treating as GET",
+                    method.as_str()
+                );
                 Method::GET
-            }
+            },
         }
     }
 }

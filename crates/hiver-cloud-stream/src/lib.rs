@@ -28,15 +28,15 @@ pub mod kafka_binder;
 #[cfg(feature = "amqp")]
 pub mod amqp_binder;
 
-pub use binder::{Binding, BindingState, InMemoryBinder, StreamBinder, StreamConsumer, StreamProducer};
-pub use error::{StreamError, StreamResult};
-pub use message::StreamMessage;
-
-#[cfg(feature = "kafka")]
-pub use kafka_binder::{KafkaBinder, KafkaBinderConfig};
-
 #[cfg(feature = "amqp")]
 pub use amqp_binder::{AmqpBinder, AmqpBinderConfig};
+pub use binder::{
+    Binding, BindingState, InMemoryBinder, StreamBinder, StreamConsumer, StreamProducer,
+};
+pub use error::{StreamError, StreamResult};
+#[cfg(feature = "kafka")]
+pub use kafka_binder::{KafkaBinder, KafkaBinderConfig};
+pub use message::StreamMessage;
 
 /// Version of the cloud-stream module.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

@@ -18,10 +18,7 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 
-use super::{
-    container::ApplicationContext,
-    registry::BeanDescriptor,
-};
+use super::{container::ApplicationContext, registry::BeanDescriptor};
 
 // ============================================================================
 // 组件类型 / Component Types

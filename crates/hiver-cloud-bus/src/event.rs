@@ -84,7 +84,9 @@ impl BusEvent
     pub fn ack(source: impl Into<String>, original_id: impl Into<String>) -> Self
     {
         let mut event = Self::new(BusEventType::Ack, source);
-        event.headers.insert("original_id".to_string(), original_id.into());
+        event
+            .headers
+            .insert("original_id".to_string(), original_id.into());
         event
     }
 
@@ -151,8 +153,7 @@ mod tests
     #[test]
     fn test_targeted_event()
     {
-        let event = BusEvent::config_refresh("gateway")
-            .with_destination("user-service");
+        let event = BusEvent::config_refresh("gateway").with_destination("user-service");
         assert!(!event.is_broadcast());
         assert!(event.targets("user-service"));
         assert!(!event.targets("order-service"));
@@ -189,13 +190,8 @@ mod tests
     #[test]
     fn test_custom_event_type()
     {
-        let event = BusEvent::new(
-            BusEventType::Custom("cache.invalidate".to_string()),
-            "cache-service",
-        );
-        assert_eq!(
-            event.event_type,
-            BusEventType::Custom("cache.invalidate".to_string())
-        );
+        let event =
+            BusEvent::new(BusEventType::Custom("cache.invalidate".to_string()), "cache-service");
+        assert_eq!(event.event_type, BusEventType::Custom("cache.invalidate".to_string()));
     }
 }

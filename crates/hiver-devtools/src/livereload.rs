@@ -12,13 +12,16 @@
 //! - Native async WebSocket via tokio-tungstenite
 //! - Zero-cost when disabled
 
-use std::net::SocketAddr;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
+use std::{
+    net::SocketAddr,
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
+};
 
 use futures_util::{SinkExt, StreamExt};
-use tokio::net::TcpListener;
-use tokio::sync::RwLock;
+use tokio::{net::TcpListener, sync::RwLock};
 use tokio_tungstenite::tungstenite::Message;
 
 use crate::error::{DevResult, DevToolsError};
@@ -48,9 +51,9 @@ struct LiveReloadClient
 /// use hiver_devtools::LiveReloadServer;
 ///
 /// #[tokio::main]
-/// async fn main() {
-///     let server = LiveReloadServer::new()
-///         .port(35729);
+/// async fn main()
+/// {
+///     let server = LiveReloadServer::new().port(35729);
 ///
 ///     server.start().await.unwrap();
 ///
@@ -108,24 +111,25 @@ impl LiveReloadServer
         tokio::spawn(async move {
             while running.load(Ordering::Relaxed)
             {
-                let accept = tokio::time::timeout(
-                    std::time::Duration::from_secs(1),
-                    listener.accept(),
-                )
-                .await;
+                let accept =
+                    tokio::time::timeout(std::time::Duration::from_secs(1), listener.accept())
+                        .await;
 
                 match accept
                 {
-                    Ok(Ok((stream, _))) => {
+                    Ok(Ok((stream, _))) =>
+                    {
                         let clients = clients.clone();
                         tokio::spawn(async move {
                             Self::handle_connection(stream, clients).await;
                         });
-                    }
-                    Ok(Err(e)) => {
+                    },
+                    Ok(Err(e)) =>
+                    {
                         tracing::warn!("LiveReload accept error: {}", e);
-                    }
-                    Err(_) => {} // timeout, check running
+                    },
+                    Err(_) =>
+                    {}, // timeout, check running
                 }
             }
         });
@@ -168,10 +172,11 @@ impl LiveReloadServer
         let ws = match tokio_tungstenite::accept_async(stream).await
         {
             Ok(ws) => ws,
-            Err(e) => {
+            Err(e) =>
+            {
                 tracing::debug!("LiveReload WS handshake failed: {}", e);
                 return;
-            }
+            },
         };
 
         let (mut sink, mut stream_rx) = ws.split();
@@ -211,7 +216,10 @@ impl LiveReloadServer
 
 impl Default for LiveReloadServer
 {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self
+    {
+        Self::new()
+    }
 }
 
 #[cfg(test)]

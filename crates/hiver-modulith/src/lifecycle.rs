@@ -14,8 +14,7 @@
 use async_trait::async_trait;
 use tracing::info;
 
-use crate::module::Module;
-use crate::registry::ModuleRegistry;
+use crate::{module::Module, registry::ModuleRegistry};
 
 /// Lifecycle phases for a module.
 /// 模块生命周期阶段。
@@ -166,10 +165,12 @@ mod tests
         {
             "user-service"
         }
+
         fn description(&self) -> &'static str
         {
             "User management"
         }
+
         fn dependencies(&self) -> Vec<&str>
         {
             vec!["database"]

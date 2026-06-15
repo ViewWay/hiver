@@ -146,8 +146,9 @@ pub enum RetryDecision
 #[cfg(test)]
 mod tests
 {
-    use super::*;
     use std::error::Error;
+
+    use super::*;
 
     #[test]
     fn test_retryable_error_display()

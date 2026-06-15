@@ -341,11 +341,11 @@ impl Gauge
     /// 减少1（饱和操作，不会下溢）。
     pub fn decrement(&self)
     {
-        self.value.fetch_update(
-            Ordering::AcqRel,
-            Ordering::Relaxed,
-            |v| if v > 0 { Some(v - 1) } else { None },
-        ).ok();
+        self.value
+            .fetch_update(Ordering::AcqRel, Ordering::Relaxed, |v| {
+                if v > 0 { Some(v - 1) } else { None }
+            })
+            .ok();
     }
 
     /// Add a specific amount

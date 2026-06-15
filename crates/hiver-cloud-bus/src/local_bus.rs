@@ -1,15 +1,19 @@
 //! Local bus — in-memory implementation for single-instance and testing.
 //! 本地总线 — 单实例和测试的内存实现。
 
-use std::sync::Arc;
-use std::sync::atomic::{AtomicUsize, Ordering as AtomicOrdering};
+use std::sync::{
+    Arc,
+    atomic::{AtomicUsize, Ordering as AtomicOrdering},
+};
 
 use async_trait::async_trait;
 use tokio::sync::RwLock;
 
-use crate::bus::{CloudBus, EventHandler};
-use crate::error::{BusError, BusResult};
-use crate::event::BusEvent;
+use crate::{
+    bus::{CloudBus, EventHandler},
+    error::{BusError, BusResult},
+    event::BusEvent,
+};
 
 /// Local bus — in-memory event bus for single-instance and testing.
 /// 本地总线 — 单实例和测试的内存事件总线。
@@ -38,7 +42,10 @@ impl LocalBus
 
 impl Default for LocalBus
 {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self
+    {
+        Self::new()
+    }
 }
 
 #[async_trait]
@@ -70,7 +77,10 @@ impl CloudBus for LocalBus
         self.count.load(AtomicOrdering::Relaxed)
     }
 
-    fn name(&self) -> &'static str { "local" }
+    fn name(&self) -> &'static str
+    {
+        "local"
+    }
 }
 
 #[cfg(test)]
@@ -95,9 +105,7 @@ mod tests
         bus.publish(BusEvent::config_refresh("app-1"))
             .await
             .unwrap();
-        bus.publish(BusEvent::ack("app-2", "id-1"))
-            .await
-            .unwrap();
+        bus.publish(BusEvent::ack("app-2", "id-1")).await.unwrap();
 
         let events = received.lock().unwrap();
         assert_eq!(events.len(), 2);
@@ -129,9 +137,7 @@ mod tests
             .unwrap();
         }
 
-        bus.publish(BusEvent::config_refresh("src"))
-            .await
-            .unwrap();
+        bus.publish(BusEvent::config_refresh("src")).await.unwrap();
 
         assert_eq!(count.load(std::sync::atomic::Ordering::Relaxed), 3);
     }

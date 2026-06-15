@@ -118,24 +118,32 @@ pub enum Content
 {
     /// Plain text content.
     #[serde(rename = "text")]
-    Text { text: String },
+    Text
+    {
+        text: String
+    },
     /// Base64-encoded image.
     #[serde(rename = "image")]
-    Image {
+    Image
+    {
         data: String,
         #[serde(rename = "mimeType")]
         mime_type: String,
     },
     /// Base64-encoded audio.
     #[serde(rename = "audio")]
-    Audio {
+    Audio
+    {
         data: String,
         #[serde(rename = "mimeType")]
         mime_type: String,
     },
     /// An embedded resource reference.
     #[serde(rename = "resource")]
-    Resource { resource: EmbeddedResource },
+    Resource
+    {
+        resource: EmbeddedResource
+    },
 }
 
 impl Content
@@ -246,10 +254,18 @@ impl Tool
 
     /// Convenience: add a single string property to the input schema.
     #[must_use]
-    pub fn string_param(mut self, name: impl Into<String>, desc: impl Into<String>, required: bool) -> Self
+    pub fn string_param(
+        mut self,
+        name: impl Into<String>,
+        desc: impl Into<String>,
+        required: bool,
+    ) -> Self
     {
         let name = name.into();
-        if let Some(props) = self.input_schema.get_mut("properties").and_then(|p| p.as_object_mut())
+        if let Some(props) = self
+            .input_schema
+            .get_mut("properties")
+            .and_then(|p| p.as_object_mut())
         {
             props.insert(
                 name.clone(),
@@ -258,7 +274,10 @@ impl Tool
         }
         if required
         {
-            if let Some(req) = self.input_schema.get_mut("required").and_then(|r| r.as_array_mut())
+            if let Some(req) = self
+                .input_schema
+                .get_mut("required")
+                .and_then(|r| r.as_array_mut())
             {
                 req.push(serde_json::Value::String(name));
             }
@@ -295,7 +314,10 @@ impl CallToolResult
     #[must_use]
     pub fn content(content: Vec<Content>) -> Self
     {
-        Self { content, is_error: false }
+        Self {
+            content,
+            is_error: false,
+        }
     }
 
     /// Creates an error result.
@@ -404,7 +426,11 @@ impl ResourceContent
 
     /// Creates a binary resource content.
     #[must_use]
-    pub fn blob(uri: impl Into<String>, mime_type: impl Into<String>, blob: impl Into<String>) -> Self
+    pub fn blob(
+        uri: impl Into<String>,
+        mime_type: impl Into<String>,
+        blob: impl Into<String>,
+    ) -> Self
     {
         Self {
             uri: uri.into(),
@@ -543,14 +569,20 @@ impl PromptMessage
     #[must_use]
     pub fn user(text: impl Into<String>) -> Self
     {
-        Self { role: PromptRole::User, content: Content::text(text) }
+        Self {
+            role: PromptRole::User,
+            content: Content::text(text),
+        }
     }
 
     /// Creates an assistant message.
     #[must_use]
     pub fn assistant(text: impl Into<String>) -> Self
     {
-        Self { role: PromptRole::Assistant, content: Content::text(text) }
+        Self {
+            role: PromptRole::Assistant,
+            content: Content::text(text),
+        }
     }
 }
 
@@ -610,7 +642,10 @@ impl<T> ListResult<T>
     #[must_use]
     pub fn new(items: Vec<T>) -> Self
     {
-        Self { items, next_cursor: None }
+        Self {
+            items,
+            next_cursor: None,
+        }
     }
 }
 
@@ -629,13 +664,21 @@ mod tests
         assert_eq!(tool.name, "search");
         let schema = &tool.input_schema;
         assert!(schema["properties"]["query"].is_object());
-        assert!(schema["required"].as_array().unwrap().contains(&serde_json::json!("query")));
+        assert!(
+            schema["required"]
+                .as_array()
+                .unwrap()
+                .contains(&serde_json::json!("query"))
+        );
     }
 
     #[test]
     fn test_tool_serde_roundtrip()
     {
-        let tool = Tool::new("calc").description("Calculate").string_param("expr", "Expression", true);
+        let tool =
+            Tool::new("calc")
+                .description("Calculate")
+                .string_param("expr", "Expression", true);
         let json = serde_json::to_string(&tool).unwrap();
         let parsed: Tool = serde_json::from_str(&json).unwrap();
         assert_eq!(parsed.name, "calc");
@@ -653,7 +696,9 @@ mod tests
     #[test]
     fn test_resource_builder()
     {
-        let r = Resource::new("file:///data.csv", "Data").description("CSV data").mime_type("text/csv");
+        let r = Resource::new("file:///data.csv", "Data")
+            .description("CSV data")
+            .mime_type("text/csv");
         assert_eq!(r.uri, "file:///data.csv");
     }
 
@@ -684,7 +729,10 @@ mod tests
         let ir = InitializeResult {
             protocol_version: MCP_PROTOCOL_VERSION.to_string(),
             capabilities: ServerCapabilities::default(),
-            server_info: Implementation { name: "test".into(), version: "1.0".into() },
+            server_info: Implementation {
+                name: "test".into(),
+                version: "1.0".into(),
+            },
             instructions: Some("Use wisely".into()),
         };
         let json = serde_json::to_string(&ir).unwrap();

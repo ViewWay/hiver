@@ -311,7 +311,7 @@ where
                     }
                     tracing::debug!("CORS headers added to response");
                     builder.body(resp.into_body())
-                }
+                },
                 other => other,
             }
         })

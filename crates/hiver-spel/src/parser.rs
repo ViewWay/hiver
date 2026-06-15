@@ -415,14 +415,14 @@ impl Parser
         match self.peek().cloned()
         {
             Some(Token::LParen) =>
-                {
-                    self.enter_scope()?;
-                    self.advance();
-                    let expr = self.parse_or()?;
-                    self.leave_scope();
-                    self.expect_rparen()?;
-                    Ok(expr)
-                },
+            {
+                self.enter_scope()?;
+                self.advance();
+                let expr = self.parse_or()?;
+                self.leave_scope();
+                self.expect_rparen()?;
+                Ok(expr)
+            },
             Some(Token::Variable(name)) =>
             {
                 self.advance();
@@ -438,7 +438,12 @@ impl Parser
                             self.advance();
                             expr = SpelExpr::PropertyAccess(Box::new(expr), prop);
                         },
-                        _ => return Err(SpelError::Parse("expected property name after '.'".into())),
+                        _ =>
+                        {
+                            return Err(SpelError::Parse(
+                                "expected property name after '.'".into(),
+                            ));
+                        },
                     }
                 }
                 Ok(expr)

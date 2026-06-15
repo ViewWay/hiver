@@ -14,8 +14,8 @@
 //!
 //! # Rust Advantage / Rust优势
 //!
-//! - **Compile-time verification**: if the repository doesn't implement the
-//!   required trait, it won't compile. Spring discovers missing methods at runtime.
+//! - **Compile-time verification**: if the repository doesn't implement the required trait, it
+//!   won't compile. Spring discovers missing methods at runtime.
 //! - **No reflection**: generic dispatch, zero overhead.
 //! - **Type-safe IDs**: `ID` is a generic, not a string parsed at runtime.
 
@@ -285,7 +285,9 @@ where
 
     /// Serialize response to pretty JSON string.
     /// 将响应序列化为格式化的 JSON 字符串。
-    pub fn to_json_pretty<U: Serialize>(response: &RestResponse<U>) -> Result<String, serde_json::Error>
+    pub fn to_json_pretty<U: Serialize>(
+        response: &RestResponse<U>,
+    ) -> Result<String, serde_json::Error>
     {
         serde_json::to_string_pretty(response)
     }

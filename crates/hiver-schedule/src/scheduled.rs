@@ -19,7 +19,9 @@ use tokio::{
 };
 use tracing::info;
 
-use crate::{CronExpression, DEFAULT_INITIAL_DELAY_MS, ScheduleStatistics, TaskState, TaskStateTracker};
+use crate::{
+    CronExpression, DEFAULT_INITIAL_DELAY_MS, ScheduleStatistics, TaskState, TaskStateTracker,
+};
 
 /// Task function type / 任务函数类型
 pub type TaskFn = Arc<dyn Fn() + Send + Sync + 'static>;
@@ -352,7 +354,11 @@ impl TaskScheduler
     ///
     /// Cron 表达式在调度时只解析一次；`next_after()` 以 O(1) 摊销复杂度
     /// 计算每次触发时间 — 无轮询，无外部调度器。
-    fn spawn_cron_task(&self, task: &ScheduledTask, expression: &str) -> Result<JoinHandle<()>, String>
+    fn spawn_cron_task(
+        &self,
+        task: &ScheduledTask,
+        expression: &str,
+    ) -> Result<JoinHandle<()>, String>
     {
         let cron = CronExpression::parse(expression)
             .map_err(|e| format!("invalid cron expression '{}': {}", expression, e))?;
@@ -385,7 +391,8 @@ impl TaskScheduler
             {
                 // Calculate next fire time
                 let now = Utc::now();
-                let Some(next) = cron.next_after(&now) else
+                let Some(next) = cron.next_after(&now)
+                else
                 {
                     tracing::warn!(
                         "Cron task {}: no future fire time for '{}', stopping",

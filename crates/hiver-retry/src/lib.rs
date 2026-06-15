@@ -47,12 +47,9 @@ mod classifier;
 mod template;
 
 // Re-export from hiver-resilience
-pub use hiver_resilience::retry::{BackoffType, RetryAll, RetryError, RetryPolicy, ShouldRetry};
-
 // Re-export from local modules
-pub use classifier::{
-    FatalError, NonRetryable, RetryDecision, Retryable, RetryableError,
-};
+pub use classifier::{FatalError, NonRetryable, RetryDecision, Retryable, RetryableError};
+pub use hiver_resilience::retry::{BackoffType, RetryAll, RetryError, RetryPolicy, ShouldRetry};
 pub use template::{
     NoOpCallback, RetryCallback, RetryContext, RetryStatistics, RetryTemplate, RetryTemplateBuilder,
 };
@@ -67,10 +64,15 @@ pub use template::{
 )]
 mod tests
 {
+    use std::{
+        sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        },
+        time::Duration,
+    };
+
     use super::*;
-    use std::sync::atomic::{AtomicUsize, Ordering};
-    use std::sync::Arc;
-    use std::time::Duration;
 
     // ---- Retryable trait tests ----
 

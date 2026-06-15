@@ -29,11 +29,11 @@ impl fmt::Display for CronError
             Self::InvalidFieldCount(n) =>
             {
                 write!(f, "expected 5, 6, or 7 fields, got {}", n)
-            }
+            },
             Self::FieldError(idx, e) =>
             {
                 write!(f, "field {}: {}", idx, e)
-            }
+            },
         }
     }
 }
@@ -209,8 +209,7 @@ impl CronExpression
     pub fn next_after(&self, from: &DateTime<Utc>) -> Option<DateTime<Utc>>
     {
         // Start one second after `from`, aligned to whole seconds.
-        let mut c = from.with_nanosecond(0).unwrap_or(*from)
-            + chrono::Duration::seconds(1);
+        let mut c = from.with_nanosecond(0).unwrap_or(*from) + chrono::Duration::seconds(1);
 
         // Safety limit: ~4 years of minute-level iterations.
         let max_iters = 4 * 366 * 24 * 60;
@@ -425,10 +424,7 @@ fn reset_to_hour(c: DateTime<Utc>, hour: u32) -> DateTime<Utc>
 
 fn reset_to_minute(c: DateTime<Utc>, minute: u32) -> DateTime<Utc>
 {
-    c.with_minute(minute)
-        .unwrap_or(c)
-        .with_second(0)
-        .unwrap()
+    c.with_minute(minute).unwrap_or(c).with_second(0).unwrap()
 }
 
 /// Days in the given month (handles leap years).
@@ -449,7 +445,7 @@ fn days_in_month(year: i32, month: u32) -> u32
             {
                 28
             }
-        }
+        },
         _ => 31,
     }
 }
@@ -470,8 +466,9 @@ fn pf(expr: &str, kind: FieldKind, idx: usize) -> Result<CronField, CronError>
 #[cfg(test)]
 mod tests
 {
-    use super::*;
     use chrono::TimeZone;
+
+    use super::*;
 
     fn dt(y: i32, m: u32, d: u32, h: u32, mi: u32, s: u32) -> DateTime<Utc>
     {

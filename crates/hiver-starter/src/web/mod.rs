@@ -49,7 +49,6 @@ pub use hiver_http::{
 /// 自动配置 HTTP 服务器，包括端口、主机地址、工作线程等设置。
 /// Automatically configures HTTP server including port, host address,
 /// worker threads, etc.
-///
 pub mod route_registry;
 /// 参考 Spring Boot 的 `ServletWebServerFactoryAutoConfiguration`。
 /// Based on Spring Boot's `ServletWebServerFactoryAutoConfiguration`.

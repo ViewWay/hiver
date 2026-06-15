@@ -59,22 +59,37 @@ impl Profile
     /// Detect from `cfg(debug_assertions)`.
     /// 从 `cfg(debug_assertions)` 检测。
     #[cfg(debug_assertions)]
-    fn from_debug() -> Self { Profile::Dev }
+    fn from_debug() -> Self
+    {
+        Profile::Dev
+    }
 
     #[cfg(not(debug_assertions))]
-    fn from_debug() -> Self { Profile::Prod }
+    fn from_debug() -> Self
+    {
+        Profile::Prod
+    }
 
     /// Whether this is a dev profile.
     /// 是否为开发环境。
-    pub fn is_dev(self) -> bool { self == Profile::Dev }
+    pub fn is_dev(self) -> bool
+    {
+        self == Profile::Dev
+    }
 
     /// Whether this is a production profile.
     /// 是否为生产环境。
-    pub fn is_prod(self) -> bool { self == Profile::Prod }
+    pub fn is_prod(self) -> bool
+    {
+        self == Profile::Prod
+    }
 
     /// Whether this is a test profile.
     /// 是否为测试环境。
-    pub fn is_test(self) -> bool { self == Profile::Test }
+    pub fn is_test(self) -> bool
+    {
+        self == Profile::Test
+    }
 }
 
 impl std::fmt::Display for Profile
@@ -92,7 +107,10 @@ impl std::fmt::Display for Profile
 
 impl Default for Profile
 {
-    fn default() -> Self { Self::current() }
+    fn default() -> Self
+    {
+        Self::current()
+    }
 }
 
 /// Compile-time build metadata — available without runtime cost.
@@ -143,11 +161,7 @@ impl BuildInfo
             crate_name: env!("CARGO_PKG_NAME"),
             version: env!("CARGO_PKG_VERSION"),
             profile: Profile::current(),
-            target: format!(
-                "{}-{}",
-                std::env::consts::ARCH,
-                std::env::consts::OS
-            ),
+            target: format!("{}-{}", std::env::consts::ARCH, std::env::consts::OS),
             opt_level: if cfg!(debug_assertions) { "0" } else { "3" },
             debug: cfg!(debug_assertions),
         }
@@ -156,7 +170,10 @@ impl BuildInfo
 
 impl Default for BuildInfo
 {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self
+    {
+        Self::new()
+    }
 }
 
 impl std::fmt::Display for BuildInfo

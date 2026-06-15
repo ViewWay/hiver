@@ -262,17 +262,17 @@ pub fn parse_message(raw: &str) -> Result<JsonRpcMessage, McpError>
         {
             let req: JsonRpcRequest = serde_json::from_value(value)?;
             Ok(JsonRpcMessage::Request(req))
-        }
+        },
         (true, false) =>
         {
             let resp: JsonRpcResponse = serde_json::from_value(value)?;
             Ok(JsonRpcMessage::Response(resp))
-        }
+        },
         (false, true) =>
         {
             let notif: JsonRpcNotification = serde_json::from_value(value)?;
             Ok(JsonRpcMessage::Notification(notif))
-        }
+        },
         _ => Err(McpError::ProtocolError(
             "Invalid JSON-RPC message: must have id and/or method".into(),
         )),
@@ -295,7 +295,7 @@ mod tests
             {
                 assert_eq!(req.method, "initialize");
                 assert_eq!(req.id, JsonRpcId::Number(1));
-            }
+            },
             _ => panic!("Expected Request"),
         }
     }
@@ -311,7 +311,7 @@ mod tests
             {
                 assert!(resp.result.is_some());
                 assert!(resp.error.is_none());
-            }
+            },
             _ => panic!("Expected Response"),
         }
     }
@@ -326,7 +326,7 @@ mod tests
             JsonRpcMessage::Notification(notif) =>
             {
                 assert_eq!(notif.method, "notifications/initialized");
-            }
+            },
             _ => panic!("Expected Notification"),
         }
     }
@@ -334,7 +334,8 @@ mod tests
     #[test]
     fn test_parse_error_response()
     {
-        let raw = r#"{"jsonrpc":"2.0","id":"abc","error":{"code":-32601,"message":"Method not found"}}"#;
+        let raw =
+            r#"{"jsonrpc":"2.0","id":"abc","error":{"code":-32601,"message":"Method not found"}}"#;
         let msg = parse_message(raw).unwrap();
         match msg
         {
@@ -343,7 +344,7 @@ mod tests
                 let err = resp.error.unwrap();
                 assert_eq!(err.code, METHOD_NOT_FOUND);
                 assert_eq!(resp.id, JsonRpcId::String("abc".into()));
-            }
+            },
             _ => panic!("Expected Response"),
         }
     }

@@ -17,9 +17,11 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use hiver_amqp::{AmqpConfig, AmqpConnection, ConnectionManager, Publisher};
 
-use crate::binder::{StreamBinder, StreamConsumer, StreamProducer};
-use crate::error::{StreamError, StreamResult};
-use crate::message::StreamMessage;
+use crate::{
+    binder::{StreamBinder, StreamConsumer, StreamProducer},
+    error::{StreamError, StreamResult},
+    message::StreamMessage,
+};
 
 /// AMQP binder configuration.
 /// AMQP Binder 配置。
@@ -95,7 +97,10 @@ impl StreamBinder for AmqpBinder
         }))
     }
 
-    fn name(&self) -> &'static str { "amqp" }
+    fn name(&self) -> &'static str
+    {
+        "amqp"
+    }
 }
 
 /// AMQP stream producer adapter.

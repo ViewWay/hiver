@@ -196,7 +196,8 @@ impl Server
                         count.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
                         tracing::warn!(
                             "Max connections ({}) reached, rejecting {}",
-                            max_conns, peer_addr
+                            max_conns,
+                            peer_addr
                         );
                         drop(stream);
                         continue;

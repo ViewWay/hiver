@@ -107,9 +107,7 @@ fn eval_string_property(s: &str, prop: &str) -> Result<Value, SpelError>
         "trim" => Ok(Value::from(s.trim())),
         "toUpper" | "toUpperCase" | "to_uppercase" => Ok(Value::from(s.to_uppercase())),
         "toLower" | "toLowerCase" | "to_lowercase" => Ok(Value::from(s.to_lowercase())),
-        _ => Err(SpelError::Evaluation(format!(
-            "unknown string property: '{prop}'"
-        ))),
+        _ => Err(SpelError::Evaluation(format!("unknown string property: '{prop}'"))),
     }
 }
 
@@ -121,9 +119,7 @@ fn eval_array_property(arr: &[Value], prop: &str) -> Result<Value, SpelError>
     {
         "length" | "len" | "size" => Ok(Value::from(arr.len() as f64)),
         "isEmpty" | "is_empty" => Ok(Value::from(arr.is_empty())),
-        _ => Err(SpelError::Evaluation(format!(
-            "unknown array property: '{prop}'"
-        ))),
+        _ => Err(SpelError::Evaluation(format!("unknown array property: '{prop}'"))),
     }
 }
 
@@ -135,9 +131,7 @@ fn eval_number_property(n: &serde_json::Number, prop: &str) -> Result<Value, Spe
     {
         "intValue" | "as_i64" if n.is_i64() => Ok(Value::from(n.as_i64().unwrap() as f64)),
         "doubleValue" | "as_f64" if n.is_f64() => Ok(Value::from(n.as_f64().unwrap())),
-        _ => Err(SpelError::Evaluation(format!(
-            "unknown number property: '{prop}'"
-        ))),
+        _ => Err(SpelError::Evaluation(format!("unknown number property: '{prop}'"))),
     }
 }
 

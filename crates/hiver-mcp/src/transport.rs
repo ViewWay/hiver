@@ -101,13 +101,10 @@ impl Transport for StdioTransport
 
         match line
         {
-            Some(l) if l.len() > MAX_MESSAGE_SIZE =>
-            {
-                Err(McpError::TransportError(format!(
-                    "Message too large: {} bytes (max {MAX_MESSAGE_SIZE})",
-                    l.len()
-                )))
-            }
+            Some(l) if l.len() > MAX_MESSAGE_SIZE => Err(McpError::TransportError(format!(
+                "Message too large: {} bytes (max {MAX_MESSAGE_SIZE})",
+                l.len()
+            ))),
             other => Ok(other),
         }
     }
@@ -136,7 +133,8 @@ impl std::fmt::Debug for ChildProcessTransport
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
     {
-        f.debug_struct("ChildProcessTransport").finish_non_exhaustive()
+        f.debug_struct("ChildProcessTransport")
+            .finish_non_exhaustive()
     }
 }
 
@@ -158,12 +156,14 @@ impl ChildProcessTransport
             .spawn()
             .map_err(|e| McpError::TransportError(format!("Failed to spawn {program}: {e}")))?;
 
-        let child_stdin = child.stdin.take().ok_or_else(|| {
-            McpError::TransportError("Failed to open child stdin".into())
-        })?;
-        let child_stdout = child.stdout.take().ok_or_else(|| {
-            McpError::TransportError("Failed to open child stdout".into())
-        })?;
+        let child_stdin = child
+            .stdin
+            .take()
+            .ok_or_else(|| McpError::TransportError("Failed to open child stdin".into()))?;
+        let child_stdout = child
+            .stdout
+            .take()
+            .ok_or_else(|| McpError::TransportError("Failed to open child stdout".into()))?;
 
         Ok(Self {
             child: Some(child),
@@ -198,13 +198,10 @@ impl Transport for ChildProcessTransport
 
         match line
         {
-            Some(l) if l.len() > MAX_MESSAGE_SIZE =>
-            {
-                Err(McpError::TransportError(format!(
-                    "Message too large: {} bytes (max {MAX_MESSAGE_SIZE})",
-                    l.len()
-                )))
-            }
+            Some(l) if l.len() > MAX_MESSAGE_SIZE => Err(McpError::TransportError(format!(
+                "Message too large: {} bytes (max {MAX_MESSAGE_SIZE})",
+                l.len()
+            ))),
             other => Ok(other),
         }
     }
@@ -288,13 +285,10 @@ impl Transport for MemoryTransport
 
         match line
         {
-            Some(l) if l.len() > MAX_MESSAGE_SIZE =>
-            {
-                Err(McpError::TransportError(format!(
-                    "Message too large: {} bytes (max {MAX_MESSAGE_SIZE})",
-                    l.len()
-                )))
-            }
+            Some(l) if l.len() > MAX_MESSAGE_SIZE => Err(McpError::TransportError(format!(
+                "Message too large: {} bytes (max {MAX_MESSAGE_SIZE})",
+                l.len()
+            ))),
             other => Ok(other),
         }
     }
@@ -315,7 +309,9 @@ mod tests
     async fn test_memory_transport_pair()
     {
         let (mut a, mut b) = MemoryTransport::pair();
-        a.send(r#"{"jsonrpc":"2.0","id":1,"method":"ping"}"#).await.unwrap();
+        a.send(r#"{"jsonrpc":"2.0","id":1,"method":"ping"}"#)
+            .await
+            .unwrap();
         let received = b.receive().await.unwrap().unwrap();
         assert!(received.contains("ping"));
     }

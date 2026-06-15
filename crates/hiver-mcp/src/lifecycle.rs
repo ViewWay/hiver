@@ -91,9 +91,7 @@ impl ServerLifecycle
         }
         else
         {
-            Err(crate::McpError::ProtocolError(format!(
-                "Cannot initialize from state {self}"
-            )))
+            Err(crate::McpError::ProtocolError(format!("Cannot initialize from state {self}")))
         }
     }
 

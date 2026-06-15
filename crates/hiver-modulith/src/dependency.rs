@@ -18,7 +18,10 @@ impl ModuleDependency
     /// Create a new dependency: `source` depends on `target`.
     pub fn new(source: impl Into<String>, target: impl Into<String>) -> Self
     {
-        Self { source: source.into(), target: target.into() }
+        Self {
+            source: source.into(),
+            target: target.into(),
+        }
     }
 }
 
@@ -34,7 +37,9 @@ impl DependencyGraph
     /// Create a new empty dependency graph.
     pub fn new() -> Self
     {
-        Self { dependencies: HashMap::new() }
+        Self {
+            dependencies: HashMap::new(),
+        }
     }
 
     /// Add a dependency: `source` depends on `target`.
@@ -106,7 +111,10 @@ impl DependencyGraph
             in_deg.insert(source.clone(), targets.len());
             for target in targets
             {
-                dependents.entry(target.clone()).or_default().push(source.clone());
+                dependents
+                    .entry(target.clone())
+                    .or_default()
+                    .push(source.clone());
             }
         }
 
@@ -187,7 +195,10 @@ impl DependencyGraph
 
 impl Default for DependencyGraph
 {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self
+    {
+        Self::new()
+    }
 }
 
 #[cfg(test)]
@@ -243,9 +254,18 @@ mod tests
         assert!(graph.is_acyclic());
         let order = graph.topological_sort().unwrap();
         assert_eq!(order.len(), 4);
-        assert!(order.iter().position(|m| m == "common").unwrap() < order.iter().position(|m| m == "user").unwrap());
-        assert!(order.iter().position(|m| m == "common").unwrap() < order.iter().position(|m| m == "order").unwrap());
-        assert!(order.iter().position(|m| m == "user").unwrap() < order.iter().position(|m| m == "app").unwrap());
+        assert!(
+            order.iter().position(|m| m == "common").unwrap()
+                < order.iter().position(|m| m == "user").unwrap()
+        );
+        assert!(
+            order.iter().position(|m| m == "common").unwrap()
+                < order.iter().position(|m| m == "order").unwrap()
+        );
+        assert!(
+            order.iter().position(|m| m == "user").unwrap()
+                < order.iter().position(|m| m == "app").unwrap()
+        );
     }
 
     #[test]

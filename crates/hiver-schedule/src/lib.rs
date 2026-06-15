@@ -31,7 +31,7 @@ mod task_state;
 pub use cron::{CronError, CronExpression, CronField, FieldError, FieldKind};
 pub use scheduled::{
     AsyncTaskFn, ScheduleType, ScheduledTask, TaskFn, TaskScheduler, schedule_fixed_delay,
-    schedule_fixed_rate, schedule_fixed_delay_sync, schedule_fixed_rate_sync,
+    schedule_fixed_delay_sync, schedule_fixed_rate, schedule_fixed_rate_sync,
 };
 pub use task_state::{ScheduleStatistics, TaskState, TaskStateTracker};
 

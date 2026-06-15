@@ -29,7 +29,6 @@ pub use bus::{CloudBus, EventHandler};
 pub use error::{BusError, BusResult};
 pub use event::{BusEvent, BusEventType};
 pub use local_bus::LocalBus;
-
 #[cfg(feature = "stream")]
 pub use stream_bus::StreamBus;
 

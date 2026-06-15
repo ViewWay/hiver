@@ -1,16 +1,16 @@
 //! Adapter Pattern — bridges hiver-ai `ToolCallback` ↔ MCP `McpToolHandler`.
 //! 适配器模式 — 桥接 hiver-ai `ToolCallback` 和 MCP `McpToolHandler`。
 
-use std::future::Future;
-use std::pin::Pin;
-use std::sync::Arc;
+use std::{future::Future, pin::Pin, sync::Arc};
 
 use async_trait::async_trait;
 use hiver_ai::tool::ToolCallback;
 
-use crate::error::McpError;
-use crate::registry::McpToolHandler;
-use crate::types::{CallToolResult, Tool};
+use crate::{
+    error::McpError,
+    registry::McpToolHandler,
+    types::{CallToolResult, Tool},
+};
 
 // ============================================================
 // HiverToolAdapter — hiver-ai → MCP
@@ -123,7 +123,10 @@ pub struct McpToolBridge
 {
     tool_def: Tool,
     executor: Arc<
-        dyn Fn(serde_json::Value) -> Pin<Box<dyn Future<Output = Result<CallToolResult, McpError>> + Send>>
+        dyn Fn(
+                serde_json::Value,
+            )
+                -> Pin<Box<dyn Future<Output = Result<CallToolResult, McpError>> + Send>>
             + Send
             + Sync,
     >,
@@ -166,7 +169,8 @@ impl McpToolBridge
             .map(|tool| {
                 let tool_name = tool.name.clone();
                 let err_msg = format!(
-                    "McpToolBridge stub for '{tool_name}' — use McpToolBridge::new() with explicit executor"
+                    "McpToolBridge stub for '{tool_name}' — use McpToolBridge::new() with \
+                     explicit executor"
                 );
                 Self {
                     tool_def: tool,
@@ -210,10 +214,12 @@ mod tests
         {
             "echo"
         }
+
         fn description(&self) -> &str
         {
             "Echoes input text"
         }
+
         fn definition(&self) -> hiver_ai::tool::ToolDefinition
         {
             hiver_ai::tool::ToolDefinition::new("echo", "Echoes input text").parameter(
@@ -221,6 +227,7 @@ mod tests
                 hiver_ai::tool::ToolParameterSchema::required("string", "Text to echo"),
             )
         }
+
         async fn execute(
             &self,
             args: serde_json::Value,
@@ -244,7 +251,10 @@ mod tests
     async fn test_hiver_adapter_call()
     {
         let adapter = HiverToolAdapter::new(EchoCallback);
-        let result = adapter.call(serde_json::json!({"text": "hello"})).await.unwrap();
+        let result = adapter
+            .call(serde_json::json!({"text": "hello"}))
+            .await
+            .unwrap();
         assert!(!result.is_error);
         let text = match &result.content[0]
         {
@@ -265,14 +275,17 @@ mod tests
             {
                 "fail"
             }
+
             fn description(&self) -> &str
             {
                 "Always fails"
             }
+
             fn definition(&self) -> hiver_ai::tool::ToolDefinition
             {
                 hiver_ai::tool::ToolDefinition::new("fail", "Always fails")
             }
+
             async fn execute(
                 &self,
                 _args: serde_json::Value,
@@ -290,7 +303,9 @@ mod tests
     #[tokio::test]
     async fn test_mcp_tool_bridge()
     {
-        let tool = Tool::new("add").description("Add").string_param("a", "First", true);
+        let tool = Tool::new("add")
+            .description("Add")
+            .string_param("a", "First", true);
         let bridge = McpToolBridge::new(tool, |args| async move {
             let a = args["a"].as_f64().unwrap_or(0.0);
             Ok(CallToolResult::text((a * 2.0).to_string()))

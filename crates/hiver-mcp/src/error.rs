@@ -46,9 +46,10 @@ impl McpError
         {
             Self::ProtocolError(_) => message::INVALID_REQUEST,
             Self::TransportError(_) => message::INTERNAL_ERROR,
-            Self::ToolNotFound(_) | Self::ResourceNotFound(_) | Self::PromptNotFound(_) => {
+            Self::ToolNotFound(_) | Self::ResourceNotFound(_) | Self::PromptNotFound(_) =>
+            {
                 message::METHOD_NOT_FOUND
-            }
+            },
             Self::InvalidParams(_) => message::INVALID_PARAMS,
             Self::NotInitialized => message::SERVER_NOT_INITIALIZED,
             Self::JsonError(_) => message::PARSE_ERROR,

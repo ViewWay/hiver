@@ -1,16 +1,20 @@
 //! Stream bus — uses hiver-cloud-stream as transport.
 //! Stream 总线 — 使用 hiver-cloud-stream 作为传输层。
 
-use std::sync::Arc;
-use std::sync::atomic::{AtomicUsize, Ordering as AtomicOrdering};
+use std::sync::{
+    Arc,
+    atomic::{AtomicUsize, Ordering as AtomicOrdering},
+};
 
 use async_trait::async_trait;
 use hiver_cloud_stream::{StreamBinder, StreamMessage};
 use tokio::sync::RwLock;
 
-use crate::bus::{CloudBus, EventHandler};
-use crate::error::{BusError, BusResult};
-use crate::event::BusEvent;
+use crate::{
+    bus::{CloudBus, EventHandler},
+    error::{BusError, BusResult},
+    event::BusEvent,
+};
 
 const BUS_TOPIC: &str = "hiver-cloud-bus";
 
@@ -80,15 +84,19 @@ impl CloudBus for StreamBus
         self.count.load(AtomicOrdering::Relaxed)
     }
 
-    fn name(&self) -> &'static str { "stream" }
+    fn name(&self) -> &'static str
+    {
+        "stream"
+    }
 }
 
 #[cfg(test)]
 mod tests
 {
+    use hiver_cloud_stream::InMemoryBinder;
+
     use super::*;
     use crate::event::BusEventType;
-    use hiver_cloud_stream::InMemoryBinder;
 
     #[tokio::test]
     async fn test_stream_bus_publish()

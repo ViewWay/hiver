@@ -11,9 +11,11 @@
 //! `notify` crate uses native OS APIs (inotify/kqueue) — zero overhead vs Spring's polling.
 //! 类型安全的配置重载 — 无反射。
 
-use std::collections::HashMap;
-use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 
 use notify::Watcher;
 use tokio::sync::RwLock;
@@ -47,14 +49,15 @@ pub struct ConfigEntry
 /// use hiver_devtools::ConfigReloader;
 ///
 /// #[tokio::main]
-/// async fn main() {
-///     let reloader = ConfigReloader::new()
-///         .watch_file("config.json");
+/// async fn main()
+/// {
+///     let reloader = ConfigReloader::new().watch_file("config.json");
 ///
 ///     reloader.start().await.unwrap();
 ///
 ///     // Later, get config values:
-///     if let Some(port) = reloader.get("server.port").await {
+///     if let Some(port) = reloader.get("server.port").await
+///     {
 ///         println!("Port: {}", port);
 ///     }
 /// }
@@ -123,8 +126,8 @@ impl ConfigReloader
             let running2 = running.clone();
 
             std::thread::spawn(move || {
-                let mut watcher =
-                    match notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
+                let mut watcher = match notify::recommended_watcher(
+                    move |res: Result<notify::Event, notify::Error>| {
                         if let Ok(event) = res
                         {
                             if event.kind.is_modify() || event.kind.is_create()
@@ -135,13 +138,16 @@ impl ConfigReloader
                                 }
                             }
                         }
-                    }) {
-                        Ok(w) => w,
-                        Err(e) => {
-                            tracing::error!("Watcher failed: {}", e);
-                            return;
-                        }
-                    };
+                    },
+                )
+                {
+                    Ok(w) => w,
+                    Err(e) =>
+                    {
+                        tracing::error!("Watcher failed: {}", e);
+                        return;
+                    },
+                };
 
                 for f in &files2
                 {
@@ -161,7 +167,8 @@ impl ConfigReloader
             {
                 match tokio::time::timeout(std::time::Duration::from_secs(1), rx.recv()).await
                 {
-                    Ok(Some(path)) if files.contains(&path) => {
+                    Ok(Some(path)) if files.contains(&path) =>
+                    {
                         let mut cfg = config.write().await;
                         cfg.retain(|_, v| v.source != path);
                         drop(cfg);
@@ -170,9 +177,10 @@ impl ConfigReloader
                             Ok(()) => tracing::info!("Config reloaded: {:?}", path),
                             Err(e) => tracing::warn!("Reload failed {:?}: {}", path, e),
                         }
-                    }
+                    },
                     Ok(None) => break,
-                    Err(_) | Ok(Some(_)) => {}
+                    Err(_) | Ok(Some(_)) =>
+                    {},
                 }
             }
         });
@@ -219,17 +227,18 @@ impl ConfigReloader
     ) -> DevResult<()>
     {
         let content = tokio::fs::read_to_string(path).await?;
-        let parsed: HashMap<String, serde_json::Value> = serde_json::from_str(&content).map_err(
-            |e| DevToolsError::Config(format!("parse error in {:?}: {}", path, e)),
-        )?;
+        let parsed: HashMap<String, serde_json::Value> = serde_json::from_str(&content)
+            .map_err(|e| DevToolsError::Config(format!("parse error in {:?}: {}", path, e)))?;
         let modified = std::time::Instant::now();
         let mut cfg = config.write().await;
         for (key, value) in parsed
         {
-            cfg.insert(
-                key.clone(),
-                ConfigEntry { key, value, source: path.to_path_buf(), modified },
-            );
+            cfg.insert(key.clone(), ConfigEntry {
+                key,
+                value,
+                source: path.to_path_buf(),
+                modified,
+            });
         }
         Ok(())
     }
@@ -237,7 +246,10 @@ impl ConfigReloader
 
 impl Default for ConfigReloader
 {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self
+    {
+        Self::new()
+    }
 }
 
 #[cfg(test)]

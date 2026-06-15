@@ -3,8 +3,7 @@
 
 use async_trait::async_trait;
 
-use crate::error::StreamResult;
-use crate::message::StreamMessage;
+use crate::{error::StreamResult, message::StreamMessage};
 
 /// Stream producer — sends messages to a destination.
 /// 流生产者 — 向目标发送消息。
@@ -27,7 +26,10 @@ pub trait StreamConsumer: Send + Sync
 
     /// Acknowledge the last received message.
     /// 确认最后接收的消息。
-    async fn ack(&self) -> StreamResult<()> { Ok(()) }
+    async fn ack(&self) -> StreamResult<()>
+    {
+        Ok(())
+    }
 }
 
 /// Binder trait — abstracts over the messaging infrastructure.
@@ -96,15 +98,31 @@ pub struct Binding
 impl Binding
 {
     /// Create an input binding.
-    pub fn input(name: impl Into<String>, destination: impl Into<String>, group: impl Into<String>) -> Self
+    pub fn input(
+        name: impl Into<String>,
+        destination: impl Into<String>,
+        group: impl Into<String>,
+    ) -> Self
     {
-        Self { name: name.into(), destination: destination.into(), group: Some(group.into()), is_input: true, state: BindingState::Starting }
+        Self {
+            name: name.into(),
+            destination: destination.into(),
+            group: Some(group.into()),
+            is_input: true,
+            state: BindingState::Starting,
+        }
     }
 
     /// Create an output binding.
     pub fn output(name: impl Into<String>, destination: impl Into<String>) -> Self
     {
-        Self { name: name.into(), destination: destination.into(), group: None, is_input: false, state: BindingState::Starting }
+        Self {
+            name: name.into(),
+            destination: destination.into(),
+            group: None,
+            is_input: false,
+            state: BindingState::Starting,
+        }
     }
 }
 
@@ -120,7 +138,14 @@ impl Binding
 /// Hiver 提供了一个无需消息代理的零成本测试方案。
 pub struct InMemoryBinder
 {
-    destinations: std::sync::Arc<tokio::sync::RwLock<std::collections::HashMap<String, tokio::sync::Mutex<std::collections::VecDeque<StreamMessage>>>>>,
+    destinations: std::sync::Arc<
+        tokio::sync::RwLock<
+            std::collections::HashMap<
+                String,
+                tokio::sync::Mutex<std::collections::VecDeque<StreamMessage>>,
+            >,
+        >,
+    >,
 }
 
 impl InMemoryBinder
@@ -128,18 +153,30 @@ impl InMemoryBinder
     /// Create a new in-memory binder.
     pub fn new() -> Self
     {
-        Self { destinations: std::sync::Arc::new(tokio::sync::RwLock::new(std::collections::HashMap::new())) }
+        Self {
+            destinations: std::sync::Arc::new(tokio::sync::RwLock::new(
+                std::collections::HashMap::new(),
+            )),
+        }
     }
 }
 
 impl Default for InMemoryBinder
 {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self
+    {
+        Self::new()
+    }
 }
 
 impl Clone for InMemoryBinder
 {
-    fn clone(&self) -> Self { Self { destinations: self.destinations.clone() } }
+    fn clone(&self) -> Self
+    {
+        Self {
+            destinations: self.destinations.clone(),
+        }
+    }
 }
 
 #[async_trait]
@@ -151,25 +188,45 @@ impl StreamBinder for InMemoryBinder
         dests
             .entry(destination.to_string())
             .or_insert_with(|| tokio::sync::Mutex::new(std::collections::VecDeque::new()));
-        Ok(Box::new(InMemoryProducer { dest: destination.to_string(), destinations: self.destinations.clone() }))
+        Ok(Box::new(InMemoryProducer {
+            dest: destination.to_string(),
+            destinations: self.destinations.clone(),
+        }))
     }
 
-    async fn create_consumer(&self, destination: &str, _group: &str) -> StreamResult<Box<dyn StreamConsumer>>
+    async fn create_consumer(
+        &self,
+        destination: &str,
+        _group: &str,
+    ) -> StreamResult<Box<dyn StreamConsumer>>
     {
         let mut dests = self.destinations.write().await;
         dests
             .entry(destination.to_string())
             .or_insert_with(|| tokio::sync::Mutex::new(std::collections::VecDeque::new()));
-        Ok(Box::new(InMemoryConsumer { dest: destination.to_string(), destinations: self.destinations.clone() }))
+        Ok(Box::new(InMemoryConsumer {
+            dest: destination.to_string(),
+            destinations: self.destinations.clone(),
+        }))
     }
 
-    fn name(&self) -> &'static str { "in-memory" }
+    fn name(&self) -> &'static str
+    {
+        "in-memory"
+    }
 }
 
 struct InMemoryProducer
 {
     dest: String,
-    destinations: std::sync::Arc<tokio::sync::RwLock<std::collections::HashMap<String, tokio::sync::Mutex<std::collections::VecDeque<StreamMessage>>>>>,
+    destinations: std::sync::Arc<
+        tokio::sync::RwLock<
+            std::collections::HashMap<
+                String,
+                tokio::sync::Mutex<std::collections::VecDeque<StreamMessage>>,
+            >,
+        >,
+    >,
 }
 
 #[async_trait]
@@ -189,7 +246,14 @@ impl StreamProducer for InMemoryProducer
 struct InMemoryConsumer
 {
     dest: String,
-    destinations: std::sync::Arc<tokio::sync::RwLock<std::collections::HashMap<String, tokio::sync::Mutex<std::collections::VecDeque<StreamMessage>>>>>,
+    destinations: std::sync::Arc<
+        tokio::sync::RwLock<
+            std::collections::HashMap<
+                String,
+                tokio::sync::Mutex<std::collections::VecDeque<StreamMessage>>,
+            >,
+        >,
+    >,
 }
 
 #[async_trait]
@@ -202,7 +266,10 @@ impl StreamConsumer for InMemoryConsumer
         {
             Ok(queue.lock().await.pop_front())
         }
-        else { Ok(None) }
+        else
+        {
+            Ok(None)
+        }
     }
 }
 
@@ -235,7 +302,10 @@ mod tests
         assert_eq!(binder.name(), "in-memory");
 
         let producer = binder.create_producer("test-topic").await.unwrap();
-        let consumer = binder.create_consumer("test-topic", "group-1").await.unwrap();
+        let consumer = binder
+            .create_consumer("test-topic", "group-1")
+            .await
+            .unwrap();
 
         let msg = StreamMessage::new(b"hello".to_vec()).with_key("k1");
         producer.send(msg).await.unwrap();
@@ -252,11 +322,13 @@ mod tests
         let producer = binder.create_producer("fifo").await.unwrap();
         let consumer = binder.create_consumer("fifo", "g").await.unwrap();
 
-        for i in 0..5u8 {
+        for i in 0..5u8
+        {
             producer.send(StreamMessage::new(vec![i])).await.unwrap();
         }
 
-        for i in 0..5u8 {
+        for i in 0..5u8
+        {
             let msg = consumer.receive().await.unwrap().unwrap();
             assert_eq!(msg.payload[0], i);
         }

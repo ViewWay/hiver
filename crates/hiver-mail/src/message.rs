@@ -96,15 +96,17 @@ impl MailMessage
 
         let from = if let Some(ref name) = self.from_name
         {
-            format!("{} <{}>", name, from_addr)
-                .parse()
-                .map_err(|e: lettre::address::AddressError| MailError::InvalidAddress(e.to_string()))?
+            format!("{} <{}>", name, from_addr).parse().map_err(
+                |e: lettre::address::AddressError| MailError::InvalidAddress(e.to_string()),
+            )?
         }
         else
         {
             from_addr
                 .parse()
-                .map_err(|e: lettre::address::AddressError| MailError::InvalidAddress(e.to_string()))?
+                .map_err(|e: lettre::address::AddressError| {
+                    MailError::InvalidAddress(e.to_string())
+                })?
         };
 
         let to_str = self.to.first().ok_or_else(|| {
@@ -124,27 +126,32 @@ impl MailMessage
         let mut builder = builder;
         for cc in &self.cc
         {
-            let addr: lettre::message::Mailbox = cc
-                .parse()
-                .map_err(|e: lettre::address::AddressError| MailError::InvalidAddress(e.to_string()))?;
+            let addr: lettre::message::Mailbox =
+                cc.parse().map_err(|e: lettre::address::AddressError| {
+                    MailError::InvalidAddress(e.to_string())
+                })?;
             builder = builder.cc(addr);
         }
 
         // Add BCC
         for bcc in &self.bcc
         {
-            let addr: lettre::message::Mailbox = bcc
-                .parse()
-                .map_err(|e: lettre::address::AddressError| MailError::InvalidAddress(e.to_string()))?;
+            let addr: lettre::message::Mailbox =
+                bcc.parse().map_err(|e: lettre::address::AddressError| {
+                    MailError::InvalidAddress(e.to_string())
+                })?;
             builder = builder.bcc(addr);
         }
 
         // Add Reply-To
         if let Some(ref reply_to) = self.reply_to
         {
-            let addr: lettre::message::Mailbox = reply_to
-                .parse()
-                .map_err(|e: lettre::address::AddressError| MailError::InvalidAddress(e.to_string()))?;
+            let addr: lettre::message::Mailbox =
+                reply_to
+                    .parse()
+                    .map_err(|e: lettre::address::AddressError| {
+                        MailError::InvalidAddress(e.to_string())
+                    })?;
             builder = builder.reply_to(addr);
         }
 
@@ -167,7 +174,7 @@ impl MailMessage
                                 .body(html.clone()),
                         ),
                 )?
-            }
+            },
             (Some(text), None) =>
             {
                 // Plain text only
@@ -176,7 +183,7 @@ impl MailMessage
                         .header(ContentType::TEXT_PLAIN)
                         .body(text.clone()),
                 )?
-            }
+            },
             (None, Some(html)) =>
             {
                 // HTML only
@@ -185,13 +192,13 @@ impl MailMessage
                         .header(ContentType::TEXT_HTML)
                         .body(html.clone()),
                 )?
-            }
+            },
             (None, None) =>
             {
                 return Err(MailError::BuildError(
                     "email body is required (text or html)".to_string(),
                 ));
-            }
+            },
         };
 
         Ok(message)
@@ -301,9 +308,9 @@ impl MailMessageBuilder
     /// 构建消息。
     pub fn build(self) -> MailResult<MailMessage>
     {
-        let subject = self.subject.ok_or_else(|| {
-            MailError::BuildError("subject is required".to_string())
-        })?;
+        let subject = self
+            .subject
+            .ok_or_else(|| MailError::BuildError("subject is required".to_string()))?;
 
         Ok(MailMessage {
             from: self.from,
@@ -415,7 +422,11 @@ mod tests
         // Verify lettre message can be built successfully
         let lettre_msg = msg.to_lettre(None).unwrap();
         let bytes = lettre_msg.formatted();
-        assert!(std::str::from_utf8(&bytes).unwrap().contains("Subject: Test"));
+        assert!(
+            std::str::from_utf8(&bytes)
+                .unwrap()
+                .contains("Subject: Test")
+        );
     }
 
     #[test]

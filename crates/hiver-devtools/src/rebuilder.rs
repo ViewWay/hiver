@@ -12,13 +12,19 @@
 //! - Compile-time validation of changes before restart
 //! - No classloader overhead — Rust compiles to native code
 
-use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
+use std::{
+    path::PathBuf,
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    },
+};
 
 use notify::Watcher;
-use tokio::sync::watch;
-use tokio::time::{timeout, Duration};
+use tokio::{
+    sync::watch,
+    time::{Duration, timeout},
+};
 
 use crate::error::DevResult;
 
@@ -66,7 +72,10 @@ impl RebuilderConfig
 {
     /// Create a new config with default values.
     /// 创建带默认值的配置。
-    pub fn new() -> Self { Self::default() }
+    pub fn new() -> Self
+    {
+        Self::default()
+    }
 
     /// Add a source directory to watch.
     /// 添加要监控的源代码目录。
@@ -140,16 +149,17 @@ pub enum BuildStatus
 /// use hiver_devtools::{AutoRebuilder, RebuilderConfig};
 ///
 /// #[tokio::main]
-/// async fn main() {
-///     let config = RebuilderConfig::new()
-///         .watch_dir("src")
-///         .watch_dir("crates");
+/// async fn main()
+/// {
+///     let config = RebuilderConfig::new().watch_dir("src").watch_dir("crates");
 ///
 ///     let mut rebuilder = AutoRebuilder::start(config).unwrap();
 ///
 ///     // In your app loop:
-///     loop {
-///         if rebuilder.rebuild_rx.changed().await.is_ok() {
+///     loop
+///     {
+///         if rebuilder.rebuild_rx.changed().await.is_ok()
+///         {
 ///             println!("Rebuild completed, restarting...");
 ///         }
 ///     }
@@ -205,7 +215,10 @@ impl AutoRebuilder
 
     /// Check if the rebuilder is running.
     /// 检查重构建器是否正在运行。
-    pub fn is_running(&self) -> bool { self.running.load(Ordering::Relaxed) }
+    pub fn is_running(&self) -> bool
+    {
+        self.running.load(Ordering::Relaxed)
+    }
 
     #[allow(clippy::unwrap_used)]
     fn spawn_watcher(&self)
@@ -244,12 +257,14 @@ impl AutoRebuilder
                         }
                     }
                 },
-            ) {
+            )
+            {
                 Ok(w) => w,
-                Err(e) => {
+                Err(e) =>
+                {
                     tracing::error!("AutoRebuilder watcher failed: {}", e);
                     return;
-                }
+                },
             };
 
             for dir in &src_dirs2
@@ -275,11 +290,13 @@ impl AutoRebuilder
             {
                 match timeout(Duration::from_millis(50), change_rx.recv()).await
                 {
-                    Ok(Some(())) => {
+                    Ok(Some(())) =>
+                    {
                         last_change = Some(tokio::time::Instant::now());
-                    }
+                    },
                     Ok(None) => break,
-                    Err(_) => {}
+                    Err(_) =>
+                    {},
                 }
 
                 if let Some(t) = last_change
@@ -301,19 +318,22 @@ impl AutoRebuilder
 
                         match cmd.status().await
                         {
-                            Ok(s) if s.success() => {
+                            Ok(s) if s.success() =>
+                            {
                                 *status.lock().unwrap() = BuildStatus::Success;
                                 let _ = rebuild_tx.send(true);
                                 tracing::info!("AutoRebuilder: build succeeded");
-                            }
-                            Ok(s) => {
+                            },
+                            Ok(s) =>
+                            {
                                 *status.lock().unwrap() = BuildStatus::Failed;
                                 tracing::warn!("AutoRebuilder: build failed ({})", s);
-                            }
-                            Err(e) => {
+                            },
+                            Err(e) =>
+                            {
                                 *status.lock().unwrap() = BuildStatus::Failed;
                                 tracing::error!("AutoRebuilder: build error: {}", e);
-                            }
+                            },
                         }
                     }
                 }
@@ -324,7 +344,10 @@ impl AutoRebuilder
 
 impl Drop for AutoRebuilder
 {
-    fn drop(&mut self) { self.stop(); }
+    fn drop(&mut self)
+    {
+        self.stop();
+    }
 }
 
 #[cfg(test)]

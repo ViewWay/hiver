@@ -13,14 +13,13 @@
 //! ```
 
 use async_trait::async_trait;
-use hiver_kafka::{
-    Consumer, ConsumerConfig, KafkaMessage, MessageKey, Producer,
-    ProducerConfig,
-};
+use hiver_kafka::{Consumer, ConsumerConfig, KafkaMessage, MessageKey, Producer, ProducerConfig};
 
-use crate::binder::{StreamBinder, StreamConsumer, StreamProducer};
-use crate::error::{StreamError, StreamResult};
-use crate::message::StreamMessage;
+use crate::{
+    binder::{StreamBinder, StreamConsumer, StreamProducer},
+    error::{StreamError, StreamResult},
+    message::StreamMessage,
+};
 
 /// Kafka binder configuration.
 /// Kafka Binder 配置。
@@ -101,7 +100,10 @@ impl StreamBinder for KafkaBinder
         Ok(Box::new(KafkaStreamConsumer { consumer }))
     }
 
-    fn name(&self) -> &'static str { "kafka" }
+    fn name(&self) -> &'static str
+    {
+        "kafka"
+    }
 }
 
 /// Kafka stream producer adapter.
@@ -148,7 +150,11 @@ impl StreamConsumer for KafkaStreamConsumer
 /// 将 KafkaMessage 转换为 StreamMessage。
 fn kafka_message_to_stream(msg: &KafkaMessage) -> StreamMessage
 {
-    let payload = msg.payload.as_bytes().map(<[u8]>::to_vec).unwrap_or_default();
+    let payload = msg
+        .payload
+        .as_bytes()
+        .map(<[u8]>::to_vec)
+        .unwrap_or_default();
 
     let key = match &msg.key
     {
@@ -166,7 +172,8 @@ fn kafka_message_to_stream(msg: &KafkaMessage) -> StreamMessage
 
     for (k, v) in &msg.headers.headers
     {
-        let val = match v {
+        let val = match v
+        {
             hiver_kafka::MessageHeaderValue::String(s) => s.clone(),
             hiver_kafka::MessageHeaderValue::Bytes(b) => String::from_utf8_lossy(b).into_owned(),
             hiver_kafka::MessageHeaderValue::Int(i) => i.to_string(),
@@ -180,8 +187,9 @@ fn kafka_message_to_stream(msg: &KafkaMessage) -> StreamMessage
 #[cfg(test)]
 mod tests
 {
-    use super::*;
     use hiver_kafka::MessageHeaders;
+
+    use super::*;
 
     #[test]
     fn test_kafka_binder_name()

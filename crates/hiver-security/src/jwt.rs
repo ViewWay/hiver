@@ -436,8 +436,9 @@ impl JwtUtil
         }
         #[cfg(not(test))]
         {
-            env::var("JWT_SECRET")
-                .expect("FATAL: JWT_SECRET environment variable must be set before starting the server")
+            env::var("JWT_SECRET").expect(
+                "FATAL: JWT_SECRET environment variable must be set before starting the server",
+            )
         }
     }
 

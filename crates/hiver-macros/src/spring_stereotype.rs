@@ -483,7 +483,9 @@ impl Parse for BeanAttrs
                         {
                             return Err(syn::Error::new(
                                 item.value.span(),
-                                format!("unknown scope '{other}', expected 'singleton' or 'prototype'"),
+                                format!(
+                                    "unknown scope '{other}', expected 'singleton' or 'prototype'"
+                                ),
                             ));
                         },
                     },
@@ -571,12 +573,9 @@ pub fn bean(attr: TokenStream, item: TokenStream) -> TokenStream
         syn::ReturnType::Type(_, ty) => (**ty).clone(),
         syn::ReturnType::Default =>
         {
-            return syn::Error::new(
-                func_name.span(),
-                "#[bean] function must have a return type",
-            )
-            .to_compile_error()
-            .into();
+            return syn::Error::new(func_name.span(), "#[bean] function must have a return type")
+                .to_compile_error()
+                .into();
         },
     };
 

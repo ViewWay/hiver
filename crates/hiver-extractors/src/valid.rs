@@ -26,7 +26,10 @@ pub struct Valid<T>(pub T);
 impl<T> Valid<T>
 {
     /// Consume and get inner value.
-    pub fn into_inner(self) -> T { self.0 }
+    pub fn into_inner(self) -> T
+    {
+        self.0
+    }
 }
 
 impl<T: std::fmt::Debug> std::fmt::Debug for Valid<T>
@@ -70,9 +73,9 @@ where
 
             let value: T = serde_json::from_slice(&body).map_err(ExtractorError::from)?;
 
-            value.validate().map_err(|e| {
-                ExtractorError::Invalid(format!("Validation failed: {e}"))
-            })?;
+            value
+                .validate()
+                .map_err(|e| ExtractorError::Invalid(format!("Validation failed: {e}")))?;
 
             Ok(Valid(value))
         })

@@ -1,15 +1,14 @@
 //! Tool, Resource, and Prompt registries (Registry Pattern).
 //! 工具、资源和提示注册表（注册表模式）。
 
-use std::collections::HashMap;
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 use async_trait::async_trait;
 use tokio::sync::RwLock;
 
-use crate::error::McpError;
-use crate::types::{
-    CallToolResult, GetPromptResult, Prompt, ReadResourceResult, Resource, Tool,
+use crate::{
+    error::McpError,
+    types::{CallToolResult, GetPromptResult, Prompt, ReadResourceResult, Resource, Tool},
 };
 
 // ============================================================
@@ -55,10 +54,7 @@ pub trait McpPromptProvider: Send + Sync
 
     /// Resolves the prompt with given arguments.
     /// 使用给定参数解析提示。
-    async fn get(
-        &self,
-        arguments: HashMap<String, String>,
-    ) -> Result<GetPromptResult, McpError>;
+    async fn get(&self, arguments: HashMap<String, String>) -> Result<GetPromptResult, McpError>;
 }
 
 // ============================================================
@@ -243,7 +239,10 @@ impl PromptRegistry
     pub async fn register(&self, provider: impl McpPromptProvider + 'static)
     {
         let name = provider.definition().name;
-        self.providers.write().await.insert(name, Arc::new(provider));
+        self.providers
+            .write()
+            .await
+            .insert(name, Arc::new(provider));
     }
 
     /// Looks up a prompt provider by name.
@@ -356,7 +355,12 @@ impl StaticPrompt
 
     /// Adds an argument.
     #[must_use]
-    pub fn argument(mut self, name: impl Into<String>, desc: impl Into<String>, required: bool) -> Self
+    pub fn argument(
+        mut self,
+        name: impl Into<String>,
+        desc: impl Into<String>,
+        required: bool,
+    ) -> Self
     {
         self.prompt = self.prompt.argument(name, desc, required);
         self
@@ -371,10 +375,7 @@ impl McpPromptProvider for StaticPrompt
         self.prompt.clone()
     }
 
-    async fn get(
-        &self,
-        arguments: HashMap<String, String>,
-    ) -> Result<GetPromptResult, McpError>
+    async fn get(&self, arguments: HashMap<String, String>) -> Result<GetPromptResult, McpError>
     {
         let mut text = self.template.clone();
         for (key, value) in &arguments
@@ -422,11 +423,7 @@ where
 {
     /// Creates a new function tool.
     /// 创建新的函数工具。
-    pub fn new(
-        name: impl Into<String>,
-        description: impl Into<String>,
-        func: F,
-    ) -> Self
+    pub fn new(name: impl Into<String>, description: impl Into<String>, func: F) -> Self
     {
         Self {
             tool: Tool::new(name).description(description),
@@ -484,7 +481,10 @@ mod tests
         assert_eq!(registry.len().await, 1);
 
         let handler = registry.get("echo").await.unwrap();
-        let result = handler.call(serde_json::json!({"text": "hello"})).await.unwrap();
+        let result = handler
+            .call(serde_json::json!({"text": "hello"}))
+            .await
+            .unwrap();
         assert!(!result.is_error);
     }
 

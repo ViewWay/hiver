@@ -265,7 +265,7 @@ impl TokenBucketState
                     {
                         *last = Instant::now();
                         break;
-                    }
+                    },
                     Err(actual) => current = actual,
                 }
             }

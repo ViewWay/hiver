@@ -1,9 +1,13 @@
 //! RetryTemplate — programmatic retry API with statistics.
 //! RetryTemplate — 带统计的编程式重试 API。
 
-use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
-use std::sync::Arc;
-use std::time::Duration;
+use std::{
+    sync::{
+        Arc,
+        atomic::{AtomicU64, AtomicUsize, Ordering},
+    },
+    time::Duration,
+};
 
 use hiver_resilience::retry::BackoffType;
 use tokio::time::sleep;
@@ -77,7 +81,9 @@ pub struct NoOpCallback;
 impl RetryCallback for NoOpCallback
 {
     fn on_retry(&self, _attempt: usize, _delay: Duration) {}
+
     fn on_success(&self, _attempts: usize) {}
+
     fn on_error(&self, _error: &str) {}
 }
 
@@ -255,7 +261,7 @@ impl RetryTemplate
                     self.callback.on_success(context.attempt);
                     self.stats.success_count.fetch_add(1, Ordering::SeqCst);
                     return Ok(value);
-                }
+                },
                 Err(error) =>
                 {
                     let error_msg = error.to_string();
@@ -279,7 +285,7 @@ impl RetryTemplate
                     context.increment(delay);
                     self.callback.on_retry(context.attempt, delay);
                     sleep(delay).await;
-                }
+                },
             }
         }
 
@@ -451,7 +457,9 @@ impl RetryTemplateBuilder
             {
                 (self.f)(attempt, delay)
             }
+
             fn on_success(&self, _attempts: usize) {}
+
             fn on_error(&self, _error: &str) {}
         }
 
@@ -474,10 +482,12 @@ impl RetryTemplateBuilder
         impl<F: Fn(usize) + Send + Sync> RetryCallback for OnSuccess<F>
         {
             fn on_retry(&self, _attempt: usize, _delay: Duration) {}
+
             fn on_success(&self, attempts: usize)
             {
                 (self.f)(attempts)
             }
+
             fn on_error(&self, _error: &str) {}
         }
 

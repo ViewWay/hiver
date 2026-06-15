@@ -85,8 +85,8 @@ pub mod model;
 pub mod multipart;
 pub mod path;
 pub mod query;
-pub mod valid;
 pub mod state;
+pub mod valid;
 
 use std::{future::Future, pin::Pin};
 

@@ -8,10 +8,10 @@
 mod mcp_e2e
 {
     use std::collections::HashMap;
-    use hiver_mcp::client::McpClient;
-    use hiver_mcp::server::McpServer;
-    use hiver_mcp::transport::MemoryTransport;
-    use hiver_mcp::types::CallToolResult;
+
+    use hiver_mcp::{
+        client::McpClient, server::McpServer, transport::MemoryTransport, types::CallToolResult,
+    };
 
     async fn setup() -> (McpClient, tokio::task::JoinHandle<()>)
     {
@@ -141,8 +141,11 @@ mod mcp_e2e
 
 mod cloud_bus_e2e
 {
-    use std::sync::Arc;
-    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::{
+        Arc,
+        atomic::{AtomicUsize, Ordering},
+    };
+
     use hiver_cloud_bus::{BusEvent, BusEventType, CloudBus, LocalBus};
 
     #[tokio::test]
@@ -225,7 +228,10 @@ mod cloud_stream_e2e
     {
         let binder = InMemoryBinder::new();
         let producer = binder.create_producer("orders").await.unwrap();
-        let consumer = binder.create_consumer("orders", "order-service").await.unwrap();
+        let consumer = binder
+            .create_consumer("orders", "order-service")
+            .await
+            .unwrap();
 
         let msg = StreamMessage::new(b"order-123".to_vec())
             .with_key("order-123")
@@ -247,7 +253,10 @@ mod cloud_stream_e2e
 
         for i in 0..10
         {
-            producer.send(StreamMessage::new(format!("msg-{i}").into_bytes())).await.unwrap();
+            producer
+                .send(StreamMessage::new(format!("msg-{i}").into_bytes()))
+                .await
+                .unwrap();
         }
 
         for i in 0..10
