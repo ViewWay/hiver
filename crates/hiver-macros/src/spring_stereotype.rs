@@ -57,7 +57,19 @@ pub fn hiver_main(_attr: TokenStream, item: TokenStream) -> TokenStream
 
                 let start_time = Instant::now();
 
+                let class_name = "hiver.Application";
+                let rt = ::tokio::runtime::Runtime::new()?;
+
                 let mut ctx = ApplicationContext::new();
+
+                // Load configuration (application.toml/yaml/json + env + system props)
+                // BEFORE auto-configurations run, so from_config() sees real values.
+                // A missing config file is not an error — properties stay empty and
+                // defaults apply (convention over configuration).
+                // 在自动配置运行前加载配置（application.toml/yaml/json + 环境变量 + 系统属性），
+                // 使 from_config() 能读到真实值。缺少配置文件不是错误——属性保持为空，
+                // 使用默认值（约定大于配置）。
+                let _ = rt.block_on(async { ctx.load_config().await });
 
                 let mut registry = AutoConfigurationRegistry::new();
                 let _ = registry.load_from_defaults();
@@ -72,33 +84,79 @@ pub fn hiver_main(_attr: TokenStream, item: TokenStream) -> TokenStream
                     }
                 }
 
-                let rt = ::tokio::runtime::Runtime::new()?;
                 rt.block_on(async {
                     ctx.start().await
                 })?;
 
-                let elapsed = start_time.elapsed().as_millis();
-                let class_name = "hiver.Application";
-                let timestamp = format_timestamp();
-                println!();
-                println!(
-                    "{} {} {} --- [           main] {} : Tomcat started on port(s): {} (http)",
-                    timestamp,
-                    "\x1b[32mINFO\x1b[0m",
-                    std::process::id(),
-                    "\x1b[90mo.s.b.w.e.tomcat.TomcatWebServer\x1b[0m",
-                    "\x1b[36m8080\x1b[0m"
-                );
-                println!(
-                    "{} {} {} --- [           main] {} : Started Application in {} seconds (JVM running for {})",
-                    timestamp,
-                    "\x1b[32mINFO\x1b[0m",
-                    std::process::id(),
-                    class_name,
-                    format!("\x1b[36m{}.{:03}\x1b[0m", elapsed / 1000, elapsed % 1000),
-                    format!("\x1b[36m{}.{:03}\x1b[0m", elapsed / 1000, elapsed % 1000)
-                );
-                println!();
+                // Wire the core path: Router bean -> WebServer -> actually serve.
+                // 接通核心路径：Router bean -> WebServer -> 真正提供服务。
+                // Previously this printed a fake "Tomcat started" banner and returned
+                // without ever binding a socket. Now we retrieve the Router registered
+                // by RouterAutoConfiguration and hand it to WebServerAutoConfiguration::run,
+                // which binds the address and drives the request loop.
+                // 此前这里只打印假的 "Tomcat started" banner 然后返回，从不绑定 socket。
+                // 现在我们取出 RouterAutoConfiguration 注册的 Router，交给
+                // WebServerAutoConfiguration::run，由它绑定地址并驱动请求循环。
+                let router = ctx.get_bean::<hiver_starter::web::Router>();
+                if let Some(router) = router
+                {
+                    // Resolve the web-server config: prefer the bean registered by
+                    // WebServerAutoConfiguration (which honors application.yaml), fall
+                    // back to defaults so a bare #[hiver_main] still works.
+                    // 解析 Web 服务器配置：优先用 WebServerAutoConfiguration 注册的
+                    // bean（它读取 application.yaml），否则回退默认值，确保裸
+                    // #[hiver_main] 仍可工作。
+                    let web_config = ctx
+                        .get_bean_by_name::<hiver_starter::web::WebServerAutoConfiguration>(
+                            "webServerConfig",
+                        )
+                        .map(|c| (*c).clone())
+                        .unwrap_or_else(hiver_starter::web::WebServerAutoConfiguration::new);
+
+                    let bind_addr = web_config.bind_address();
+                    let port = web_config.port;
+                    // Router is Arc<Router>; dereference to the owned Router for run().
+                    // Router 是 Arc<Router>；解引用为 owned Router 供 run() 使用。
+                    rt.block_on(async {
+                        web_config.run((*router).clone()).await
+                    })?;
+
+                    let elapsed = start_time.elapsed().as_millis();
+                    let timestamp = format_timestamp();
+                    println!(
+                        "{} {} {} --- [           main] {} : Tomcat started on port(s): {} (http)",
+                        timestamp,
+                        "\x1b[32mINFO\x1b[0m",
+                        std::process::id(),
+                        "\x1b[90mo.s.b.w.e.tomcat.TomcatWebServer\x1b[0m",
+                        format!("\x1b[36m{}\x1b[0m", port),
+                    );
+                    println!(
+                        "{} {} {} --- [           main] {} : Started Application in {} seconds, listening on {}",
+                        timestamp,
+                        "\x1b[32mINFO\x1b[0m",
+                        std::process::id(),
+                        class_name,
+                        format!("\x1b[36m{}.{:03}\x1b[0m", elapsed / 1000, elapsed % 1000),
+                        bind_addr,
+                    );
+                    println!();
+                }
+                else
+                {
+                    // No Router bean (e.g. a non-web application). Skip server start.
+                    // 无 Router bean（如非 Web 应用）。跳过服务器启动。
+                    let elapsed = start_time.elapsed().as_millis();
+                    let timestamp = format_timestamp();
+                    println!(
+                        "{} {} {} --- [           main] {} : Started Application in {} seconds (no web server)",
+                        timestamp,
+                        "\x1b[32mINFO\x1b[0m",
+                        std::process::id(),
+                        class_name,
+                        format!("\x1b[36m{}.{:03}\x1b[0m", elapsed / 1000, elapsed % 1000),
+                    );
+                }
 
                 Ok(())
             }
@@ -117,16 +175,22 @@ pub fn main(_attr: TokenStream, item: TokenStream) -> TokenStream
     let input = parse_macro_input!(item as ItemStruct);
     let name = &input.ident;
 
+    // Low-level runtime entry point: the user passes an HttpService
+    // (e.g. a Router or a bare async fn) to run().
+    // 低层运行时入口：用户向 run() 传入一个 HttpService（如 Router 或裸 async fn）。
     let expanded = quote! {
         #input
 
         impl #name {
-            pub fn run() -> std::io::Result<()> {
+            pub fn run<S>(service: S) -> std::io::Result<()>
+            where
+                S: hiver_http::HttpService + Clone + 'static,
+            {
                 use hiver_runtime::Runtime;
 
                 let runtime = Runtime::new()?;
                 runtime.block_on(async {
-                    hiver_http::Server::new().run().await
+                    hiver_http::Server::new().run(service).await
                 })
             }
         }
@@ -142,16 +206,28 @@ pub fn main(_attr: TokenStream, item: TokenStream) -> TokenStream
 pub fn controller(_attr: TokenStream, item: TokenStream) -> TokenStream
 {
     let input = parse_macro_input!(item as ItemStruct);
+    let name = &input.ident;
+
+    // A @RestController is a @Component: register it as a singleton bean.
+    // Routes are contributed separately via #[get]/#[post]/... + inventory,
+    // so there is no per-controller Router to build here.
+    // @RestController 即 @Component：注册为单例 bean。
+    // 路由通过 #[get]/#[post]/... + inventory 单独贡献，此处无需构建 Router。
+    let bean_reg = crate::bean_register::generate_bean_registration(
+        &input,
+        quote! { ::hiver_starter::core::registry::BeanScope::Singleton },
+    );
 
     let expanded = quote! {
         #input
 
-        impl #input {
-            pub fn register() -> hiver_router::Router {
-                hiver_router::Router::new()
-                    .prefix(concat!("/", stringify!(#input)))
+        impl #name {
+            pub fn init() -> Self {
+                ::std::default::Default::default()
             }
         }
+
+        #bean_reg
     };
 
     TokenStream::from(expanded)

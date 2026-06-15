@@ -498,6 +498,27 @@ impl ApplicationContext
     // 生命周期 / Lifecycle
     // ========================================================================
 
+    /// Load configuration from default sources (application.toml/yaml/json,
+    /// environment variables, system properties) into this context.
+    /// 从默认来源（application.toml/yaml/json、环境变量、系统属性）加载配置到本上下文。
+    ///
+    /// This is convention-over-configuration: with no arguments it searches
+    /// `.` and `config/` for `application.toml` (then profile-specific files),
+    /// merges environment variables, and makes the resulting properties
+    /// available to `get_property()` / `from_config()`. Safe to call when no
+    /// config file exists — properties simply stay empty and defaults apply.
+    /// 这是约定大于配置：无参数时搜索 `.` 与 `config/` 下的 `application.toml`
+    /// （随后是 profile 专属文件），合并环境变量，并把结果属性提供给
+    /// `get_property()` / `from_config()`。无配置文件时调用也安全——属性保持为空，
+    /// 使用默认值。
+    pub async fn load_config(&mut self) -> AnyhowResult<()>
+    {
+        let mut loader = crate::config::ConfigurationLoader::new();
+        loader.load().await?;
+        self.config_loader = Arc::new(loader);
+        Ok(())
+    }
+
     /// 启动应用上下文
     /// Start application context
     ///

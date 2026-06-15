@@ -33,11 +33,12 @@ fn available_parallelism() -> usize
     num_cpus::get()
 }
 
-// Re-export HTTP server types
-// 重新导出 HTTP 服务器类型
+// Re-export HTTP server + router types
+// 重新导出 HTTP 服务器与路由器类型
 pub use hiver_http::{
     Body, HttpService, IntoResponse, Json, Request, Response, Server, StatusCode,
 };
+pub use hiver_router::Router;
 
 // ============================================================================
 // WebServerAutoConfiguration / Web 服务器自动配置
@@ -294,9 +295,13 @@ impl AutoConfiguration for WebServerAutoConfiguration
     /// Configure HTTP server and register related beans.
     fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()>
     {
-        // Register the configuration as a bean so it can be retrieved later
-        // 将配置注册为 Bean，以便后续获取
-        ctx.register_named_bean("webServerConfig".to_string(), self.clone());
+        // Build the effective config from application properties (loaded by
+        // #[hiver_main] via ctx.load_config()), falling back to `self`'s
+        // builder-set values, then to hardcoded defaults.
+        // 从应用属性（由 #[hiver_main] 通过 ctx.load_config() 加载）构建生效配置，
+        // 回退到 `self` 的 builder 设定值，再回退到硬编码默认值。
+        let effective = WebServerAutoConfiguration::from_config(ctx);
+        ctx.register_named_bean("webServerConfig".to_string(), effective);
         Ok(())
     }
 }
@@ -461,10 +466,47 @@ impl AutoConfiguration for RouterAutoConfiguration
         10 // 在服务器配置（0）之后
     }
 
-    fn configure(&self, _ctx: &mut ApplicationContext) -> anyhow::Result<()>
+    fn configure(&self, ctx: &mut ApplicationContext) -> anyhow::Result<()>
     {
-        let router = self::route_registry::collect_routes();
-        _ctx.register_bean(router);
+        let mut router = self::route_registry::collect_routes();
+
+        // Convention over configuration: logging + timeout middleware are on by
+        // default (disable via server.logging.enabled=false / server.timeout.enabled=false).
+        // The middleware is attached here, where the Router is built, because
+        // MiddlewareAutoConfiguration (order 20) runs after this (order 10) and
+        // cannot mutate the already-registered Router bean.
+        // 约定大于配置：日志与超时中间件默认开启（经
+        // server.logging.enabled=false / server.timeout.enabled=false 关闭）。
+        // 中间件在此处（构建 Router 的位置）附加，因为
+        // MiddlewareAutoConfiguration（序号 20）在本步骤（序号 10）之后运行，
+        // 无法修改已注册的 Router bean。
+        let logging_enabled = ctx
+            .get_property("server.logging.enabled")
+            .and_then(|p| p.parse().ok())
+            .unwrap_or(true);
+        if logging_enabled
+        {
+            router =
+                router.middleware(std::sync::Arc::new(hiver_middleware::LoggerMiddleware::new()));
+        }
+
+        let timeout_enabled = ctx
+            .get_property("server.timeout.enabled")
+            .and_then(|p| p.parse().ok())
+            .unwrap_or(true);
+        if timeout_enabled
+        {
+            let timeout_secs = ctx
+                .get_property("server.request_timeout_secs")
+                .and_then(|p| p.parse().ok())
+                .unwrap_or(30u64);
+            router =
+                router.middleware(std::sync::Arc::new(hiver_middleware::TimeoutMiddleware::new(
+                    std::time::Duration::from_secs(timeout_secs),
+                )));
+        }
+
+        ctx.register_bean(router);
         tracing::info!("Router auto-configuration complete");
         Ok(())
     }
@@ -578,16 +620,15 @@ impl AutoConfiguration for MiddlewareAutoConfiguration
 
     fn configure(&self, _ctx: &mut ApplicationContext) -> anyhow::Result<()>
     {
-        // Spring Boot 风格：不在启动时打印详细配置
-        // Spring Boot style: Don't print detailed config during startup
-        //
-        // Middleware configuration requires:
-        // 中间件配置需要：
-        // 1. Create middleware instances (CORS, Compression, Logger, etc.)
-        //    创建中间件实例（CORS、压缩、日志等）
-        // 2. Configure each middleware based on application properties 根据应用属性配置每个中间件
-        // 3. Build the middleware chain 构建中间件链
-        // 4. Register to the server/router 注册到服务器/路由器
+        // Middleware is attached in RouterAutoConfiguration::configure() (order 10),
+        // where the Router is built. This config (order 20) runs afterward and
+        // cannot mutate the already-registered Router bean, so there is nothing
+        // to do here. It remains registered for property resolution
+        // (from_config) and as an extension point for future middleware that
+        // does not attach to the Router.
+        // 中间件在 RouterAutoConfiguration::configure()（序号 10，构建 Router 处）附加。
+        // 本配置（序号 20）在其之后运行，无法修改已注册的 Router bean，因此此处无需操作。
+        // 它保留注册以供属性解析（from_config），并为将来不附加到 Router 的中间件留作扩展点。
         Ok(())
     }
 }
