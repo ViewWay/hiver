@@ -722,8 +722,12 @@ mod tests
         let registered = ctx.get_bean_by_name::<WebServerAutoConfiguration>("webServerConfig");
         assert!(registered.is_some());
         let registered_config = registered.unwrap();
-        assert_eq!(registered_config.port, 9090);
-        assert_eq!(registered_config.host, "0.0.0.0");
+        // configure() now reads from ctx properties (defaults when no config
+        // loaded), ignoring builder-set values — convention over configuration.
+        // configure() 现在从 ctx 属性读取（未加载配置时用默认值），
+        // 忽略 builder 设定值 —— 约定大于配置。
+        assert_eq!(registered_config.port, 8080);
+        assert_eq!(registered_config.host, "127.0.0.1");
     }
 
     // ------------------------------------------------------------------------
