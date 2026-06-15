@@ -85,6 +85,10 @@ jobs:
             path: crates/hiver-aop
           - crate: hiver-grpc
             path: crates/hiver-grpc
+          - crate: hiver-devtools
+            path: crates/hiver-devtools
+          - crate: hiver-mail
+            path: crates/hiver-mail
 
           # Tier 1: Depend on Tier 0 or already-published crates / 依赖 Tier 0 或已发布
           - crate: hiver-core
@@ -129,6 +133,8 @@ jobs:
             path: crates/hiver-data-redis
           - crate: hiver-data-mongodb
             path: crates/hiver-data-mongodb
+          - crate: hiver-mcp
+            path: crates/hiver-mcp
 
           # Tier 2: Depend on Tier 0-1 / 依赖 Tier 0-1
           - crate: hiver-http
@@ -169,6 +175,16 @@ jobs:
             path: crates/hiver-data-annotations
           - crate: hiver-openapi
             path: crates/hiver-openapi
+          # cloud-stream depends on hiver-kafka/hiver-amqp (Tier 1);
+          # cloud-bus depends on cloud-stream — order is significant.
+          # cloud-stream 依赖 hiver-kafka/hiver-amqp（Tier 1）；
+          # cloud-bus 依赖 cloud-stream —— 顺序有影响。
+          - crate: hiver-cloud-stream
+            path: crates/hiver-cloud-stream
+          - crate: hiver-cloud-bus
+            path: crates/hiver-cloud-bus
+          - crate: hiver-data-rest
+            path: crates/hiver-data-rest
 
           # Tier 2 (proc-macro crates): Published after their runtime deps.
           # proc-macro crate 在运行时依赖之后发布。
@@ -186,6 +202,8 @@ jobs:
             path: crates/hiver-validation-annotations
           - crate: hiver-lombok
             path: crates/hiver-lombok
+          - crate: hiver-aop-macros
+            path: crates/hiver-aop-macros
 
           # Tier 3: Depend on multiple layers / 依赖多层
           - crate: hiver-session
