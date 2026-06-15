@@ -696,7 +696,11 @@ impl Driver for IoUringDriver
             // expires with no completions — this is a NORMAL timeout, not an error.
             // run_once already treats timed_out as normal idle; returning Err here
             // aborted block_on whenever a pure-computation task had no I/O event.
-            if err.raw_os_error() == Some(libc::ETIMEDOUT)
+            //
+            // NB: the kernel returns -ETIME (errno 62), NOT -ETIMEDOUT (errno 110).
+            // Comparing against libc::ETIMEDOUT was wrong — the Err propagated as
+            // Os { code: 62, "Timer expired" }, aborting every spawn test.
+            if err.raw_os_error() == Some(libc::ETIME)
             {
                 return Ok((0, true)); // 0 completions, timed out
             }
