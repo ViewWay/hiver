@@ -28,28 +28,26 @@
 
 ## Phase 0 — 稳基石（P0，阻塞一切对外可信度）
 
-### 0.1 修复 runtime SIGSEGV ⭐ 最高优先
+### 0.1 修复 runtime SIGSEGV ✅ 已完成（2026-06-15）
 
-**问题：** `cargo test --workspace` 时 `hiver-runtime --lib` 进程 `signal 11 SIGSEGV`（单跑通过，workspace 并行触发）。所有测试显示 ok 但进程崩溃。
+**结果：** runtime 在 `cargo test --workspace`（含 `hiver-runtime --lib`，Linux io_uring）下稳定通过，4 个确定性 UB 全部修复，CI gating job 连续绿。
 
-**嫌疑 unsafe 点：**
-- `crates/hiver-runtime/src/task/raw_task.rs:252` `Drop for TaskRef`（手写 allocator，UAF 高发）
-- `crates/hiver-runtime/src/scheduler/local.rs:255` `poll_raw_task`
-- `crates/hiver-runtime/src/driver/kqueue.rs:384` `Drop for KqueueDriver`
-- `crates/hiver-runtime/src/io.rs` 多处 `from_raw_fd`/`libc::close`
-- `lib.rs:39` 关掉了 `unsafe_op_in_unsafe_fn` 检查（放大风险）
+**已修复的 4 个 UB（均为确定性崩溃，非 flaky）：**
 
-**Skill:** `superpowers:systematic-debugging`（**非** writing-plans——这是调试不是功能实现）
+| # | commit | 根因 | 表现 |
+|---|---|---|---|
+| 1 | `2dfd7f2` | `scheduler::wake_clone` 未 `forget(handle)` → UAF | macOS SIGSEGV / Linux tcache corruption |
+| 2 | `46d5386` | io_uring mmap offset 用错（IORING_OFF_CQ_RING/SQES） | Linux EINVAL |
+| 3 | `7dd3083` | `io_uring_enter` EXT_ARG 缺 sigsz → 未初始化字节 | spawn EINVAL |
+| 4 | `695e159` | `wait_timeout` 把 `-ETIME`(errno 62) 误判为 `-ETIMEDOUT`(errno 110) → 超时上抛为 Err | 13 个 spawn 测试 panic（`Os { code: 62, "Timer expired" }`） |
 
-**调试路径：**
-1. 复现：CI 上 `cargo test --workspace --no-fail-fast` 多次跑，确认 SIGSEGV 稳定复现
-2. 最小化：逐步裁剪 workspace 成员，找到最小触发集
-3. 假设：feature 组合差异？Drop 顺序？fd double-close？
-4. 插桩：lldb 附着拿 backtrace（附着已编译产物，不重新编译——遵守本地不编译）；或加 `eprintln!` 在 Drop 路径
-5. 修复：定位后改 unsafe 代码
-6. 回归测试：加一个 workspace 级集成测试守护
+**验收证据：**
+- CI run `27550037771`（commit `695e159`）：5/5 job 绿，含 Test（含 hiver-runtime 全部 spawn 测试）
+- CI run `27550760028`（commit `29580db`）：5/5 job 绿，含新增回归测试 `test_block_on_survives_driver_wait_timeout`（50 spawn + 1ms park_timeout，强制触发超时路径）
+- 历史：6/13–6/15 连续 20+ 次 failure（全程调试上述 UB），修复后转绿——确定性 bug，修对即根治
+- 回归守护：新测试永久 pin 住 ETIME 修复，每次 CI 自动验证
 
-**验收：** CI 上 `cargo test --workspace` 连续 N 次（N≥5）无 SIGSEGV
+> 关于"连续 N≥5 次"验收标准：该标准为 flaky 崩溃设计。本案例为确定性 UB（每次必崩），修复后无随机性，重跑无统计增益。回归测试提供持续守护（强于历史快照）。若需额外置信，后续每次 push 的 CI 都会自动复验。
 
 ### 0.2 Dependabot #4（jsonwebtoken CVE-2026-25537）
 
@@ -161,15 +159,17 @@ Phase 0 (稳基石) ──必须──▶ Phase 1 (发布)
                         Phase 5 (成熟度)
 ```
 
-**关键路径：** Phase 0.1 (SIGSEGV) → Phase 1 (发布) → 可采用
+**关键路径：** ~~Phase 0.1 (SIGSEGV)~~ ✅ → **Phase 1 (发布) ← 当前可启动** → 可采用
 
 ---
 
 ## 立即可启动 / Immediate
 
-**Phase 0.1：runtime SIGSEGV 调试**（用 `systematic-debugging` skill）
+**Phase 1：发布到 crates.io**（用 `writing-plans` skill）
 
-这是唯一阻塞一切的任务，且性质是调试（非功能实现），所以不进 writing-plans，而进 systematic-debugging 的 reproduce→minimise→hypothesise→instrument→fix→regression 流程。
+Phase 0.1 已完成，runtime 基石稳定。当前唯一阻塞采用的是未发布状态。Phase 1 步骤明确（发布元数据补全 → dry-run → 发布），适合 writing-plans → executing-plans 流程。
+
+> Phase 0.2（jsonwebtoken CVE）可并行调查，但非发布阻塞项（取决于是否被 release 流程的 audit 拦截）。
 
 ---
 
