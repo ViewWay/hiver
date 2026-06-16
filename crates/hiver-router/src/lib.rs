@@ -53,7 +53,7 @@ pub mod router;
 pub mod trie;
 
 // Re-export from hiver-http
-pub use hiver_http::Method;
+pub use hiver_http::{Method, StatusCode};
 pub use params::Path;
 pub use route::{AsyncHandlerFn, BoxedAsyncHandler, Handler as RouteHandler, Route};
 pub use router::{Handler, Middleware, Next, Router, Stateful};

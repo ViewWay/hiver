@@ -9,7 +9,7 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 
-use std::{net::SocketAddr, sync::Arc};
+use std::{net::SocketAddr, sync::Arc, time::Duration};
 
 use hiver_runtime::{
     io::{TcpListener, TcpStream},
@@ -70,9 +70,9 @@ pub struct ServerConfig
     /// Maximum concurrent connections / 最大并发连接数
     max_connections: usize,
     /// Request timeout in seconds / 请求超时时间（秒）
-    request_timeout: u64,
+    request_timeout: Duration,
     /// Keep-alive timeout in seconds / 保活超时时间（秒）
-    keep_alive_timeout: u64,
+    keep_alive_timeout: Duration,
     /// Maximum buffer size for reading (bytes) / 最大读取缓冲区大小（字节）
     max_buffer_size: usize,
 }
@@ -83,8 +83,8 @@ impl Default for ServerConfig
     {
         Self {
             max_connections: 10000,
-            request_timeout: 30,
-            keep_alive_timeout: 60,
+            request_timeout: Duration::from_secs(30),
+            keep_alive_timeout: Duration::from_secs(60),
             max_buffer_size: 64 * 1024,
         }
     }
@@ -132,17 +132,17 @@ impl Server
 
     /// Set the request timeout in seconds
     /// 设置请求超时时间（秒）
-    pub fn request_timeout(mut self, timeout: u64) -> Self
+    pub fn request_timeout(mut self, secs: u64) -> Self
     {
-        self.config.request_timeout = timeout;
+        self.config.request_timeout = Duration::from_secs(secs);
         self
     }
 
     /// Set the keep-alive timeout in seconds
     /// 设置keep-alive超时时间（秒）
-    pub fn keep_alive_timeout(mut self, timeout: u64) -> Self
+    pub fn keep_alive_timeout(mut self, secs: u64) -> Self
     {
-        self.config.keep_alive_timeout = timeout;
+        self.config.keep_alive_timeout = Duration::from_secs(secs);
         self
     }
 
@@ -395,17 +395,17 @@ impl ServerBuilder
 
     /// Set the request timeout
     /// 设置请求超时时间
-    pub fn request_timeout(mut self, timeout: u64) -> Self
+    pub fn request_timeout(mut self, secs: u64) -> Self
     {
-        self.config.request_timeout = timeout;
+        self.config.request_timeout = Duration::from_secs(secs);
         self
     }
 
     /// Set the keep-alive timeout
     /// 设置keep-alive超时时间
-    pub fn keep_alive_timeout(mut self, timeout: u64) -> Self
+    pub fn keep_alive_timeout(mut self, secs: u64) -> Self
     {
-        self.config.keep_alive_timeout = timeout;
+        self.config.keep_alive_timeout = Duration::from_secs(secs);
         self
     }
 
@@ -467,6 +467,6 @@ mod tests
 
         assert_eq!(server.addr(), &SocketAddr::from(([127, 0, 0, 1], 8080)));
         assert_eq!(server.config().max_connections, 1000);
-        assert_eq!(server.config().request_timeout, 60);
+        assert_eq!(server.config().request_timeout, Duration::from_secs(60));
     }
 }

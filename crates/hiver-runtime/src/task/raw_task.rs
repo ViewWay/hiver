@@ -301,7 +301,7 @@ where
 /// # Safety
 ///
 /// `raw_task` must be valid. Caller must have exclusive access.
-pub unsafe fn poll_raw_task(raw_task: RawTask) -> bool
+pub(crate) unsafe fn poll_raw_task(raw_task: RawTask) -> bool
 {
     let core = raw_task as *const TaskCore;
     (*core).poll()
@@ -313,7 +313,7 @@ pub unsafe fn poll_raw_task(raw_task: RawTask) -> bool
 ///
 /// `raw_task` must be valid. Must only be called when the task just completed
 /// (the scheduler's queue ref is being consumed).
-pub unsafe fn deallocate_completed_task(raw_task: RawTask)
+pub(crate) unsafe fn deallocate_completed_task(raw_task: RawTask)
 {
     TaskCore::dec_ref(raw_task as *const TaskCore);
 }

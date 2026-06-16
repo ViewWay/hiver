@@ -23,7 +23,12 @@ use std::os::fd::AsRawFd;
 
 pub use config::{DriverConfig, DriverConfigBuilder, DriverFactory, DriverType};
 pub use interest::Interest;
-pub use queue::{CompletionEntry, IoState, SubmitEntry};
+pub use queue::IoState;
+// SubmitEntry/CompletionEntry are internal driver types — not re-exported
+// publicly to avoid leaking unsafe raw I/O structs to downstream crates.
+// SubmitEntry/CompletionEntry 是内部 driver 类型 —— 不公开重导出，
+// 避免向下游 crate 泄漏不安全的原始 I/O 结构。
+pub(crate) use queue::{CompletionEntry, SubmitEntry};
 
 /// Core driver trait for async I/O operations
 /// 异步I/O操作的核心driver trait

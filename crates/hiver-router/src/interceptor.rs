@@ -9,6 +9,8 @@
 
 use std::sync::Arc;
 
+use crate::{Method, StatusCode};
+
 /// Result of an interceptor pre-handle check.
 /// 拦截器 pre-handle 检查结果。
 #[derive(Debug, Clone)]
@@ -20,7 +22,7 @@ pub enum InterceptorResult
     ShortCircuit
     {
         /// HTTP status code.
-        status: u16,
+        status: StatusCode,
         /// Response body.
         body: String,
     },
@@ -31,13 +33,13 @@ pub enum InterceptorResult
 pub trait HandlerInterceptor: Send + Sync
 {
     /// Called before the handler executes.
-    fn pre_handle(&self, path: &str, method: &str) -> InterceptorResult;
+    fn pre_handle(&self, path: &str, method: Method) -> InterceptorResult;
 
     /// Called after the handler executes successfully.
-    fn post_handle(&self, _path: &str, _method: &str, _status: u16) {}
+    fn post_handle(&self, _path: &str, _method: Method, _status: StatusCode) {}
 
     /// Called after handler completion (success or error).
-    fn after_completion(&self, _path: &str, _method: &str, _status: u16) {}
+    fn after_completion(&self, _path: &str, _method: Method, _status: StatusCode) {}
 
     /// Interceptor ordering (lower = earlier).
     fn order(&self) -> i32
@@ -82,7 +84,7 @@ impl InterceptorChain
     }
 
     /// Run pre-handle on all interceptors.
-    pub fn pre_handle(&self, path: &str, method: &str) -> InterceptorResult
+    pub fn pre_handle(&self, path: &str, method: Method) -> InterceptorResult
     {
         for i in &self.interceptors
         {
@@ -97,7 +99,7 @@ impl InterceptorChain
     }
 
     /// Run post-handle on all interceptors.
-    pub fn post_handle(&self, path: &str, method: &str, status: u16)
+    pub fn post_handle(&self, path: &str, method: Method, status: StatusCode)
     {
         for i in &self.interceptors
         {
@@ -106,7 +108,7 @@ impl InterceptorChain
     }
 
     /// Run after-completion on all interceptors.
-    pub fn after_completion(&self, path: &str, method: &str, status: u16)
+    pub fn after_completion(&self, path: &str, method: Method, status: StatusCode)
     {
         for i in &self.interceptors
         {
@@ -132,13 +134,13 @@ pub struct LoggingInterceptor;
 
 impl HandlerInterceptor for LoggingInterceptor
 {
-    fn pre_handle(&self, path: &str, method: &str) -> InterceptorResult
+    fn pre_handle(&self, path: &str, method: Method) -> InterceptorResult
     {
         let _ = (path, method);
         InterceptorResult::Continue
     }
 
-    fn after_completion(&self, path: &str, method: &str, status: u16)
+    fn after_completion(&self, path: &str, method: Method, status: StatusCode)
     {
         let _ = (path, method, status);
     }
@@ -169,10 +171,10 @@ mod tests
     struct DenyInterceptor;
     impl HandlerInterceptor for DenyInterceptor
     {
-        fn pre_handle(&self, _: &str, _: &str) -> InterceptorResult
+        fn pre_handle(&self, _: &str, _: Method) -> InterceptorResult
         {
             InterceptorResult::ShortCircuit {
-                status: 403,
+                status: StatusCode::FORBIDDEN,
                 body: "Denied".into(),
             }
         }
@@ -191,7 +193,7 @@ mod tests
     struct AllowInterceptor;
     impl HandlerInterceptor for AllowInterceptor
     {
-        fn pre_handle(&self, _: &str, _: &str) -> InterceptorResult
+        fn pre_handle(&self, _: &str, _: Method) -> InterceptorResult
         {
             InterceptorResult::Continue
         }
@@ -211,7 +213,7 @@ mod tests
     fn test_chain_continue()
     {
         let chain = InterceptorChain::new().add(AllowInterceptor);
-        assert!(matches!(chain.pre_handle("/api", "GET"), InterceptorResult::Continue));
+        assert!(matches!(chain.pre_handle("/api", Method::GET), InterceptorResult::Continue));
     }
 
     #[test]
@@ -219,7 +221,7 @@ mod tests
     {
         let chain = InterceptorChain::new().add(DenyInterceptor);
         assert!(matches!(
-            chain.pre_handle("/api", "GET"),
+            chain.pre_handle("/api", Method::GET),
             InterceptorResult::ShortCircuit { .. }
         ));
     }
@@ -231,7 +233,7 @@ mod tests
             .add(DenyInterceptor)
             .add(AllowInterceptor);
         assert!(matches!(
-            chain.pre_handle("/api", "GET"),
+            chain.pre_handle("/api", Method::GET),
             InterceptorResult::ShortCircuit { .. }
         ));
     }

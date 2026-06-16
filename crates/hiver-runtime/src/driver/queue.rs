@@ -71,7 +71,7 @@ impl IoState
 /// - 如果非空，`buf_ptr` 必须对 `buf_len` 字节有效
 /// - 缓冲区必须在操作完成前保持有效
 #[derive(Debug, Clone)]
-pub struct SubmitEntry
+pub(crate) struct SubmitEntry
 {
     /// File descriptor to operate on / 操作的文件描述符
     pub fd: i32,
@@ -112,7 +112,7 @@ impl SockAddr
     ///
     /// The storage must contain a valid socket address.
     /// storage必须包含有效的套接字地址。
-    pub unsafe fn from_raw(storage: libc::sockaddr_storage, len: libc::socklen_t) -> Self
+    pub(crate) unsafe fn from_raw(storage: libc::sockaddr_storage, len: libc::socklen_t) -> Self
     {
         Self { storage, len }
     }
@@ -145,7 +145,7 @@ impl SubmitEntry
     /// `buf` must be valid for reads and remain valid until completion.
     /// `buf` 必须对读取有效并在完成前保持有效。
     #[must_use]
-    pub unsafe fn read(fd: i32, buf: *mut u8, buf_len: u32, user_data: u64) -> Self
+    pub(crate) unsafe fn read(fd: i32, buf: *mut u8, buf_len: u32, user_data: u64) -> Self
     {
         Self {
             fd,
@@ -167,7 +167,7 @@ impl SubmitEntry
     /// `buf` must be valid for reads and remain valid until completion.
     /// `buf` 必须对读取有效并在完成前保持有效。
     #[must_use]
-    pub unsafe fn write(fd: i32, buf: *const u8, buf_len: u32, user_data: u64) -> Self
+    pub(crate) unsafe fn write(fd: i32, buf: *const u8, buf_len: u32, user_data: u64) -> Self
     {
         Self {
             fd,
@@ -189,7 +189,7 @@ impl SubmitEntry
     /// `buf` must be valid for `buf_len` bytes.
     /// `buf` 必须对 `buf_len` 字节有效。
     #[must_use]
-    pub unsafe fn with_buffer(mut self, buf: *mut u8, buf_len: u32) -> Self
+    pub(crate) unsafe fn with_buffer(mut self, buf: *mut u8, buf_len: u32) -> Self
     {
         self.buf_ptr = NonNull::new(buf);
         self.buf_len = buf_len;
@@ -231,7 +231,7 @@ impl SubmitEntry
     /// The returned slice is only valid if the buffer is still alive.
     /// 返回的切片仅在缓冲区仍然存活时有效。
     #[must_use]
-    pub unsafe fn buffer(&self) -> Option<&[u8]>
+    pub(crate) unsafe fn buffer(&self) -> Option<&[u8]>
     {
         self.buf_ptr
             .map(|ptr| std::slice::from_raw_parts(ptr.as_ptr(), self.buf_len as usize))
@@ -245,7 +245,7 @@ impl SubmitEntry
     /// The returned slice is only valid if the buffer is still alive and mutable.
     /// 返回的切片仅在缓冲区仍然存活且可变时有效。
     #[must_use]
-    pub unsafe fn buffer_mut(&self) -> Option<&mut [u8]>
+    pub(crate) unsafe fn buffer_mut(&self) -> Option<&mut [u8]>
     {
         self.buf_ptr
             .map(|ptr| std::slice::from_raw_parts_mut(ptr.as_ptr(), self.buf_len as usize))
@@ -264,7 +264,7 @@ impl SubmitEntry
 /// Represents a completed I/O operation returned from the kernel.
 /// 表示从内核返回的已完成的I/O操作。
 #[derive(Debug, Clone, Copy)]
-pub struct CompletionEntry
+pub(crate) struct CompletionEntry
 {
     /// User data from the corresponding submission / 来自相应提交的用户数据
     pub user_data: u64,

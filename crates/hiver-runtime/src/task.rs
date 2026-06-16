@@ -545,7 +545,9 @@ where
     {
         let (raw_task, task_ref) = raw_task::allocate_task(future, handle.scheduler().clone());
 
-        let id = task_ref.core().map_or(0, raw_task::TaskCore::id);
+        let id = task_ref
+            .core()
+            .map_or(crate::scheduler::TaskId::UNKNOWN, raw_task::TaskCore::id);
         let _ = handle.scheduler().submit(raw_task);
 
         return JoinHandle {
