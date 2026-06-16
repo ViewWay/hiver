@@ -772,10 +772,18 @@ mod tests
     }
 
     #[test]
-    #[should_panic(expected = "Error threshold must be between 0.0 and 1.0")]
-    fn test_config_invalid_threshold()
+    fn test_config_invalid_threshold_clamped()
     {
-        CircuitBreakerConfig::new().with_error_threshold(1.5);
+        // with_error_threshold now clamps instead of panicking — builders
+        // should not crash on bad input. Values outside [0.0, 1.0] are
+        // clamped to the nearest valid bound.
+        // with_error_threshold 现在钳位而非 panic —— builder 不应因错误
+        // 输入而崩溃。超出 [0.0, 1.0] 的值被钳位到最近的合法边界。
+        let over = CircuitBreakerConfig::new().with_error_threshold(1.5);
+        assert_eq!(over.error_threshold, 1.0);
+
+        let under = CircuitBreakerConfig::new().with_error_threshold(-0.5);
+        assert_eq!(under.error_threshold, 0.0);
     }
 
     #[test]
