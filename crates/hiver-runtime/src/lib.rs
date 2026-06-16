@@ -81,7 +81,7 @@ pub mod time;
 
 // Re-exports / 重新导出
 pub use channel::{Receiver, RecvError, SendError, Sender, bounded, unbounded};
-pub use driver::{Driver, DriverConfig, DriverConfigBuilder, DriverFactory, DriverType};
+pub use driver::{DriverConfig, DriverConfigBuilder, DriverFactory, DriverType};
 pub use runtime::{Runtime, RuntimeBuilder, RuntimeConfig};
 pub use scheduler::{
     Scheduler, SchedulerConfig, SchedulerHandle, WorkStealingConfig, WorkStealingHandle,
