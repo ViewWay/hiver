@@ -25,7 +25,12 @@ use std::any::Any;
 
 /// Type alias for results in this module.
 /// 本模块的结果类型别名。
-pub type Result<T> = anyhow::Result<T>;
+///
+/// Uses the crate's unified `Error` type (not `anyhow::Result`) so the
+/// entire `hiver-core` crate exports a single consistent `Result`.
+/// 使用本 crate 统一的 `Error` 类型（而非 `anyhow::Result`），
+/// 使整个 `hiver-core` crate 导出单一一致的 `Result`。
+pub type Result<T> = crate::error::Result<T>;
 
 /// Trait for beans that need initialization after property injection.
 /// 在属性注入后需要初始化的Bean trait。

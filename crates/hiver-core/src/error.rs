@@ -87,6 +87,64 @@ impl Error
         }
     }
 
+    // ── Domain-layer convenience constructors ─────────────────────────────
+    // ── 领域层便捷构造函数 ──────────────────────────────────────────────────
+
+    /// Create a data-layer error (DB query, entity not found, duplicate key).
+    /// 创建数据层错误（DB 查询、实体未找到、重复键）。
+    pub fn data(msg: impl Into<String>) -> Self
+    {
+        Self {
+            kind: ErrorKind::Data(String::new()),
+            message: msg.into(),
+            source: None,
+        }
+    }
+
+    /// Create an infrastructure error (connection, pool, network, driver).
+    /// 创建基础设施错误（连接、连接池、网络、驱动）。
+    pub fn infra(msg: impl Into<String>) -> Self
+    {
+        Self {
+            kind: ErrorKind::Infra(String::new()),
+            message: msg.into(),
+            source: None,
+        }
+    }
+
+    /// Create a configuration error (invalid value, missing key, parse error).
+    /// 创建配置错误（无效值、缺失键、解析错误）。
+    pub fn config(msg: impl Into<String>) -> Self
+    {
+        Self {
+            kind: ErrorKind::Config(String::new()),
+            message: msg.into(),
+            source: None,
+        }
+    }
+
+    /// Create a messaging error (kafka, amqp, bus, stream).
+    /// 创建消息传递错误（kafka、amqp、总线、流）。
+    pub fn messaging(msg: impl Into<String>) -> Self
+    {
+        Self {
+            kind: ErrorKind::Messaging(String::new()),
+            message: msg.into(),
+            source: None,
+        }
+    }
+
+    /// Create a security error (auth, authz, token, crypto).
+    /// 创建安全错误（认证、授权、令牌、加密）。
+    pub fn security(msg: impl Into<String>) -> Self
+    {
+        Self {
+            kind: ErrorKind::Security(String::new()),
+            message: msg.into(),
+            source: None,
+        }
+    }
+
     /// Get the error kind
     /// 获取错误类型
     pub fn kind(&self) -> &ErrorKind
@@ -187,9 +245,19 @@ impl From<serde_json::Error> for Error
 
 /// Error kind
 /// 错误类型
+///
+/// Combines HTTP-status-shaped variants (for the web layer) with domain
+/// variants (for data/infra/config layers). This lets every crate in the
+/// workspace funnel its failures through a single `hiver_core::Error`
+/// instead of defining 75 parallel error enums.
+/// 合并 HTTP 状态码变体（Web 层）与领域变体（数据/基础设施/配置层）。
+/// 使工作区中的每个 crate 都能通过单一 `hiver_core::Error` 汇聚失败，
+/// 而非定义 75 个并行错误枚举。
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ErrorKind
 {
+    // ── HTTP-layer kinds (map to status codes) ───────────────────────────
+    // ── HTTP 层类型（映射到状态码）───────────────────────────────────────
     /// Bad request (400)
     /// 错误请求 (400)
     BadRequest,
@@ -225,6 +293,32 @@ pub enum ErrorKind
     /// Custom error with code
     /// 带代码的自定义错误
     Custom(u16, String),
+
+    // ── Domain kinds (layer-specific failures, not directly HTTP-shaped) ─
+    // ── 领域类型（分层特定失败，不直接映射 HTTP）──────────────────────────
+    /// Data-layer failure (DB query, entity not found, duplicate key, etc.)
+    /// 数据层失败（DB 查询、实体未找到、重复键等）
+    Data(String),
+
+    /// Infrastructure failure (connection, pool, network, driver)
+    /// 基础设施失败（连接、连接池、网络、驱动）
+    Infra(String),
+
+    /// Configuration failure (invalid value, missing key, parse error)
+    /// 配置失败（无效值、缺失键、解析错误）
+    Config(String),
+
+    /// Caching failure (miss, eviction, serialization)
+    /// 缓存失败（未命中、驱逐、序列化）
+    Cache(String),
+
+    /// Messaging failure (kafka, amqp, bus, stream)
+    /// 消息传递失败（kafka、amqp、总线、流）
+    Messaging(String),
+
+    /// Security failure (auth, authz, token, crypto)
+    /// 安全失败（认证、授权、令牌、加密）
+    Security(String),
 }
 
 impl fmt::Display for ErrorKind
@@ -242,6 +336,12 @@ impl fmt::Display for ErrorKind
             ErrorKind::Internal(s) => write!(f, "Internal Server Error: {}", s),
             ErrorKind::ServiceUnavailable => write!(f, "Service Unavailable"),
             ErrorKind::Custom(code, msg) => write!(f, "Error {}: {}", code, msg),
+            ErrorKind::Data(s) => write!(f, "Data error: {}", s),
+            ErrorKind::Infra(s) => write!(f, "Infrastructure error: {}", s),
+            ErrorKind::Config(s) => write!(f, "Configuration error: {}", s),
+            ErrorKind::Cache(s) => write!(f, "Cache error: {}", s),
+            ErrorKind::Messaging(s) => write!(f, "Messaging error: {}", s),
+            ErrorKind::Security(s) => write!(f, "Security error: {}", s),
         }
     }
 }
@@ -263,6 +363,15 @@ impl ErrorKind
             ErrorKind::Internal(_) => 500,
             ErrorKind::ServiceUnavailable => 503,
             ErrorKind::Custom(code, _) => *code,
+            // Domain kinds: map to the most appropriate HTTP status when they
+            // surface at the web layer. Data/Config/Cache → 500 (server-side),
+            // Infra → 503 (downstream), Messaging → 503, Security → 403.
+            // 领域类型：当浮到 Web 层时映射到最合适的 HTTP 状态码。
+            // Data/Config/Cache → 500（服务端），Infra → 503（下游），
+            // Messaging → 503，Security → 403。
+            ErrorKind::Data(_) | ErrorKind::Config(_) | ErrorKind::Cache(_) => 500,
+            ErrorKind::Infra(_) | ErrorKind::Messaging(_) => 503,
+            ErrorKind::Security(_) => 403,
         }
     }
 }
@@ -270,3 +379,19 @@ impl ErrorKind
 /// Result type alias
 /// Result类型别名
 pub type Result<T> = std::result::Result<T, Error>;
+
+/// Canonical unified error type for the entire hiver workspace.
+/// 整个 hiver 工作区的规范统一错误类型。
+///
+/// This is the single funnel point: every crate should convert its
+/// domain-specific errors into `HiverError` (via `From` impls or the
+/// convenience constructors `Error::data()` / `Error::infra()` / etc.)
+/// rather than defining 75 parallel error enums.
+/// 这是唯一的汇聚点：每个 crate 应将其领域特定错误转换为 `HiverError`
+/// （通过 `From` impl 或便捷构造函数 `Error::data()` / `Error::infra()` 等），
+/// 而非定义 75 个并行错误枚举。
+pub type HiverError = Error;
+
+/// Canonical unified Result alias for the entire hiver workspace.
+/// 整个 hiver 工作区的规范统一 Result 别名。
+pub type HiverResult<T> = std::result::Result<T, HiverError>;
