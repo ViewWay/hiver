@@ -155,22 +155,6 @@ impl JwtClaims
         }
     }
 
-    /// Set the issuer claim
-    /// 设置签发者声明
-    pub fn with_issuer(mut self, issuer: impl Into<String>) -> Self
-    {
-        self.iss = Some(issuer.into());
-        self
-    }
-
-    /// Set the audience claim
-    /// 设置受众声明
-    pub fn with_audience(mut self, audience: impl Into<String>) -> Self
-    {
-        self.aud = Some(serde_json::Value::String(audience.into()));
-        self
-    }
-
     /// Set multiple audiences
     /// 设置多个受众
     pub fn with_audiences(mut self, audiences: Vec<String>) -> Self
@@ -181,14 +165,6 @@ impl JwtClaims
                 .map(serde_json::Value::String)
                 .collect(),
         ));
-        self
-    }
-
-    /// Set the not-before claim
-    /// 设置生效时间声明
-    pub fn with_not_before(mut self, nbf: i64) -> Self
-    {
-        self.nbf = Some(nbf);
         self
     }
 
