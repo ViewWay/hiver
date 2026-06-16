@@ -19,7 +19,7 @@ where
 {
     initial: Option<S>,
     transitions: Vec<Transition<S, E>>,
-    current_transition: Option<TransitionBuilder<S, E>>,
+    current_transition: Option<crate::transition::TransitionBuilder<S, E>>,
 }
 
 impl<S, E> StateMachineBuilder<S, E>
@@ -50,7 +50,7 @@ where
     /// 开始定义转换
     pub fn transition(mut self) -> Self
     {
-        self.current_transition = Some(TransitionBuilder::new());
+        self.current_transition = Some(crate::transition::TransitionBuilder::new());
         self
     }
 
@@ -160,95 +160,6 @@ where
 }
 
 impl<S, E> Default for StateMachineBuilder<S, E>
-where
-    S: State + Clone + PartialEq + Eq,
-    E: Event + Clone,
-{
-    fn default() -> Self
-    {
-        Self::new()
-    }
-}
-
-/// Transition builder for nested builder API
-/// 嵌套构建器 API 的转换构建器
-pub struct TransitionBuilder<S, E>
-where
-    S: State + Clone + PartialEq + Eq,
-    E: Event + Clone,
-{
-    builder: crate::transition::TransitionBuilder<S, E>,
-}
-
-impl<S, E> TransitionBuilder<S, E>
-where
-    S: State + Clone + PartialEq + Eq,
-    E: Event + Clone,
-{
-    /// Create a new transition builder
-    /// 创建新转换构建器
-    pub fn new() -> Self
-    {
-        Self {
-            builder: crate::transition::TransitionBuilder::new(),
-        }
-    }
-
-    /// Set the source state
-    /// 设置源状态
-    pub fn source(mut self, source: S) -> Self
-    {
-        self.builder = self.builder.source(source);
-        self
-    }
-
-    /// Set the target state
-    /// 设置目标状态
-    pub fn target(mut self, target: S) -> Self
-    {
-        self.builder = self.builder.target(target);
-        self
-    }
-
-    /// Set the event
-    /// 设置事件
-    pub fn event(mut self, event: E) -> Self
-    {
-        self.builder = self.builder.event(event);
-        self
-    }
-
-    /// Set a guard
-    /// 设置守卫
-    pub fn guard(
-        mut self,
-        guard: impl Fn(&StateContext<'_, S, E>) -> StateMachineResult<bool> + Send + Sync + 'static,
-    ) -> Self
-    {
-        self.builder = self.builder.guard(guard);
-        self
-    }
-
-    /// Set an action
-    /// 设置动作
-    pub fn action(
-        mut self,
-        action: impl Fn(&StateContext<'_, S, E>) -> StateMachineResult<()> + Send + Sync + 'static,
-    ) -> Self
-    {
-        self.builder = self.builder.action(action);
-        self
-    }
-
-    /// Build the transition
-    /// 构建转换
-    pub fn build(self) -> StateMachineResult<Transition<S, E>>
-    {
-        self.builder.build()
-    }
-}
-
-impl<S, E> Default for TransitionBuilder<S, E>
 where
     S: State + Clone + PartialEq + Eq,
     E: Event + Clone,

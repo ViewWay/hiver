@@ -48,7 +48,7 @@ use std::{
     future::Future,
     sync::{
         Arc,
-        atomic::{AtomicU64, AtomicUsize, Ordering},
+        atomic::{AtomicU8, AtomicU64, AtomicUsize, Ordering},
     },
     time::{Duration, Instant},
 };
@@ -58,7 +58,13 @@ use std::{
 ///
 /// The three states of the circuit breaker pattern.
 /// 熔断器模式的三种状态。
+///
+/// `#[repr(u8)]` makes the discriminant a stable `u8` so it can be
+/// stored atomically without magic numbers (Closed=0, Open=1, HalfOpen=2).
+/// `#[repr(u8)]` 使判别值为稳定的 `u8`，可原子存储而无需魔法数字
+/// （Closed=0, Open=1, HalfOpen=2）。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
 pub enum CircuitState
 {
     /// Closed - normal operation, requests pass through
@@ -340,9 +346,9 @@ impl CircuitBreakerConfig
 #[derive(Debug)]
 struct StateData
 {
-    /// Current circuit state
-    /// 当前电路状态
-    state: AtomicU64, // Stored as u64: 0=Closed, 1=Open, 2=HalfOpen
+    /// Current circuit state (stored as CircuitState as u8 — no magic numbers).
+    /// 当前电路状态（存为 CircuitState as u8 —— 无魔法数字）。
+    state: AtomicU8,
 
     /// When the circuit was opened (protected by mutex for thread safety).
     /// 电路何时打开（用 mutex 保护线程安全）。
@@ -362,7 +368,7 @@ impl StateData
     fn new() -> Self
     {
         Self {
-            state: AtomicU64::new(0), // Closed
+            state: AtomicU8::new(CircuitState::Closed as u8),
             opened_at: std::sync::Mutex::new(None),
             half_open_success_count: AtomicU64::new(0),
             half_open_total_count: AtomicU64::new(0),
@@ -371,24 +377,21 @@ impl StateData
 
     fn get_state(&self) -> CircuitState
     {
+        // Safe due to #[repr(u8)] — the only values ever stored are
+        // CircuitState variants cast to u8.
+        // 因 #[repr(u8)] 而安全 —— 唯一存储过的值是 CircuitState 变体转 u8。
         match self.state.load(Ordering::Acquire)
         {
             0 => CircuitState::Closed,
             1 => CircuitState::Open,
             2 => CircuitState::HalfOpen,
-            _ => CircuitState::Closed,
+            _ => CircuitState::Closed, // unreachable in practice
         }
     }
 
     fn set_state(&mut self, state: CircuitState)
     {
-        let value = match state
-        {
-            CircuitState::Closed => 0,
-            CircuitState::Open => 1,
-            CircuitState::HalfOpen => 2,
-        };
-        self.state.store(value, Ordering::Release);
+        self.state.store(state as u8, Ordering::Release);
         if state == CircuitState::Open
         {
             *self.opened_at.lock().unwrap() = Some(Instant::now());
@@ -466,30 +469,39 @@ impl CircuitBreaker
 
     /// Get current state
     /// 获取当前状态
+    /// Get the current circuit state.
+    /// 获取当前电路状态。
+    ///
+    /// This is a pure read — no side effects. The Open→HalfOpen auto-transition
+    /// happens in `is_request_permitted()`, the call site that needs it.
+    /// 这是纯读取 —— 无副作用。Open→HalfOpen 的自动转换发生在
+    /// `is_request_permitted()`，即需要它的调用点。
     pub fn state(&self) -> CircuitState
+    {
+        self.state_data.lock().expect("lock poisoned").get_state()
+    }
+
+    /// Check if a request is permitted. This is where the Open→HalfOpen
+    /// auto-transition is evaluated (the only place that needs it).
+    /// 检查是否允许请求。此处评估 Open→HalfOpen 自动转换（唯一需要它的地方）。
+    pub fn is_request_permitted(&self) -> bool
     {
         let mut data = self.state_data.lock().expect("lock poisoned");
         let current = data.get_state();
 
-        // Auto-transition from Open to HalfOpen after duration
+        // Auto-transition from Open to HalfOpen after the cooldown duration.
+        // This side effect belongs HERE (a permission check), not in a getter.
+        // 冷却时间后自动从 Open 转换到 HalfOpen。
+        // 这个副作用属于此处（权限检查），而非 getter。
         if current == CircuitState::Open && data.should_attempt_reset(self.config.open_duration)
         {
             data.set_state(CircuitState::HalfOpen);
             data.half_open_success_count.store(0, Ordering::Relaxed);
             data.half_open_total_count.store(0, Ordering::Relaxed);
-            CircuitState::HalfOpen
+            return CircuitState::HalfOpen.allows_requests();
         }
-        else
-        {
-            current
-        }
-    }
 
-    /// Check if a request is permitted
-    /// 检查是否允许请求
-    pub fn is_request_permitted(&self) -> bool
-    {
-        self.state().allows_requests()
+        current.allows_requests()
     }
 
     /// Execute a function with circuit breaker protection
