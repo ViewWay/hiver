@@ -20,6 +20,9 @@ where
     initial: Option<S>,
     transitions: Vec<Transition<S, E>>,
     current_transition: Option<crate::transition::TransitionBuilder<S, E>>,
+    /// Errors accumulated during building (e.g. incomplete transitions).
+    /// 构建过程中积累的错误（如不完整的 transition）。
+    errors: Vec<String>,
 }
 
 impl<S, E> StateMachineBuilder<S, E>
@@ -35,6 +38,7 @@ where
             initial: None,
             transitions: Vec::new(),
             current_transition: None,
+            errors: Vec::new(),
         }
     }
 
@@ -66,10 +70,11 @@ where
                 {
                     self.transitions.push(transition);
                 },
-                Err(_e) =>
+                Err(e) =>
                 {
-                    // Store error for later reporting
-                    // 存储错误以供稍后报告
+                    // Actually store the error for build() to report.
+                    // 真正存储错误，供 build() 报告。
+                    self.errors.push(format!("Transition build failed: {}", e));
                 },
             }
         }
@@ -144,6 +149,18 @@ where
         S: State + Clone + PartialEq + Eq + 'static,
         E: Event + Clone + 'static,
     {
+        // Report any errors accumulated during fluent transition building
+        // (previously silently dropped).
+        // 报告流式 transition 构建过程中积累的错误（此前被静默丢弃）。
+        if !self.errors.is_empty()
+        {
+            return Err(StateMachineError::InvalidConfiguration(format!(
+                "{} transition build error(s): {}",
+                self.errors.len(),
+                self.errors.join("; ")
+            )));
+        }
+
         let initial = self.initial.ok_or_else(|| {
             StateMachineError::InvalidConfiguration("Initial state not set".to_string())
         })?;

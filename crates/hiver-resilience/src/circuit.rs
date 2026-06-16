@@ -289,14 +289,13 @@ impl CircuitBreakerConfig
     /// Set error threshold (0.0 - 1.0)
     /// 设置错误阈值（0.0 - 1.0）
     ///
-    /// # Panics / 恐慌
-    ///
-    /// Panics if threshold is not between 0.0 and 1.0
-    /// 如果阈值不在0.0和1.0之间则恐慌
+    /// Values outside [0.0, 1.0] are clamped to the nearest valid bound
+    /// rather than panicking — builders should not crash on bad input.
+    /// 超出 [0.0, 1.0] 的值被钳位到最近的合法边界，而非 panic ——
+    /// builder 不应因错误输入而崩溃。
     pub fn with_error_threshold(mut self, threshold: f64) -> Self
     {
-        assert!((0.0..=1.0).contains(&threshold), "Error threshold must be between 0.0 and 1.0");
-        self.error_threshold = threshold;
+        self.error_threshold = threshold.clamp(0.0, 1.0);
         self
     }
 
