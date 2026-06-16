@@ -654,8 +654,8 @@ mod tests
             .block_on(async {
                 let h1 = crate::task::spawn(async { 1i32 });
                 let h2 = crate::task::spawn(async { 2i32 });
-                assert_ne!(h1.id(), 0);
-                assert_ne!(h2.id(), 0);
+                assert_ne!(h1.id(), crate::scheduler::TaskId::UNKNOWN);
+                assert_ne!(h2.id(), crate::scheduler::TaskId::UNKNOWN);
                 assert_ne!(h1.id(), h2.id());
                 let _ = h1.wait().await;
                 let _ = h2.wait().await;

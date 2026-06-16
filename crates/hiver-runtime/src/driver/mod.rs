@@ -38,7 +38,9 @@ pub(crate) use queue::{CompletionEntry, SubmitEntry};
 ///
 /// 此trait抽象了不同的I/O轮询机制（io-uring、epoll、kqueue），
 /// 为运行时提供统一接口。
-pub trait Driver: Send + Sync + AsRawFd
+// Driver is an internal trait — only implemented by iouring/epoll/kqueue
+// inside hiver-runtime. Not part of the public API.
+pub(crate) trait Driver: Send + Sync + AsRawFd
 {
     /// Submit queued operations to the kernel
     /// 将队列中的操作提交给内核
