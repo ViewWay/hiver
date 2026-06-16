@@ -1548,6 +1548,8 @@ impl Container
 }
 
 #[cfg(test)]
+#[path = "container_tests.rs"]
 mod container_tests;
+#[path = "scanner.rs"]
 mod scanner;
 pub use scanner::ComponentScanner;
