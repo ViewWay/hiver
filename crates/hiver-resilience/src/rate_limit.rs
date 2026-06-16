@@ -40,10 +40,7 @@
 use std::{
     collections::HashMap,
     fmt,
-    sync::{
-        Arc,
-        atomic::{AtomicUsize, Ordering},
-    },
+    sync::atomic::{AtomicUsize, Ordering},
     time::{Duration, Instant},
 };
 
@@ -224,23 +221,29 @@ struct TokenBucketState
     /// Capacity
     /// 容量
     capacity: usize,
+
+    /// Refill rate (tokens per second) — encapsulated so try_acquire takes no args.
+    /// 补充速率（令牌/秒）—— 封装于此，使 try_acquire 无需参数。
+    refill_rate: u64,
 }
 
 impl TokenBucketState
 {
-    fn new(capacity: usize) -> Self
+    fn new(capacity: usize, refill_rate: u64) -> Self
     {
         Self {
             tokens: AtomicUsize::new(capacity),
             last_refill: std::sync::Mutex::new(Instant::now()),
             capacity,
+            refill_rate,
         }
     }
 
     /// Try to acquire a token
     /// 尝试获取令牌
-    fn try_acquire(&self, refill_rate: u64) -> Result<()>
+    fn try_acquire(&self) -> Result<()>
     {
+        let refill_rate = self.refill_rate;
         // Refill tokens based on elapsed time
         let mut last = self.last_refill.lock().expect("lock poisoned");
         let elapsed = last.elapsed();
@@ -293,6 +296,17 @@ impl TokenBucketState
         Err(RateLimitError::Exceeded {
             retry_after: Duration::from_millis(retry_after_ms),
         })
+    }
+}
+
+impl RateLimitStrategy for TokenBucketState
+{
+    fn metrics(&self) -> RateLimiterMetrics
+    {
+        RateLimiterMetrics {
+            available_tokens: Some(self.tokens.load(Ordering::Relaxed)),
+            window_count: None,
+        }
     }
 }
 
@@ -356,6 +370,18 @@ impl SlidingWindowState
                     retry_after: self.window_duration,
                 })
             }
+        }
+    }
+}
+
+impl RateLimitStrategy for SlidingWindowState
+{
+    fn metrics(&self) -> RateLimiterMetrics
+    {
+        let timestamps = self.timestamps.lock().expect("lock poisoned");
+        RateLimiterMetrics {
+            available_tokens: None,
+            window_count: Some(timestamps.len()),
         }
     }
 }
@@ -426,12 +452,46 @@ impl FixedWindowState
     }
 }
 
+impl RateLimitStrategy for FixedWindowState
+{
+    fn metrics(&self) -> RateLimiterMetrics
+    {
+        RateLimiterMetrics {
+            available_tokens: None,
+            window_count: Some(self.count.load(Ordering::Relaxed)),
+        }
+    }
+}
+
+// ── Strategy pattern ───────────────────────────────────────────────────
+// ── 策略模式 ───────────────────────────────────────────────────────────
+
+/// Rate-limiting strategy. Each algorithm (token bucket, sliding window,
+/// fixed window) implements this trait so the RateLimiter holds a single
+/// boxed strategy instead of three parallel `Option<Arc<State>>` fields
+/// dispatched by match. This is the Strategy pattern from GoF.
+/// 限流策略。每种算法（令牌桶、滑动窗口、固定窗口）实现此 trait，
+/// 使 RateLimiter 持有单个装箱策略，而非三个并行 `Option<Arc<State>>`
+/// 字段再用 match 分派。这是 GoF 策略模式。
+pub trait RateLimitStrategy: Send + Sync + std::fmt::Debug
+{
+    /// Attempt to acquire a permit under this strategy.
+    /// 在本策略下尝试获取许可。
+    fn try_acquire(&self) -> Result<()>;
+
+    /// Return current metrics (available tokens or window count).
+    /// 返回当前指标（可用令牌或窗口计数）。
+    fn metrics(&self) -> RateLimiterMetrics;
+}
+
+impl dyn RateLimitStrategy {}
+
 /// Rate limiter
 /// 限流器
 ///
 /// Controls the rate of requests using various algorithms.
 /// 使用各种算法控制请求速率。
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct RateLimiter
 {
     /// Rate limiter name
@@ -442,17 +502,11 @@ pub struct RateLimiter
     /// 配置
     config: RateLimiterConfig,
 
-    /// Token bucket state (if applicable)
-    /// 令牌桶状态（如适用）
-    token_bucket: Option<Arc<TokenBucketState>>,
-
-    /// Sliding window state (if applicable)
-    /// 滑动窗口状态（如适用）
-    sliding_window: Option<Arc<SlidingWindowState>>,
-
-    /// Fixed window state (if applicable)
-    /// 固定窗口状态（如适用）
-    fixed_window: Option<Arc<FixedWindowState>>,
+    /// The rate-limiting strategy (token bucket / sliding window / fixed window).
+    /// Constructed once at RateLimiter::new() — no per-request match dispatch.
+    /// 限流策略（令牌桶 / 滑动窗口 / 固定窗口）。在 RateLimiter::new() 时
+    /// 构建一次 —— 无每次请求的 match 分派。
+    strategy: Box<dyn RateLimitStrategy>,
 }
 
 impl RateLimiter
@@ -462,37 +516,37 @@ impl RateLimiter
     pub fn new(name: impl Into<String>, config: RateLimiterConfig) -> Self
     {
         let name = name.into();
-        let limiter_type = config.limiter_type;
 
-        let (token_bucket, sliding_window, fixed_window) = match limiter_type
+        // Build the single strategy object based on config. No more three
+        // parallel Option fields — exactly one strategy is always Some.
+        // 根据配置构建单一策略对象。不再有三个并行 Option 字段 ——
+        // 恰好一个策略总是 Some。
+        let strategy: Box<dyn RateLimitStrategy> = match config.limiter_type
         {
             RateLimiterType::TokenBucket =>
             {
-                (Some(Arc::new(TokenBucketState::new(config.capacity))), None, None)
+                Box::new(TokenBucketState::new(config.capacity, config.refill_rate))
             },
-            RateLimiterType::SlidingWindow => (
-                None,
-                Some(Arc::new(SlidingWindowState::new(config.capacity, config.window_duration))),
-                None,
-            ),
-            RateLimiterType::FixedWindow => (
-                None,
-                None,
-                Some(Arc::new(FixedWindowState::new(config.capacity, config.window_duration))),
-            ),
+            RateLimiterType::SlidingWindow =>
+            {
+                Box::new(SlidingWindowState::new(config.capacity, config.window_duration))
+            },
+            RateLimiterType::FixedWindow =>
+            {
+                Box::new(FixedWindowState::new(config.capacity, config.window_duration))
+            },
             RateLimiterType::LeakyBucket =>
             {
-                // Leaky bucket is similar to token bucket for our purposes
-                (Some(Arc::new(TokenBucketState::new(config.capacity))), None, None)
+                // Leaky bucket is similar to token bucket for our purposes.
+                // 漏桶对我们的用途而言类似令牌桶。
+                Box::new(TokenBucketState::new(config.capacity, config.refill_rate))
             },
         };
 
         Self {
             name,
             config,
-            token_bucket,
-            sliding_window,
-            fixed_window,
+            strategy,
         }
     }
 
@@ -519,44 +573,12 @@ impl RateLimiter
 
     /// Try to acquire a permit
     /// 尝试获取许可
+    ///
+    /// Delegates to the boxed strategy — no per-request match dispatch.
+    /// 委托给装箱策略 —— 无每次请求的 match 分派。
     pub fn try_acquire(&self) -> Result<()>
     {
-        match self.config.limiter_type
-        {
-            RateLimiterType::TokenBucket | RateLimiterType::LeakyBucket =>
-            {
-                if let Some(ref bucket) = self.token_bucket
-                {
-                    bucket.try_acquire(self.config.refill_rate)
-                }
-                else
-                {
-                    Err(RateLimitError::Internal("Token bucket not initialized".to_string()))
-                }
-            },
-            RateLimiterType::SlidingWindow =>
-            {
-                if let Some(ref window) = self.sliding_window
-                {
-                    window.try_acquire()
-                }
-                else
-                {
-                    Err(RateLimitError::Internal("Sliding window not initialized".to_string()))
-                }
-            },
-            RateLimiterType::FixedWindow =>
-            {
-                if let Some(ref window) = self.fixed_window
-                {
-                    window.try_acquire()
-                }
-                else
-                {
-                    Err(RateLimitError::Internal("Fixed window not initialized".to_string()))
-                }
-            },
-        }
+        self.strategy.try_acquire()
     }
 
     /// Acquire a permit, blocking until available
@@ -582,63 +604,12 @@ impl RateLimiter
 
     /// Get current metrics
     /// 获取当前指标
+    ///
+    /// Delegates to the boxed strategy — no per-request match dispatch.
+    /// 委托给装箱策略 —— 无每次请求的 match 分派。
     pub fn metrics(&self) -> RateLimiterMetrics
     {
-        match self.config.limiter_type
-        {
-            RateLimiterType::TokenBucket | RateLimiterType::LeakyBucket =>
-            {
-                if let Some(ref bucket) = self.token_bucket
-                {
-                    RateLimiterMetrics {
-                        available_tokens: Some(bucket.tokens.load(Ordering::Relaxed)),
-                        window_count: None,
-                    }
-                }
-                else
-                {
-                    RateLimiterMetrics {
-                        available_tokens: None,
-                        window_count: None,
-                    }
-                }
-            },
-            RateLimiterType::SlidingWindow =>
-            {
-                if let Some(ref window) = self.sliding_window
-                {
-                    let timestamps = window.timestamps.lock().expect("lock poisoned");
-                    RateLimiterMetrics {
-                        available_tokens: None,
-                        window_count: Some(timestamps.len()),
-                    }
-                }
-                else
-                {
-                    RateLimiterMetrics {
-                        available_tokens: None,
-                        window_count: None,
-                    }
-                }
-            },
-            RateLimiterType::FixedWindow =>
-            {
-                if let Some(ref window) = self.fixed_window
-                {
-                    RateLimiterMetrics {
-                        available_tokens: None,
-                        window_count: Some(window.count.load(Ordering::Relaxed)),
-                    }
-                }
-                else
-                {
-                    RateLimiterMetrics {
-                        available_tokens: None,
-                        window_count: None,
-                    }
-                }
-            },
-        }
+        self.strategy.metrics()
     }
 }
 
