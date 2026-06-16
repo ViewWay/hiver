@@ -1,6 +1,8 @@
 //! Component scanner module
 //! 组件扫描器模块
 
+use std::sync::Arc;
+
 use super::ApplicationContext;
 use crate::{bean::Bean, error::Result};
 
