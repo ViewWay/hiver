@@ -353,7 +353,9 @@ impl<T> JoinHandle<T>
         {
             return core.id();
         }
-        self.inner.as_ref().map_or(0, |i| i.id)
+        self.inner
+            .as_ref()
+            .map_or(crate::scheduler::TaskId::UNKNOWN, |i| i.id)
     }
 
     /// Check if the task has finished (completed, cancelled, or panicked).
