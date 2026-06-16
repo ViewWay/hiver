@@ -301,6 +301,12 @@ impl TokenBucketState
 
 impl RateLimitStrategy for TokenBucketState
 {
+    fn try_acquire(&self) -> Result<()>
+    {
+        // Delegate to the inherent method.
+        TokenBucketState::try_acquire(self)
+    }
+
     fn metrics(&self) -> RateLimiterMetrics
     {
         RateLimiterMetrics {
@@ -376,6 +382,11 @@ impl SlidingWindowState
 
 impl RateLimitStrategy for SlidingWindowState
 {
+    fn try_acquire(&self) -> Result<()>
+    {
+        SlidingWindowState::try_acquire(self)
+    }
+
     fn metrics(&self) -> RateLimiterMetrics
     {
         let timestamps = self.timestamps.lock().expect("lock poisoned");
@@ -454,6 +465,11 @@ impl FixedWindowState
 
 impl RateLimitStrategy for FixedWindowState
 {
+    fn try_acquire(&self) -> Result<()>
+    {
+        FixedWindowState::try_acquire(self)
+    }
+
     fn metrics(&self) -> RateLimiterMetrics
     {
         RateLimiterMetrics {
@@ -634,7 +650,7 @@ pub struct RateLimiterRegistry
 {
     /// Rate limiters by name
     /// 按名称索引的限流器
-    limiters: std::sync::RwLock<HashMap<String, RateLimiter>>,
+    limiters: std::sync::RwLock<HashMap<String, std::sync::Arc<RateLimiter>>>,
 }
 
 impl RateLimiterRegistry
@@ -651,12 +667,12 @@ impl RateLimiterRegistry
     pub fn register(&self, limiter: RateLimiter)
     {
         let mut limiters = self.limiters.write().expect("lock poisoned");
-        limiters.insert(limiter.name().to_string(), limiter);
+        limiters.insert(limiter.name().to_string(), std::sync::Arc::new(limiter));
     }
 
     /// Get a rate limiter by name
     /// 按名称获取限流器
-    pub fn get(&self, name: &str) -> Option<RateLimiter>
+    pub fn get(&self, name: &str) -> Option<std::sync::Arc<RateLimiter>>
     {
         let limiters = self.limiters.read().expect("lock poisoned");
         limiters.get(name).cloned()
@@ -664,7 +680,7 @@ impl RateLimiterRegistry
 
     /// Get all rate limiters
     /// 获取所有限流器
-    pub fn all(&self) -> Vec<RateLimiter>
+    pub fn all(&self) -> Vec<std::sync::Arc<RateLimiter>>
     {
         let limiters = self.limiters.read().expect("lock poisoned");
         limiters.values().cloned().collect()
@@ -806,8 +822,8 @@ mod tests
         let limiter1 = RateLimiter::with_defaults("api-1");
         let limiter2 = RateLimiter::with_defaults("api-2");
 
-        registry.register(limiter1.clone());
-        registry.register(limiter2.clone());
+        registry.register(limiter1);
+        registry.register(limiter2);
 
         assert!(registry.get("api-1").is_some());
         assert!(registry.get("api-2").is_some());
