@@ -1,6 +1,9 @@
+use std::sync::Arc;
+
 use super::{
-    Filter, Gateway, GatewayCbState, GatewayCircuitBreaker, GatewayFilter, GatewayRequest,
-    GatewayResponse, GatewayRoute, LoggingFilter, Predicate, RateLimitFilter, Route, SimpleGateway,
+    Filter, Gateway, GatewayCbState, GatewayCircuitBreaker, GatewayConfig, GatewayFilter,
+    GatewayRequest, GatewayResponse, GatewayRoute, GatewayRouter, InMemoryRouteLocator,
+    LoggingFilter, Predicate, RateLimitFilter, Route, RouteLocator, SimpleGateway,
     TokenBucketRateLimiter,
 };
 
