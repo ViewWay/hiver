@@ -48,7 +48,6 @@ mod connection;
 mod converter;
 mod dead_letter;
 mod exchange;
-pub mod kafka;
 mod listener;
 mod message;
 mod publisher;
