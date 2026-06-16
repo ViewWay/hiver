@@ -1,6 +1,7 @@
 use super::{
-    Gateway, GatewayCbState, GatewayCircuitBreaker, GatewayFilter, GatewayRequest, GatewayResponse,
-    GatewayRoute, LoggingFilter, Predicate, RateLimitFilter, SimpleGateway, TokenBucketRateLimiter,
+    Filter, Gateway, GatewayCbState, GatewayCircuitBreaker, GatewayFilter, GatewayRequest,
+    GatewayResponse, GatewayRoute, LoggingFilter, Predicate, RateLimitFilter, Route, SimpleGateway,
+    TokenBucketRateLimiter,
 };
 
 #[tokio::test]
