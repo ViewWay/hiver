@@ -1,10 +1,11 @@
 use std::sync::Arc;
+use std::time::Duration;
 
 use super::{
-    Filter, Gateway, GatewayCbState, GatewayCircuitBreaker, GatewayConfig, GatewayFilter,
+    Filter, Gateway, GatewayCbState, GatewayCircuitBreaker, GatewayConfig,
     GatewayRequest, GatewayResponse, GatewayRoute, GatewayRouter, InMemoryRouteLocator,
-    LoggingFilter, Predicate, RateLimitFilter, Route, RouteLocator, SimpleGateway,
-    TokenBucketRateLimiter,
+    Predicate, Route, RouteLocator, SimpleGateway,
+    TokenBucketRateLimiter, glob_match,
 };
 
 #[tokio::test]
