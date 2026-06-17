@@ -112,5 +112,11 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Install system dependencies / 安装系统依赖
+        run: |
+          sudo apt-get update && sudo apt-get install -y \
+            libcurl4-openssl-dev \
+            libsasl2-dev
+
       - name: Run documentation tests
         run: cargo test --doc --all-features --workspace
