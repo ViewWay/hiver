@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["Banner","HiverFormatter","RequestLogFormat","SimpleFormatter","StartupLogger"],"type":["SpringBootFormatter"]};

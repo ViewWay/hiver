@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["BeanState","Scope"],"struct":["BeanDefinition","DependencyInfo"],"trait":["Bean","BeanDependencies"]};

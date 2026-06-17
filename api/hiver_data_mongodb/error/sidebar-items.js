@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["MongoError"],"mod":["error_codes"],"type":["MongoResult"]};

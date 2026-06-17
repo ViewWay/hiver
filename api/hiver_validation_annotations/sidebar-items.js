@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"attr":["valid"],"derive":["Email","Length","Max","Min","NotNull","Pattern","Size"]};

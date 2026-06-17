@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["MarshalError"],"struct":["DefaultMarshaller"],"trait":["XmlMarshal","XmlUnmarshal"]};

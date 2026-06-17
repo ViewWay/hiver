@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DieselColumnType","OrderDirection"],"struct":["DieselColumn","DieselQuery","DieselSchema"]};

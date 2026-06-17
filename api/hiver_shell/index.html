@@ -1,0 +1,74 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="hiver-shell — Spring Shell Equivalent: Interactive CLI REPL Framework hiver-shell — 等价于Spring Shell：交互式CLI REPL框架"><title>hiver_shell - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="hiver_shell" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../static.files/storage-41dd4d93.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Crate hiver_shell</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../hiver_shell/index.html">hiver_<wbr>shell</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#overview--概述" title="Overview / 概述">Overview / 概述</a></li><li><a href="#features--功能" title="Features / 功能">Features / 功能</a></li><li><a href="#quick-start--快速开始" title="Quick Start / 快速开始">Quick Start / 快速开始</a></li><li><a href="#using-proc-macros--使用过程宏" title="Using Proc Macros / 使用过程宏">Using Proc Macros / 使用过程宏</a></li></ul><h3><a href="#reexports">Crate Items</a></h3><ul class="block"><li><a href="#reexports" title="Re-exports">Re-exports</a></li><li><a href="#modules" title="Modules">Modules</a></li><li><a href="#macros" title="Macros">Macros</a></li><li><a href="#structs" title="Structs">Structs</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1>Crate <span>hiver_<wbr>shell</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/hiver_shell/lib.rs.html#1-426">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>hiver-shell — Spring Shell Equivalent: Interactive CLI REPL Framework
+hiver-shell — 等价于Spring Shell：交互式CLI REPL框架</p>
+<h2 id="overview--概述"><a class="doc-anchor" href="#overview--概述">§</a>Overview / 概述</h2>
+<p><code>hiver-shell</code> provides an interactive CLI REPL (Read-Eval-Print Loop) framework,
+equivalent to Spring Shell in the Spring ecosystem.</p>
+<p><code>hiver-shell</code> 提供交互式CLI REPL（读取-求值-打印循环）框架，
+<code>等价于Spring生态系统中的Spring</code> Shell。</p>
+<h2 id="features--功能"><a class="doc-anchor" href="#features--功能">§</a>Features / 功能</h2>
+<ul>
+<li><strong>REPL Loop</strong> — Interactive command-line with history and tab completion <strong>REPL循环</strong> —
+带历史记录和Tab补全的交互式命令行</li>
+<li><strong>Command Registry</strong> — Dynamic command registration with trait-based dispatch <strong>命令注册表</strong> —
+基于trait的动态命令注册</li>
+<li><strong>Built-in Commands</strong> — help, clear, exit, stacktrace, script, echo, history <strong>内置命令</strong> —
+help、clear、exit、stacktrace、script、echo、history</li>
+<li><strong>Custom Prompts</strong> — Colored, configurable prompts <strong>自定义提示符</strong> — 彩色、可配置的提示符</li>
+<li><strong>Input Validation</strong> — Command input validation and sanitization <strong>输入验证</strong> —
+命令输入验证和清理</li>
+<li><strong>Multiple Output Formats</strong> — Plain text, JSON, Table <strong>多种输出格式</strong> — 纯文本、JSON、表格</li>
+<li><strong>Proc Macros</strong> — <code>#[shell_component]</code> and <code>#[shell_method]</code> for easy command definition
+<strong>过程宏</strong> — <code>#[shell_component]</code>和<code>#[shell_method]</code>用于轻松定义命令</li>
+</ul>
+<h2 id="quick-start--快速开始"><a class="doc-anchor" href="#quick-start--快速开始">§</a>Quick Start / 快速开始</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_shell::{ShellBuilder, ShellConfig};
+<span class="kw">use </span>hiver_shell::command::{Command, CommandMeta};
+<span class="kw">use </span>hiver_shell::result::ShellResult;
+
+<span class="comment">// Define a custom command / 定义自定义命令
+</span><span class="kw">struct </span>GreetCommand;
+
+<span class="kw">impl </span>Command <span class="kw">for </span>GreetCommand {
+    <span class="kw">fn </span>meta(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; CommandMeta {
+        CommandMeta::new(<span class="string">"greet"</span>)
+            .description(<span class="string">"Greet someone / 问候某人"</span>)
+    }
+
+    <span class="kw">fn </span>execute(<span class="kw-2">&amp;</span><span class="self">self</span>, args: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str]) -&gt; ShellResult&lt;String&gt; {
+        <span class="kw">let </span>name = args.first().copied().unwrap_or(<span class="string">"World"</span>);
+        <span class="prelude-val">Ok</span>(<span class="macro">format!</span>(<span class="string">"Hello, {}!"</span>, name))
+    }
+}
+
+<span class="comment">// Build and run the shell / 构建并运行shell
+</span><span class="kw">fn </span>main() -&gt; hiver_shell::result::ShellResult&lt;()&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>shell = ShellBuilder::new()
+        .app_name(<span class="string">"my-app"</span>)
+        .register(GreetCommand)
+        .build();
+    shell.run()
+}</code></pre></div><h2 id="using-proc-macros--使用过程宏"><a class="doc-anchor" href="#using-proc-macros--使用过程宏">§</a>Using Proc Macros / 使用过程宏</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_shell_macros::shell_component;
+<span class="kw">use </span>hiver_shell::command::{Command, CommandMeta};
+<span class="kw">use </span>hiver_shell::result::ShellResult;
+
+<span class="attr">#[shell_component]
+</span><span class="kw">struct </span>MyCommands;
+
+<span class="kw">impl </span>MyCommands {
+    <span class="attr">#[shell_method(<span class="string">"greet"</span>, <span class="string">"Greet someone"</span>)]
+    </span><span class="kw">fn </span>greet(<span class="kw-2">&amp;</span><span class="self">self</span>, args: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str]) -&gt; ShellResult&lt;String&gt; {
+        <span class="prelude-val">Ok</span>(<span class="macro">format!</span>(<span class="string">"Hello, {}!"</span>, args.first().unwrap_or(<span class="kw-2">&amp;</span><span class="string">"World"</span>)))
+    }
+}</code></pre></div></div></details><h2 id="reexports" class="section-header">Re-exports<a href="#reexports" class="anchor">§</a></h2><dl class="item-table reexports"><dt id="reexport.Command"><code>pub use command::<a class="trait" href="command/trait.Command.html" title="trait hiver_shell::command::Command">Command</a>;</code></dt><dt id="reexport.CommandBox"><code>pub use command::<a class="type" href="command/type.CommandBox.html" title="type hiver_shell::command::CommandBox">CommandBox</a>;</code></dt><dt id="reexport.CommandMeta"><code>pub use command::<a class="struct" href="command/struct.CommandMeta.html" title="struct hiver_shell::command::CommandMeta">CommandMeta</a>;</code></dt><dt id="reexport.CommandRegistry"><code>pub use command::<a class="struct" href="command/struct.CommandRegistry.html" title="struct hiver_shell::command::CommandRegistry">CommandRegistry</a>;</code></dt><dt id="reexport.ParameterMeta"><code>pub use command::<a class="struct" href="command/struct.ParameterMeta.html" title="struct hiver_shell::command::ParameterMeta">ParameterMeta</a>;</code></dt><dt id="reexport.Banner"><code>pub use prompt::<a class="struct" href="prompt/struct.Banner.html" title="struct hiver_shell::prompt::Banner">Banner</a>;</code></dt><dt id="reexport.PromptColor"><code>pub use prompt::<a class="enum" href="prompt/enum.PromptColor.html" title="enum hiver_shell::prompt::PromptColor">PromptColor</a>;</code></dt><dt id="reexport.PromptStyle"><code>pub use prompt::<a class="struct" href="prompt/struct.PromptStyle.html" title="struct hiver_shell::prompt::PromptStyle">PromptStyle</a>;</code></dt><dt id="reexport.Repl"><code>pub use repl::<a class="struct" href="repl/struct.Repl.html" title="struct hiver_shell::repl::Repl">Repl</a>;</code></dt><dt id="reexport.ReplConfig"><code>pub use repl::<a class="struct" href="repl/struct.ReplConfig.html" title="struct hiver_shell::repl::ReplConfig">ReplConfig</a>;</code></dt><dt id="reexport.JsonResult"><code>pub use result::<a class="struct" href="result/struct.JsonResult.html" title="struct hiver_shell::result::JsonResult">JsonResult</a>;</code></dt><dt id="reexport.OutputFormat"><code>pub use result::<a class="enum" href="result/enum.OutputFormat.html" title="enum hiver_shell::result::OutputFormat">OutputFormat</a>;</code></dt><dt id="reexport.ResultHandler"><code>pub use result::<a class="struct" href="result/struct.ResultHandler.html" title="struct hiver_shell::result::ResultHandler">ResultHandler</a>;</code></dt><dt id="reexport.ShellError"><code>pub use result::<a class="enum" href="result/enum.ShellError.html" title="enum hiver_shell::result::ShellError">ShellError</a>;</code></dt><dt id="reexport.ShellOutput"><code>pub use result::<a class="trait" href="result/trait.ShellOutput.html" title="trait hiver_shell::result::ShellOutput">ShellOutput</a>;</code></dt><dt id="reexport.ShellResult"><code>pub use result::<a class="type" href="result/type.ShellResult.html" title="type hiver_shell::result::ShellResult">ShellResult</a>;</code></dt><dt id="reexport.TableResult"><code>pub use result::<a class="struct" href="result/struct.TableResult.html" title="struct hiver_shell::result::TableResult">TableResult</a>;</code></dt><dt id="reexport.TextResult"><code>pub use result::<a class="struct" href="result/struct.TextResult.html" title="struct hiver_shell::result::TextResult">TextResult</a>;</code></dt><dt id="reexport.InputValidator"><code>pub use validation::<a class="struct" href="validation/struct.InputValidator.html" title="struct hiver_shell::validation::InputValidator">InputValidator</a>;</code></dt><dt id="reexport.ValidatedInput"><code>pub use validation::<a class="struct" href="validation/struct.ValidatedInput.html" title="struct hiver_shell::validation::ValidatedInput">ValidatedInput</a>;</code></dt></dl><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><dl class="item-table"><dt><a class="mod" href="builtin/index.html" title="mod hiver_shell::builtin">builtin</a></dt><dd>Built-in shell commands
+内置shell命令</dd><dt><a class="mod" href="command/index.html" title="mod hiver_shell::command">command</a></dt><dd>Command trait and registry
+命令trait和注册表</dd><dt><a class="mod" href="completion/index.html" title="mod hiver_shell::completion">completion</a></dt><dd>Tab completion support
+Tab补全支持</dd><dt><a class="mod" href="prompt/index.html" title="mod hiver_shell::prompt">prompt</a></dt><dd>Prompt styling and customization
+提示符样式和自定义</dd><dt><a class="mod" href="repl/index.html" title="mod hiver_shell::repl">repl</a></dt><dd>REPL (Read-Eval-Print Loop) implementation
+REPL（读取-求值-打印循环）实现</dd><dt><a class="mod" href="result/index.html" title="mod hiver_shell::result">result</a></dt><dd>Shell result types and output formatting
+Shell结果类型和输出格式化</dd><dt><a class="mod" href="validation/index.html" title="mod hiver_shell::validation">validation</a></dt><dd>Input validation
+输入验证</dd></dl><h2 id="macros" class="section-header">Macros<a href="#macros" class="anchor">§</a></h2><dl class="item-table"><dt><a class="macro" href="macro.shell_command.html" title="macro hiver_shell::shell_command">shell_<wbr>command</a></dt><dd>Macro-based command registration helper
+基于宏的命令注册辅助</dd></dl><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.Shell.html" title="struct hiver_shell::Shell">Shell</a></dt><dd>The main Shell instance
+主Shell实例</dd><dt><a class="struct" href="struct.ShellBuilder.html" title="struct hiver_shell::ShellBuilder">Shell<wbr>Builder</a></dt><dd>Builder for creating a Shell instance
+创建Shell实例的构建器</dd><dt><a class="struct" href="struct.ShellConfig.html" title="struct hiver_shell::ShellConfig">Shell<wbr>Config</a></dt><dd>Shell configuration
+Shell配置</dd></dl></section></div></main></body></html>

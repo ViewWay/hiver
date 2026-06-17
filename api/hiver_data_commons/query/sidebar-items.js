@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Condition","Predicate","QueryOrder","Value"],"struct":["LambdaQueryWrapper","QueryWrapper","Specification","UpdateWrapper"],"trait":["ToValue","ToValueMap"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["FunctionTool","ToolCall","ToolDefinition","ToolExecutor","ToolExecutorConfig","ToolParameterSchema","ToolRegistry","ToolResult"],"trait":["ToolCallback"]};

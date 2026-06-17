@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ModelError","Role"],"struct":["ChatChunk","ChatMessage","ChatRequest","ChatResponse","TokenUsage"],"trait":["ChatModel"],"type":["ChatStream"]};

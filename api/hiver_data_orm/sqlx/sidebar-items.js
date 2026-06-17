@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SqlxOrder"],"struct":["SqlxPoolAdapter","SqlxQuery","VerifiedQuery"],"trait":["FromRow"]};

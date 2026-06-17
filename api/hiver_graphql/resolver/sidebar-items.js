@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ResolverRegistry"],"trait":["FieldResolver","MutationResolver","QueryResolver","SubscriptionResolver"],"type":["ResolverResult"]};

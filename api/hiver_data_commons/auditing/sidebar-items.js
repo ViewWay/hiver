@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["AuditingHandler"],"trait":["AuditingEntity","AuditorAware","CreatedBy","CreatedDate","LastModifiedBy","LastModifiedDate"]};

@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Bean 后处理器 trait Bean post-processor trait"><title>BeanPostProcessor in hiver_starter::core::bean_post_processor - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="hiver_starter" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc trait"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">BeanPostProcessor</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../hiver_starter/index.html">hiver_<wbr>starter</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Bean<wbr>Post<wbr>Processor</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#lifecycle-position--生命周期位置" title="Lifecycle Position / 生命周期位置">Lifecycle Position / 生命周期位置</a></li><li><a href="#示例--example" title="示例 / Example">示例 / Example</a></li></ul><h3><a href="#required-methods">Required Methods</a></h3><ul class="block"><li><a href="#tymethod.post_process_after_initialization" title="post_process_after_initialization">post_process_after_initialization</a></li><li><a href="#tymethod.post_process_before_initialization" title="post_process_before_initialization">post_process_before_initialization</a></li></ul><h3><a href="#provided-methods">Provided Methods</a></h3><ul class="block"><li><a href="#method.name" title="name">name</a></li><li><a href="#method.order" title="order">order</a></li></ul><h3><a href="#implementors">Implementors</a></h3></section><div id="rustdoc-modnav"><h2><a href="index.html">In hiver_<wbr>starter::<wbr>core::<wbr>bean_<wbr>post_<wbr>processor</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">hiver_starter</a>::<wbr><a href="../index.html">core</a>::<wbr><a href="index.html">bean_post_processor</a></div><h1>Trait <span class="trait">Bean<wbr>Post<wbr>Processor</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/hiver_starter/core/bean_post_processor.rs.html#72-119">Source</a> </span></div><pre class="rust item-decl"><code>pub trait BeanPostProcessor: <a class="trait" href="https://doc.rust-lang.org/1.96.0/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + <a class="trait" href="https://doc.rust-lang.org/1.96.0/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> {
+    // Required methods
+    fn <a href="#tymethod.post_process_before_initialization" class="fn">post_process_before_initialization</a>(
+        &amp;self,
+        bean: &amp;mut dyn <a class="trait" href="https://doc.rust-lang.org/1.96.0/core/any/trait.Any.html" title="trait core::any::Any">Any</a>,
+        context: &amp;<a class="struct" href="struct.BeanContext.html" title="struct hiver_starter::core::bean_post_processor::BeanContext">BeanContext</a>,
+    ) -&gt; <a class="type" href="../../type.HiverResult.html" title="type hiver_starter::HiverResult">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.96.0/std/primitive.unit.html">()</a>&gt;;
+<span class="item-spacer"></span>    fn <a href="#tymethod.post_process_after_initialization" class="fn">post_process_after_initialization</a>(
+        &amp;self,
+        bean: &amp;mut dyn <a class="trait" href="https://doc.rust-lang.org/1.96.0/core/any/trait.Any.html" title="trait core::any::Any">Any</a>,
+        context: &amp;<a class="struct" href="struct.BeanContext.html" title="struct hiver_starter::core::bean_post_processor::BeanContext">BeanContext</a>,
+    ) -&gt; <a class="type" href="../../type.HiverResult.html" title="type hiver_starter::HiverResult">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.96.0/std/primitive.unit.html">()</a>&gt;;
+
+    // Provided methods
+    fn <a href="#method.name" class="fn">name</a>(&amp;self) -&gt; &amp;<a class="primitive" href="https://doc.rust-lang.org/1.96.0/std/primitive.str.html">str</a> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.order" class="fn">order</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.96.0/std/primitive.i32.html">i32</a> { ... }
+}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Bean 后处理器 trait
+Bean post-processor trait</p>
+<p>在 Bean 实例化之后对 Bean 进行加工，支持初始化前和初始化后两个扩展点。
+Processes beans after instantiation, with before-init and after-init hooks.</p>
+<p>等价于 Spring 的 <code>BeanPostProcessor</code>。
+Equivalent to Spring’s <code>BeanPostProcessor</code>.</p>
+<h2 id="lifecycle-position--生命周期位置"><a class="doc-anchor" href="#lifecycle-position--生命周期位置">§</a>Lifecycle Position / 生命周期位置</h2>
+<p>Instantiation -&gt; before_init -&gt; @PostConstruct -&gt; after_init -&gt; Ready</p>
+<h2 id="示例--example"><a class="doc-anchor" href="#示例--example">§</a>示例 / Example</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_starter::core::bean_post_processor::{BeanPostProcessor, BeanContext};
+
+<span class="kw">struct </span>MyPostProcessor;
+
+<span class="kw">impl </span>BeanPostProcessor <span class="kw">for </span>MyPostProcessor {
+    <span class="kw">fn </span>post_process_before_initialization(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        bean: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Any,
+        context: <span class="kw-2">&amp;</span>BeanContext,
+    ) -&gt; anyhow::Result&lt;()&gt; {
+        <span class="comment">// 初始化前的处理
+        // Processing before initialization
+        </span><span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">fn </span>post_process_after_initialization(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        bean: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Any,
+        context: <span class="kw-2">&amp;</span>BeanContext,
+    ) -&gt; anyhow::Result&lt;()&gt; {
+        <span class="comment">// 初始化后的处理
+        // Processing after initialization
+        </span><span class="prelude-val">Ok</span>(())
+    }
+}</code></pre></div></div></details><h2 id="required-methods" class="section-header">Required Methods<a href="#required-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="tymethod.post_process_before_initialization" class="method"><a class="src rightside" href="../../../src/hiver_starter/core/bean_post_processor.rs.html#98-102">Source</a><h4 class="code-header">fn <a href="#tymethod.post_process_before_initialization" class="fn">post_process_before_initialization</a>(
+    &amp;self,
+    bean: &amp;mut dyn <a class="trait" href="https://doc.rust-lang.org/1.96.0/core/any/trait.Any.html" title="trait core::any::Any">Any</a>,
+    context: &amp;<a class="struct" href="struct.BeanContext.html" title="struct hiver_starter::core::bean_post_processor::BeanContext">BeanContext</a>,
+) -&gt; <a class="type" href="../../type.HiverResult.html" title="type hiver_starter::HiverResult">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.96.0/std/primitive.unit.html">()</a>&gt;</h4></section></summary><div class="docblock"><p>Bean 初始化前的处理
+Processing before bean initialization</p>
+<p>在 Bean 实例化后、@PostConstruct 回调前调用。
+Called after bean instantiation, before @PostConstruct callback.</p>
+<h5 id="参数--parameters"><a class="doc-anchor" href="#参数--parameters">§</a>参数 / Parameters</h5>
+<ul>
+<li><code>bean</code>: Bean 实例的可变引用 / Mutable reference to bean instance</li>
+<li><code>context</code>: Bean 上下文 / Bean context</li>
+</ul>
+</div></details><details class="toggle method-toggle" open><summary><section id="tymethod.post_process_after_initialization" class="method"><a class="src rightside" href="../../../src/hiver_starter/core/bean_post_processor.rs.html#114-118">Source</a><h4 class="code-header">fn <a href="#tymethod.post_process_after_initialization" class="fn">post_process_after_initialization</a>(
+    &amp;self,
+    bean: &amp;mut dyn <a class="trait" href="https://doc.rust-lang.org/1.96.0/core/any/trait.Any.html" title="trait core::any::Any">Any</a>,
+    context: &amp;<a class="struct" href="struct.BeanContext.html" title="struct hiver_starter::core::bean_post_processor::BeanContext">BeanContext</a>,
+) -&gt; <a class="type" href="../../type.HiverResult.html" title="type hiver_starter::HiverResult">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.96.0/std/primitive.unit.html">()</a>&gt;</h4></section></summary><div class="docblock"><p>Bean 初始化后的处理
+Processing after bean initialization</p>
+<p>在 @PostConstruct 回调后调用。
+Called after @PostConstruct callback.</p>
+<h5 id="参数--parameters-1"><a class="doc-anchor" href="#参数--parameters-1">§</a>参数 / Parameters</h5>
+<ul>
+<li><code>bean</code>: Bean 实例的可变引用 / Mutable reference to bean instance</li>
+<li><code>context</code>: Bean 上下文 / Bean context</li>
+</ul>
+</div></details></div><h2 id="provided-methods" class="section-header">Provided Methods<a href="#provided-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="method.name" class="method"><a class="src rightside" href="../../../src/hiver_starter/core/bean_post_processor.rs.html#76-79">Source</a><h4 class="code-header">fn <a href="#method.name" class="fn">name</a>(&amp;self) -&gt; &amp;<a class="primitive" href="https://doc.rust-lang.org/1.96.0/std/primitive.str.html">str</a></h4></section></summary><div class="docblock"><p>处理器名称（用于日志和调试）
+Processor name (for logging and debugging)</p>
+</div></details><details class="toggle method-toggle" open><summary><section id="method.order" class="method"><a class="src rightside" href="../../../src/hiver_starter/core/bean_post_processor.rs.html#83-86">Source</a><h4 class="code-header">fn <a href="#method.order" class="fn">order</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.96.0/std/primitive.i32.html">i32</a></h4></section></summary><div class="docblock"><p>优先级（数字越小越先执行）
+Priority (lower number executes first)</p>
+</div></details></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><div class="negative-marker"></div><section id="impl-BeanPostProcessor-for-AutowiredAnnotationBeanPostProcessor" class="impl"><a class="src rightside" href="../../../src/hiver_starter/core/bean_post_processor.rs.html#318-364">Source</a><a href="#impl-BeanPostProcessor-for-AutowiredAnnotationBeanPostProcessor" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.BeanPostProcessor.html" title="trait hiver_starter::core::bean_post_processor::BeanPostProcessor">BeanPostProcessor</a> for <a class="struct" href="struct.AutowiredAnnotationBeanPostProcessor.html" title="struct hiver_starter::core::bean_post_processor::AutowiredAnnotationBeanPostProcessor">AutowiredAnnotationBeanPostProcessor</a></h3></section><section id="impl-BeanPostProcessor-for-CommonAnnotationBeanPostProcessor" class="impl"><a class="src rightside" href="../../../src/hiver_starter/core/bean_post_processor.rs.html#545-588">Source</a><a href="#impl-BeanPostProcessor-for-CommonAnnotationBeanPostProcessor" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.BeanPostProcessor.html" title="trait hiver_starter::core::bean_post_processor::BeanPostProcessor">BeanPostProcessor</a> for <a class="struct" href="struct.CommonAnnotationBeanPostProcessor.html" title="struct hiver_starter::core::bean_post_processor::CommonAnnotationBeanPostProcessor">CommonAnnotationBeanPostProcessor</a></h3></section></div><script src="../../../trait.impl/hiver_starter/core/bean_post_processor/trait.BeanPostProcessor.js" async></script></section></div></main></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["KafkaError"],"struct":["KafkaConsumer","KafkaProducer"]};

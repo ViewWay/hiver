@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["I18nError"],"struct":["AcceptHeaderLocaleResolver","CookieLocaleResolver","FixedLocaleResolver","Locale","LocaleContextHolder","ResourceBundleMessageSource","ResourceBundleSource","SessionLocaleResolver"],"trait":["LocaleResolver","MessageSource","MessageSourceResolvable"],"type":["I18nResult"]};

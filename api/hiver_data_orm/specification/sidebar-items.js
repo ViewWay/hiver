@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CompositeSpec"],"struct":["Spec"],"trait":["JpaSpecificationExecutor","Specification"]};

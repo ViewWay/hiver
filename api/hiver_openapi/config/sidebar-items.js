@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ApiKeyLocation","SecuritySchemeConfig"],"struct":["AuthorizationCodeFlow","ClientCredentialsFlow","ContactConfig","ExternalDocsConfig","ImplicitFlow","InfoConfig","LicenseConfig","OAuthFlows","OpenApiConfig","PasswordFlow","ServerConfig","ServerVariable","TagConfig"]};

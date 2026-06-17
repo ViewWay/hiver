@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["PayloadRoot","SoapAction"],"trait":["Endpoint"]};

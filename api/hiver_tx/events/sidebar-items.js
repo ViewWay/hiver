@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["TransactionPhase"],"struct":["LoggingSynchronization","PhaseListener","SynchronizationRegistry"],"trait":["TransactionSynchronization"]};

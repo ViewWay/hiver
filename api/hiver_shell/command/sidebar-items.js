@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["CommandMeta","CommandRegistry","ParameterMeta"],"trait":["Command"],"type":["CommandBox"]};

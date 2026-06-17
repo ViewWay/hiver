@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["db_query","fortunes","json","main","multiple_queries","plaintext","update"],"struct":["World"]};

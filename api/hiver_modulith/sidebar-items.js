@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["VERSION"],"enum":["ModulePhase"],"fn":["collect_modules","verify_modules"],"mod":["prelude"],"struct":["DependencyGraph","DomainEvent","InMemoryEventPublisher","ModuleDependency","ModuleDescriptor","ModuleMetadata","ModuleRegistry","VerificationResult"],"trait":["EventHandler","EventPublisher","LifecycleModule","Module"]};

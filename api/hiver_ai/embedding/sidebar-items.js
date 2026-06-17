@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["cosine_similarity","euclidean_distance","normalize"],"struct":["EmbeddingRequest","EmbeddingResponse"],"trait":["EmbeddingModel"]};

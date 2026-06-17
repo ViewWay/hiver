@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["counter","gauge","global_registry","timer"],"struct":["MetricRegistry"]};

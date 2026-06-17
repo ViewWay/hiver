@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ModelRendering","SyntaxHighlightTheme"],"fn":["redoc_html","swagger_ui_html"],"struct":["SwaggerConfig","SwaggerUi"]};

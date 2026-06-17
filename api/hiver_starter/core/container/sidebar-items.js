@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["set_request_bean","with_request_scope"],"struct":["ApplicationContext","BeanDefinition","ComponentRegistry"]};

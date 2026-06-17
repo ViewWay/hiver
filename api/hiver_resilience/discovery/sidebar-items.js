@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DiscoveryError","InstanceStatus","LoadBalanceStrategy"],"struct":["ServiceDiscovery","ServiceInstance","SimpleServiceRegistry"],"trait":["ServiceRegistry"],"type":["Result"]};

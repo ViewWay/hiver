@@ -1,0 +1,95 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Hiver Batch Framework Hiver批处理框架"><title>hiver_batch - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="hiver_batch" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../static.files/storage-41dd4d93.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Crate hiver_batch</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../hiver_batch/index.html">hiver_<wbr>batch</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#overview--概述" title="Overview / 概述">Overview / 概述</a></li><li><a href="#spring-equivalent--spring等价物" title="Spring Equivalent / Spring等价物">Spring Equivalent / Spring等价物</a></li><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul><h3><a href="#reexports">Crate Items</a></h3><ul class="block"><li><a href="#reexports" title="Re-exports">Re-exports</a></li><li><a href="#modules" title="Modules">Modules</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1>Crate <span>hiver_<wbr>batch</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/hiver_batch/lib.rs.html#1-150">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Hiver Batch Framework
+Hiver批处理框架</p>
+<p>A batch processing framework equivalent to Spring Batch.
+等价于Spring Batch的批处理框架。</p>
+<h2 id="overview--概述"><a class="doc-anchor" href="#overview--概述">§</a>Overview / 概述</h2>
+<p>This module provides a comprehensive batch processing framework with:
+本模块提供完整的批处理框架，具有：</p>
+<ul>
+<li><strong>Job</strong>: Batch job container containing multiple steps <strong>Job</strong>: 包含多个步骤的批处理作业容器</li>
+<li><strong>Step</strong>: Independent phase of execution within a job <strong>Step</strong>: 作业中独立的执行阶段</li>
+<li><strong>ItemReader</strong>: Reads items for processing <strong>ItemReader</strong>: 读取待处理项目</li>
+<li><strong>ItemProcessor</strong>: Transforms items (optional) <strong>ItemProcessor</strong>: 转换项目（可选）</li>
+<li><strong>ItemWriter</strong>: Writes processed items <strong>ItemWriter</strong>: 写入处理后的项目</li>
+<li><strong>JobRepository</strong>: Stores job metadata and execution history <strong>JobRepository</strong>:
+存储作业元数据和执行历史</li>
+<li><strong>JobLauncher</strong>: Launches and manages job execution <strong>JobLauncher</strong>: 启动和管理作业执行</li>
+</ul>
+<h2 id="spring-equivalent--spring等价物"><a class="doc-anchor" href="#spring-equivalent--spring等价物">§</a>Spring Equivalent / Spring等价物</h2><div class="example-wrap"><pre class="language-java"><code>// Spring Batch Job Configuration
+@Bean
+public Job importUserJob(JobRepository jobRepository, Step step1) {
+    return new JobBuilder(&quot;importUserJob&quot;, jobRepository)
+        .start(step1)
+        .build();
+}
+
+@Bean
+public Step step1(JobRepository jobRepository,
+                  PlatformTransactionManager transactionManager,
+                  ItemReader&lt;User&gt; reader,
+                  ItemWriter&lt;User&gt; writer) {
+    return new StepBuilder(&quot;step1&quot;, jobRepository)
+        .&lt;User, User&gt;chunk(100)
+        .reader(reader)
+        .writer(writer)
+        .transactionManager(transactionManager)
+        .build();
+}</code></pre></div><h2 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_batch::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>async_trait::async_trait;
+
+<span class="comment">// Define reader
+</span><span class="kw">struct </span>UserReader;
+
+<span class="attr">#[async_trait]
+</span><span class="kw">impl </span>ItemReader <span class="kw">for </span>UserReader {
+    <span class="kw">type </span>Item = User;
+
+    <span class="kw">async fn </span>read(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; BatchResult&lt;<span class="prelude-ty">Option</span>&lt;User&gt;&gt; {
+        <span class="comment">// Read user from source
+        </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(User::default()))
+    }
+}
+
+<span class="comment">// Define writer
+</span><span class="kw">struct </span>UserWriter;
+
+<span class="attr">#[async_trait]
+</span><span class="kw">impl </span>ItemWriter <span class="kw">for </span>UserWriter {
+    <span class="kw">type </span>Item = User;
+
+    <span class="kw">async fn </span>write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, items: Vec&lt;User&gt;) -&gt; BatchResult&lt;()&gt; {
+        <span class="comment">// Write users to destination
+        </span><span class="prelude-val">Ok</span>(())
+    }
+}
+
+<span class="comment">// Create and run job
+</span><span class="attr">#[tokio::main]
+</span><span class="kw">async fn </span>main() -&gt; BatchResult&lt;()&gt; {
+    <span class="kw">let </span>job = Job::new(<span class="string">"import-users"</span>)
+        .add_step(Step::new(<span class="string">"process-users"</span>)
+            .with_chunk_size(<span class="number">100</span>)
+            .with_reader(UserReader)
+            .with_writer(UserWriter))
+        .build()<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>launcher = JobLauncher::new(JobRepository::new());
+    <span class="kw">let </span>execution = launcher.run(job).<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="macro">println!</span>(<span class="string">"Job completed with status: {:?}"</span>, execution.status);
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div></div></details><h2 id="reexports" class="section-header">Re-exports<a href="#reexports" class="anchor">§</a></h2><dl class="item-table reexports"><dt id="reexport.JobContext"><code>pub use context::<a class="struct" href="context/struct.JobContext.html" title="struct hiver_batch::context::JobContext">JobContext</a>;</code></dt><dt id="reexport.StepContext"><code>pub use context::<a class="struct" href="context/struct.StepContext.html" title="struct hiver_batch::context::StepContext">StepContext</a>;</code></dt><dt id="reexport.BatchError"><code>pub use error::<a class="enum" href="error/enum.BatchError.html" title="enum hiver_batch::error::BatchError">BatchError</a>;</code></dt><dt id="reexport.BatchResult"><code>pub use error::<a class="type" href="error/type.BatchResult.html" title="type hiver_batch::error::BatchResult">BatchResult</a>;</code></dt><dt id="reexport.BatchStatus"><code>pub use execution::<a class="enum" href="execution/enum.BatchStatus.html" title="enum hiver_batch::execution::BatchStatus">BatchStatus</a>;</code></dt><dt id="reexport.JobExecution"><code>pub use execution::<a class="struct" href="execution/struct.JobExecution.html" title="struct hiver_batch::execution::JobExecution">JobExecution</a>;</code></dt><dt id="reexport.JobStatus"><code>pub use execution::<a class="type" href="execution/type.JobStatus.html" title="type hiver_batch::execution::JobStatus">JobStatus</a>;</code></dt><dt id="reexport.StepExecution"><code>pub use execution::<a class="struct" href="execution/struct.StepExecution.html" title="struct hiver_batch::execution::StepExecution">StepExecution</a>;</code></dt><dt id="reexport.Job"><code>pub use job::<a class="struct" href="job/struct.Job.html" title="struct hiver_batch::job::Job">Job</a>;</code></dt><dt id="reexport.JobBuilder"><code>pub use job::<a class="struct" href="job/struct.JobBuilder.html" title="struct hiver_batch::job::JobBuilder">JobBuilder</a>;</code></dt><dt id="reexport.JobLauncher"><code>pub use launcher::<a class="struct" href="launcher/struct.JobLauncher.html" title="struct hiver_batch::launcher::JobLauncher">JobLauncher</a>;</code></dt><dt id="reexport.AdvancedJobOperator"><code>pub use operator::<a class="struct" href="operator/struct.AdvancedJobOperator.html" title="struct hiver_batch::operator::AdvancedJobOperator">AdvancedJobOperator</a>;</code></dt><dt id="reexport.FaultTolerantStep"><code>pub use operator::<a class="struct" href="operator/struct.FaultTolerantStep.html" title="struct hiver_batch::operator::FaultTolerantStep">FaultTolerantStep</a>;</code></dt><dt id="reexport.JobExecutionSummary"><code>pub use operator::<a class="struct" href="operator/struct.JobExecutionSummary.html" title="struct hiver_batch::operator::JobExecutionSummary">JobExecutionSummary</a>;</code></dt><dt id="reexport.ItemProcessor"><code>pub use processor::<a class="trait" href="processor/trait.ItemProcessor.html" title="trait hiver_batch::processor::ItemProcessor">ItemProcessor</a>;</code></dt><dt id="reexport.PassThroughProcessor"><code>pub use processor::<a class="struct" href="processor/struct.PassThroughProcessor.html" title="struct hiver_batch::processor::PassThroughProcessor">PassThroughProcessor</a>;</code></dt><dt id="reexport.ItemReader"><code>pub use reader::<a class="trait" href="reader/trait.ItemReader.html" title="trait hiver_batch::reader::ItemReader">ItemReader</a>;</code></dt><dt id="reexport.ItemStreamReader"><code>pub use reader::<a class="struct" href="reader/struct.ItemStreamReader.html" title="struct hiver_batch::reader::ItemStreamReader">ItemStreamReader</a>;</code></dt><dt id="reexport.JobRepository"><code>pub use repository::<a class="trait" href="repository/trait.JobRepository.html" title="trait hiver_batch::repository::JobRepository">JobRepository</a>;</code></dt><dt id="reexport.Step"><code>pub use step::<a class="struct" href="step/struct.Step.html" title="struct hiver_batch::step::Step">Step</a>;</code></dt><dt id="reexport.StepBuilder"><code>pub use step::<a class="struct" href="step/struct.StepBuilder.html" title="struct hiver_batch::step::StepBuilder">StepBuilder</a>;</code></dt><dt id="reexport.ItemStreamWriter"><code>pub use writer::<a class="struct" href="writer/struct.ItemStreamWriter.html" title="struct hiver_batch::writer::ItemStreamWriter">ItemStreamWriter</a>;</code></dt><dt id="reexport.ItemWriter"><code>pub use writer::<a class="trait" href="writer/trait.ItemWriter.html" title="trait hiver_batch::writer::ItemWriter">ItemWriter</a>;</code></dt></dl><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><dl class="item-table"><dt><a class="mod" href="context/index.html" title="mod hiver_batch::context">context</a></dt><dd>Job and step context for sharing data during execution
+作业和步骤上下文，用于执行期间共享数据</dd><dt><a class="mod" href="error/index.html" title="mod hiver_batch::error">error</a></dt><dd>Batch processing errors
+批处理错误</dd><dt><a class="mod" href="execution/index.html" title="mod hiver_batch::execution">execution</a></dt><dd>Job and step execution tracking
+作业和步骤执行跟踪</dd><dt><a class="mod" href="flow/index.html" title="mod hiver_batch::flow">flow</a></dt><dd>Conditional job flow and step transitions.
+条件作业流程和步骤转换。</dd><dt><a class="mod" href="job/index.html" title="mod hiver_batch::job">job</a></dt><dd>Job configuration and execution
+作业配置和执行</dd><dt><a class="mod" href="launcher/index.html" title="mod hiver_batch::launcher">launcher</a></dt><dd>Job launcher for starting batch jobs
+作业启动器，用于启动批处理作业</dd><dt><a class="mod" href="operator/index.html" title="mod hiver_batch::operator">operator</a></dt><dd>Advanced Job Operator for managing running jobs
+高级作业操作器，用于管理运行中的作业</dd><dt><a class="mod" href="partition/index.html" title="mod hiver_batch::partition">partition</a></dt><dd>Partition handling for parallel step execution.
+分区处理，用于并行步骤执行。</dd><dt><a class="mod" href="prelude/index.html" title="mod hiver_batch::prelude">prelude</a></dt><dt><a class="mod" href="processor/index.html" title="mod hiver_batch::processor">processor</a></dt><dd>Item processor for batch processing
+批处理项目处理器</dd><dt><a class="mod" href="reader/index.html" title="mod hiver_batch::reader">reader</a></dt><dd>Item reader for batch processing
+批处理项目读取器</dd><dt><a class="mod" href="repository/index.html" title="mod hiver_batch::repository">repository</a></dt><dd>Job repository for storing job metadata and execution history
+作业存储库，用于存储作业元数据和执行历史</dd><dt><a class="mod" href="step/index.html" title="mod hiver_batch::step">step</a></dt><dd>Step configuration and execution
+步骤配置和执行</dd><dt><a class="mod" href="writer/index.html" title="mod hiver_batch::writer">writer</a></dt><dd>Item writer for batch processing
+批处理项目写入器</dd></dl></section></div></main></body></html>

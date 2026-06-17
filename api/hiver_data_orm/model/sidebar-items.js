@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ColumnType","SqlDialect"],"struct":["Column","ModelMeta"],"trait":["Model"]};

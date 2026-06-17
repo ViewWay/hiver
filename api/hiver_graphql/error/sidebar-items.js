@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["error_to_response","errors_to_response"],"struct":["GraphQLError","GraphQLErrors","SourceLocation"]};

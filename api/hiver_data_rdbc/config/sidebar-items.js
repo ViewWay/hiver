@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DatabaseConfig","SslMode"],"struct":["MySqlConfig","PoolConfig","PostgresConfig","SqliteConfig"]};

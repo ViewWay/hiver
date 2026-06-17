@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["FunctionTool","PromptRegistry","ResourceRegistry","StaticPrompt","StaticTextResource","ToolRegistry"],"trait":["McpPromptProvider","McpResourceProvider","McpToolHandler"]};

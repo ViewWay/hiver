@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ExtractorError"],"mod":["attribute","cookie","form","header","json","matrix","model","multipart","path","query","state","valid"],"struct":["Request"],"trait":["FromRequest"],"type":["ExtractorFuture"]};

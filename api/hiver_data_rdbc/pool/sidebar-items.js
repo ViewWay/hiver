@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["SqlxPoolClient"],"type":["MySqlPoolClient","PgPoolClient","SqlitePoolClient"]};

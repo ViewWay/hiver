@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_CACHE","DEFAULT_MAX_CAPACITY","DEFAULT_TTL_SECS"],"struct":["CacheAutoConfiguration","CacheBuilder","CacheConfig","CacheManagerBuilder","CacheStats","Cached","MemoryCache","SimpleCacheManager"],"trait":["Cache","CacheEvict","CacheManager","CachePut","Cacheable"]};

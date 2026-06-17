@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ContractError"],"struct":["CallParams","Contract","ContractCall","ERC20","ERC721","FunctionSelector"]};

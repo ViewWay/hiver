@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["Environment","EnvironmentCollector","EnvironmentResponse","PropertySource","PropertyValue"]};

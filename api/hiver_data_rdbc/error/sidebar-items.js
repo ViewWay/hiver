@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["R2dbcError"],"type":["R2dbcResult","Result"]};

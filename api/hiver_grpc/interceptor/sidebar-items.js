@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["AuthInterceptor","BearerTokenInterceptor","ClientInterceptorChain","InterceptorChain","LoggingInterceptor","RequestIdInterceptor"],"trait":["ClientInterceptor","ServerInterceptor"]};

@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/hiver-observability/src/lib.rs`."><title>lib.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="hiver_observability" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../../static.files/src-script-813739b1.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">hiver_observability/</div>lib.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! Hiver Observability - Distributed tracing, metrics, and structured logging
+<a href=#2 id=2 data-nosnippet>2</a>//! Hiver可观测性 - 分布式追踪、指标和结构化日志
+<a href=#3 id=3 data-nosnippet>3</a>//!
+<a href=#4 id=4 data-nosnippet>4</a>//! # Overview / 概述
+<a href=#5 id=5 data-nosnippet>5</a>//!
+<a href=#6 id=6 data-nosnippet>6</a>//! `hiver-observability` provides a unified observability stack for the Hiver framework,
+<a href=#7 id=7 data-nosnippet>7</a>//! encompassing distributed tracing, metrics collection, and structured logging. It follows
+<a href=#8 id=8 data-nosnippet>8</a>//! a design philosophy of "observable by default" - every request is automatically traced
+<a href=#9 id=9 data-nosnippet>9</a>//! without manual instrumentation.
+<a href=#10 id=10 data-nosnippet>10</a>//!
+<a href=#11 id=11 data-nosnippet>11</a>//! `hiver-observability` 为Hiver框架提供统一的可观测性技术栈，涵盖分布式追踪、指标收集
+<a href=#12 id=12 data-nosnippet>12</a>//! 和结构化日志。它遵循"默认可观测"的设计理念——每个请求都会被自动追踪，无需手动埋点。
+<a href=#13 id=13 data-nosnippet>13</a>//!
+<a href=#14 id=14 data-nosnippet>14</a>//! # Features / 功能
+<a href=#15 id=15 data-nosnippet>15</a>//!
+<a href=#16 id=16 data-nosnippet>16</a>//! - **Distributed Tracing** - OpenTelemetry-compatible span propagation and context management /
+<a href=#17 id=17 data-nosnippet>17</a>//!   分布式追踪 - 兼容OpenTelemetry的span传播和上下文管理
+<a href=#18 id=18 data-nosnippet>18</a>//! - **Metrics** - Counters, gauges, and histograms with a pluggable registry / 指标 -
+<a href=#19 id=19 data-nosnippet>19</a>//!   计数器、仪表盘和直方图，支持可插拔注册表
+<a href=#20 id=20 data-nosnippet>20</a>//! - **Structured Logging** - JSON/text output with log levels, rotation, and configurable
+<a href=#21 id=21 data-nosnippet>21</a>//!   formatting / 结构化日志 - 支持JSON/文本输出，包含日志级别、轮转和可配置格式化
+<a href=#22 id=22 data-nosnippet>22</a>//! - **Hiver Format** - Branded startup banner and colored console output (feature-gated) /
+<a href=#23 id=23 data-nosnippet>23</a>//!   Hiver格式 - 品牌化启动横幅和彩色控制台输出（特性门控）
+<a href=#24 id=24 data-nosnippet>24</a>//! - **Zipkin Export** - Send trace data to Zipkin collectors (feature-gated) / Zipkin导出 -
+<a href=#25 id=25 data-nosnippet>25</a>//!   将追踪数据发送到Zipkin收集器（特性门控）
+<a href=#26 id=26 data-nosnippet>26</a>//!
+<a href=#27 id=27 data-nosnippet>27</a>//! # Equivalent to Spring Boot / 等价于 Spring Boot
+<a href=#28 id=28 data-nosnippet>28</a>//!
+<a href=#29 id=29 data-nosnippet>29</a>//! - Spring Boot Actuator `/actuator/metrics` and `/actuator/health` -&gt; `MetricsRegistry`
+<a href=#30 id=30 data-nosnippet>30</a>//! - Micrometer Tracing (`MicrometerObservation`) -&gt; `Tracer`, `Span`, `TraceContext`
+<a href=#31 id=31 data-nosnippet>31</a>//! - SLF4J + Logback (`application.yml` logging config) -&gt; `Logger`, `LoggerConfig`
+<a href=#32 id=32 data-nosnippet>32</a>//! - Spring Boot Startup Banner -&gt; `Banner` (behind `hiver-format` feature)
+<a href=#33 id=33 data-nosnippet>33</a>//!
+<a href=#34 id=34 data-nosnippet>34</a>//! # Module Organization / 模块组织
+<a href=#35 id=35 data-nosnippet>35</a>//!
+<a href=#36 id=36 data-nosnippet>36</a>//! | Module | Purpose / 用途 |
+<a href=#37 id=37 data-nosnippet>37</a>//! |--------|---------------|
+<a href=#38 id=38 data-nosnippet>38</a>//! | [`log`] | Structured logging with levels, rotation, and multiple output formats / 结构化日志，支持级别、轮转和多种输出格式 |
+<a href=#39 id=39 data-nosnippet>39</a>//! | [`metrics`] | Counters, gauges, histograms, and the central metrics registry / 计数器、仪表盘、直方图及中央指标注册表 |
+<a href=#40 id=40 data-nosnippet>40</a>//! | [`mod@trace`] | Distributed tracing with spans, trace IDs, and context propagation / 分布式追踪，包含span、追踪ID和上下文传播 |
+<a href=#41 id=41 data-nosnippet>41</a>//!
+<a href=#42 id=42 data-nosnippet>42</a>//! # Example / 示例
+<a href=#43 id=43 data-nosnippet>43</a>//!
+<a href=#44 id=44 data-nosnippet>44</a>//! ```rust,no_run,ignore
+<a href=#45 id=45 data-nosnippet>45</a>//! use hiver_observability::{info, LoggerConfig, Logger, MetricsRegistry, Tracer};
+<a href=#46 id=46 data-nosnippet>46</a>//!
+<a href=#47 id=47 data-nosnippet>47</a>//! fn main() {
+<a href=#48 id=48 data-nosnippet>48</a>//!     // Initialize logging / 初始化日志
+<a href=#49 id=49 data-nosnippet>49</a>//!     let config = LoggerConfig::default();
+<a href=#50 id=50 data-nosnippet>50</a>//!     let _logger = Logger::new(config);
+<a href=#51 id=51 data-nosnippet>51</a>//!
+<a href=#52 id=52 data-nosnippet>52</a>//!     info!("Application started");
+<a href=#53 id=53 data-nosnippet>53</a>//!
+<a href=#54 id=54 data-nosnippet>54</a>//!     // Record metrics / 记录指标
+<a href=#55 id=55 data-nosnippet>55</a>//!     let registry = MetricsRegistry::new();
+<a href=#56 id=56 data-nosnippet>56</a>//!     let counter = registry.counter("requests_total");
+<a href=#57 id=57 data-nosnippet>57</a>//!     counter.increment();
+<a href=#58 id=58 data-nosnippet>58</a>//! }
+<a href=#59 id=59 data-nosnippet>59</a>//! ```
+<a href=#60 id=60 data-nosnippet>60</a>
+<a href=#61 id=61 data-nosnippet>61</a></span><span class="attr">#![warn(missing_docs)]
+<a href=#62 id=62 data-nosnippet>62</a>#![warn(unreachable_pub)]
+<a href=#63 id=63 data-nosnippet>63</a>
+<a href=#64 id=64 data-nosnippet>64</a>#[cfg(test)]
+<a href=#65 id=65 data-nosnippet>65</a>#[allow(
+<a href=#66 id=66 data-nosnippet>66</a>    clippy::indexing_slicing,
+<a href=#67 id=67 data-nosnippet>67</a>    clippy::float_cmp,
+<a href=#68 id=68 data-nosnippet>68</a>    clippy::module_inception,
+<a href=#69 id=69 data-nosnippet>69</a>    clippy::items_after_statements,
+<a href=#70 id=70 data-nosnippet>70</a>    clippy::assertions_on_constants
+<a href=#71 id=71 data-nosnippet>71</a>)]
+<a href=#72 id=72 data-nosnippet>72</a></span><span class="kw">mod </span>tests;
+<a href=#73 id=73 data-nosnippet>73</a>
+<a href=#74 id=74 data-nosnippet>74</a><span class="doccomment">/// Structured logging with levels, rotation, and configurable output formats.
+<a href=#75 id=75 data-nosnippet>75</a>/// 结构化日志，支持日志级别、日志轮转和可配置的输出格式。
+<a href=#76 id=76 data-nosnippet>76</a></span><span class="kw">pub mod </span>log;
+<a href=#77 id=77 data-nosnippet>77</a>
+<a href=#78 id=78 data-nosnippet>78</a><span class="doccomment">/// Metrics collection with counters, gauges, and histograms.
+<a href=#79 id=79 data-nosnippet>79</a>/// 指标收集，包含计数器、仪表盘和直方图。
+<a href=#80 id=80 data-nosnippet>80</a></span><span class="kw">pub mod </span>metrics;
+<a href=#81 id=81 data-nosnippet>81</a>
+<a href=#82 id=82 data-nosnippet>82</a><span class="doccomment">/// Distributed tracing with spans, trace IDs, and context propagation.
+<a href=#83 id=83 data-nosnippet>83</a>/// 分布式追踪，包含span、追踪ID和上下文传播。
+<a href=#84 id=84 data-nosnippet>84</a></span><span class="kw">pub mod </span>trace;
+<a href=#85 id=85 data-nosnippet>85</a>
+<a href=#86 id=86 data-nosnippet>86</a><span class="doccomment">/// Hiver-branded startup banner and simple console formatter.
+<a href=#87 id=87 data-nosnippet>87</a>/// Hiver品牌化启动横幅和简单控制台格式化器。
+<a href=#88 id=88 data-nosnippet>88</a></span><span class="attr">#[cfg(feature = <span class="string">"hiver-format"</span>)]
+<a href=#89 id=89 data-nosnippet>89</a></span><span class="kw">pub mod </span>hiver_format;
+<a href=#90 id=90 data-nosnippet>90</a>
+<a href=#91 id=91 data-nosnippet>91</a><span class="doccomment">/// Zipkin trace exporter for sending spans to a Zipkin collector.
+<a href=#92 id=92 data-nosnippet>92</a>/// Zipkin追踪导出器，用于将span发送到Zipkin收集器。
+<a href=#93 id=93 data-nosnippet>93</a></span><span class="attr">#[cfg(feature = <span class="string">"zipkin"</span>)]
+<a href=#94 id=94 data-nosnippet>94</a></span><span class="kw">pub mod </span>zipkin;
+<a href=#95 id=95 data-nosnippet>95</a>
+<a href=#96 id=96 data-nosnippet>96</a><span class="comment">// Re-exports from the log module / 从日志模块重新导出
+<a href=#97 id=97 data-nosnippet>97</a>// Re-exports from the hiver-format module / 从hiver-format模块重新导出
+<a href=#98 id=98 data-nosnippet>98</a></span><span class="attr">#[cfg(feature = <span class="string">"hiver-format"</span>)]
+<a href=#99 id=99 data-nosnippet>99</a></span><span class="kw">pub use </span>hiver_format::{Banner, SimpleFormatter, StartupLogger};
+<a href=#100 id=100 data-nosnippet>100</a><span class="kw">pub use </span>log::{
+<a href=#101 id=101 data-nosnippet>101</a>    LogFormat, LogLevel, LogMode, LogRotation, Logger, LoggerConfig, LoggerFactory, LoggerHandle,
+<a href=#102 id=102 data-nosnippet>102</a>};
+<a href=#103 id=103 data-nosnippet>103</a><span class="comment">// Re-exports from the metrics module / 从指标模块重新导出
+<a href=#104 id=104 data-nosnippet>104</a></span><span class="kw">pub use </span>metrics::{Counter, Gauge, Histogram, MetricsRegistry};
+<a href=#105 id=105 data-nosnippet>105</a><span class="comment">// Re-exports from the trace module / 从追踪模块重新导出
+<a href=#106 id=106 data-nosnippet>106</a></span><span class="kw">pub use </span>trace::{Span, SpanId, TraceContext, TraceId, Tracer};
+<a href=#107 id=107 data-nosnippet>107</a><span class="doccomment">/// Re-export the `tracing` crate for convenience.
+<a href=#108 id=108 data-nosnippet>108</a>/// 重新导出 `tracing` crate 以便使用。
+<a href=#109 id=109 data-nosnippet>109</a></span><span class="kw">pub use </span>tracing::{<span class="self">self</span>, debug, error, info, trace, warn};
+</code></pre></div></section></main></body></html>

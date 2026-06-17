@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ValidationError"],"trait":["Validate","ValidateCollection","ValidateField","ValidateOptional"]};

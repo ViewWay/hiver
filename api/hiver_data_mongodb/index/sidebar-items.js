@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["IndexDirection"],"struct":["IndexBuilder","IndexInfo","IndexOperations"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["BackpressureStrategy","FluxItem","ReactorError","TrySendError"],"mod":["prelude","stream"],"struct":["Flux","Mono","Sinks"],"trait":["Stream","StreamExt"],"type":["ReactorResult"]};

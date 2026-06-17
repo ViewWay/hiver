@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["build_count_query","build_delete_query","build_page_query","build_select_query","build_update_query","build_where_clause","build_where_clause_offset"]};

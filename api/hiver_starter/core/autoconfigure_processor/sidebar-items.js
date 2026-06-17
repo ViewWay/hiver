@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SkipReason"],"struct":["AutoConfigurationProcessor","ConditionAdapter","ConditionContext","ProcessResult"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["DtoProjection","ProjectionField"],"trait":["ClosedProjection","Projection","ProjectionTransformer"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["InMemoryPermissionAuditLogger","PermissionAuditEntry","PermissionAuditLogger","PermissionDef","PermissionEvaluator","PermissionRegistry"],"trait":["PermissionAuditLog"]};

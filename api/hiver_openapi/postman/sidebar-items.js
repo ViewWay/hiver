@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["POSTMAN_SCHEMA"],"struct":["CollectionInfo","PostmanAuth","PostmanAuthBearer","PostmanBody","PostmanBodyOptions","PostmanCollection","PostmanFormData","PostmanGenerator","PostmanHeader","PostmanItem","PostmanQueryParam","PostmanRawOptions","PostmanRequest","PostmanResponse","PostmanUrl","PostmanUrlEncodedPair"]};

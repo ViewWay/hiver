@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["add_cors_headers"],"struct":["CorsConfig","CorsMiddleware"]};

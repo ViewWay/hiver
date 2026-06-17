@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["RestMethod"],"fn":["generate_crud_endpoints","generate_search_endpoint"],"struct":["RestEndpoint","RestResourceConfig"]};

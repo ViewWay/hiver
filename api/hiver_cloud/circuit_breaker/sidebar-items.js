@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CallOutcome","CircuitBreakerError","CircuitBreakerEvent","CircuitState"],"struct":["CircuitBreaker","CircuitBreakerConfig","CircuitBreakerMetrics","CircuitBreakerRegistry"],"type":["EventCallback"]};

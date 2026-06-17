@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["OPENAPI_VERSION","VERSION"],"mod":["config","doc_pdf","generator","http","macros","openapi","operation","path","postman","prelude","response","scanner","schema","swagger"],"trait":["GenerateOpenApi"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["circuit_breaker_example","combined_patterns_example","main","retry_policy_example"],"struct":["UserService"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["AppRoleAuth","AppRoleLoginRequest","AuthResponse","AuthResult","TokenAuth"],"trait":["AuthBackend"]};

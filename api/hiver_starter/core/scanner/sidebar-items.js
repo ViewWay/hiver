@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ComponentScope","ComponentType","FilterType"],"struct":["ComponentDefinition","ComponentScanner","ExcludeFilter","IncludeFilter","ScanResult"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["OutputFormat","ShellError"],"struct":["JsonResult","ResultHandler","TableResult","TextResult"],"trait":["ShellOutput"],"type":["ShellResult"]};

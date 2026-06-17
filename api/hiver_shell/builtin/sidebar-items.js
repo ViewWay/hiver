@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["register_builtins"],"struct":["BuiltinState","ClearCommand","EchoCommand","ExitCommand","HelpCommand","HistoryCommand","ScriptCommand","StacktraceCommand"]};

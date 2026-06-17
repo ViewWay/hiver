@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="hiver-vault — Spring Vault equivalent for `HashiCorp` Vault secrets management hiver-vault — `HashiCorp` Vault 密钥管理（Spring Vault 等价实现）"><title>hiver_vault - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="hiver_vault" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../static.files/storage-41dd4d93.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Crate hiver_vault</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../hiver_vault/index.html">hiver_<wbr>vault</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#overview--概述" title="Overview / 概述">Overview / 概述</a></li><li><a href="#features--功能" title="Features / 功能">Features / 功能</a></li><li><a href="#quick-start--快速开始" title="Quick Start / 快速开始">Quick Start / 快速开始</a></li></ul><h3><a href="#reexports">Crate Items</a></h3><ul class="block"><li><a href="#reexports" title="Re-exports">Re-exports</a></li><li><a href="#modules" title="Modules">Modules</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1>Crate <span>hiver_<wbr>vault</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/hiver_vault/lib.rs.html#1-74">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>hiver-vault — Spring Vault equivalent for <code>HashiCorp</code> Vault secrets management
+hiver-vault — <code>HashiCorp</code> Vault 密钥管理（Spring Vault 等价实现）</p>
+<h2 id="overview--概述"><a class="doc-anchor" href="#overview--概述">§</a>Overview / 概述</h2>
+<p><code>hiver-vault</code> provides a complete Rust client for <code>HashiCorp</code> Vault,
+equivalent to Spring Vault in the Java/Spring ecosystem.</p>
+<p><code>hiver-vault</code> 提供完整的 <code>HashiCorp</code> Vault Rust 客户端，
+等价于 Java/Spring 生态中的 Spring Vault。</p>
+<h2 id="features--功能"><a class="doc-anchor" href="#features--功能">§</a>Features / 功能</h2>
+<ul>
+<li><strong><code>VaultClient</code></strong> — HTTP client with TLS and token auth / 支持 TLS 和 Token 认证的 HTTP 客户端</li>
+<li><strong>Auth</strong> — Token &amp; <code>AppRole</code> authentication / Token 和 <code>AppRole</code> 认证</li>
+<li><strong>Secret</strong> — CRUD operations on secrets / 密钥的增删改查操作</li>
+<li><strong>Lease</strong> — Lease renewal and revocation / 租约续订和撤销</li>
+<li><strong>KV</strong> — KV v1 and v2 secret backends / KV v1 和 v2 密钥后端</li>
+<li><strong>Transit</strong> — Encrypt/decrypt as a service / 加密/解密服务</li>
+<li><strong>PKI</strong> — Certificate management / 证书管理</li>
+<li><strong>Health</strong> — Health check and seal status / 健康检查和封印状态</li>
+</ul>
+<h2 id="quick-start--快速开始"><a class="doc-anchor" href="#quick-start--快速开始">§</a>Quick Start / 快速开始</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_vault::{VaultClient, VaultConfig, auth::TokenAuth};
+
+<span class="attr">#[tokio::main]
+</span><span class="kw">async fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
+    <span class="kw">let </span>config = VaultConfig::builder()
+        .address(<span class="string">"https://127.0.0.1:8200"</span>)
+        .token(<span class="string">"my-root-token"</span>)
+        .build()<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>client = VaultClient::connect(config)<span class="question-mark">?</span>;
+
+    <span class="comment">// Read a secret / 读取密钥
+    </span><span class="kw">let </span>secret = client.kv_v2(<span class="string">"secret"</span>)
+        .read(<span class="string">"myapp/config"</span>)
+        .<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div></div></details><h2 id="reexports" class="section-header">Re-exports<a href="#reexports" class="anchor">§</a></h2><dl class="item-table reexports"><dt id="reexport.JwtAuth"><code>pub use auth_jwt::<a class="struct" href="auth_jwt/struct.JwtAuth.html" title="struct hiver_vault::auth_jwt::JwtAuth">JwtAuth</a>;</code></dt><dt id="reexport.JwtAuthManager"><code>pub use auth_jwt::<a class="struct" href="auth_jwt/struct.JwtAuthManager.html" title="struct hiver_vault::auth_jwt::JwtAuthManager">JwtAuthManager</a>;</code></dt><dt id="reexport.JwtRoleConfig"><code>pub use auth_jwt::<a class="struct" href="auth_jwt/struct.JwtRoleConfig.html" title="struct hiver_vault::auth_jwt::JwtRoleConfig">JwtRoleConfig</a>;</code></dt><dt id="reexport.VaultClient"><code>pub use client::<a class="struct" href="client/struct.VaultClient.html" title="struct hiver_vault::client::VaultClient">VaultClient</a>;</code></dt><dt id="reexport.VaultConfig"><code>pub use client::<a class="struct" href="client/struct.VaultConfig.html" title="struct hiver_vault::client::VaultConfig">VaultConfig</a>;</code></dt><dt id="reexport.VaultError"><code>pub use error::<a class="enum" href="error/enum.VaultError.html" title="enum hiver_vault::error::VaultError">VaultError</a>;</code></dt></dl><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><dl class="item-table"><dt><a class="mod" href="auth/index.html" title="mod hiver_vault::auth">auth</a></dt><dd>Authentication backends for Vault
+Vault 认证后端</dd><dt><a class="mod" href="auth_jwt/index.html" title="mod hiver_vault::auth_jwt">auth_<wbr>jwt</a></dt><dd>JWT/OIDC authentication method for Vault
+Vault 的 JWT/OIDC 认证方式</dd><dt><a class="mod" href="client/index.html" title="mod hiver_vault::client">client</a></dt><dd>Vault HTTP client and configuration
+Vault HTTP 客户端和配置</dd><dt><a class="mod" href="error/index.html" title="mod hiver_vault::error">error</a></dt><dd>Error types for hiver-vault
+hiver-vault 错误类型</dd><dt><a class="mod" href="health/index.html" title="mod hiver_vault::health">health</a></dt><dd>Health check and seal status for Vault
+Vault 健康检查和封印状态</dd><dt><a class="mod" href="kv/index.html" title="mod hiver_vault::kv">kv</a></dt><dd>Key-Value secret backends (v1 and v2)
+Key-Value 密钥后端（v1 和 v2）</dd><dt><a class="mod" href="kv_v2/index.html" title="mod hiver_vault::kv_v2">kv_v2</a></dt><dd>KV v2 Advanced Features — versioned key-value store with CAS operations
+KV v2 高级功能 — 带 CAS 操作的版本化键值存储</dd><dt><a class="mod" href="lease/index.html" title="mod hiver_vault::lease">lease</a></dt><dd>Lease management for Vault
+Vault 租约管理</dd><dt><a class="mod" href="pki/index.html" title="mod hiver_vault::pki">pki</a></dt><dd>PKI secrets engine — Certificate management
+PKI 密钥引擎 — 证书管理</dd><dt><a class="mod" href="secret/index.html" title="mod hiver_vault::secret">secret</a></dt><dd>Secret operations for Vault
+Vault 密钥操作</dd><dt><a class="mod" href="transit/index.html" title="mod hiver_vault::transit">transit</a></dt><dd>Transit secrets engine — encrypt/decrypt as a service
+Transit 密钥引擎 — 加密/解密服务</dd></dl></section></div></main></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["EmailError"],"struct":["Attachment","EmailConfig","EmailMessage","EmailQueue","EmailTemplate","SmtpEmailSender"],"trait":["EmailSender"],"type":["EmailResult"]};

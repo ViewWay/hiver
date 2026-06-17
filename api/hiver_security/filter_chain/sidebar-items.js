@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["FilterResult"],"struct":["AuthenticationFilter","PublicPathFilter","RoleAuthorizationFilter","SecurityContext","SecurityFilterChain"],"trait":["SecurityFilter"]};

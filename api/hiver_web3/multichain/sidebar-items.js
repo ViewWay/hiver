@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["BridgeError","BridgeStatus","Chain"],"struct":["BridgeFeeEstimate","BridgeRequest","BridgeTransaction","ChainEntry","ChainRegistry","GasFeeEstimate","GasOracle","NativeCurrency"],"trait":["Bridge"]};

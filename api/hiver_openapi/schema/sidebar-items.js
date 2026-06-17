@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SchemaFormat","SchemaType"],"struct":["Schema","SchemaProperty"]};

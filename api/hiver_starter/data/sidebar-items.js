@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DatabaseType"],"fn":["register_sqlx_transaction_manager"],"struct":["DataSourceAutoConfiguration","DataSourceConfig","PoolConfig","SqlxPoolClient","TransactionAutoConfiguration","TransactionManager"],"trait":["DatabaseClient"]};

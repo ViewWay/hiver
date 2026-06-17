@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["VERSION"],"fn":["replace_placeholders"],"mod":["auditing","data_rest","entity","error","method_name","optimistic_lock","page","part_tree","prelude","projection","propagation","query","repository","sort","specification"],"trait":["ToSql"]};

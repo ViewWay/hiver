@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["NullHandling","StringMatcher"],"struct":["Example","ExampleMatcher"],"trait":["QueryByExample"]};

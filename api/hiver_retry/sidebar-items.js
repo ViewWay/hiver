@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"attr":["recover","retry"],"enum":["BackoffType","RetryDecision"],"struct":["FatalError","NoOpCallback","RetryAll","RetryContext","RetryError","RetryPolicy","RetryStatistics","RetryTemplate","RetryTemplateBuilder","RetryableError"],"trait":["NonRetryable","RetryCallback","Retryable","ShouldRetry"]};

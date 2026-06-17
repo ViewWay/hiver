@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["VERSION"],"mod":["beans","env","health","info","loggers","mappings","metrics","prelude","routes"]};

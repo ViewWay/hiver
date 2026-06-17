@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ColumnType","ColumnValue"],"struct":["Column","Row"],"trait":["FromRowValue"]};

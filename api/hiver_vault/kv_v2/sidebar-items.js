@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["KvV2Engine","KvV2FullMetadata","KvV2GetRequest","KvV2PutRequest","KvV2VersionInfo","KvV2WriteOptions"]};

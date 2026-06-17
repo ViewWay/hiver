@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["get_all_path_vars","get_path_var","has_path_var"],"struct":["Path"]};

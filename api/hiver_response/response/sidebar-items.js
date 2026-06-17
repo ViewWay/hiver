@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["HeaderVal"],"fn":["status"],"struct":["Response","ResponseBuilder"],"trait":["IntoHeaderName","IntoHeaderVal","IntoResponse"],"type":["Body"]};

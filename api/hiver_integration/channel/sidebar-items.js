@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["global_registry"],"struct":["ChannelRegistry","DirectChannel","ExecutorChannel","PointToPointChannel","PublishSubscribeChannel","RequestReplyChannel"],"trait":["MessageChannel"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SubscriptionMessage"],"struct":["ErrorLocation","GraphQLErrorPayload","PersistedQueryCache","SubscribePayload","SubscriptionConfig","SubscriptionConfigBuilder","SubscriptionData"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_BUFFER_SIZE","MAX_HEADER_SIZE"],"enum":["HttpVersion"],"fn":["encode_response","parse_request"],"struct":["ConnectionContext","RequestParser","ResponseEncoder"]};

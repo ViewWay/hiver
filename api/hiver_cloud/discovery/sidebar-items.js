@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["InstanceStatus"],"mod":["consul"],"struct":["AlwaysHealthyChecker","HealthCheckResult","HeartbeatConfig","HttpHealthChecker","InMemoryServiceRegistry","ServiceDiscoveryClient","ServiceInstance","SimpleDiscoveryClient"],"trait":["HealthChecker","ServiceDiscovery","ServiceRegistry"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["counter","error","gauge","metric","prometheus","registry","timer"]};

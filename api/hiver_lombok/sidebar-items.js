@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":["AllArgsConstructor","Builder","Data","Getter","NoArgsConstructor","Setter","Value","With"]};

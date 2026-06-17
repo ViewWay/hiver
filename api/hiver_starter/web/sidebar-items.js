@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["route_registry"],"struct":["Json","MiddlewareAutoConfiguration","Request","Response","Router","RouterAutoConfiguration","Server","StatusCode","WebServerAutoConfiguration"],"trait":["HttpService","IntoResponse"],"type":["Body"]};

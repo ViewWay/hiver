@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Filter","GatewayCbState","Predicate"],"struct":["GatewayCircuitBreaker","GatewayConfig","GatewayRequest","GatewayResponse","GatewayRoute","GatewayRouter","InMemoryRouteLocator","LoggingFilter","RateLimitFilter","Route","SimpleGateway","TokenBucketRateLimiter"],"trait":["Gateway","GatewayFilter","RouteLocator"]};

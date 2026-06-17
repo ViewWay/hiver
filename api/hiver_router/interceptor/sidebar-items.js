@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["InterceptorResult"],"struct":["InterceptorChain","LoggingInterceptor"],"trait":["HandlerInterceptor"]};

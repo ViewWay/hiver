@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["get_all_cookies","get_cookie","has_cookie"],"struct":["Cookie","CookieOption","NamedCookie"]};

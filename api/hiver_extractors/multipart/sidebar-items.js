@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["UploadError"],"fn":["media_type_for_extension"],"struct":["Multipart","MultipartParser","UploadConfig","UploadConfigBuilder","UploadedFile"]};

@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Repository attribute macro Repository 属性宏"><title>repository in hiver_data_macros - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="hiver_data_macros" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc attr"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">repository</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../hiver_data_macros/index.html">hiver_<wbr>data_<wbr>macros</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">repository</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#features--功能" title="Features / 功能">Features / 功能</a></li><li><a href="#method-name-patterns--方法名模式" title="Method Name Patterns / 方法名模式">Method Name Patterns / 方法名模式</a><ul><li><a href="#modifying-annotation--modifying-注解" title="`#[Modifying]` Annotation / `#[Modifying]` 注解"><code>#[Modifying]</code> Annotation / <code>#[Modifying]</code> 注解</a></li></ul></li><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="index.html">In crate hiver_<wbr>data_<wbr>macros</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">hiver_data_macros</a></div><h1>Attribute Macro <span class="attr">repository</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/hiver_data_macros/lib.rs.html#649-653">Source</a> </span></div><pre class="rust item-decl"><code>#[repository]</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Repository attribute macro
+Repository 属性宏</p>
+<p>Automatically generates CRUD repository implementation similar to Spring Data JPA.
+自动生成类似Spring Data JPA的CRUD Repository实现。</p>
+<h2 id="features--功能"><a class="doc-anchor" href="#features--功能">§</a>Features / 功能</h2>
+<ul>
+<li>Auto-implements <code>CrudRepository</code> methods</li>
+<li>Parses method names to generate queries (e.g., <code>findByUsernameAndEmail</code>)</li>
+<li>Supports <code>@Query</code> annotation for custom SQL</li>
+<li>Supports pagination with <code>PageRequest</code></li>
+<li>Supports sorting with <code>Sort</code></li>
+</ul>
+<h2 id="method-name-patterns--方法名模式"><a class="doc-anchor" href="#method-name-patterns--方法名模式">§</a>Method Name Patterns / 方法名模式</h2><div><table><thead><tr><th>Pattern</th><th>SQL Generated</th><th>Example</th></tr></thead><tbody>
+<tr><td><code>findByXxx</code></td><td><code>WHERE xxx = ?</code></td><td><code>findByUsername</code></td></tr>
+<tr><td><code>findByXxxAndYyy</code></td><td><code>WHERE xxx = ? AND yyy = ?</code></td><td><code>findByUsernameAndActive</code></td></tr>
+<tr><td><code>findByXxxOrYyy</code></td><td><code>WHERE xxx = ? OR yyy = ?</code></td><td><code>findByUsernameOrEmail</code></td></tr>
+<tr><td><code>findAllByXxx</code></td><td><code>WHERE xxx = ?</code></td><td><code>findAllByActive</code></td></tr>
+<tr><td><code>countByXxx</code></td><td><code>SELECT COUNT(*) WHERE xxx = ?</code></td><td><code>countByActive</code></td></tr>
+<tr><td><code>existsByXxx</code></td><td><code>SELECT EXISTS(...)</code></td><td><code>existsByEmail</code></td></tr>
+<tr><td><code>deleteByXxx</code></td><td><code>DELETE WHERE xxx = ?</code></td><td><code>deleteByUserId</code></td></tr>
+</tbody></table>
+</div><h3 id="modifying-annotation--modifying-注解"><a class="doc-anchor" href="#modifying-annotation--modifying-注解">§</a><code>#[Modifying]</code> Annotation / <code>#[Modifying]</code> 注解</h3>
+<p>When applied to a <code>#[Query]</code> method, forces the generated code to use
+<code>execute_params</code> (for UPDATE/DELETE/INSERT), regardless of the SQL prefix.
+Returns the number of affected rows (as <code>usize</code> or <code>i64</code>).</p>
+<p>应用于 <code>#[Query]</code> 方法时，强制生成的代码使用 <code>execute_params</code>（用于 UPDATE/DELETE/INSERT），
+忽略 SQL 前缀。返回受影响的行数（以 <code>usize</code> 或 <code>i64</code> 形式）。</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="attr">#[Repository]
+</span><span class="kw">pub trait </span>UserRepository: CrudRepository&lt;User, i64&gt; {
+    <span class="attr">#[Modifying]
+    #[Query(<span class="string">"UPDATE users SET active = ? WHERE last_login &lt; ?"</span>)]
+    </span><span class="kw">async fn </span>deactivate_inactive_users(<span class="kw-2">&amp;</span><span class="self">self</span>, cutoff: chrono::NaiveDateTime) -&gt; <span class="prelude-ty">Result</span>&lt;usize, Error&gt;;
+}</code></pre></div><h2 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_data_macros::Repository;
+<span class="kw">use </span>hiver_data_commons::{CrudRepository, <span class="prelude-ty">Result</span>, Error};
+
+<span class="attr">#[Repository]
+</span><span class="kw">pub trait </span>UserRepository: CrudRepository&lt;User, i64&gt; {
+    <span class="comment">// Auto-generated: SELECT * FROM users WHERE username = ? LIMIT 1
+    </span><span class="kw">async fn </span>find_by_username(<span class="kw-2">&amp;</span><span class="self">self</span>, username: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;User&gt;, Error&gt;;
+
+    <span class="comment">// Auto-generated: SELECT * FROM users WHERE active = ? AND age &gt; ?
+    </span><span class="kw">async fn </span>find_by_active_and_age_greater_than(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        active: bool,
+        age: i32
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;User&gt;, Error&gt;;
+
+    <span class="comment">// Custom query
+    </span><span class="attr">#[Query(<span class="string">"SELECT * FROM users WHERE email LIKE ?"</span>)]
+    </span><span class="kw">async fn </span>search_by_email_pattern(<span class="kw-2">&amp;</span><span class="self">self</span>, pattern: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;User&gt;, Error&gt;;
+}</code></pre></div></div></details></section></div></main></body></html>

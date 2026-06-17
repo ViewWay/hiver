@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SignatureError","WalletError"],"fn":["keccak256"],"mod":["address"],"struct":["LocalWallet","Signature","Signer"],"trait":["Wallet"]};

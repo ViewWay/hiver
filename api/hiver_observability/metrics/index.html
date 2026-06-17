@@ -1,0 +1,47 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Metrics collection with counters, gauges, and histograms. 指标收集，包含计数器、仪表盘和直方图。 Metrics module 指标模块"><title>hiver_observability::metrics - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="hiver_observability" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Module metrics</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../hiver_observability/index.html">hiver_<wbr>observability</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module metrics</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#overview--概述" title="Overview / 概述">Overview / 概述</a></li><li><a href="#equivalent-to-spring-boot--等价于-spring-boot" title="Equivalent to Spring Boot / 等价于 Spring Boot">Equivalent to Spring Boot / 等价于 Spring Boot</a></li><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul><h3><a href="#structs">Module Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#enums" title="Enums">Enums</a></li><li><a href="#functions" title="Functions">Functions</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="../index.html">In crate hiver_<wbr>observability</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">hiver_observability</a></div><h1>Module <span>metrics</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/hiver_observability/metrics.rs.html#1-1390">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Metrics collection with counters, gauges, and histograms.
+指标收集，包含计数器、仪表盘和直方图。
+Metrics module
+指标模块</p>
+<h2 id="overview--概述"><a class="doc-anchor" href="#overview--概述">§</a>Overview / 概述</h2>
+<p>This module provides metrics collection functionality compatible with Prometheus.
+It includes counters, gauges, histograms, and a metrics registry.</p>
+<p>本模块提供与 Prometheus 兼容的指标收集功能。
+包括计数器、仪表、直方图和指标注册表。</p>
+<h2 id="equivalent-to-spring-boot--等价于-spring-boot"><a class="doc-anchor" href="#equivalent-to-spring-boot--等价于-spring-boot">§</a>Equivalent to Spring Boot / 等价于 Spring Boot</h2>
+<ul>
+<li>Micrometer Metrics</li>
+<li>Spring Boot Actuator Metrics</li>
+<li>Prometheus <code>MeterRegistry</code></li>
+</ul>
+<h2 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_observability::metrics::{MetricsRegistry, Counter, Gauge, Histogram};
+
+<span class="kw">let </span>registry = MetricsRegistry::new();
+
+<span class="comment">// Counter - monotonically increasing
+</span><span class="kw">let </span>counter = registry.counter(<span class="string">"http_requests_total"</span>);
+counter.increment();
+counter.increment_by(<span class="number">5</span>);
+
+<span class="comment">// Gauge - can go up or down
+</span><span class="kw">let </span>gauge = registry.gauge(<span class="string">"active_connections"</span>);
+gauge.set(<span class="number">10</span>);
+gauge.increment();
+gauge.decrement();
+
+<span class="comment">// Histogram - observe distributions
+</span><span class="kw">let </span>histogram = registry.histogram(<span class="string">"request_duration_seconds"</span>);
+histogram.observe(<span class="number">0.123</span>);
+histogram.observe(<span class="number">0.456</span>);</code></pre></div></div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.Bucket.html" title="struct hiver_observability::metrics::Bucket">Bucket</a></dt><dd>Histogram bucket
+直方图桶</dd><dt><a class="struct" href="struct.Counter.html" title="struct hiver_observability::metrics::Counter">Counter</a></dt><dd>Counter metric - monotonically increasing value
+计数器指标 - 单调递增值</dd><dt><a class="struct" href="struct.Gauge.html" title="struct hiver_observability::metrics::Gauge">Gauge</a></dt><dd>Gauge metric - can go up or down
+仪表指标 - 可增可减</dd><dt><a class="struct" href="struct.Histogram.html" title="struct hiver_observability::metrics::Histogram">Histogram</a></dt><dd>Histogram metric - distribution of values
+直方图指标 - 值分布</dd><dt><a class="struct" href="struct.MetricId.html" title="struct hiver_observability::metrics::MetricId">Metric<wbr>Id</a></dt><dd>Metric ID
+指标ID</dd><dt><a class="struct" href="struct.MetricsRegistry.html" title="struct hiver_observability::metrics::MetricsRegistry">Metrics<wbr>Registry</a></dt><dd>Metrics registry - central storage for metrics
+指标注册表 - 指标的中央存储</dd></dl><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><dl class="item-table"><dt><a class="enum" href="enum.Metric.html" title="enum hiver_observability::metrics::Metric">Metric</a></dt><dd>Metric - enum of all metric types
+指标 - 所有指标类型的枚举</dd><dt><a class="enum" href="enum.MetricType.html" title="enum hiver_observability::metrics::MetricType">Metric<wbr>Type</a></dt><dd>Metric type
+指标类型</dd></dl><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><dl class="item-table"><dt><a class="fn" href="fn.counter.html" title="fn hiver_observability::metrics::counter">counter</a></dt><dd>Get a counter from the global registry
+从全局注册表获取计数器</dd><dt><a class="fn" href="fn.gauge.html" title="fn hiver_observability::metrics::gauge">gauge</a></dt><dd>Get a gauge from the global registry
+从全局注册表获取仪表</dd><dt><a class="fn" href="fn.global_registry.html" title="fn hiver_observability::metrics::global_registry">global_<wbr>registry</a></dt><dd>Get the global metrics registry
+获取全局指标注册表</dd><dt><a class="fn" href="fn.histogram.html" title="fn hiver_observability::metrics::histogram">histogram</a></dt><dd>Get a histogram from the global registry
+从全局注册表获取直方图</dd></dl></section></div></main></body></html>

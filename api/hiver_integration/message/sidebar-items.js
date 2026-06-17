@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["HeaderValue"],"struct":["GenericMessage","Headers","JsonSerializer","Message","MessageBuilder","Payload"],"trait":["MessageSerializer"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ParameterLocation","SecurityScheme"],"struct":["Encoding","Example","ExternalDocs","MediaType","Operation","Parameter","RequestBody"]};

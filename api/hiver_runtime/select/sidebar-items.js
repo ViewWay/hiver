@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SelectMultipleOutput","SelectTwoOutput"],"fn":["select_multiple","select_two"],"struct":["SelectMultiple","SelectMultipleBinding","SelectTwo"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["LdifChangeType","LdifModOp"],"fn":["generate_ldif","parse_ldif"],"struct":["LdifEntry","LdifModification"]};

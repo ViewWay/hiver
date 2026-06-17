@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["CompositeWriter","ConsoleWriter","CsvWriter","FileWriter","ItemStreamWriter","NoOpWriter"],"trait":["ItemWriter"]};

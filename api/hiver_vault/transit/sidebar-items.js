@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["KeyConfig","KeyInfo","Transit"]};

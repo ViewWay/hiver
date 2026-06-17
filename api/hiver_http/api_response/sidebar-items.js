@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ResultCode"],"struct":["ApiResponse","PageResponse"],"trait":["IntoApiResponse"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["CsvFileReader","ItemStreamReader","IteratorItemReader","JsonFileReader"],"trait":["ItemReader"]};

@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="HTTP/2 support HTTP/2 支持"><title>hiver_http::http2 - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="hiver_http" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Module http2</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../hiver_http/index.html">hiver_<wbr>http</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module http2</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#overview--概述" title="Overview / 概述">Overview / 概述</a></li><li><a href="#equivalent-to-spring-boot--等价于-spring-boot" title="Equivalent to Spring Boot / 等价于 Spring Boot">Equivalent to Spring Boot / 等价于 Spring Boot</a></li><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul><h3><a href="#structs">Module Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#enums" title="Enums">Enums</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="../index.html">In crate hiver_<wbr>http</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">hiver_http</a></div><h1>Module <span>http2</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/hiver_http/http2.rs.html#1-875">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>HTTP/2 support
+HTTP/2 支持</p>
+<h2 id="overview--概述"><a class="doc-anchor" href="#overview--概述">§</a>Overview / 概述</h2>
+<p>HTTP/2 is a major revision of the HTTP protocol that provides:</p>
+<ul>
+<li>Binary framing instead of text-based</li>
+<li>Multiplexing of requests over a single TCP connection</li>
+<li>Header compression using HPACK</li>
+<li>Server push capability</li>
+<li>Flow control and prioritization</li>
+</ul>
+<p>HTTP/2 是HTTP协议的主要修订版本，提供：</p>
+<ul>
+<li>二进制分帧而非基于文本</li>
+<li>通过单个TCP连接多路复用请求</li>
+<li>使用HPACK进行头压缩</li>
+<li>服务器推送能力</li>
+<li>流控制和优先级</li>
+</ul>
+<h2 id="equivalent-to-spring-boot--等价于-spring-boot"><a class="doc-anchor" href="#equivalent-to-spring-boot--等价于-spring-boot">§</a>Equivalent to Spring Boot / 等价于 Spring Boot</h2>
+<ul>
+<li><code>server.http2.enabled=true</code></li>
+<li><code>Servlet.webServlet</code></li>
+</ul>
+<h2 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_http::http2::{Http2Config, ServerConnection};
+
+<span class="kw">let </span>config = Http2Config::new()
+    .with_max_streams(<span class="number">1000</span>)
+    .with_header_table_size(<span class="number">4096</span>);</code></pre></div></div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.Http2Config.html" title="struct hiver_http::http2::Http2Config">Http2<wbr>Config</a></dt><dd>HTTP/2 connection configuration
+HTTP/2 连接配置</dd><dt><a class="struct" href="struct.Priority.html" title="struct hiver_http::http2::Priority">Priority</a></dt><dd>HTTP/2 priority information
+HTTP/2 优先级信息</dd><dt><a class="struct" href="struct.StreamId.html" title="struct hiver_http::http2::StreamId">Stream<wbr>Id</a></dt><dd>HTTP/2 stream identifier
+HTTP/2 流标识符</dd><dt><a class="struct" href="struct.StreamReset.html" title="struct hiver_http::http2::StreamReset">Stream<wbr>Reset</a></dt><dd>Represents a pending HTTP/2 stream reset
+表示待处理的HTTP/2流重置</dd></dl><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><dl class="item-table"><dt><a class="enum" href="enum.ConnectionState.html" title="enum hiver_http::http2::ConnectionState">Connection<wbr>State</a></dt><dd>HTTP/2 connection state
+HTTP/2 连接状态</dd><dt><a class="enum" href="enum.ErrorCode.html" title="enum hiver_http::http2::ErrorCode">Error<wbr>Code</a></dt><dd>HTTP/2 error codes
+HTTP/2 错误码</dd><dt><a class="enum" href="enum.FrameType.html" title="enum hiver_http::http2::FrameType">Frame<wbr>Type</a></dt><dd>HTTP/2 frame types
+HTTP/2 帧类型</dd><dt><a class="enum" href="enum.Http2Error.html" title="enum hiver_http::http2::Http2Error">Http2<wbr>Error</a></dt><dd>HTTP/2 error
+HTTP/2 错误</dd><dt><a class="enum" href="enum.SettingsParameter.html" title="enum hiver_http::http2::SettingsParameter">Settings<wbr>Parameter</a></dt><dd>HTTP/2 settings parameter
+HTTP/2 设置参数</dd><dt><a class="enum" href="enum.StreamState.html" title="enum hiver_http::http2::StreamState">Stream<wbr>State</a></dt><dd>HTTP/2 stream state
+HTTP/2 流状态</dd></dl></section></div></main></body></html>

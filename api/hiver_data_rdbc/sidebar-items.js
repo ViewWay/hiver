@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["VERSION"],"enum":["DataError","DatabaseType"],"mod":["client","config","connection","error","executor","pool","prelude","row","sql_builder","transaction","tx_bridge"],"trait":["ToSql"]};

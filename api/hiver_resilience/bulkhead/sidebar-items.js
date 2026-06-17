@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["BulkheadError"],"struct":["Bulkhead","BulkheadConfig","BulkheadMetrics","BulkheadPermit","BulkheadRegistry"],"type":["Result"]};

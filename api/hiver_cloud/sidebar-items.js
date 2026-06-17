@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_APP_NAME","DEFAULT_CONFIG_SERVER_URL","DEFAULT_GATEWAY_PORT","DEFAULT_HEARTBEAT_SECS","DEFAULT_SERVICE_NAME","VERSION"],"mod":["circuit_breaker","config","config_client","discovery","feign","gateway","load_balancer","load_balancer_ext","prelude"]};

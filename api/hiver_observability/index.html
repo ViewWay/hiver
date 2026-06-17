@@ -1,0 +1,74 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Hiver Observability - Distributed tracing, metrics, and structured logging Hiver可观测性 - 分布式追踪、指标和结构化日志"><title>hiver_observability - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="hiver_observability" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../static.files/storage-41dd4d93.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Crate hiver_observability</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../hiver_observability/index.html">hiver_<wbr>observability</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#overview--概述" title="Overview / 概述">Overview / 概述</a></li><li><a href="#features--功能" title="Features / 功能">Features / 功能</a></li><li><a href="#equivalent-to-spring-boot--等价于-spring-boot" title="Equivalent to Spring Boot / 等价于 Spring Boot">Equivalent to Spring Boot / 等价于 Spring Boot</a></li><li><a href="#module-organization--模块组织" title="Module Organization / 模块组织">Module Organization / 模块组织</a></li><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul><h3><a href="#reexports">Crate Items</a></h3><ul class="block"><li><a href="#reexports" title="Re-exports">Re-exports</a></li><li><a href="#modules" title="Modules">Modules</a></li><li><a href="#macros" title="Macros">Macros</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1>Crate <span>hiver_<wbr>observability</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/hiver_observability/lib.rs.html#1-109">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Hiver Observability - Distributed tracing, metrics, and structured logging
+Hiver可观测性 - 分布式追踪、指标和结构化日志</p>
+<h2 id="overview--概述"><a class="doc-anchor" href="#overview--概述">§</a>Overview / 概述</h2>
+<p><code>hiver-observability</code> provides a unified observability stack for the Hiver framework,
+encompassing distributed tracing, metrics collection, and structured logging. It follows
+a design philosophy of “observable by default” - every request is automatically traced
+without manual instrumentation.</p>
+<p><code>hiver-observability</code> 为Hiver框架提供统一的可观测性技术栈，涵盖分布式追踪、指标收集
+和结构化日志。它遵循“默认可观测“的设计理念——每个请求都会被自动追踪，无需手动埋点。</p>
+<h2 id="features--功能"><a class="doc-anchor" href="#features--功能">§</a>Features / 功能</h2>
+<ul>
+<li><strong>Distributed Tracing</strong> - OpenTelemetry-compatible span propagation and context management /
+分布式追踪 - 兼容OpenTelemetry的span传播和上下文管理</li>
+<li><strong>Metrics</strong> - Counters, gauges, and histograms with a pluggable registry / 指标 -
+计数器、仪表盘和直方图，支持可插拔注册表</li>
+<li><strong>Structured Logging</strong> - JSON/text output with log levels, rotation, and configurable
+formatting / 结构化日志 - 支持JSON/文本输出，包含日志级别、轮转和可配置格式化</li>
+<li><strong>Hiver Format</strong> - Branded startup banner and colored console output (feature-gated) /
+Hiver格式 - 品牌化启动横幅和彩色控制台输出（特性门控）</li>
+<li><strong>Zipkin Export</strong> - Send trace data to Zipkin collectors (feature-gated) / Zipkin导出 -
+将追踪数据发送到Zipkin收集器（特性门控）</li>
+</ul>
+<h2 id="equivalent-to-spring-boot--等价于-spring-boot"><a class="doc-anchor" href="#equivalent-to-spring-boot--等价于-spring-boot">§</a>Equivalent to Spring Boot / 等价于 Spring Boot</h2>
+<ul>
+<li>Spring Boot Actuator <code>/actuator/metrics</code> and <code>/actuator/health</code> -&gt; <code>MetricsRegistry</code></li>
+<li>Micrometer Tracing (<code>MicrometerObservation</code>) -&gt; <code>Tracer</code>, <code>Span</code>, <code>TraceContext</code></li>
+<li>SLF4J + Logback (<code>application.yml</code> logging config) -&gt; <code>Logger</code>, <code>LoggerConfig</code></li>
+<li>Spring Boot Startup Banner -&gt; <code>Banner</code> (behind <code>hiver-format</code> feature)</li>
+</ul>
+<h2 id="module-organization--模块组织"><a class="doc-anchor" href="#module-organization--模块组织">§</a>Module Organization / 模块组织</h2><div><table><thead><tr><th>Module</th><th>Purpose / 用途</th></tr></thead><tbody>
+<tr><td><a href="log/index.html" title="mod hiver_observability::log"><code>log</code></a></td><td>Structured logging with levels, rotation, and multiple output formats / 结构化日志，支持级别、轮转和多种输出格式</td></tr>
+<tr><td><a href="metrics/index.html" title="mod hiver_observability::metrics"><code>metrics</code></a></td><td>Counters, gauges, histograms, and the central metrics registry / 计数器、仪表盘、直方图及中央指标注册表</td></tr>
+<tr><td><a href="trace/index.html" title="mod hiver_observability::trace"><code>trace</code></a></td><td>Distributed tracing with spans, trace IDs, and context propagation / 分布式追踪，包含span、追踪ID和上下文传播</td></tr>
+</tbody></table>
+</div><h2 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_observability::{info, LoggerConfig, Logger, MetricsRegistry, Tracer};
+
+<span class="kw">fn </span>main() {
+    <span class="comment">// Initialize logging / 初始化日志
+    </span><span class="kw">let </span>config = LoggerConfig::default();
+    <span class="kw">let </span>_logger = Logger::new(config);
+
+    <span class="macro">info!</span>(<span class="string">"Application started"</span>);
+
+    <span class="comment">// Record metrics / 记录指标
+    </span><span class="kw">let </span>registry = MetricsRegistry::new();
+    <span class="kw">let </span>counter = registry.counter(<span class="string">"requests_total"</span>);
+    counter.increment();
+}</code></pre></div></div></details><h2 id="reexports" class="section-header">Re-exports<a href="#reexports" class="anchor">§</a></h2><dl class="item-table reexports"><dt id="reexport.Banner"><code>pub use hiver_format::<a class="struct" href="hiver_format/struct.Banner.html" title="struct hiver_observability::hiver_format::Banner">Banner</a>;</code></dt><dt id="reexport.SimpleFormatter"><code>pub use hiver_format::<a class="struct" href="hiver_format/struct.SimpleFormatter.html" title="struct hiver_observability::hiver_format::SimpleFormatter">SimpleFormatter</a>;</code></dt><dt id="reexport.StartupLogger"><code>pub use hiver_format::<a class="struct" href="hiver_format/struct.StartupLogger.html" title="struct hiver_observability::hiver_format::StartupLogger">StartupLogger</a>;</code></dt><dt id="reexport.LogFormat"><code>pub use log::<a class="enum" href="log/enum.LogFormat.html" title="enum hiver_observability::log::LogFormat">LogFormat</a>;</code></dt><dt id="reexport.LogLevel"><code>pub use log::<a class="enum" href="log/enum.LogLevel.html" title="enum hiver_observability::log::LogLevel">LogLevel</a>;</code></dt><dt id="reexport.LogMode"><code>pub use log::<a class="enum" href="log/enum.LogMode.html" title="enum hiver_observability::log::LogMode">LogMode</a>;</code></dt><dt id="reexport.LogRotation"><code>pub use log::<a class="enum" href="log/enum.LogRotation.html" title="enum hiver_observability::log::LogRotation">LogRotation</a>;</code></dt><dt id="reexport.Logger"><code>pub use log::<a class="struct" href="log/struct.Logger.html" title="struct hiver_observability::log::Logger">Logger</a>;</code></dt><dt id="reexport.LoggerConfig"><code>pub use log::<a class="struct" href="log/struct.LoggerConfig.html" title="struct hiver_observability::log::LoggerConfig">LoggerConfig</a>;</code></dt><dt id="reexport.LoggerFactory"><code>pub use log::<a class="struct" href="log/struct.LoggerFactory.html" title="struct hiver_observability::log::LoggerFactory">LoggerFactory</a>;</code></dt><dt id="reexport.LoggerHandle"><code>pub use log::<a class="struct" href="log/struct.LoggerHandle.html" title="struct hiver_observability::log::LoggerHandle">LoggerHandle</a>;</code></dt><dt id="reexport.Counter"><code>pub use metrics::<a class="struct" href="metrics/struct.Counter.html" title="struct hiver_observability::metrics::Counter">Counter</a>;</code></dt><dt id="reexport.Gauge"><code>pub use metrics::<a class="struct" href="metrics/struct.Gauge.html" title="struct hiver_observability::metrics::Gauge">Gauge</a>;</code></dt><dt id="reexport.Histogram"><code>pub use metrics::<a class="struct" href="metrics/struct.Histogram.html" title="struct hiver_observability::metrics::Histogram">Histogram</a>;</code></dt><dt id="reexport.MetricsRegistry"><code>pub use metrics::<a class="struct" href="metrics/struct.MetricsRegistry.html" title="struct hiver_observability::metrics::MetricsRegistry">MetricsRegistry</a>;</code></dt><dt id="reexport.Span"><code>pub use trace::<a class="struct" href="trace/struct.Span.html" title="struct hiver_observability::trace::Span">Span</a>;</code></dt><dt id="reexport.SpanId"><code>pub use trace::<a class="struct" href="trace/struct.SpanId.html" title="struct hiver_observability::trace::SpanId">SpanId</a>;</code></dt><dt id="reexport.TraceContext"><code>pub use trace::<a class="struct" href="trace/struct.TraceContext.html" title="struct hiver_observability::trace::TraceContext">TraceContext</a>;</code></dt><dt id="reexport.TraceId"><code>pub use trace::<a class="struct" href="trace/struct.TraceId.html" title="struct hiver_observability::trace::TraceId">TraceId</a>;</code></dt><dt id="reexport.Tracer"><code>pub use trace::<a class="struct" href="trace/struct.Tracer.html" title="struct hiver_observability::trace::Tracer">Tracer</a>;</code></dt><dt id="reexport.tracing"><code>pub use tracing;</code></dt></dl><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><dl class="item-table"><dt><a class="mod" href="hiver_format/index.html" title="mod hiver_observability::hiver_format">hiver_<wbr>format</a></dt><dd>Hiver-branded startup banner and simple console formatter.
+Hiver品牌化启动横幅和简单控制台格式化器。
+Structured log formatting
+结构化日志格式化</dd><dt><a class="mod" href="log/index.html" title="mod hiver_observability::log">log</a></dt><dd>Structured logging with levels, rotation, and configurable output formats.
+结构化日志，支持日志级别、日志轮转和可配置的输出格式。
+Spring Boot Style Logging Module
+Spring Boot 风格日志模块</dd><dt><a class="mod" href="metrics/index.html" title="mod hiver_observability::metrics">metrics</a></dt><dd>Metrics collection with counters, gauges, and histograms.
+指标收集，包含计数器、仪表盘和直方图。
+Metrics module
+指标模块</dd><dt><a class="mod" href="trace/index.html" title="mod hiver_observability::trace">trace</a></dt><dd>Distributed tracing with spans, trace IDs, and context propagation.
+分布式追踪，包含span、追踪ID和上下文传播。
+Distributed tracing module
+分布式追踪模块</dd><dt><a class="mod" href="zipkin/index.html" title="mod hiver_observability::zipkin">zipkin</a></dt><dd>Zipkin trace exporter for sending spans to a Zipkin collector.
+Zipkin追踪导出器，用于将span发送到Zipkin收集器。
+Zipkin v2 span exporter
+Zipkin v2 span 导出器</dd></dl><h2 id="macros" class="section-header">Macros<a href="#macros" class="anchor">§</a></h2><dl class="item-table"><dt><a class="macro" href="macro.debug.html" title="macro hiver_observability::debug">debug</a></dt><dd>Re-export the <code>tracing</code> crate for convenience.
+重新导出 <code>tracing</code> crate 以便使用。
+Constructs an event at the debug level.</dd><dt><a class="macro" href="macro.error.html" title="macro hiver_observability::error">error</a></dt><dd>Re-export the <code>tracing</code> crate for convenience.
+重新导出 <code>tracing</code> crate 以便使用。
+Constructs an event at the error level.</dd><dt><a class="macro" href="macro.info.html" title="macro hiver_observability::info">info</a></dt><dd>Re-export the <code>tracing</code> crate for convenience.
+重新导出 <code>tracing</code> crate 以便使用。
+Constructs an event at the info level.</dd><dt><a class="macro" href="macro.trace.html" title="macro hiver_observability::trace">trace</a></dt><dd>Re-export the <code>tracing</code> crate for convenience.
+重新导出 <code>tracing</code> crate 以便使用。
+Constructs an event at the trace level.</dd><dt><a class="macro" href="macro.warn.html" title="macro hiver_observability::warn">warn</a></dt><dd>Re-export the <code>tracing</code> crate for convenience.
+重新导出 <code>tracing</code> crate 以便使用。
+Constructs an event at the warn level.</dd></dl></section></div></main></body></html>

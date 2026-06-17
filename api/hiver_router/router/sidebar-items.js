@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Handler"],"struct":["Next","Router","Stateful"],"trait":["Middleware"],"type":["HandlerFn"]};

@@ -1,0 +1,42 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Hiver Validation Annotations"><title>hiver_validation_annotations - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="hiver_validation_annotations" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../static.files/storage-41dd4d93.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Crate hiver_validation_annotations</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../hiver_validation_annotations/index.html">hiver_<wbr>validation_<wbr>annotations</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#hiver-validation-annotations" title="Hiver Validation Annotations">Hiver Validation Annotations</a><ul><li><a href="#features--功能" title="Features / 功能">Features / 功能</a></li><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul></li></ul><h3><a href="#attributes">Crate Items</a></h3><ul class="block"><li><a href="#attributes" title="Attribute Macros">Attribute Macros</a></li><li><a href="#derives" title="Derive Macros">Derive Macros</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1>Crate <span>hiver_<wbr>validation_<wbr>annotations</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/hiver_validation_annotations/lib.rs.html#1-893">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="hiver-validation-annotations"><a class="doc-anchor" href="#hiver-validation-annotations">§</a>Hiver Validation Annotations</h2>
+<p>Bean Validation style annotations for Hiver framework
+Hiver 框架的 Bean Validation 风格注解</p>
+<h3 id="features--功能"><a class="doc-anchor" href="#features--功能">§</a>Features / 功能</h3>
+<ul>
+<li><strong><code>#[Valid]</code></strong> - Trigger validation for request parameters</li>
+<li><strong><code>@NotNull</code></strong> - Validates field is not null</li>
+<li><strong><code>@Email</code></strong> - Validates email format</li>
+<li><strong><code>@Size</code></strong> - Validates string length</li>
+<li><strong><code>@Min</code></strong> / <strong><code>@Max</code></strong> - Validates numeric ranges</li>
+<li><strong><code>@Pattern</code></strong> - Validates with regex pattern</li>
+</ul>
+<h3 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h3>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_validation_annotations::{Valid, NotNull, Email, Size};
+<span class="kw">use </span>hiver_http::Json;
+
+<span class="attr">#[derive(Valid)]
+</span><span class="kw">struct </span>CreateUserRequest {
+    <span class="attr">#[validate(email)]
+    </span><span class="kw">pub </span>email: String,
+
+    <span class="attr">#[validate(length(min = <span class="number">3</span>))]
+    </span><span class="kw">pub </span>username: String,
+}
+
+<span class="attr">#[post(<span class="string">"/users"</span>)]
+</span><span class="kw">async fn </span>create_user(
+    <span class="attr">#[Valid] </span>req: Json&lt;CreateUserRequest&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;Json&lt;User&gt;, Error&gt; {
+    <span class="comment">// req is automatically validated
+    // req 会被自动验证
+    </span><span class="kw">let </span>user = service.create(req.into_inner()).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(Json(user))
+}</code></pre></div></div></details><h2 id="attributes" class="section-header">Attribute Macros<a href="#attributes" class="anchor">§</a></h2><dl class="item-table"><dt><a class="attr" href="attr.valid.html" title="attr hiver_validation_annotations::valid">valid</a></dt><dd>Marks a parameter to be validated
+标记参数以进行验证</dd></dl><h2 id="derives" class="section-header">Derive Macros<a href="#derives" class="anchor">§</a></h2><dl class="item-table"><dt><a class="derive" href="derive.Email.html" title="derive hiver_validation_annotations::Email">Email</a></dt><dd>Derive macro for Email validation
+Email 验证的派生宏</dd><dt><a class="derive" href="derive.Length.html" title="derive hiver_validation_annotations::Length">Length</a></dt><dd>Derive macro for Length validation
+Length 验证的派生宏</dd><dt><a class="derive" href="derive.Max.html" title="derive hiver_validation_annotations::Max">Max</a></dt><dd>Derive macro for Max validation
+Max 验证的派生宏</dd><dt><a class="derive" href="derive.Min.html" title="derive hiver_validation_annotations::Min">Min</a></dt><dd>Derive macro for Min validation
+Min 验证的派生宏</dd><dt><a class="derive" href="derive.NotNull.html" title="derive hiver_validation_annotations::NotNull">NotNull</a></dt><dd>Derive macro for NotNull validation
+NotNull 验证的派生宏</dd><dt><a class="derive" href="derive.Pattern.html" title="derive hiver_validation_annotations::Pattern">Pattern</a></dt><dd>Derive macro for Pattern validation
+Pattern 验证的派生宏</dd><dt><a class="derive" href="derive.Size.html" title="derive hiver_validation_annotations::Size">Size</a></dt><dd>Derive macro for Size validation
+Size 验证的派生宏</dd></dl></section></div></main></body></html>

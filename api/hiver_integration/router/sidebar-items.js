@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["BuiltRouter"],"struct":["ContentBasedRouter","RecipientListRouter","RouterBuilder","StaticRouter"],"trait":["Router"],"type":["RoutingPredicate"]};

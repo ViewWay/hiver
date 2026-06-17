@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Hiver Data Annotations"><title>hiver_data_annotations - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="hiver_data_annotations" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../static.files/storage-41dd4d93.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Crate hiver_data_annotations</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../hiver_data_annotations/index.html">hiver_<wbr>data_<wbr>annotations</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#hiver-data-annotations" title="Hiver Data Annotations">Hiver Data Annotations</a><ul><li><a href="#features--功能" title="Features / 功能">Features / 功能</a></li><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul></li></ul><h3><a href="#attributes">Crate Items</a></h3><ul class="block"><li><a href="#attributes" title="Attribute Macros">Attribute Macros</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1>Crate <span>hiver_<wbr>data_<wbr>annotations</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/hiver_data_annotations/lib.rs.html#1-720">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="hiver-data-annotations"><a class="doc-anchor" href="#hiver-data-annotations">§</a>Hiver Data Annotations</h2>
+<p>Spring Data JPA style annotations for Hiver framework
+Hiver 框架的 Spring Data JPA 风格注解</p>
+<h3 id="features--功能"><a class="doc-anchor" href="#features--功能">§</a>Features / 功能</h3>
+<ul>
+<li><strong><code>#[Entity]</code></strong> - Marks a struct as a JPA entity</li>
+<li><strong><code>#[Table]</code></strong> - Specifies database table mapping</li>
+<li><strong><code>#[Id]</code></strong> - Marks a field as primary key</li>
+<li><strong><code>#[GeneratedValue]</code></strong> - Specifies ID generation strategy</li>
+<li><strong><code>#[Column]</code></strong> - Specifies column mapping</li>
+<li><strong><code>#[Query]</code></strong> - Custom SQL query for repository methods</li>
+<li><strong><code>#[Insert]</code></strong>, <strong><code>#[Update]</code></strong>, <strong><code>#[Delete]</code></strong> - CRUD operation annotations</li>
+</ul>
+<h3 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h3>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_data_annotations::{Entity, Table, Id, GeneratedValue, Column};
+<span class="kw">use </span>hiver_lombok::Data;
+<span class="kw">use </span>serde::{Serialize, Deserialize};
+
+<span class="attr">#[Entity]
+#[Table(name = <span class="string">"users"</span>)]
+#[Data]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+</span><span class="kw">pub struct </span>User {
+    <span class="attr">#[Id]
+    #[GeneratedValue(strategy = <span class="string">"AUTO"</span>)]
+    #[Column(name = <span class="string">"id"</span>)]
+    </span><span class="kw">pub </span>id: i64,
+
+    <span class="attr">#[Column(name = <span class="string">"username"</span>, nullable = <span class="bool-val">false</span>)]
+    </span><span class="kw">pub </span>username: String,
+
+    <span class="attr">#[Column(name = <span class="string">"email"</span>)]
+    </span><span class="kw">pub </span>email: String,
+
+    <span class="attr">#[Column(name = <span class="string">"age"</span>)]
+    </span><span class="kw">pub </span>age: i32,
+}
+
+<span class="comment">// Usage with MyBatis-Plus style repository / 与 MyBatis-Plus 风格的 repository 配合使用
+</span><span class="attr">#[hiver_mapper]
+</span><span class="kw">pub trait </span>UserMapper: BaseMapper&lt;User&gt; {
+    <span class="attr">#[Query(<span class="string">"SELECT * FROM users WHERE id = #{id}"</span>)]
+    </span><span class="kw">async fn </span>find_by_id(<span class="kw-2">&amp;</span><span class="self">self</span>, id: i64) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;User&gt;, Error&gt;;
+
+    <span class="attr">#[Query(<span class="string">"SELECT * FROM users WHERE username LIKE #{username}%"</span>)]
+    </span><span class="kw">async fn </span>find_by_username_starts_with(<span class="kw-2">&amp;</span><span class="self">self</span>, username: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;User&gt;, Error&gt;;
+}</code></pre></div></div></details><h2 id="attributes" class="section-header">Attribute Macros<a href="#attributes" class="anchor">§</a></h2><dl class="item-table"><dt><a class="attr" href="attr.Column.html" title="attr hiver_data_annotations::Column">Column</a></dt><dd>Specifies database column mapping
+指定数据库列映射</dd><dt><a class="attr" href="attr.CreatedBy.html" title="attr hiver_data_annotations::CreatedBy">Created<wbr>By</a></dt><dd>Marks a field as auto-populated with creator identity
+标记字段自动填充创建者标识</dd><dt><a class="attr" href="attr.CreatedDate.html" title="attr hiver_data_annotations::CreatedDate">Created<wbr>Date</a></dt><dd>Marks a field as auto-populated with creation timestamp
+标记字段自动填充创建时间戳</dd><dt><a class="attr" href="attr.Delete.html" title="attr hiver_data_annotations::Delete">Delete</a></dt><dd>Marks a method as a delete operation
+将方法标记为删除操作</dd><dt><a class="attr" href="attr.Entity.html" title="attr hiver_data_annotations::Entity">Entity</a></dt><dd>Marks a struct as a JPA entity
+将结构体标记为 JPA 实体</dd><dt><a class="attr" href="attr.GeneratedValue.html" title="attr hiver_data_annotations::GeneratedValue">Generated<wbr>Value</a></dt><dd>Specifies the strategy for generating ID values
+指定 ID 值的生成策略</dd><dt><a class="attr" href="attr.Id.html" title="attr hiver_data_annotations::Id">Id</a></dt><dd>Marks a field as primary key
+将字段标记为主键</dd><dt><a class="attr" href="attr.Insert.html" title="attr hiver_data_annotations::Insert">Insert</a></dt><dd>Marks a method as an insert operation
+将方法标记为插入操作</dd><dt><a class="attr" href="attr.JoinColumn.html" title="attr hiver_data_annotations::JoinColumn">Join<wbr>Column</a></dt><dd>Specifies the foreign key column for a relationship.
+指定关系的外键列。</dd><dt><a class="attr" href="attr.JoinTable.html" title="attr hiver_data_annotations::JoinTable">Join<wbr>Table</a></dt><dd>Specifies the join table for a many-to-many relationship.
+指定多对多关系的连接表。</dd><dt><a class="attr" href="attr.LastModifiedBy.html" title="attr hiver_data_annotations::LastModifiedBy">Last<wbr>Modified<wbr>By</a></dt><dd>Marks a field as auto-updated with modifier identity
+标记字段自动更新修改者标识</dd><dt><a class="attr" href="attr.LastModifiedDate.html" title="attr hiver_data_annotations::LastModifiedDate">Last<wbr>Modified<wbr>Date</a></dt><dd>Marks a field as auto-updated with modification timestamp
+标记字段自动更新修改时间戳</dd><dt><a class="attr" href="attr.ManyToMany.html" title="attr hiver_data_annotations::ManyToMany">Many<wbr>ToMany</a></dt><dd>Marks a many-to-many relationship
+标记多对多关系</dd><dt><a class="attr" href="attr.ManyToOne.html" title="attr hiver_data_annotations::ManyToOne">Many<wbr>ToOne</a></dt><dd>Marks a many-to-one relationship
+标记多对一关系</dd><dt><a class="attr" href="attr.OneToMany.html" title="attr hiver_data_annotations::OneToMany">OneTo<wbr>Many</a></dt><dd>Marks a one-to-many relationship
+标记一对多关系</dd><dt><a class="attr" href="attr.OneToOne.html" title="attr hiver_data_annotations::OneToOne">OneTo<wbr>One</a></dt><dd>Marks a one-to-one relationship
+标记一对一关系</dd><dt><a class="attr" href="attr.PostLoad.html" title="attr hiver_data_annotations::PostLoad">Post<wbr>Load</a></dt><dd>Marks a method to be called after entity is loaded from database.
+标记方法在实体从数据库加载之后调用。</dd><dt><a class="attr" href="attr.PostPersist.html" title="attr hiver_data_annotations::PostPersist">Post<wbr>Persist</a></dt><dd>Marks a method to be called after entity persist.
+标记方法在实体持久化之后调用。</dd><dt><a class="attr" href="attr.PostUpdate.html" title="attr hiver_data_annotations::PostUpdate">Post<wbr>Update</a></dt><dd>Marks a method to be called after entity update.
+标记方法在实体更新之后调用。</dd><dt><a class="attr" href="attr.PreAuthorize.html" title="attr hiver_data_annotations::PreAuthorize">PreAuthorize</a></dt><dd>Method-level security annotation
+方法级安全注解</dd><dt><a class="attr" href="attr.PreAuthorizeMacroFn.html" title="attr hiver_data_annotations::PreAuthorizeMacroFn">PreAuthorize<wbr>Macro<wbr>Fn</a></dt><dd>Alias for @PreAuthorize annotation
+@PreAuthorize 注解的别名</dd><dt><a class="attr" href="attr.PrePersist.html" title="attr hiver_data_annotations::PrePersist">PrePersist</a></dt><dd>Marks a method to be called before entity persist (INSERT).
+标记方法在实体持久化（INSERT）之前调用。</dd><dt><a class="attr" href="attr.PreRemove.html" title="attr hiver_data_annotations::PreRemove">PreRemove</a></dt><dd>Marks a method to be called before entity remove (DELETE).
+标记方法在实体删除之前调用。</dd><dt><a class="attr" href="attr.PreUpdate.html" title="attr hiver_data_annotations::PreUpdate">PreUpdate</a></dt><dd>Marks a method to be called before entity update.
+标记方法在实体更新之前调用。</dd><dt><a class="attr" href="attr.Query.html" title="attr hiver_data_annotations::Query">Query</a></dt><dd>Specifies a custom SQL query for a repository method
+为 repository 方法指定自定义 SQL 查询</dd><dt><a class="attr" href="attr.Table.html" title="attr hiver_data_annotations::Table">Table</a></dt><dd>Specifies the database table for an entity
+指定实体的数据库表</dd><dt><a class="attr" href="attr.Transactional.html" title="attr hiver_data_annotations::Transactional">Transactional</a></dt><dd>Marks a method or function to be executed within a transaction
+将方法或函数标记为在事务中执行</dd><dt><a class="attr" href="attr.Transient.html" title="attr hiver_data_annotations::Transient">Transient</a></dt><dd>Marks a field as non-persistent (not mapped to a database column).
+标记字段为非持久化（不映射到数据库列）。</dd><dt><a class="attr" href="attr.Update.html" title="attr hiver_data_annotations::Update">Update</a></dt><dd>Marks a method as an update operation
+将方法标记为更新操作</dd></dl></section></div></main></body></html>

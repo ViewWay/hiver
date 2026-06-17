@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["basic_validation_example","custom_validation_example","error_handling_example","example_conditional_validation","example_create_user_endpoint","main","nested_validation_example","user_input_validation_example","validate_password_strength","validate_string"],"struct":["Address","UserInput","UserWithAddress"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["OnDelete","RelationType"],"fn":["enforce_cascade"],"struct":["BelongsTo","BelongsToMany","EagerLoad","EagerQueryBuilder","HasMany","HasOne","Relation","WithRelations"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CellAlignment","ExcelCell","ExcelError"],"fn":["export_to_excel"],"struct":["Excel","ExcelCellStyle","ExcelExportConfig","ExcelExporter"],"trait":["ExcelTable"],"type":["Result"]};

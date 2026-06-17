@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Transaction","TransactionError","TxType"],"struct":["Eip1559Tx","LegacyTx","SignedTransaction","TransactionBuilder","TxHash","U256"]};

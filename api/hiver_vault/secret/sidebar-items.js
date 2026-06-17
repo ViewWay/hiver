@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["delete","list","read","write"],"struct":["Secret","SecretResponse"]};

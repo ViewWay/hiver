@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["MigrationDirection","SchemaOperation"],"struct":["ColumnDefinition","Migration","Migrator","Reference","Schema"]};

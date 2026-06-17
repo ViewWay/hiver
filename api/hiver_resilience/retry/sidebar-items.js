@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["BackoffType"],"fn":["retry","retry_with_predicate"],"struct":["RetryAll","RetryError","RetryErrors","RetryPolicy","RetryState"],"trait":["ShouldRetry"]};

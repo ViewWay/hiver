@@ -1,0 +1,33 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Evaluate cache condition expression 评估缓存条件表达式"><title>evaluate_cache_condition in hiver_cache - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="hiver_cache" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc fn"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">evaluate_cache_condition</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../hiver_cache/index.html">hiver_<wbr>cache</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">evaluate_<wbr>cache_<wbr>condition</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#supported-expressions--支持的表达式" title="Supported Expressions / 支持的表达式">Supported Expressions / 支持的表达式</a></li><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="index.html">In crate hiver_<wbr>cache</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">hiver_cache</a></div><h1>Function <span class="fn">evaluate_<wbr>cache_<wbr>condition</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/hiver_cache/condition_evaluator.rs.html#47-240">Source</a> </span></div><pre class="rust item-decl"><code>pub fn evaluate_cache_condition(
+    expression: &amp;<a class="primitive" href="https://doc.rust-lang.org/1.96.0/std/primitive.str.html">str</a>,
+    args: &amp;<a class="struct" href="https://doc.rust-lang.org/1.96.0/std/collections/hash/map/struct.HashMap.html" title="struct std::collections::hash::map::HashMap">HashMap</a>&lt;<a class="struct" href="https://doc.rust-lang.org/1.96.0/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>, <a class="enum" href="https://docs.rs/serde_json/1.0.150/serde_json/value/enum.Value.html" title="enum serde_json::value::Value">Value</a>&gt;,
+    result: <a class="enum" href="https://doc.rust-lang.org/1.96.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;<a class="enum" href="https://docs.rs/serde_json/1.0.150/serde_json/value/enum.Value.html" title="enum serde_json::value::Value">Value</a>&gt;,
+) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.96.0/std/primitive.bool.html">bool</a></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Evaluate cache condition expression
+评估缓存条件表达式</p>
+<h2 id="supported-expressions--支持的表达式"><a class="doc-anchor" href="#supported-expressions--支持的表达式">§</a>Supported Expressions / 支持的表达式</h2>
+<ul>
+<li><code>#param</code> - Parameter reference 参数引用</li>
+<li><code>#param == value</code> - Equality check 相等性检查</li>
+<li><code>#param != value</code> - Inequality check 不等性检查</li>
+<li><code>#param &gt; value</code>, <code>#param &gt;= value</code> - Comparison 比较</li>
+<li><code>#param &lt; value</code>, <code>#param &lt;= value</code> - Comparison 比较</li>
+<li><code>#param.isEmpty()</code> - Check if string/collection is empty 检查字符串/集合是否为空</li>
+<li><code>#param.length() &gt; 0</code> - Check length 检查长度</li>
+<li><code>#result</code> - Method result (for unless expressions) 方法结果（用于 unless 表达式）</li>
+<li><code>expr1 and expr2</code> - Logical AND 逻辑与</li>
+<li><code>expr1 or expr2</code> - Logical OR 逻辑或</li>
+<li><code>!expr</code> - Logical NOT 逻辑非</li>
+</ul>
+<h2 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_cache::evaluate_cache_condition;
+
+<span class="kw">let </span><span class="kw-2">mut </span>args = HashMap::new();
+args.insert(<span class="string">"id"</span>.to_string(), JsonValue::Number(<span class="number">123</span>.into()));
+
+<span class="comment">// Cache only if ID &gt; 100
+</span><span class="kw">let </span>should_cache = evaluate_cache_condition(<span class="string">"#id &gt; 100"</span>, <span class="kw-2">&amp;</span>args, <span class="prelude-val">None</span>);
+<span class="macro">assert!</span>(should_cache);
+
+<span class="comment">// Don't cache if result is null
+</span><span class="kw">let </span>should_not_cache = evaluate_cache_condition(<span class="string">"#result == null"</span>, <span class="kw-2">&amp;</span>args, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>JsonValue::Null));
+<span class="macro">assert!</span>(should_not_cache);</code></pre></div></div></details></section></div></main></body></html>

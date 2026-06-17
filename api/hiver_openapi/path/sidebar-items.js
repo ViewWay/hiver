@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["PathMethod"],"struct":["Components","PathItem","PathOperation","SchemaRef"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ApiResponse","DefaultResponseAdvice","ResponseResult"],"trait":["ResponseAdvice"]};

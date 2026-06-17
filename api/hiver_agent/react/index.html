@@ -1,0 +1,37 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="ReAct (Reasoning + Acting) agent implementation. ReAct（推理 + 行动）代理实现。"><title>hiver_agent::react - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="hiver_agent" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Module react</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../hiver_agent/index.html">hiver_<wbr>agent</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module react</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#overview--概述" title="Overview / 概述">Overview / 概述</a></li></ul><h3><a href="#structs">Module Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="../index.html">In crate hiver_<wbr>agent</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">hiver_agent</a></div><h1>Module <span>react</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/hiver_agent/react.rs.html#1-672">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>ReAct (Reasoning + Acting) agent implementation.
+ReAct（推理 + 行动）代理实现。</p>
+<p>The ReAct agent follows a Thought -&gt; Action -&gt; Observation loop,
+reasoning about the problem, taking actions via tools, and observing
+results until reaching a final answer or exhausting iterations.</p>
+<p>ReAct 代理遵循 思考 -&gt; 行动 -&gt; 观察 循环，
+推理问题、通过工具采取行动并观察结果，直到得出最终答案或耗尽迭代次数。</p>
+<h2 id="overview--概述"><a class="doc-anchor" href="#overview--概述">§</a>Overview / 概述</h2>
+<ol>
+<li>
+<p><strong>Thought</strong>: The agent reasons about the current situation.</p>
+</li>
+<li>
+<p><strong>Action</strong>: The agent selects and executes a tool.</p>
+</li>
+<li>
+<p><strong>Observation</strong>: The agent processes the tool’s result.</p>
+</li>
+<li>
+<p>Repeat until a final answer is reached or max iterations exceeded.</p>
+</li>
+<li>
+<p><strong>思考</strong>：代理推理当前情况。</p>
+</li>
+<li>
+<p><strong>行动</strong>：代理选择并执行工具。</p>
+</li>
+<li>
+<p><strong>观察</strong>：代理处理工具的结果。</p>
+</li>
+<li>
+<p>重复直到得出最终答案或超过最大迭代次数。</p>
+</li>
+</ol>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.ReActAgent.html" title="struct hiver_agent::react::ReActAgent">ReAct<wbr>Agent</a></dt><dd>A ReAct (Reasoning + Acting) agent that uses tools iteratively.
+使用工具迭代的 ReAct（推理 + 行动）代理。</dd><dt><a class="struct" href="struct.ReActConfig.html" title="struct hiver_agent::react::ReActConfig">ReAct<wbr>Config</a></dt><dd>Configuration specific to the ReAct agent.
+ReAct 代理的特定配置。</dd></dl></section></div></main></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["Document","InMemoryVectorStore","SearchResult"],"trait":["VectorStore"]};

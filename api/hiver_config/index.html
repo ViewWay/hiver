@@ -1,0 +1,60 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Hiver Config - Configuration management module Hiver配置 - 配置管理模块"><title>hiver_config - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="hiver_config" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../static.files/storage-41dd4d93.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Crate hiver_config</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../hiver_config/index.html">hiver_<wbr>config</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#equivalent-to-spring-boot--等价于-spring-boot" title="Equivalent to Spring Boot / 等价于 Spring Boot">Equivalent to Spring Boot / 等价于 Spring Boot</a></li><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul><h3><a href="#modules">Crate Items</a></h3><ul class="block"><li><a href="#modules" title="Modules">Modules</a></li><li><a href="#macros" title="Macros">Macros</a></li><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#enums" title="Enums">Enums</a></li><li><a href="#constants" title="Constants">Constants</a></li><li><a href="#traits" title="Traits">Traits</a></li><li><a href="#types" title="Type Aliases">Type Aliases</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1>Crate <span>hiver_<wbr>config</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/hiver_config/lib.rs.html#1-88">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Hiver Config - Configuration management module
+Hiver配置 - 配置管理模块</p>
+<h2 id="equivalent-to-spring-boot--等价于-spring-boot"><a class="doc-anchor" href="#equivalent-to-spring-boot--等价于-spring-boot">§</a>Equivalent to Spring Boot / 等价于 Spring Boot</h2>
+<ul>
+<li><code>@ConfigurationProperties</code> - <code>PropertiesConfig</code></li>
+<li><code>@Value</code> - Value extractor</li>
+<li><code>Environment</code> - Environment</li>
+<li><code>PropertySource</code> - <code>PropertySource</code></li>
+<li><code>@Profile</code> - Profile</li>
+<li><code>ConfigFileApplicationListener</code> - <code>ConfigLoader</code></li>
+</ul>
+<h2 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_config::{Config, PropertiesConfig};
+<span class="kw">use </span>serde::Deserialize;
+
+<span class="attr">#[derive(PropertiesConfig, Deserialize)]
+#[prefix = <span class="string">"app.datasource"</span>]
+</span><span class="kw">struct </span>DataSourceConfig {
+    url: String,
+    username: String,
+    password: String,
+}
+
+<span class="attr">#[derive(PropertiesConfig, Deserialize)]
+#[prefix = <span class="string">"server"</span>]
+</span><span class="kw">struct </span>ServerConfig {
+    port: u16,
+    host: String,
+}
+
+<span class="kw">let </span>config = Config::load().unwrap();
+<span class="kw">let </span>server = config.get::&lt;ServerConfig&gt;().unwrap();</code></pre></div></div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><dl class="item-table"><dt><a class="mod" href="prelude/index.html" title="mod hiver_config::prelude">prelude</a></dt><dd>Re-exports of commonly used types
+常用类型的重新导出</dd></dl><h2 id="macros" class="section-header">Macros<a href="#macros" class="anchor">§</a></h2><dl class="item-table"><dt><a class="macro" href="macro.impl_properties_config.html" title="macro hiver_config::impl_properties_config">impl_<wbr>properties_<wbr>config</a></dt><dd>Macro to implement <code>PropertiesConfig</code> for a type
+<code>为类型实现PropertiesConfig的宏</code></dd><dt><a class="macro" href="macro.properties_config.html" title="macro hiver_config::properties_config">properties_<wbr>config</a></dt><dd>Macro to create a properties config struct
+创建属性配置结构的宏</dd></dl><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.ActiveProfiles.html" title="struct hiver_config::ActiveProfiles">Active<wbr>Profiles</a></dt><dd>Active profiles manager
+活动配置文件管理器</dd><dt><a class="struct" href="struct.Config.html" title="struct hiver_config::Config">Config</a></dt><dd>Main configuration structure
+主配置结构</dd><dt><a class="struct" href="struct.ConfigBuilder.html" title="struct hiver_config::ConfigBuilder">Config<wbr>Builder</a></dt><dd>Configuration builder
+配置构建器</dd><dt><a class="struct" href="struct.ConfigChangeEvent.html" title="struct hiver_config::ConfigChangeEvent">Config<wbr>Change<wbr>Event</a></dt><dd>Event fired when a configuration property changes.
+当配置属性发生更改时触发的事件。</dd><dt><a class="struct" href="struct.ConfigEncryptor.html" title="struct hiver_config::ConfigEncryptor">Config<wbr>Encryptor</a></dt><dd>Encryptor for configuration values.
+配置值加密器。</dd><dt><a class="struct" href="struct.ConfigLoader.html" title="struct hiver_config::ConfigLoader">Config<wbr>Loader</a></dt><dd>Configuration loader
+配置加载器</dd><dt><a class="struct" href="struct.ConfigLoaderBuilder.html" title="struct hiver_config::ConfigLoaderBuilder">Config<wbr>Loader<wbr>Builder</a></dt><dd>Configuration loader builder
+配置加载器构建器</dd><dt><a class="struct" href="struct.ConfigWatcher.html" title="struct hiver_config::ConfigWatcher">Config<wbr>Watcher</a></dt><dd>ConfigWatcher — watches config sources for changes.
+ConfigWatcher — 监视配置源的更改。</dd><dt><a class="struct" href="struct.Environment.html" title="struct hiver_config::Environment">Environment</a></dt><dd>Environment interface
+环境接口</dd><dt><a class="struct" href="struct.Profile.html" title="struct hiver_config::Profile">Profile</a></dt><dd>Environment profile
+环境配置文件</dd><dt><a class="struct" href="struct.PropertiesConfigRegistry.html" title="struct hiver_config::PropertiesConfigRegistry">Properties<wbr>Config<wbr>Registry</a></dt><dd>Properties configuration registry
+属性配置注册表</dd><dt><a class="struct" href="struct.PropertySource.html" title="struct hiver_config::PropertySource">Property<wbr>Source</a></dt><dd>Property source
+属性源</dd><dt><a class="struct" href="struct.PropertySourceBuilder.html" title="struct hiver_config::PropertySourceBuilder">Property<wbr>Source<wbr>Builder</a></dt><dd>Property source builder
+属性源构建器</dd><dt><a class="struct" href="struct.RefreshScope.html" title="struct hiver_config::RefreshScope">Refresh<wbr>Scope</a></dt><dd>RefreshScope — marks beans that should be refreshed when config changes.
+RefreshScope — 标记在配置更改时应刷新的 bean。</dd><dt><a class="struct" href="struct.Refreshable.html" title="struct hiver_config::Refreshable">Refreshable</a></dt><dd>A wrapper that auto-refreshes its value when configuration changes.
+在配置更改时自动刷新其值的包装器。</dd><dt><a class="struct" href="struct.ValueExtractor.html" title="struct hiver_config::ValueExtractor">Value<wbr>Extractor</a></dt><dd>Value extractor for @Value annotation equivalent
+@Value注解等价物的值提取器</dd><dt><a class="struct" href="struct.Watcher.html" title="struct hiver_config::Watcher">Watcher</a></dt><dd>File watcher for configuration hot reload
+配置热重载的文件监视器</dd></dl><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><dl class="item-table"><dt><a class="enum" href="enum.ConfigError.html" title="enum hiver_config::ConfigError">Config<wbr>Error</a></dt><dd>Configuration error type
+配置错误类型</dd><dt><a class="enum" href="enum.EncryptError.html" title="enum hiver_config::EncryptError">Encrypt<wbr>Error</a></dt><dd>Encryption errors.
+加密错误。</dd><dt><a class="enum" href="enum.FileFormat.html" title="enum hiver_config::FileFormat">File<wbr>Format</a></dt><dd>Configuration file format
+配置文件格式</dd><dt><a class="enum" href="enum.PropertySourceType.html" title="enum hiver_config::PropertySourceType">Property<wbr>Source<wbr>Type</a></dt><dd>Property source type
+属性源类型</dd><dt><a class="enum" href="enum.ReloadStrategy.html" title="enum hiver_config::ReloadStrategy">Reload<wbr>Strategy</a></dt><dd>Configuration reload strategy
+配置重新加载策略</dd><dt><a class="enum" href="enum.Value.html" title="enum hiver_config::Value">Value</a></dt><dd>Configuration value wrapper
+配置值包装器</dd></dl><h2 id="constants" class="section-header">Constants<a href="#constants" class="anchor">§</a></h2><dl class="item-table"><dt><a class="constant" href="constant.VERSION.html" title="constant hiver_config::VERSION">VERSION</a></dt><dd>Version of the config module</dd></dl><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><dl class="item-table"><dt><a class="trait" href="trait.PropertiesConfig.html" title="trait hiver_config::PropertiesConfig">Properties<wbr>Config</a></dt><dd>Properties configuration trait
+属性配置trait</dd></dl><h2 id="types" class="section-header">Type Aliases<a href="#types" class="anchor">§</a></h2><dl class="item-table"><dt><a class="type" href="type.ConfigResult.html" title="type hiver_config::ConfigResult">Config<wbr>Result</a></dt><dd>Configuration result type
+配置结果类型</dd></dl></section></div></main></body></html>

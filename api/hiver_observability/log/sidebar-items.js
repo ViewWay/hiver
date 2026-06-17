@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["LogFormat","LogLevel","LogMode","LogRotation"],"fn":["format_pattern","global_logger","init_global_logger"],"struct":["Logger","LoggerConfig","LoggerFactory","LoggerHandle"]};

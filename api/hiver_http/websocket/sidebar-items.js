@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Message","WebSocketError"],"struct":["CloseFrame","WebSocket","WebSocketConfig","WebSocketUpgrade"]};

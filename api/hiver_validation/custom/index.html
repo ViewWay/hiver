@@ -1,0 +1,43 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Custom validator support / 自定义验证器支持"><title>hiver_validation::custom - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="hiver_validation" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Module custom</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../hiver_validation/index.html">hiver_<wbr>validation</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module custom</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#spring-equivalent--spring等价物" title="Spring Equivalent / Spring等价物">Spring Equivalent / Spring等价物</a></li><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul><h3><a href="#structs">Module Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#traits" title="Traits">Traits</a></li><li><a href="#functions" title="Functions">Functions</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="../index.html">In crate hiver_<wbr>validation</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">hiver_validation</a></div><h1>Module <span>custom</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/hiver_validation/custom.rs.html#1-1127">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Custom validator support / 自定义验证器支持</p>
+<p>Provides a custom validator framework similar to Spring’s <code>@Constraint</code> annotation.
+提供类似 Spring <code>@Constraint</code> 注解的自定义验证器框架。</p>
+<h2 id="spring-equivalent--spring等价物"><a class="doc-anchor" href="#spring-equivalent--spring等价物">§</a>Spring Equivalent / Spring等价物</h2><div class="example-wrap"><pre class="language-java"><code>@Constraint(validatedBy = FieldMatchValidator.class)
+@Target({ TYPE, ANNOTATION_TYPE })
+@Retention(RUNTIME)
+public @interface FieldMatch {
+    String message() default &quot;Fields must match&quot;;
+    Class&lt;?&gt;[] groups() default {};
+    Class&lt;? extends Payload&gt;[] payload() default {};
+    String first();
+    String second();
+}</code></pre></div><h2 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_validation::custom::{CustomValidator, ValidatorRegistry, ValidationError};
+<span class="kw">use </span>std::any::Any;
+
+<span class="kw">struct </span>NoWhitespaceValidator;
+
+<span class="kw">impl </span>CustomValidator&lt;String&gt; <span class="kw">for </span>NoWhitespaceValidator {
+    <span class="kw">fn </span>validate(<span class="kw-2">&amp;</span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>String) -&gt; <span class="prelude-ty">Result</span>&lt;(), ValidationError&gt; {
+        <span class="kw">if </span>value.contains(<span class="string">' '</span>) {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(ValidationError::new(<span class="string">"field"</span>, <span class="string">"Must not contain whitespace"</span>)
+                .with_rejected_value(value)
+                .with_constraint_name(<span class="string">"NoWhitespace"</span>));
+        }
+        <span class="prelude-val">Ok</span>(())
+    }
+}
+
+<span class="kw">let </span><span class="kw-2">mut </span>registry = ValidatorRegistry::new();
+registry.register(<span class="string">"no_whitespace"</span>, NoWhitespaceValidator);
+
+<span class="kw">let </span>result = registry.validate(<span class="string">"no_whitespace"</span>, <span class="kw-2">&amp;</span><span class="string">"hello world"</span>.to_string());
+<span class="macro">assert!</span>(result.is_err());</code></pre></div></div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.CompositeValidator.html" title="struct hiver_validation::custom::CompositeValidator">Composite<wbr>Validator</a></dt><dd>Chains multiple validators; returns on the first failure.
+链接多个验证器；在第一个失败时返回。</dd><dt><a class="struct" href="struct.ConditionalValidator.html" title="struct hiver_validation::custom::ConditionalValidator">Conditional<wbr>Validator</a></dt><dd>Validates only when a condition is true; skips validation otherwise.
+仅在条件为 true 时验证；否则跳过验证。</dd><dt><a class="struct" href="struct.FieldMatchValidator.html" title="struct hiver_validation::custom::FieldMatchValidator">Field<wbr>Match<wbr>Validator</a></dt><dd>Validates that two field values match (e.g. password &amp; password confirmation).
+验证两个字段值匹配（例如密码和确认密码）。</dd><dt><a class="struct" href="struct.ValidationReport.html" title="struct hiver_validation::custom::ValidationReport">Validation<wbr>Report</a></dt><dd>Accumulates multiple <code>ValidationError</code>s into a single result.
+将多个 <code>ValidationError</code> 累积到一个结果中。</dd><dt><a class="struct" href="struct.ValidatorRegistry.html" title="struct hiver_validation::custom::ValidatorRegistry">Validator<wbr>Registry</a></dt><dd>Registry for custom validators, keyed by name.
+按名称索引的自定义验证器注册表。</dd></dl><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><dl class="item-table"><dt><a class="trait" href="trait.CustomValidator.html" title="trait hiver_validation::custom::CustomValidator">Custom<wbr>Validator</a></dt><dd>Custom validator trait for user-defined validation logic.
+用户自定义验证逻辑的 trait。</dd><dt><a class="trait" href="trait.FieldProvider.html" title="trait hiver_validation::custom::FieldProvider">Field<wbr>Provider</a></dt><dd>The value type for <code>FieldMatchValidator</code>: a map-like accessor.
+<code>FieldMatchValidator</code> 的值类型：类似 map 的访问器。</dd><dt><a class="trait" href="trait.ValidationErrorExt.html" title="trait hiver_validation::custom::ValidationErrorExt">Validation<wbr>Error<wbr>Ext</a></dt><dd>Extension methods for <code>ValidationError</code> from the custom module.
+custom 模块中 <code>ValidationError</code> 的扩展方法。</dd></dl><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><dl class="item-table"><dt><a class="fn" href="fn.field_match.html" title="fn hiver_validation::custom::field_match">field_<wbr>match</a></dt><dd>Convenience function: validate two raw string values match.
+便捷函数：验证两个原始字符串值匹配。</dd></dl></section></div></main></body></html>

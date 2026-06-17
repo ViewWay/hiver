@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["Transition","TransitionBuilder"],"type":["Action","Guard"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["PartitionCollector","PartitionInfo","PartitionResult","RangePartitioner"],"trait":["PartitionHandler","Partitioner"]};

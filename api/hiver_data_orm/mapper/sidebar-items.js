@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["BeanRowMapper","FirstRowExtractor","MappingResultSetExtractor"],"trait":["ResultSetExtractor","RowMapper"]};

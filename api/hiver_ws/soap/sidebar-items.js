@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["SoapBody","SoapEnvelope","SoapFault","SoapHeader","SoapHeaderElement","SoapMessage"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["HttpMethod"],"fn":["collect_routes"],"struct":["RouteDescriptor"]};

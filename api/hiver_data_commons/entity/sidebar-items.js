@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["LifecycleEvent"],"trait":["AggregateRoot","Auditable","ColumnName","Entity","EntityWithLifecycle","Identifier","SoftDeletable","TableName","Versioned"]};

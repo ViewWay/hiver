@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["shell_command"],"mod":["builtin","command","completion","prompt","repl","result","validation"],"struct":["Shell","ShellBuilder","ShellConfig"]};

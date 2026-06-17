@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AutoConfigureOrder"],"struct":["AutoConfigurationEntry","AutoConfigurationRegistry","ConditionalOnBeanCondition","ConditionalOnClass","ConditionalOnMissingBeanCondition","ConditionalOnMissingClass","ConditionalOnPropertyCondition","EnableAutoConfiguration"],"trait":["Condition"]};

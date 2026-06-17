@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ConfigurationPropertiesBinder","PostProcessorChain","PostProcessorContext","PropertyPlaceholderProcessor"],"trait":["BeanFactoryPostProcessor"]};

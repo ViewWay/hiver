@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["config","dialect","error","flyway","info","migration"],"type":["Checksum","Description","Version"]};

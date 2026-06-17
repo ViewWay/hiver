@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["collect_auto_configurations"],"mod":["order"],"struct":["AutoConfigurationEntry","AutoConfigurationMetadata"],"trait":["AutoConfiguration"]};

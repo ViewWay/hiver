@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["EventError"],"struct":["ContextClosedEvent","ContextRefreshedEvent","Event","EventContext","PayloadApplicationEvent","RequestHandledEvent"],"trait":["ApplicationEvent","EventPayload"],"type":["EventResult"]};

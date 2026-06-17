@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["AsyncFunctionTransformer","ChainTransformer","ContentTypeTransformer","FunctionTransformer","GenericFunctionTransformer","HeaderTransformer","JsonTransformer","PayloadTransformer"],"trait":["GenericTransformer","Transformer"]};

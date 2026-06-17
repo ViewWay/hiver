@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"trait":["ActiveRecord","Count","Delete","OptimisticLock","Refresh","Save"]};

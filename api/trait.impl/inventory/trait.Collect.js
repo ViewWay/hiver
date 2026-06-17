@@ -1,0 +1,9 @@
+(function() {
+    const implementors = Object.fromEntries([["hiver_modulith",[["impl <a class=\"trait\" href=\"https://docs.rs/inventory/0.3.24/inventory/trait.Collect.html\" title=\"trait inventory::Collect\">Collect</a> for <a class=\"struct\" href=\"hiver_modulith/struct.ModuleDescriptor.html\" title=\"struct hiver_modulith::ModuleDescriptor\">ModuleDescriptor</a>",0]]],["hiver_starter",[["impl <a class=\"trait\" href=\"https://docs.rs/inventory/0.3.24/inventory/trait.Collect.html\" title=\"trait inventory::Collect\">Collect</a> for <a class=\"struct\" href=\"hiver_starter/core/autoconfig/struct.AutoConfigurationEntry.html\" title=\"struct hiver_starter::core::autoconfig::AutoConfigurationEntry\">AutoConfigurationEntry</a>",0],["impl <a class=\"trait\" href=\"https://docs.rs/inventory/0.3.24/inventory/trait.Collect.html\" title=\"trait inventory::Collect\">Collect</a> for <a class=\"struct\" href=\"hiver_starter/core/registry/struct.BeanDescriptor.html\" title=\"struct hiver_starter::core::registry::BeanDescriptor\">BeanDescriptor</a>",0],["impl <a class=\"trait\" href=\"https://docs.rs/inventory/0.3.24/inventory/trait.Collect.html\" title=\"trait inventory::Collect\">Collect</a> for <a class=\"struct\" href=\"hiver_starter/schedule/struct.ScheduledMethodDescriptor.html\" title=\"struct hiver_starter::schedule::ScheduledMethodDescriptor\">ScheduledMethodDescriptor</a>",0],["impl <a class=\"trait\" href=\"https://docs.rs/inventory/0.3.24/inventory/trait.Collect.html\" title=\"trait inventory::Collect\">Collect</a> for <a class=\"struct\" href=\"hiver_starter/web/route_registry/struct.RouteDescriptor.html\" title=\"struct hiver_starter::web::route_registry::RouteDescriptor\">RouteDescriptor</a>",0]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":59,"fragment_lengths":[316,1355]}

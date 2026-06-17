@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Hiver Retry - Enhanced retry framework with type-level error classification. Hiver 重试 — 带类型级错误分类的增强重试框架。"><title>hiver_retry - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="hiver_retry" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../static.files/storage-41dd4d93.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Crate hiver_retry</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../hiver_retry/index.html">hiver_<wbr>retry</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#spring-equivalent--spring等价物" title="Spring Equivalent / Spring等价物">Spring Equivalent / Spring等价物</a></li><li><a href="#rust-advantage--rust-优势" title="Rust Advantage / Rust 优势">Rust Advantage / Rust 优势</a></li><li><a href="#features--功能" title="Features / 功能">Features / 功能</a></li><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul><h3><a href="#structs">Crate Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#enums" title="Enums">Enums</a></li><li><a href="#traits" title="Traits">Traits</a></li><li><a href="#attributes" title="Attribute Macros">Attribute Macros</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1>Crate <span>hiver_<wbr>retry</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/hiver_retry/lib.rs.html#1-286">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Hiver Retry - Enhanced retry framework with type-level error classification.
+Hiver 重试 — 带类型级错误分类的增强重试框架。</p>
+<h2 id="spring-equivalent--spring等价物"><a class="doc-anchor" href="#spring-equivalent--spring等价物">§</a>Spring Equivalent / Spring等价物</h2>
+<ul>
+<li>Spring Retry <code>@Retryable</code> / <code>@Recover</code></li>
+<li>Spring Retry <code>RetryTemplate</code></li>
+</ul>
+<h2 id="rust-advantage--rust-优势"><a class="doc-anchor" href="#rust-advantage--rust-优势">§</a>Rust Advantage / Rust 优势</h2>
+<p>Spring checks exception types at runtime; Hiver uses marker traits
+(<code>Retryable</code> / <code>NonRetryable</code>) to classify errors at compile time.</p>
+<p>Spring 在运行时检查异常类型；Hiver 使用标记 trait 在编译期分类错误。</p>
+<h2 id="features--功能"><a class="doc-anchor" href="#features--功能">§</a>Features / 功能</h2>
+<ul>
+<li><code>#[retry]</code> attribute macro for automatic retry</li>
+<li><code>RetryTemplate</code> for programmatic retry</li>
+<li><code>Retryable</code> / <code>NonRetryable</code> marker traits for compile-time classification</li>
+<li>Exponential backoff with jitter</li>
+<li>Retry statistics for observability</li>
+</ul>
+<h2 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_retry::{RetryTemplate, Retryable};
+
+<span class="comment">// Define a retryable error
+</span><span class="attr">#[derive(Debug, thiserror::Error)]
+#[error(<span class="string">"Connection timeout"</span>)]
+</span><span class="kw">struct </span>Timeout;
+<span class="kw">impl </span>Retryable <span class="kw">for </span>Timeout {}
+
+<span class="comment">// Use RetryTemplate
+</span><span class="kw">let </span>template = RetryTemplate::builder()
+    .max_attempts(<span class="number">3</span>)
+    .exponential_backoff(Duration::from_millis(<span class="number">100</span>))
+    .build();
+
+<span class="kw">let </span>result = template.execute(|| <span class="kw">async </span>{ risky_call().<span class="kw">await </span>}).<span class="kw">await</span><span class="question-mark">?</span>;</code></pre></div></div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.FatalError.html" title="struct hiver_retry::FatalError">Fatal<wbr>Error</a></dt><dd>A generic non-retryable error wrapper.
+通用不可重试错误包装器。</dd><dt><a class="struct" href="struct.NoOpCallback.html" title="struct hiver_retry::NoOpCallback">NoOp<wbr>Callback</a></dt><dd>Default no-op callback.
+默认空操作回调。</dd><dt><a class="struct" href="struct.RetryAll.html" title="struct hiver_retry::RetryAll">Retry<wbr>All</a></dt><dd>Default retry predicate that retries all errors
+重试所有错误的默认重试谓词</dd><dt><a class="struct" href="struct.RetryContext.html" title="struct hiver_retry::RetryContext">Retry<wbr>Context</a></dt><dd>Retry context containing execution state.
+重试上下文，包含执行状态。</dd><dt><a class="struct" href="struct.RetryError.html" title="struct hiver_retry::RetryError">Retry<wbr>Error</a></dt><dd>Retry error with attempt information
+带尝试信息的重试错误</dd><dt><a class="struct" href="struct.RetryPolicy.html" title="struct hiver_retry::RetryPolicy">Retry<wbr>Policy</a></dt><dd>Retry policy configuration
+重试策略配置</dd><dt><a class="struct" href="struct.RetryStatistics.html" title="struct hiver_retry::RetryStatistics">Retry<wbr>Statistics</a></dt><dd>Retry statistics for observability.
+重试统计，用于可观测性。</dd><dt><a class="struct" href="struct.RetryTemplate.html" title="struct hiver_retry::RetryTemplate">Retry<wbr>Template</a></dt><dd>RetryTemplate for programmatic retry operations.
+RetryTemplate 用于编程式重试操作。</dd><dt><a class="struct" href="struct.RetryTemplateBuilder.html" title="struct hiver_retry::RetryTemplateBuilder">Retry<wbr>Template<wbr>Builder</a></dt><dd>Builder for RetryTemplate (Builder Pattern).
+RetryTemplate 构建器（建造者模式）。</dd><dt><a class="struct" href="struct.RetryableError.html" title="struct hiver_retry::RetryableError">Retryable<wbr>Error</a></dt><dd>A generic retryable error wrapper.
+通用可重试错误包装器。</dd></dl><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><dl class="item-table"><dt><a class="enum" href="enum.BackoffType.html" title="enum hiver_retry::BackoffType">Backoff<wbr>Type</a></dt><dd>Backoff strategy type
+退避策略类型</dd><dt><a class="enum" href="enum.RetryDecision.html" title="enum hiver_retry::RetryDecision">Retry<wbr>Decision</a></dt><dd>Result of classifying an error for retry.
+错误重试分类结果。</dd></dl><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><dl class="item-table"><dt><a class="trait" href="trait.NonRetryable.html" title="trait hiver_retry::NonRetryable">NonRetryable</a></dt><dd>Marker trait for errors that should NOT be retried.
+不应重试的错误的标记 trait。</dd><dt><a class="trait" href="trait.RetryCallback.html" title="trait hiver_retry::RetryCallback">Retry<wbr>Callback</a></dt><dd>Callback for retry lifecycle events (Observer Pattern).
+重试生命周期事件回调（观察者模式）。</dd><dt><a class="trait" href="trait.Retryable.html" title="trait hiver_retry::Retryable">Retryable</a></dt><dd>Marker trait for errors that are safe to retry.
+可安全重试的错误的标记 trait。</dd><dt><a class="trait" href="trait.ShouldRetry.html" title="trait hiver_retry::ShouldRetry">Should<wbr>Retry</a></dt><dd>Predicate to determine if an error is retryable
+判断错误是否可重试的谓词</dd></dl><h2 id="attributes" class="section-header">Attribute Macros<a href="#attributes" class="anchor">§</a></h2><dl class="item-table"><dt><a class="attr" href="attr.recover.html" title="attr hiver_retry::recover">recover</a></dt><dd>Recover attribute macro for fallback methods
+恢复属性宏，用于降级方法</dd><dt><a class="attr" href="attr.retry.html" title="attr hiver_retry::retry">retry</a></dt><dd>Retry attribute macro for automatic retry logic
+重试属性宏，用于自动重试逻辑</dd></dl></section></div></main></body></html>

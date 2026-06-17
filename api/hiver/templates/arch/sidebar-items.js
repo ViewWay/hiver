@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Architecture"],"fn":["arch_entries","clean_entries","clean_main_rs","create_arch_dirs","ddd_entries","ddd_main_rs","generate_arch_main_rs","hexagonal_entries","hexagonal_main_rs","layered_entries","layered_main_rs","microservice_entries","microservice_main_rs"],"struct":["DirTemplate"]};

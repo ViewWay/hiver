@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ZipkinError"],"struct":["InMemoryReporter","ZipkinAnnotation","ZipkinConfig","ZipkinEndpoint","ZipkinExporter","ZipkinSpan"],"trait":["SpanReporter"],"type":["Result"]};

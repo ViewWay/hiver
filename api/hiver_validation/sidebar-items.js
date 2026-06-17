@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ValidationRule"],"macro":["validate_nested_impl","validation_groups"],"mod":["annotations","custom","error","extractor","groups","nested","traits","validators"],"struct":["ValidationContext"],"type":["ValidationResult"]};

@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Hiver Cache - Caching abstraction module Hiver缓存 - 缓存抽象模块"><title>hiver_cache - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="hiver_cache" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../static.files/storage-41dd4d93.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc mod crate"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Crate hiver_cache</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../hiver_cache/index.html">hiver_<wbr>cache</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><ul class="block"><li><a id="all-types" href="all.html">All Items</a></li></ul><section id="rustdoc-toc"><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#equivalent-to-spring-boot--等价于-spring-boot" title="Equivalent to Spring Boot / 等价于 Spring Boot">Equivalent to Spring Boot / 等价于 Spring Boot</a></li><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul><h3><a href="#modules">Crate Items</a></h3><ul class="block"><li><a href="#modules" title="Modules">Modules</a></li><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#enums" title="Enums">Enums</a></li><li><a href="#constants" title="Constants">Constants</a></li><li><a href="#traits" title="Traits">Traits</a></li><li><a href="#functions" title="Functions">Functions</a></li></ul></section><div id="rustdoc-modnav"></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1>Crate <span>hiver_<wbr>cache</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/hiver_cache/lib.rs.html#1-112">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Hiver Cache - Caching abstraction module
+Hiver缓存 - 缓存抽象模块</p>
+<h2 id="equivalent-to-spring-boot--等价于-spring-boot"><a class="doc-anchor" href="#equivalent-to-spring-boot--等价于-spring-boot">§</a>Equivalent to Spring Boot / 等价于 Spring Boot</h2>
+<ul>
+<li><code>@Cacheable</code> - Cacheable</li>
+<li><code>@CacheEvict</code> - <code>CacheEvict</code></li>
+<li><code>@CachePut</code> - <code>CachePut</code></li>
+<li><code>@Caching</code> - Caching (multi-operation)</li>
+<li><code>@CacheConfig</code> - <code>CacheConfig</code></li>
+<li><code>CacheManager</code> - <code>CacheManager</code></li>
+<li><code>@EnableCaching</code> - <code>EnableCaching</code></li>
+</ul>
+<h2 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_cache::{Cache, Cacheable, CachePut, CacheEvict};
+<span class="kw">use </span>std::sync::Arc;
+
+<span class="kw">struct </span>UserService {
+    cache: Arc&lt;Cache&lt;String, User&gt;&gt;,
+}
+
+<span class="kw">impl </span>UserService {
+    <span class="comment">// Equivalent to @Cacheable("users")
+    </span><span class="attr">#[cacheable(<span class="string">"users"</span>)]
+    </span><span class="kw">async fn </span>get_user(<span class="kw-2">&amp;</span><span class="self">self</span>, id: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;User&gt; {
+        <span class="comment">// Implementation
+        </span><span class="prelude-val">None
+    </span>}
+
+    <span class="comment">// Equivalent to @CachePut("users")
+    </span><span class="attr">#[cache_put(<span class="string">"users"</span>)]
+    </span><span class="kw">async fn </span>update_user(<span class="kw-2">&amp;</span><span class="self">self</span>, user: User) -&gt; User {
+        <span class="comment">// Implementation
+        </span>user
+    }
+
+    <span class="comment">// Equivalent to @CacheEvict("users")
+    </span><span class="attr">#[cache_evict(<span class="string">"users"</span>)]
+    </span><span class="kw">async fn </span>delete_user(<span class="kw-2">&amp;</span><span class="self">self</span>, id: <span class="kw-2">&amp;</span>str) {
+        <span class="comment">// Implementation
+    </span>}
+}</code></pre></div></div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><dl class="item-table"><dt><a class="mod" href="prelude/index.html" title="mod hiver_cache::prelude">prelude</a></dt><dd>Re-exports of commonly used types
+常用类型的重新导出</dd></dl><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.CacheBuilder.html" title="struct hiver_cache::CacheBuilder">Cache<wbr>Builder</a></dt><dd>Cache builder
+缓存构建器</dd><dt><a class="struct" href="struct.CacheConfig.html" title="struct hiver_cache::CacheConfig">Cache<wbr>Config</a></dt><dd>Cache configuration
+缓存配置</dd><dt><a class="struct" href="struct.CacheEvictExec.html" title="struct hiver_cache::CacheEvictExec">Cache<wbr>Evict<wbr>Exec</a></dt><dd><code>CacheEvict</code> wrapper for async functions
+<code>异步函数的CacheEvict包装器</code></dd><dt><a class="struct" href="struct.CacheEvictOptions.html" title="struct hiver_cache::CacheEvictOptions">Cache<wbr>Evict<wbr>Options</a></dt><dd><code>CacheEvict</code> options - equivalent to Spring’s @<code>CacheEvict</code> parameters
+<code>CacheEvict选项</code> - 等价于Spring的@CacheEvict参数</dd><dt><a class="struct" href="struct.CacheManagerBuilder.html" title="struct hiver_cache::CacheManagerBuilder">Cache<wbr>Manager<wbr>Builder</a></dt><dd>Cache manager builder
+缓存管理器构建器</dd><dt><a class="struct" href="struct.CachePutExec.html" title="struct hiver_cache::CachePutExec">Cache<wbr>PutExec</a></dt><dd><code>CachePut</code> wrapper for async functions
+<code>异步函数的CachePut包装器</code></dd><dt><a class="struct" href="struct.CachePutOptions.html" title="struct hiver_cache::CachePutOptions">Cache<wbr>PutOptions</a></dt><dd><code>CachePut</code> options - equivalent to Spring’s @<code>CachePut</code> parameters
+<code>CachePut选项</code> - 等价于Spring的@CachePut参数</dd><dt><a class="struct" href="struct.CacheSettings.html" title="struct hiver_cache::CacheSettings">Cache<wbr>Settings</a></dt><dd>Cache configuration
+缓存配置</dd><dt><a class="struct" href="struct.CacheStats.html" title="struct hiver_cache::CacheStats">Cache<wbr>Stats</a></dt><dd>Cache statistics
+缓存统计</dd><dt><a class="struct" href="struct.CacheableOptions.html" title="struct hiver_cache::CacheableOptions">Cacheable<wbr>Options</a></dt><dd>Cacheable options - equivalent to Spring’s @Cacheable parameters
+Cacheable选项 - 等价于Spring的@Cacheable参数</dd><dt><a class="struct" href="struct.Cached.html" title="struct hiver_cache::Cached">Cached</a></dt><dd>Cached wrapper for async functions
+异步函数的缓存包装器</dd><dt><a class="struct" href="struct.Caching.html" title="struct hiver_cache::Caching">Caching</a></dt><dd>Caching annotation - equivalent to Spring’s @Caching
+Caching注解 - 等价于Spring的@Caching</dd><dt><a class="struct" href="struct.CachingBuilder.html" title="struct hiver_cache::CachingBuilder">Caching<wbr>Builder</a></dt><dd>Caching options builder
+Caching选项构建器</dd><dt><a class="struct" href="struct.CachingExec.html" title="struct hiver_cache::CachingExec">Caching<wbr>Exec</a></dt><dd>Caching executor - applies multiple cache operations
+Caching执行器 - 应用多个缓存操作</dd><dt><a class="struct" href="struct.DefaultKeyGenerator.html" title="struct hiver_cache::DefaultKeyGenerator">Default<wbr>KeyGenerator</a></dt><dd>Default key generator
+默认key生成器</dd><dt><a class="struct" href="struct.HashKeyGenerator.html" title="struct hiver_cache::HashKeyGenerator">Hash<wbr>KeyGenerator</a></dt><dd>Hash-based key generator
+基于哈希的key生成器</dd><dt><a class="struct" href="struct.MemoryCache.html" title="struct hiver_cache::MemoryCache">Memory<wbr>Cache</a></dt><dd>In-memory cache implementation
+内存缓存实现</dd><dt><a class="struct" href="struct.RedisCache.html" title="struct hiver_cache::RedisCache">Redis<wbr>Cache</a></dt><dd>Redis-backed cache that implements the <code>Cache&lt;K, V&gt;</code> trait.
+基于 Redis 的缓存，实现 <code>Cache&lt;K, V&gt;</code> trait。</dd><dt><a class="struct" href="struct.RedisCacheManager.html" title="struct hiver_cache::RedisCacheManager">Redis<wbr>Cache<wbr>Manager</a></dt><dd>Cache manager backed by Redis, implementing the <code>CacheManager</code> trait.
+基于 Redis 的缓存管理器，实现 <code>CacheManager</code> trait。</dd><dt><a class="struct" href="struct.RedisCacheWorker.html" title="struct hiver_cache::RedisCacheWorker">Redis<wbr>Cache<wbr>Worker</a></dt><dd>Type-erased wrapper that exposes <code>RedisCache&lt;K, V&gt;</code> through the
+<code>CacheWorker</code> trait, allowing heterogeneous storage in the manager.
+类型擦除包装器，通过 <code>CacheWorker</code> trait 暴露 <code>RedisCache&lt;K, V&gt;</code>，
+允许在管理器中异构存储。</dd><dt><a class="struct" href="struct.RedisConfig.html" title="struct hiver_cache::RedisConfig">Redis<wbr>Config</a></dt><dd>A Redis connection string or client configuration.
+Redis 连接字符串或客户端配置。</dd><dt><a class="struct" href="struct.SimpleCacheManager.html" title="struct hiver_cache::SimpleCacheManager">Simple<wbr>Cache<wbr>Manager</a></dt><dd>Simple cache manager
+简单缓存管理器</dd><dt><a class="struct" href="struct.SimpleCacheResolver.html" title="struct hiver_cache::SimpleCacheResolver">Simple<wbr>Cache<wbr>Resolver</a></dt><dd>Simple cache resolver
+简单缓存解析器</dd></dl><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><dl class="item-table"><dt><a class="enum" href="enum.EvictPolicy.html" title="enum hiver_cache::EvictPolicy">Evict<wbr>Policy</a></dt><dd>Eviction policy
+驱逐策略</dd><dt><a class="enum" href="enum.SerializationFormat.html" title="enum hiver_cache::SerializationFormat">Serialization<wbr>Format</a></dt><dd>Serialization format for Redis cache values.
+Redis 缓存值的序列化格式。</dd></dl><h2 id="constants" class="section-header">Constants<a href="#constants" class="anchor">§</a></h2><dl class="item-table"><dt><a class="constant" href="constant.DEFAULT_CACHE.html" title="constant hiver_cache::DEFAULT_CACHE">DEFAULT_<wbr>CACHE</a></dt><dd>Default cache name
+默认缓存名称</dd><dt><a class="constant" href="constant.DEFAULT_MAX_CAPACITY.html" title="constant hiver_cache::DEFAULT_MAX_CAPACITY">DEFAULT_<wbr>MAX_<wbr>CAPACITY</a></dt><dd>Default maximum cache size
+默认最大缓存大小</dd><dt><a class="constant" href="constant.DEFAULT_TTL_SECS.html" title="constant hiver_cache::DEFAULT_TTL_SECS">DEFAULT_<wbr>TTL_<wbr>SECS</a></dt><dd>Default TTL (time to live) in seconds
+默认TTL（生存时间），单位秒</dd><dt><a class="constant" href="constant.VERSION.html" title="constant hiver_cache::VERSION">VERSION</a></dt><dd>Version of the cache module</dd></dl><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><dl class="item-table"><dt><a class="trait" href="trait.Cache.html" title="trait hiver_cache::Cache">Cache</a></dt><dd>Cache trait
+缓存trait</dd><dt><a class="trait" href="trait.CacheEvict.html" title="trait hiver_cache::CacheEvict">Cache<wbr>Evict</a></dt><dd><code>CacheEvict</code> trait - equivalent to Spring’s @<code>CacheEvict</code>
+<code>CacheEvict</code> trait - 等价于Spring的@CacheEvict</dd><dt><a class="trait" href="trait.CacheManager.html" title="trait hiver_cache::CacheManager">Cache<wbr>Manager</a></dt><dd>Cache manager trait
+缓存管理器trait</dd><dt><a class="trait" href="trait.CachePut.html" title="trait hiver_cache::CachePut">Cache<wbr>Put</a></dt><dd><code>CachePut</code> trait - equivalent to Spring’s @<code>CachePut</code>
+<code>CachePut</code> trait - 等价于Spring的@CachePut</dd><dt><a class="trait" href="trait.CacheResolver.html" title="trait hiver_cache::CacheResolver">Cache<wbr>Resolver</a></dt><dd>Cache resolver trait
+缓存解析器trait</dd><dt><a class="trait" href="trait.Cacheable.html" title="trait hiver_cache::Cacheable">Cacheable</a></dt><dd>Cacheable trait - equivalent to Spring’s @Cacheable
+Cacheable trait - 等价于Spring的@Cacheable</dd><dt><a class="trait" href="trait.KeyGenerator.html" title="trait hiver_cache::KeyGenerator">KeyGenerator</a></dt><dd>Key generator trait
+Key生成器trait</dd></dl><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><dl class="item-table"><dt><a class="fn" href="fn.cache_evict_key.html" title="fn hiver_cache::cache_evict_key">cache_<wbr>evict_<wbr>key</a></dt><dd>Evict a key from the named cache.
+从指定缓存中驱逐键。</dd><dt><a class="fn" href="fn.cache_get.html" title="fn hiver_cache::cache_get">cache_<wbr>get</a></dt><dd>Get a cached JSON string value.
+获取缓存的 JSON 字符串值。</dd><dt><a class="fn" href="fn.cache_put.html" title="fn hiver_cache::cache_put">cache_<wbr>put</a></dt><dd>Put a JSON string value into the cache.
+将 JSON 字符串值放入缓存。</dd><dt><a class="fn" href="fn.evaluate_cache_condition.html" title="fn hiver_cache::evaluate_cache_condition">evaluate_<wbr>cache_<wbr>condition</a></dt><dd>Evaluate cache condition expression
+评估缓存条件表达式</dd><dt><a class="fn" href="fn.global_cache_manager.html" title="fn hiver_cache::global_cache_manager">global_<wbr>cache_<wbr>manager</a></dt><dd>Returns the global cache manager (cache-name → key-value store).
+返回全局缓存管理器（缓存名 → 键值存储）。</dd></dl></section></div></main></body></html>

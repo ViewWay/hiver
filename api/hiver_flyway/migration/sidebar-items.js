@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Migration","MigrationType"],"struct":["MigratedVersion","SqlMigration"]};

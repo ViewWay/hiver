@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["builder","config","error","persist","regions","state","timer","transition","visualizer"],"struct":["StateMachine"],"trait":["Event"]};

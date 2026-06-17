@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["auth","auth_jwt","client","error","health","kv","kv_v2","lease","pki","secret","transit"]};

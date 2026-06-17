@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AdviceType"],"fn":["global_registry"],"struct":["AdviceChain","AspectRegistry","InterceptChain","InterceptResult","JoinPoint","PointcutExpression","ProceedingJoinPoint"]};

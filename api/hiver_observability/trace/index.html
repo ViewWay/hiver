@@ -1,0 +1,41 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Distributed tracing with spans, trace IDs, and context propagation. 分布式追踪，包含span、追踪ID和上下文传播。 Distributed tracing module 分布式追踪模块"><title>hiver_observability::trace - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="hiver_observability" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Module trace</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../hiver_observability/index.html">hiver_<wbr>observability</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module trace</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#overview--概述" title="Overview / 概述">Overview / 概述</a></li><li><a href="#equivalent-to-spring-boot--等价于-spring-boot" title="Equivalent to Spring Boot / 等价于 Spring Boot">Equivalent to Spring Boot / 等价于 Spring Boot</a></li><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul><h3><a href="#structs">Module Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#enums" title="Enums">Enums</a></li><li><a href="#functions" title="Functions">Functions</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="../index.html">In crate hiver_<wbr>observability</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">hiver_observability</a></div><h1>Module <span>trace</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/hiver_observability/trace.rs.html#1-1288">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Distributed tracing with spans, trace IDs, and context propagation.
+分布式追踪，包含span、追踪ID和上下文传播。
+Distributed tracing module
+分布式追踪模块</p>
+<h2 id="overview--概述"><a class="doc-anchor" href="#overview--概述">§</a>Overview / 概述</h2>
+<p>This module provides distributed tracing functionality compatible with <code>OpenTelemetry</code>.
+It includes span management, trace context propagation, and W3C Trace Context format.</p>
+<p>本模块提供与 <code>OpenTelemetry</code> 兼容的分布式追踪功能。
+包括 span 管理、追踪上下文传播和 W3C Trace Context 格式。</p>
+<h2 id="equivalent-to-spring-boot--等价于-spring-boot"><a class="doc-anchor" href="#equivalent-to-spring-boot--等价于-spring-boot">§</a>Equivalent to Spring Boot / 等价于 Spring Boot</h2>
+<ul>
+<li>Spring Cloud Sleuth + <code>OpenTelemetry</code> Tracing</li>
+<li>Micrometer Tracing</li>
+<li>@<code>NewSpan</code> annotation</li>
+</ul>
+<h2 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_observability::trace::{Tracer, SpanBuilder};
+
+<span class="kw">let </span>tracer = Tracer::new(<span class="string">"my-service"</span>);
+
+<span class="comment">// Create a root span
+</span><span class="kw">let </span>span = tracer.span(<span class="string">"handle_request"</span>)
+    .with_attribute(<span class="string">"http.method"</span>, <span class="string">"GET"</span>)
+    .with_attribute(<span class="string">"http.path"</span>, <span class="string">"/api/users"</span>)
+    .start();
+
+<span class="comment">// Do some work...
+</span>span.end();</code></pre></div></div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.Span.html" title="struct hiver_observability::trace::Span">Span</a></dt><dd>Span representing a single operation
+表示单个操作的span</dd><dt><a class="struct" href="struct.SpanBuilder.html" title="struct hiver_observability::trace::SpanBuilder">Span<wbr>Builder</a></dt><dd>Builder for creating spans
+用于创建span的构建器</dd><dt><a class="struct" href="struct.SpanEvent.html" title="struct hiver_observability::trace::SpanEvent">Span<wbr>Event</a></dt><dd>Span event
+Span事件</dd><dt><a class="struct" href="struct.SpanFlags.html" title="struct hiver_observability::trace::SpanFlags">Span<wbr>Flags</a></dt><dd>Span flags
+Span标志</dd><dt><a class="struct" href="struct.SpanId.html" title="struct hiver_observability::trace::SpanId">SpanId</a></dt><dd>Span ID (64-bit)
+Span ID（64位）</dd><dt><a class="struct" href="struct.TraceContext.html" title="struct hiver_observability::trace::TraceContext">Trace<wbr>Context</a></dt><dd>Trace context for distributed tracing
+分布式追踪的追踪上下文</dd><dt><a class="struct" href="struct.TraceId.html" title="struct hiver_observability::trace::TraceId">TraceId</a></dt><dd>Trace ID (128-bit)
+追踪ID（128位）</dd><dt><a class="struct" href="struct.Tracer.html" title="struct hiver_observability::trace::Tracer">Tracer</a></dt><dd>Tracer for creating and managing spans
+用于创建和管理span的追踪器</dd></dl><h2 id="enums" class="section-header">Enums<a href="#enums" class="anchor">§</a></h2><dl class="item-table"><dt><a class="enum" href="enum.SpanKind.html" title="enum hiver_observability::trace::SpanKind">Span<wbr>Kind</a></dt><dd>Span kind
+Span类型</dd><dt><a class="enum" href="enum.SpanStatus.html" title="enum hiver_observability::trace::SpanStatus">Span<wbr>Status</a></dt><dd>Span status
+Span状态</dd><dt><a class="enum" href="enum.TraceContextError.html" title="enum hiver_observability::trace::TraceContextError">Trace<wbr>Context<wbr>Error</a></dt><dd>Trace context error
+追踪上下文错误</dd></dl><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><dl class="item-table"><dt><a class="fn" href="fn.global_tracer.html" title="fn hiver_observability::trace::global_tracer">global_<wbr>tracer</a></dt><dd>Get the global tracer
+获取全局追踪器</dd><dt><a class="fn" href="fn.init_tracer.html" title="fn hiver_observability::trace::init_tracer">init_<wbr>tracer</a></dt><dd>Initialize the global tracer
+初始化全局追踪器</dd></dl></section></div></main></body></html>

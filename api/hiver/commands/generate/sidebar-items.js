@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["generate_config","generate_controller","generate_entity","generate_middleware","generate_repository","generate_service","run","to_pascal_case","to_snake_case"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["EventMulticaster","EventRegistry","EventSubscription","PassAllFilter"],"trait":["EventFilter","ListenerRegistry"]};

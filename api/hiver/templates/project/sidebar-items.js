@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["generate_application_toml","generate_cargo_toml"]};

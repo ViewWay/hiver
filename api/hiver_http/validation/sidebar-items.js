@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["JsonValidator","Validated","ValidationError","ValidationErrors","ValidationHelpers","ValidationMiddleware"],"trait":["Validatable","ValidatableExtractor"]};

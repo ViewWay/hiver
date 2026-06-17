@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["bind_transaction","current_status","resolve_propagation","take_transaction","with_transaction_scope"],"trait":["LiveTransaction"]};

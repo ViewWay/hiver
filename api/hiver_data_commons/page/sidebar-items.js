@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["List","Page","PageRequest","Slice"]};

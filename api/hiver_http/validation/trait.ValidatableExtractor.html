@@ -1,0 +1,88 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Simple validation extractor for request parameters 请求参数的简单验证提取器"><title>ValidatableExtractor in hiver_http::validation - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="hiver_http" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc trait"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">ValidatableExtractor</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../hiver_http/index.html">hiver_<wbr>http</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Validatable<wbr>Extractor</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul><h3><a href="#required-methods">Required Methods</a></h3><ul class="block"><li><a href="#tymethod.extract_validated" title="extract_validated">extract_validated</a></li></ul><h3><a href="#dyn-compatibility">Dyn Compatibility</a></h3><h3><a href="#implementors">Implementors</a></h3></section><div id="rustdoc-modnav"><h2><a href="index.html">In hiver_<wbr>http::<wbr>validation</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">hiver_http</a>::<wbr><a href="index.html">validation</a></div><h1>Trait <span class="trait">Validatable<wbr>Extractor</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/hiver_http/validation.rs.html#295-323">Source</a> </span></div><pre class="rust item-decl"><code>pub trait ValidatableExtractor&lt;T&gt; {
+    // Required method
+    fn <a href="#tymethod.extract_validated" class="fn">extract_validated</a>(
+        req: &amp;<a class="struct" href="../request/struct.Request.html" title="struct hiver_http::request::Request">Request</a>,
+    ) -&gt; <a class="struct" href="https://doc.rust-lang.org/1.96.0/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/1.96.0/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/1.96.0/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/1.96.0/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="struct.Validated.html" title="struct hiver_http::validation::Validated">Validated</a>&lt;T&gt;, <a class="enum" href="../error/enum.Error.html" title="enum hiver_http::error::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/1.96.0/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + '_&gt;&gt;;
+}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Simple validation extractor for request parameters
+请求参数的简单验证提取器</p>
+<p>This extractor can be used as a layer in HTTP handlers to automatically
+validate request parameters.</p>
+<p>这个提取器可以用作 HTTP 处理器中的一层来自动验证请求参数。</p>
+<h2 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_http::{Valid, Validated};
+<span class="kw">use </span>hiver_http::validation::ValidatableExtractor;
+<span class="kw">use </span>serde::{Deserialize, Serialize};
+
+<span class="attr">#[derive(Deserialize, Serialize)]
+</span><span class="kw">struct </span>CreateUserRequest {
+    username: String,
+    email: String,
+    age: i32,
+}
+
+<span class="kw">impl </span>Validatable <span class="kw">for </span>CreateUserRequest {
+    <span class="kw">fn </span>validate(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), ValidationErrors&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>errors = ValidationErrors::new();
+
+        <span class="kw">if </span><span class="self">self</span>.username.is_empty() {
+            errors.add(ValidationError::new(<span class="string">"username"</span>, <span class="string">"Username is required"</span>));
+        }
+
+        <span class="kw">if </span><span class="self">self</span>.username.len() &lt; <span class="number">3 </span>{
+            errors.add(ValidationError::with_value(
+                <span class="string">"username"</span>,
+                <span class="string">"Username must be at least 3 characters"</span>,
+                <span class="macro">format!</span>(<span class="string">"{}"</span>, <span class="self">self</span>.username.len())
+            ));
+        }
+
+        <span class="kw">if </span>!<span class="self">self</span>.email.contains(<span class="string">'@'</span>) {
+            errors.add(ValidationError::new(<span class="string">"email"</span>, <span class="string">"Invalid email format"</span>));
+        }
+
+        <span class="kw">if </span><span class="self">self</span>.age &lt; <span class="number">18 </span>{
+            errors.add(ValidationError::with_value(
+                <span class="string">"age"</span>,
+                <span class="string">"Must be at least 18 years old"</span>,
+                <span class="macro">format!</span>(<span class="string">"{}"</span>, <span class="self">self</span>.age)
+            ));
+        }
+
+        <span class="kw">if </span>errors.has_errors() {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(errors);
+        }
+
+        <span class="prelude-val">Ok</span>(())
+    }
+}
+
+<span class="comment">// Use in HTTP handler
+</span><span class="attr">#[post(<span class="string">"/users"</span>)]
+</span><span class="kw">async fn </span>create_user(
+    <span class="attr">#[Valid] </span>req: Validated&lt;CreateUserRequest&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;Json&lt;User&gt;, Error&gt; {
+    <span class="comment">// req is automatically validated before this function executes
+    // req 在此函数执行前自动验证
+    </span><span class="kw">let </span>user = service.create(req.into_inner()).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(Json(user))
+}</code></pre></div></div></details><h2 id="required-methods" class="section-header">Required Methods<a href="#required-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="tymethod.extract_validated" class="method"><a class="src rightside" href="../../src/hiver_http/validation.rs.html#320-322">Source</a><h4 class="code-header">fn <a href="#tymethod.extract_validated" class="fn">extract_validated</a>(
+    req: &amp;<a class="struct" href="../request/struct.Request.html" title="struct hiver_http::request::Request">Request</a>,
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/1.96.0/core/pin/struct.Pin.html" title="struct core::pin::Pin">Pin</a>&lt;<a class="struct" href="https://doc.rust-lang.org/1.96.0/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="https://doc.rust-lang.org/1.96.0/core/future/future/trait.Future.html" title="trait core::future::future::Future">Future</a>&lt;Output = <a class="enum" href="https://doc.rust-lang.org/1.96.0/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="struct.Validated.html" title="struct hiver_http::validation::Validated">Validated</a>&lt;T&gt;, <a class="enum" href="../error/enum.Error.html" title="enum hiver_http::error::Error">Error</a>&gt;&gt; + <a class="trait" href="https://doc.rust-lang.org/1.96.0/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> + '_&gt;&gt;</h4></section></summary><div class="docblock"><p>Extract and validate a value from the request
+从请求中提取并验证值</p>
+<h5 id="example--示例-1"><a class="doc-anchor" href="#example--示例-1">§</a>Example / 示例</h5>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_http::validation::ValidatableExtractor;
+
+<span class="kw">async fn </span>extract_validated&lt;T&gt;(
+    req: <span class="kw-2">&amp;</span>Request
+) -&gt; <span class="prelude-ty">Result</span>&lt;Validated&lt;T&gt;, Error&gt;
+<span class="kw">where
+    </span>T: Validatable + <span class="kw">for</span>&lt;<span class="lifetime">'de</span>&gt; Deserialize&lt;<span class="lifetime">'de</span>&gt; + Send + Sync
+{
+    <span class="comment">// Extract from request body
+    </span><span class="kw">let </span>value: T = extract_json_body(req).<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="comment">// Validate
+    </span>value.validate()<span class="question-mark">?</span>;
+
+    <span class="prelude-val">Ok</span>(Validated::new(value))
+}</code></pre></div></div></details></div><h2 id="dyn-compatibility" class="section-header">Dyn Compatibility<a href="#dyn-compatibility" class="anchor">§</a></h2><div class="dyn-compatibility-info"><p>This trait is <b>not</b> <a href="https://doc.rust-lang.org/1.96.0/reference/items/traits.html#dyn-compatibility">dyn compatible</a>.</p><p><i>In older versions of Rust, dyn compatibility was called "object safety", so this trait is not object safe.</i></p></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"></div><script src="../../trait.impl/hiver_http/validation/trait.ValidatableExtractor.js" async></script></section></div></main></body></html>

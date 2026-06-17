@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error"],"mod":["compression","cors","jwt_auth","logger","middleware","request_id","security_headers","static_files","timeout"],"struct":["Next","Request","Response"],"trait":["Middleware"],"type":["Result"]};

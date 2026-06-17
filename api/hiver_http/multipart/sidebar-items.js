@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["media_type_for_extension","validate_content_type","validate_extension"],"struct":["FileSizeLimits","MultipartData","MultipartFile","MultipartForm"],"trait":["FromMultipart"]};

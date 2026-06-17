@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["HealthStatus","MetricType"],"fn":["handle_request"],"struct":["Actuator","ActuatorAutoConfiguration","Environment","EnvironmentCollector","HealthCheck","InfoBuilder","Metric","MetricsRegistry"],"trait":["HealthIndicator"]};

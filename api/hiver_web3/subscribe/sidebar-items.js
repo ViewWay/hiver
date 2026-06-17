@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SubscriptionNotification","SubscriptionType","WsError"],"struct":["BlockReceiver","LogFilter","LogNotification","LogReceiver","NewBlockHeader","PendingTransaction","PendingTxReceiver","SubscriptionId","SubscriptionManager","WsClient"]};

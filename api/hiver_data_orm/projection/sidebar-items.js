@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["DtoProjection","DynamicProjection"],"trait":["ClosedProjection","InterfaceProjection","Projection"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SseError"],"fn":["sse_channel"],"struct":["SseEmitter","SseEvent","SseEventBuilder","SseSender"]};

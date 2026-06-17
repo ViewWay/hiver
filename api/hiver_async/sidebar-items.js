@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AsyncError","ExecutionMode","RejectionPolicy"],"mod":["backpressure"],"struct":["AsyncTaskExecutor","AsyncTaskHandle","RunnableTask","TaskExecutorConfig"],"trait":["AsyncTask","TaskExecutor"],"type":["AsyncResult"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ApplicationException","ErrorResponse","ExceptionHandlerRegistry","FieldError","ResourceNotFoundException","ValidationException"],"trait":["IntoErrorResponse"],"type":["ExceptionHandlerFn"]};

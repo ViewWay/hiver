@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["extract_multipart"],"mod":["mime_types"],"struct":["FileValidator","MultipartConfig","Part"]};

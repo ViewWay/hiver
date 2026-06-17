@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["custom_headers_example","error_response_example","example_create_user_handler","example_error_handler","example_get_user_handler","example_paginated_response","into_response_example","json_parsing_example","json_response_example","main","response_building_example","status_code_example"],"struct":["CreateUserRequest","PaginationResponse","User"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DeFiError"],"struct":["Erc1155","Erc20","Erc721","UniswapV2Router"]};

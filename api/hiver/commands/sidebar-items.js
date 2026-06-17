@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["add","generate","new","run"]};

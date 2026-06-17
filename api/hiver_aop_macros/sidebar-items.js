@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"attr":["after","after_returning","after_throwing","around","aspect","before","pointcut"]};

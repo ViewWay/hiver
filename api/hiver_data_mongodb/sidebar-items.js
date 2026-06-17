@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["VERSION"],"mod":["aggregation","bulk","client","error","index","prelude","projection","query","repository","template"]};

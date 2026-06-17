@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="`OpenAPI` procedural macros `OpenAPI过程宏`"><title>hiver_openapi::macros - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="hiver_openapi" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Module macros</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../hiver_openapi/index.html">hiver_<wbr>openapi</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module macros</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#available-macros--可用宏" title="Available Macros / 可用宏">Available Macros / 可用宏</a></li><li><a href="#spring-equivalent--spring等价物" title="Spring Equivalent / Spring等价物">Spring Equivalent / Spring等价物</a></li><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul><h3><a href="#modules">Module Items</a></h3><ul class="block"><li><a href="#modules" title="Modules">Modules</a></li><li><a href="#traits" title="Traits">Traits</a></li><li><a href="#derives" title="Derive Macros">Derive Macros</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="../index.html">In crate hiver_<wbr>openapi</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">hiver_openapi</a></div><h1>Module <span>macros</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/hiver_openapi/macros.rs.html#1-164">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p><code>OpenAPI</code> procedural macros
+<code>OpenAPI过程宏</code></p>
+<p>This module re-exports utoipa macros for defining <code>OpenAPI</code> documentation.
+此模块重新导出 utoipa 宏用于定义 <code>OpenAPI</code> 文档。</p>
+<h2 id="available-macros--可用宏"><a class="doc-anchor" href="#available-macros--可用宏">§</a>Available Macros / 可用宏</h2>
+<ul>
+<li><code>#[derive(ToSchema)]</code> - Define <code>OpenAPI</code> schema for structs / 为结构体定义 <code>OpenAPI</code> 模式</li>
+<li><code>#[derive(IntoParams)]</code> - Define parameters for path/query / 定义路径/查询参数</li>
+<li><code>#[derive(ToResponse)]</code> - Define response schema / 定义响应模式</li>
+<li><code>#[openapi(...)]</code> - Define <code>OpenAPI</code> specification / 定义 <code>OpenAPI</code> 规范</li>
+</ul>
+<h2 id="spring-equivalent--spring等价物"><a class="doc-anchor" href="#spring-equivalent--spring等价物">§</a>Spring Equivalent / Spring等价物</h2><div><table><thead><tr><th>Hiver</th><th>Spring</th></tr></thead><tbody>
+<tr><td><code>#[derive(ToSchema)]</code></td><td><code>@Schema</code></td></tr>
+<tr><td><code>#[into_params(...)]</code></td><td><code>@Parameter</code></td></tr>
+<tr><td><code>#[openapi(...)]</code></td><td><code>@Operation</code> + <code>@Api</code></td></tr>
+</tbody></table>
+</div><h2 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>hiver_openapi::{ToSchema, IntoParams, openapi};
+<span class="kw">use </span>serde::Serialize;
+
+<span class="attr">#[derive(Serialize, ToSchema)]
+#[schema(description = <span class="string">"User entity"</span>)]
+</span><span class="kw">struct </span>User {
+    <span class="attr">#[schema(description = <span class="string">"User ID"</span>, example = <span class="string">"1"</span>)]
+    </span>id: u64,
+
+    <span class="attr">#[schema(description = <span class="string">"User name"</span>, example = <span class="string">"John Doe"</span>)]
+    </span>name: String,
+}
+
+<span class="attr">#[derive(IntoParams)]
+#[into_params(parameter_in = Path)]
+</span><span class="kw">struct </span>UserPathParams {
+    <span class="attr">#[param(description = <span class="string">"User ID"</span>)]
+    </span>id: u64,
+}
+
+<span class="attr">#[openapi(
+    tags = [<span class="string">"users"</span>]</span>,
+    paths(
+        get_user = (
+            path = <span class="string">"/users/{id}"</span>,
+            method = get,
+            operation_id = <span class="string">"getUser"</span>,
+            responses = (
+                (status = <span class="number">200</span>, description = <span class="string">"User found"</span>, body = User),
+                (status = <span class="number">404</span>, description = <span class="string">"User not found"</span>)
+            ),
+            params = (
+                (<span class="string">"id"</span>, description = <span class="string">"User ID"</span>, required = <span class="bool-val">true</span>)
+            )
+        )
+    )
+)]
+<span class="kw">struct </span>OpenApiSpec;</code></pre></div></div></details><h2 id="modules" class="section-header">Modules<a href="#modules" class="anchor">§</a></h2><dl class="item-table"><dt><a class="mod" href="openapi/index.html" title="mod hiver_openapi::macros::openapi">openapi</a></dt><dd>Rust implementation of Openapi Spec V3.1.</dd></dl><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><dl class="item-table"><dt><a class="trait" href="trait.IntoParams.html" title="trait hiver_openapi::macros::IntoParams">Into<wbr>Params</a></dt><dd>Trait used to convert implementing type to OpenAPI parameters.</dd><dt><a class="trait" href="trait.OperationHelper.html" title="trait hiver_openapi::macros::OperationHelper">Operation<wbr>Helper</a></dt><dd>Helper trait for operation documentation
+操作文档助手 trait</dd><dt><a class="trait" href="trait.SchemaHelper.html" title="trait hiver_openapi::macros::SchemaHelper">Schema<wbr>Helper</a></dt><dd>Helper trait for schema documentation
+模式文档助手 trait</dd><dt><a class="trait" href="trait.ToResponse.html" title="trait hiver_openapi::macros::ToResponse">ToResponse</a></dt><dd>This trait is implemented to document a type which represents a single response which can be
+referenced or reused as a component in multiple operations.</dd><dt><a class="trait" href="trait.ToSchema.html" title="trait hiver_openapi::macros::ToSchema">ToSchema</a></dt><dd>Trait for implementing OpenAPI Schema object.</dd></dl><h2 id="derives" class="section-header">Derive Macros<a href="#derives" class="anchor">§</a></h2><dl class="item-table"><dt><a class="derive" href="derive.IntoParams.html" title="derive hiver_openapi::macros::IntoParams">Into<wbr>Params</a></dt><dd>Generate <a href="attr.path.html#params-attributes">path parameters</a> from struct’s
+fields.</dd><dt><a class="derive" href="derive.ToResponse.html" title="derive hiver_openapi::macros::ToResponse">ToResponse</a></dt><dd>Generate reusable OpenAPI response that can be used
+in <a href="attr.path.html"><code>utoipa::path</code></a> or in <a href="derive.OpenApi.html"><code>OpenApi</code></a>.</dd><dt><a class="derive" href="derive.ToSchema.html" title="derive hiver_openapi::macros::ToSchema">ToSchema</a></dt><dd>Generate reusable OpenAPI schema to be used
+together with <a href="derive.OpenApi.html"><code>OpenApi</code></a>.</dd></dl></section></div></main></body></html>

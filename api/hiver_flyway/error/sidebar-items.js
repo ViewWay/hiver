@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["FlywayError"],"type":["Result"]};

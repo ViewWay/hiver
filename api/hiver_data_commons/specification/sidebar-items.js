@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Predicate","SpecValue"],"struct":["AlwaysSpec","AndSpec","BuiltSpecification","NotSpec","OrSpec","SimpleSpec","SpecFactories","Specifications"],"trait":["JpaSpecificationExecutor","Specification"]};

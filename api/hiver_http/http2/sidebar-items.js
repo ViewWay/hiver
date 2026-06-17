@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ConnectionState","ErrorCode","FrameType","Http2Error","SettingsParameter","StreamState"],"struct":["Http2Config","Priority","StreamId","StreamReset"]};

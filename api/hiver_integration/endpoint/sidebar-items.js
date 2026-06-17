@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["FnMessageHandler","Gateway","ServiceActivator","ServiceActivatorBuilder","ServiceActivatorConfig"],"trait":["MessageHandler"]};

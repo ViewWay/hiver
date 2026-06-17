@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["dispatcher","endpoint","marshalling","security","soap","transport","wsdl"]};

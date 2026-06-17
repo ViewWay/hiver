@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ApplicationContext","BeanRegistrar","BeanRegistration","ComponentScanner","Container"],"trait":["PostConstruct","PreDestroy"],"type":["BeanFactoryFn"]};

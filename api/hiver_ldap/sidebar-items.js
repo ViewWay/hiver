@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["context","error","ldif","mapper","odm","operations","pool","query","repository","template"]};

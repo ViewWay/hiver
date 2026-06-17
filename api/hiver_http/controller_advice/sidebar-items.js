@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ControllerAdvice","ControllerAdviceBuilder","ControllerErrorResponse","ForbiddenHandler","InternalErrorHandler","NotFoundHandler","UnauthorizedHandler","ValidationHandler"],"trait":["ExceptionHandler"]};

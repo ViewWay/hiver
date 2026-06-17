@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DataScopeType"],"fn":["apply_data_scope","build_data_scope_authority","default_scope_resolver","get_data_scope","with_data_scope","with_data_scope_async"],"struct":["DataScope","DataScopeContext","DataScopeMiddleware","DataScopeRule"],"trait":["DataScopeApply"]};

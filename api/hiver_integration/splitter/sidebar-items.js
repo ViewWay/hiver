@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["AsyncFunctionSplitter","DelimiterSplitter","FunctionSplitter","IteratorSplitter","JsonArraySplitter","LineSplitter","SizeSplitter"],"trait":["MessageSplitter"]};

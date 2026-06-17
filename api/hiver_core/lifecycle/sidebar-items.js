@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["destroy_bean","initialize_bean"],"struct":["NoOpBeanFactoryPostProcessor","NoOpBeanPostProcessor"],"trait":["BeanFactoryPostProcessor","BeanPostProcessor","DisposableBean","InitializingBean"],"type":["Result"]};

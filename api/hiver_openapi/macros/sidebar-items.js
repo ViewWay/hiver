@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":["IntoParams","ToResponse","ToSchema"],"mod":["openapi"],"trait":["IntoParams","OperationHelper","SchemaHelper","ToResponse","ToSchema"]};

@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="async-graphql execution engine bridge. 基于 async-graphql 的真实 GraphQL 执行引擎桥接。"><title>hiver_graphql::engine - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="hiver_graphql" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Module engine</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../hiver_graphql/index.html">hiver_<wbr>graphql</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module engine</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#description--描述" title="Description / 描述">Description / 描述</a></li><li><a href="#example--示例" title="Example / 示例">Example / 示例</a></li></ul><h3><a href="#structs">Module Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li><li><a href="#traits" title="Traits">Traits</a></li><li><a href="#functions" title="Functions">Functions</a></li><li><a href="#types" title="Type Aliases">Type Aliases</a></li><li><a href="#attributes" title="Attribute Macros">Attribute Macros</a></li><li><a href="#derives" title="Derive Macros">Derive Macros</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="../index.html">In crate hiver_<wbr>graphql</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">hiver_graphql</a></div><h1>Module <span>engine</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/hiver_graphql/engine.rs.html#1-473">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>async-graphql execution engine bridge.
+基于 async-graphql 的真实 GraphQL 执行引擎桥接。</p>
+<h2 id="description--描述"><a class="doc-anchor" href="#description--描述">§</a>Description / 描述</h2>
+<p>This module bridges <code>async-graphql</code> (the most mature Rust GraphQL library)
+into the Hiver framework, providing:</p>
+<ul>
+<li>SDL schema parsing and validation</li>
+<li>Full query / mutation execution</li>
+<li>Subscription streams over async channels</li>
+<li>DataLoader integration</li>
+<li>GraphiQL playground HTML</li>
+</ul>
+<p>本模块将 async-graphql 集成到 Hiver 框架，提供真实的 SDL 解析、
+Query/Mutation 执行、Subscription 流以及 DataLoader 集成。</p>
+<h2 id="example--示例"><a class="doc-anchor" href="#example--示例">§</a>Example / 示例</h2>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>async_graphql::{Object, SimpleObject, EmptyMutation, EmptySubscription, Schema};
+<span class="kw">use </span>hiver_graphql::engine::{HiverGraphQL, GraphQLRequest};
+
+<span class="attr">#[derive(SimpleObject)]
+</span><span class="kw">struct </span>User { id: u64, name: String }
+
+<span class="kw">struct </span>QueryRoot;
+<span class="attr">#[Object]
+</span><span class="kw">impl </span>QueryRoot {
+    <span class="kw">async fn </span>user(<span class="kw-2">&amp;</span><span class="self">self</span>, id: u64) -&gt; User { User { id, name: <span class="string">"Alice"</span>.into() } }
+}
+
+<span class="kw">let </span>schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription).finish();
+<span class="kw">let </span>engine = HiverGraphQL::new(schema);
+<span class="kw">let </span>resp = engine.execute(GraphQLRequest::new(<span class="string">"{ user(id: 1) { name } }"</span>)).<span class="kw">await</span>;</code></pre></div></div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.EmptyMutation.html" title="struct hiver_graphql::engine::EmptyMutation">Empty<wbr>Mutation</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。
+Empty mutation</dd><dt><a class="struct" href="struct.EmptySubscription.html" title="struct hiver_graphql::engine::EmptySubscription">Empty<wbr>Subscription</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。
+Empty subscription</dd><dt><a class="struct" href="struct.GraphQLRequest.html" title="struct hiver_graphql::engine::GraphQLRequest">GraphQL<wbr>Request</a></dt><dd>GraphQL over-HTTP request.
+GraphQL over-HTTP 请求。</dd><dt><a class="struct" href="struct.GraphQLResponse.html" title="struct hiver_graphql::engine::GraphQLResponse">GraphQL<wbr>Response</a></dt><dd>GraphQL over-HTTP response.
+GraphQL over-HTTP 响应。</dd><dt><a class="struct" href="struct.HiverGraphQL.html" title="struct hiver_graphql::engine::HiverGraphQL">Hiver<wbr>GraphQL</a></dt><dd>The Hiver GraphQL execution engine backed by <code>async-graphql</code>.
+基于 async-graphql 的 Hiver GraphQL 执行引擎。</dd><dt><a class="struct" href="struct.HiverGraphQLBuilder.html" title="struct hiver_graphql::engine::HiverGraphQLBuilder">Hiver<wbr>GraphQL<wbr>Builder</a></dt><dd>Convenience builder for constructing a Hiver-wrapped <code>async-graphql</code> schema.
+方便构建 Hiver 包装的 async-graphql schema 的辅助构建器。</dd><dt><a class="struct" href="struct.ID.html" title="struct hiver_graphql::engine::ID">ID</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。
+ID scalar</dd></dl><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><dl class="item-table"><dt><a class="trait" href="trait.OutputType.html" title="trait hiver_graphql::engine::OutputType">Output<wbr>Type</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。
+Represents a GraphQL output type.</dd><dt><a class="trait" href="trait.ScalarType.html" title="trait hiver_graphql::engine::ScalarType">Scalar<wbr>Type</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。
+A GraphQL scalar.</dd></dl><h2 id="functions" class="section-header">Functions<a href="#functions" class="anchor">§</a></h2><dl class="item-table"><dt><a class="fn" href="fn.graphiql_html.html" title="fn hiver_graphql::engine::graphiql_html">graphiql_<wbr>html</a></dt><dd>Generate the GraphiQL HTML playground page.
+生成 GraphiQL HTML 游乐场页面。</dd></dl><h2 id="types" class="section-header">Type Aliases<a href="#types" class="anchor">§</a></h2><dl class="item-table"><dt><a class="type" href="type.Context.html" title="type hiver_graphql::engine::Context">Context</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。
+Context object for resolve field</dd><dt><a class="type" href="type.FieldResult.html" title="type hiver_graphql::engine::FieldResult">Field<wbr>Result</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。
+An alias of <a href="type.Result.html">async_graphql::Result</a>. Present for backward
+compatibility reasons.</dd></dl><h2 id="attributes" class="section-header">Attribute Macros<a href="#attributes" class="anchor">§</a></h2><dl class="item-table"><dt><a class="attr" href="attr.Object.html" title="attr hiver_graphql::engine::Object">Object</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。</dd><dt><a class="attr" href="attr.Scalar.html" title="attr hiver_graphql::engine::Scalar">Scalar</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。</dd><dt><a class="attr" href="attr.Subscription.html" title="attr hiver_graphql::engine::Subscription">Subscription</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。</dd></dl><h2 id="derives" class="section-header">Derive Macros<a href="#derives" class="anchor">§</a></h2><dl class="item-table"><dt><a class="derive" href="derive.Enum.html" title="derive hiver_graphql::engine::Enum">Enum</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。</dd><dt><a class="derive" href="derive.InputObject.html" title="derive hiver_graphql::engine::InputObject">Input<wbr>Object</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。</dd><dt><a class="derive" href="derive.Interface.html" title="derive hiver_graphql::engine::Interface">Interface</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。</dd><dt><a class="derive" href="derive.MergedObject.html" title="derive hiver_graphql::engine::MergedObject">Merged<wbr>Object</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。</dd><dt><a class="derive" href="derive.MergedSubscription.html" title="derive hiver_graphql::engine::MergedSubscription">Merged<wbr>Subscription</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。</dd><dt><a class="derive" href="derive.OneofObject.html" title="derive hiver_graphql::engine::OneofObject">Oneof<wbr>Object</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。</dd><dt><a class="derive" href="derive.SimpleObject.html" title="derive hiver_graphql::engine::SimpleObject">Simple<wbr>Object</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。</dd><dt><a class="derive" href="derive.Union.html" title="derive hiver_graphql::engine::Union">Union</a></dt><dd>Re-exported from <code>async-graphql</code> for convenience.
+从 async-graphql 重新导出，方便使用。</dd></dl></section></div></main></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["aggregator","channel","endpoint","error","filter","interceptor","message","prelude","router","splitter","transformer"],"struct":["BuiltFlow","Flow","IntegrationFlow"]};

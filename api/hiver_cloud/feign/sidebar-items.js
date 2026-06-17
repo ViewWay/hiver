@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["FeignError"],"fn":["execute_request","execute_request_text","execute_request_with_body"],"struct":["BearerTokenInterceptor","DefaultFallback","FeignClientConfig","HeaderInterceptor","RetryConfig"],"trait":["FeignFallback","FeignRequestInterceptor"],"type":["FeignResult"]};
