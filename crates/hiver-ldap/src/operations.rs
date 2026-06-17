@@ -25,7 +25,7 @@
 
 use crate::{
     LdapTemplate,
-    context::{ContextSource, LdapContextSource},
+    context::LdapContextSource,
     error::LdapResult,
 };
 

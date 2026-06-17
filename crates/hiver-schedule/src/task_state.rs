@@ -3,10 +3,7 @@
 
 use std::{
     collections::HashMap,
-    sync::{
-        Arc,
-        atomic::{AtomicU64, AtomicUsize, Ordering},
-    },
+    sync::atomic::{AtomicU64, AtomicUsize, Ordering},
 };
 
 use tokio::sync::RwLock;

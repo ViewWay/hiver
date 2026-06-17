@@ -19,9 +19,7 @@ use tokio::{
 };
 use tracing::info;
 
-use crate::{
-    CronExpression, DEFAULT_INITIAL_DELAY_MS, ScheduleStatistics, TaskState, TaskStateTracker,
-};
+use crate::{CronExpression, DEFAULT_INITIAL_DELAY_MS, ScheduleStatistics, TaskStateTracker};
 
 /// Task function type / 任务函数类型
 pub type TaskFn = Arc<dyn Fn() + Send + Sync + 'static>;
