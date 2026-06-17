@@ -27,7 +27,12 @@ async fn flux_map_filter_collect()
 #[tokio::test]
 async fn flux_take_skip()
 {
-    let v: Vec<i32> = Flux::from_iter(0..10).skip(2).take(3).collect().await.unwrap();
+    let v: Vec<i32> = Flux::from_iter(0..10)
+        .skip(2)
+        .take(3)
+        .collect()
+        .await
+        .unwrap();
     assert_eq!(v, vec![2, 3, 4]);
 }
 
@@ -133,8 +138,10 @@ async fn flux_explicit_error()
 #[tokio::test]
 async fn flux_for_each()
 {
-    use std::sync::atomic::{AtomicI32, Ordering};
-    use std::sync::Arc;
+    use std::sync::{
+        Arc,
+        atomic::{AtomicI32, Ordering},
+    };
     let sum = Arc::new(AtomicI32::new(0));
     let s = sum.clone();
     Flux::from_iter([1, 2, 3])
@@ -212,8 +219,10 @@ async fn mono_error()
 #[tokio::test]
 async fn mono_do_on_next()
 {
-    use std::sync::atomic::{AtomicUsize, Ordering};
-    use std::sync::Arc;
+    use std::sync::{
+        Arc,
+        atomic::{AtomicUsize, Ordering},
+    };
     let calls = Arc::new(AtomicUsize::new(0));
     let c = calls.clone();
     let v = Mono::just("hi")

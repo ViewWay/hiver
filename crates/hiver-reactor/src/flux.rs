@@ -1,12 +1,12 @@
 //! `Flux<T>` — a reactive stream of 0..N values (Project Reactor `Flux` equivalent).
 //! `Flux<T>`——0..N 值的响应式流（Project Reactor `Flux` 等价）。
 
-use std::future::Future;
-use std::pin::Pin;
-use std::time::Duration;
+use std::{future::Future, pin::Pin, time::Duration};
 
-use futures::stream::{BoxStream, Stream, StreamExt};
-use futures::TryStreamExt;
+use futures::{
+    TryStreamExt,
+    stream::{BoxStream, Stream, StreamExt},
+};
 
 use crate::error::{ReactorError, ReactorResult};
 
@@ -133,7 +133,8 @@ impl<T: Send + 'static> Flux<T>
         Flux::from_stream(self.inner.then(move |res| {
             let f = f.clone();
             async move {
-                match res {
+                match res
+                {
                     Ok(v) => Ok(f(v).await),
                     Err(e) => Err(e),
                 }
@@ -148,7 +149,8 @@ impl<T: Send + 'static> Flux<T>
         F: FnMut(&T) -> bool + Send + 'static,
     {
         Flux::from_stream(self.inner.filter(move |res| {
-            let keep = match res {
+            let keep = match res
+            {
                 Ok(v) => pred(v),
                 Err(_) => true,
             };
@@ -192,23 +194,21 @@ impl<T: Send + 'static> Flux<T>
     {
         // ready_chunks yields Vec<Item>; we must unwrap the Result<Item>.
         // ready_chunks 发射 Vec<Item>；需解开 Result<Item>。
-        Flux::from_stream(
-            self.inner
-                .ready_chunks(capacity)
-                .map(|chunk| {
-                    // Partition into (values, first_error). On error, emit the error
-                    // and drop the rest (terminal).
-                    // 分离为 (值, 首个错误)。出错时发射错误并丢弃其余（终止）。
-                    let mut values = Vec::with_capacity(chunk.len());
-                    for item in chunk {
-                        match item {
-                            Ok(v) => values.push(v),
-                            Err(e) => return Err(e),
-                        }
-                    }
-                    Ok(values)
-                }),
-        )
+        Flux::from_stream(self.inner.ready_chunks(capacity).map(|chunk| {
+            // Partition into (values, first_error). On error, emit the error
+            // and drop the rest (terminal).
+            // 分离为 (值, 首个错误)。出错时发射错误并丢弃其余（终止）。
+            let mut values = Vec::with_capacity(chunk.len());
+            for item in chunk
+            {
+                match item
+                {
+                    Ok(v) => values.push(v),
+                    Err(e) => return Err(e),
+                }
+            }
+            Ok(values)
+        }))
     }
 
     // ---- Time operators (require tokio) / 时间算子（需要 tokio） ----
@@ -257,9 +257,11 @@ impl<T: Send + 'static> Flux<T>
     {
         let mut acc: Option<T> = None;
         let mut inner = self.inner;
-        while let Some(res) = inner.next().await {
+        while let Some(res) = inner.next().await
+        {
             let v = res?;
-            acc = Some(match acc {
+            acc = Some(match acc
+            {
                 Some(a) => f(a, v),
                 None => v,
             });
@@ -278,7 +280,8 @@ impl<T: Send + 'static> Flux<T>
     {
         let mut acc = init;
         let mut inner = self.inner;
-        while let Some(res) = inner.next().await {
+        while let Some(res) = inner.next().await
+        {
             let v = res?;
             acc = f(acc, v).await;
         }
@@ -291,7 +294,8 @@ impl<T: Send + 'static> Flux<T>
     {
         let mut n = 0usize;
         let mut inner = self.inner;
-        while let Some(res) = inner.next().await {
+        while let Some(res) = inner.next().await
+        {
             let _ = res?;
             n += 1;
         }
@@ -311,7 +315,8 @@ impl<T: Send + 'static> Flux<T>
     {
         let mut last = None;
         let mut inner = self.inner;
-        while let Some(res) = inner.next().await {
+        while let Some(res) = inner.next().await
+        {
             last = Some(res?);
         }
         Ok(last)
@@ -326,7 +331,8 @@ impl<T: Send + 'static> Flux<T>
         T: Send,
     {
         let mut inner = self.inner;
-        while let Some(res) = inner.next().await {
+        while let Some(res) = inner.next().await
+        {
             on_next(res?);
         }
         Ok(())
@@ -368,17 +374,16 @@ fn async_timeout_stream<T: Send + 'static>(
 ) -> impl Stream<Item = ReactorResult<T>> + Send
 {
     use futures::stream::unfold;
-    unfold(
-        (inner, false),
-        move |(mut inner, timed_out)| async move {
-            if timed_out {
-                return None;
-            }
-            match tokio::time::timeout(duration, inner.next()).await {
-                Ok(Some(item)) => Some((item, (inner, false))),
-                Ok(None) => None,
-                Err(_) => Some((Err(ReactorError::Timeout), (inner, true))),
-            }
-        },
-    )
+    unfold((inner, false), move |(mut inner, timed_out)| async move {
+        if timed_out
+        {
+            return None;
+        }
+        match tokio::time::timeout(duration, inner.next()).await
+        {
+            Ok(Some(item)) => Some((item, (inner, false))),
+            Ok(None) => None,
+            Err(_) => Some((Err(ReactorError::Timeout), (inner, true))),
+        }
+    })
 }

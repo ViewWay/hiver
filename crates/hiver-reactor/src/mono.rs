@@ -1,14 +1,14 @@
 //! `Mono<T>` — a reactive stream of 0..1 values (Project Reactor `Mono` equivalent).
 //! `Mono<T>`——0..1 值的响应式流（Project Reactor `Mono` 等价）。
 
-use std::future::Future;
-use std::pin::Pin;
-use std::time::Duration;
+use std::{future::Future, pin::Pin, time::Duration};
 
 use futures::future::{BoxFuture, FutureExt};
 
-use crate::error::{ReactorError, ReactorResult};
-use crate::flux::Flux;
+use crate::{
+    error::{ReactorError, ReactorResult},
+    flux::Flux,
+};
 
 /// `Mono<T>` — an asynchronous publisher of zero or one `T` value, followed by
 /// completion or an error.
@@ -46,9 +46,7 @@ impl<T: Send + 'static> Mono<T>
         F: Future<Output = ReactorResult<Option<T>>> + Send + 'static,
         T: Send + 'static,
     {
-        Self {
-            inner: fut.boxed(),
-        }
+        Self { inner: fut.boxed() }
     }
 
     /// Create a `Mono` that emits exactly one value.
@@ -101,7 +99,8 @@ impl<T: Send + 'static> Mono<T>
         T: Send + 'static,
     {
         Mono::from_future(async move {
-            match self.inner.await {
+            match self.inner.await
+            {
                 Ok(Some(v)) => Ok(Some(f(v))),
                 Ok(None) => Ok(None),
                 Err(e) => Err(e),
@@ -118,7 +117,8 @@ impl<T: Send + 'static> Mono<T>
         T: Send + 'static,
     {
         Mono::from_future(async move {
-            match self.inner.await {
+            match self.inner.await
+            {
                 Ok(Some(v)) => f(v).await,
                 Ok(None) => Ok(None),
                 Err(e) => Err(e),
@@ -133,11 +133,13 @@ impl<T: Send + 'static> Mono<T>
         F: FnMut(&T) + Send + 'static,
     {
         Mono::from_future(async move {
-            match self.inner.await {
-                Ok(Some(v)) => {
+            match self.inner.await
+            {
+                Ok(Some(v)) =>
+                {
                     f(&v);
                     Ok(Some(v))
-                }
+                },
                 Ok(None) => Ok(None),
                 Err(e) => Err(e),
             }
@@ -151,7 +153,8 @@ impl<T: Send + 'static> Mono<T>
         T: Clone + Send + 'static,
     {
         Mono::from_future(async move {
-            match self.inner.await {
+            match self.inner.await
+            {
                 Ok(None) => Ok(Some(default)),
                 other => other,
             }
@@ -176,8 +179,10 @@ impl<T: Send + 'static> Mono<T>
         // 避免局部枚举引用外部类型参数。
         let init: Option<BoxFuture<'static, ReactorResult<Option<T>>>> = Some(self.inner);
         let stream = futures::stream::unfold(init, |state| async move {
-            match state {
-                Some(fut) => match fut.await {
+            match state
+            {
+                Some(fut) => match fut.await
+                {
                     Ok(Some(v)) => Some((Ok(v), None)),
                     Ok(None) => None,
                     Err(e) => Some((Err(e), None)),
@@ -210,7 +215,8 @@ impl<T: Send + 'static> Mono<T>
         T: Send + 'static,
     {
         Mono::from_future(async move {
-            match tokio::time::timeout(duration, self.inner).await {
+            match tokio::time::timeout(duration, self.inner).await
+            {
                 Ok(res) => res,
                 Err(_) => Err(ReactorError::Timeout),
             }
@@ -230,10 +236,8 @@ impl<T> Future for Mono<T>
 {
     type Output = ReactorResult<Option<T>>;
 
-    fn poll(
-        self: Pin<&mut Self>,
-        cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Self::Output>
+    fn poll(self: Pin<&mut Self>, cx: &mut std::task::Context<'_>)
+    -> std::task::Poll<Self::Output>
     {
         let inner = unsafe { self.map_unchecked_mut(|m| &mut m.inner) };
         inner.poll(cx)

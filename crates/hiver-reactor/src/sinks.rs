@@ -4,9 +4,11 @@
 use futures::stream::unfold;
 use tokio::sync::broadcast;
 
-use crate::error::{ReactorError, ReactorResult};
-use crate::flux::Flux;
-use crate::strategy::BackpressureStrategy;
+use crate::{
+    error::{ReactorError, ReactorResult},
+    flux::Flux,
+    strategy::BackpressureStrategy,
+};
 
 /// Error returned by [`Sinks::try_emit`] when the value cannot be accepted.
 /// 当 [`Sinks::try_emit`] 无法接受值时返回的错误。
@@ -71,27 +73,30 @@ impl<T: Clone + Send + 'static> Sinks<T>
     /// Try to emit a value to all current subscribers.
     /// 向所有当前订阅者尝试发射一个值。
     ///
-    /// - `Buffer` / `Drop` / `DropLatest`: emit and silently let lagged
-    ///   subscribers miss values (returns `Ok(())` if there are subscribers).
+    /// - `Buffer` / `Drop` / `DropLatest`: emit and silently let lagged subscribers miss values
+    ///   (returns `Ok(())` if there are subscribers).
     /// - `Error`: returns [`TrySendError::Full`] if no subscriber could receive.
     /// - Returns [`TrySendError::NoSubscribers`] if there are no receivers.
     ///
-    /// - `Buffer` / `Drop` / `DropLatest`：发射并静默让滞后订阅者错过值
-    ///   （有订阅者时返回 `Ok(())`）。
+    /// - `Buffer` / `Drop` / `DropLatest`：发射并静默让滞后订阅者错过值 （有订阅者时返回
+    ///   `Ok(())`）。
     /// - `Error`：若无订阅者能接收，返回 [`TrySendError::Full`]。
     /// - 无接收者时返回 [`TrySendError::NoSubscribers`]。
     pub fn try_emit(&self, value: T) -> Result<(), TrySendError>
     {
         let n = self.tx.receiver_count();
-        if n == 0 {
+        if n == 0
+        {
             // Honor Error strategy's "no subscribers" semantics; otherwise it's a
             // no-op for a hot source.
-            return match self.strategy {
+            return match self.strategy
+            {
                 BackpressureStrategy::Error => Err(TrySendError::NoSubscribers),
                 _ => Ok(()),
             };
         }
-        match self.tx.send(value) {
+        match self.tx.send(value)
+        {
             Ok(_) => Ok(()),
             Err(broadcast::error::SendError(_)) => Err(TrySendError::Closed),
         }
@@ -107,14 +112,12 @@ impl<T: Clone + Send + 'static> Sinks<T>
         // by reporting NoSubscribers immediately when there are none.
         // broadcast::send 非阻塞；"阻塞直到被接收"以无订阅者时立即上报
         // NoSubscribers 来近似。
-        self.try_emit(value)
-            .map_err(|e| match e {
-                TrySendError::NoSubscribers => {
-                    ReactorError::Overflow("no subscribers".into())
-                }
-                TrySendError::Full => ReactorError::Overflow("buffer full".into()),
-                TrySendError::Closed => ReactorError::SinkClosed,
-            })
+        self.try_emit(value).map_err(|e| match e
+        {
+            TrySendError::NoSubscribers => ReactorError::Overflow("no subscribers".into()),
+            TrySendError::Full => ReactorError::Overflow("buffer full".into()),
+            TrySendError::Closed => ReactorError::SinkClosed,
+        })
     }
 
     /// Subscribe to the sink, returning a [`Flux`] of emitted values. A lagged
@@ -129,11 +132,13 @@ impl<T: Clone + Send + 'static> Sinks<T>
         // 通过 `unfold` 将广播接收者驱动为 futures Stream，接收者本身作为
         // unfold 状态（因此每次调用不会重新 move 它）。
         let stream = unfold(rx, |mut rx| async move {
-            match rx.recv().await {
+            match rx.recv().await
+            {
                 Ok(v) => Some((Ok(v), rx)),
-                Err(broadcast::error::RecvError::Lagged(n)) => {
+                Err(broadcast::error::RecvError::Lagged(n)) =>
+                {
                     Some((Err(ReactorError::Overflow(format!("lagged by {n}"))), rx))
-                }
+                },
                 Err(broadcast::error::RecvError::Closed) => None,
             }
         });

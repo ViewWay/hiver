@@ -64,21 +64,19 @@ mod sinks;
 
 pub use error::{ReactorError, ReactorResult};
 pub use flux::{Flux, FluxItem};
+pub use futures::stream::{self, Stream, StreamExt};
 pub use mono::Mono;
-pub use strategy::BackpressureStrategy;
-
 #[cfg(feature = "tokio")]
 pub use sinks::{Sinks, TrySendError};
-
-pub use futures::stream::{self, Stream, StreamExt};
+pub use strategy::BackpressureStrategy;
 
 /// Prelude — import to bring the commonly used types into scope.
 /// 预导出——导入后可将常用类型引入作用域。
 pub mod prelude
 {
-    pub use crate::{flux::Flux, mono::Mono, strategy::BackpressureStrategy};
     #[cfg(feature = "tokio")]
     pub use crate::sinks::Sinks;
+    pub use crate::{flux::Flux, mono::Mono, strategy::BackpressureStrategy};
 }
 
 #[cfg(test)]
