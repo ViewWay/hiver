@@ -12,7 +12,7 @@
 #[cfg(feature = "ldap")]
 use crate::error::LdapError;
 use crate::{
-    context::LdapContextSource,
+    context::{ContextSource, LdapContextSource},
     error::LdapResult,
     mapper::{AttrMap, AttributesMapper, ContextMapper},
 };

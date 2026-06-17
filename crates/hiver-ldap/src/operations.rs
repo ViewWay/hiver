@@ -23,7 +23,11 @@
 //! let matches = ops.compare("cn=user,dc=example,dc=com", "uid", "jdoe").await?;
 //! ```
 
-use crate::{LdapTemplate, context::LdapContextSource, error::LdapResult};
+use crate::{
+    LdapTemplate,
+    context::{ContextSource, LdapContextSource},
+    error::LdapResult,
+};
 
 /// Advanced LDAP operations wrapper / 高级 LDAP 操作包装器
 ///
