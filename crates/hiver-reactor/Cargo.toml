@@ -1,0 +1,37 @@
+[package]
+name = "hiver-reactor"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = """
+Reactive streams for Hiver Framework — Project Reactor / Spring WebFlux equivalent.
+Hiver框架的响应式流——Project Reactor / Spring WebFlux 等价功能。
+Provides Mono (0..1) and Flux (0..N) reactive types with operators, backpressure, and error handling.
+"""
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[features]
+default = ["tokio"]
+
+# Enable tokio runtime integration / 启用 tokio 迏行时集成
+tokio = ["dep:tokio"]
+
+[dependencies]
+hiver-core = { path = "../hiver-core", version = "0.1.0-alpha.6" }
+futures = { workspace = true }
+pin-project-lite = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tokio = { workspace = true, features = ["sync", "time", "rt"], optional = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt", "rt-multi-thread", "test-util", "time"] }

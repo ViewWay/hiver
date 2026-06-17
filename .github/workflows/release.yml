@@ -74,6 +74,8 @@ jobs:
             path: crates/hiver-ws
           - crate: hiver-async
             path: crates/hiver-async
+          - crate: hiver-reactor
+            path: crates/hiver-reactor
           - crate: hiver-batch
             path: crates/hiver-batch
           - crate: hiver-micrometer

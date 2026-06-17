@@ -5849,6 +5849,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "hiver-reactor"
+version = "0.1.0-alpha.6"
+dependencies = [
+ "futures",
+ "hiver-core",
+ "pin-project-lite",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "hiver-resilience"
 version = "0.1.0-alpha.6"
 dependencies = [

@@ -68,6 +68,7 @@ members = [
     "crates/hiver-data-rest",
     "crates/hiver-cloud-stream",
     "crates/hiver-cloud-bus",
+    "crates/hiver-reactor",
     "crates/hiver-devtools",
     "crates/hiver-cli",
     "tests",
