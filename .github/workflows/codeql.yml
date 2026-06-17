@@ -70,7 +70,8 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y \
             libcurl4-openssl-dev \
-            libsasl2-dev
+            libsasl2-dev \
+            protobuf-compiler
 
       - name: Build project
         run: cargo build --all --all-features

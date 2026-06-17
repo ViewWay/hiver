@@ -63,7 +63,8 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y \
             libcurl4-openssl-dev \
-            libsasl2-dev
+            libsasl2-dev \
+            protobuf-compiler
 
       - name: Build mdBook guide
         run: |
@@ -116,7 +117,8 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y \
             libcurl4-openssl-dev \
-            libsasl2-dev
+            libsasl2-dev \
+            protobuf-compiler
 
       - name: Run documentation tests
         run: cargo test --doc --all-features --workspace
