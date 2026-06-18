@@ -71,7 +71,7 @@ impl IoState
 /// - 如果非空，`buf_ptr` 必须对 `buf_len` 字节有效
 /// - 缓冲区必须在操作完成前保持有效
 #[derive(Debug, Clone)]
-pub(crate) struct SubmitEntry
+pub struct SubmitEntry
 {
     /// File descriptor to operate on / 操作的文件描述符
     pub fd: i32,
@@ -264,7 +264,7 @@ impl SubmitEntry
 /// Represents a completed I/O operation returned from the kernel.
 /// 表示从内核返回的已完成的I/O操作。
 #[derive(Debug, Clone, Copy)]
-pub(crate) struct CompletionEntry
+pub struct CompletionEntry
 {
     /// User data from the corresponding submission / 来自相应提交的用户数据
     pub user_data: u64,
