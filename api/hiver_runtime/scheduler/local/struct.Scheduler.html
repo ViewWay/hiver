@@ -20,7 +20,7 @@ Each scheduler follows the thread-per-core model with no work stealing.</p>
 </ul>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.with_config_and_driver" class="method"><a class="src rightside" href="../../../src/hiver_runtime/scheduler/local.rs.html#142-192">Source</a><h4 class="code-header">pub fn <a href="#method.with_config_and_driver" class="fn">with_config_and_driver</a>(
     config: &amp;<a class="struct" href="struct.SchedulerConfig.html" title="struct hiver_runtime::scheduler::local::SchedulerConfig">SchedulerConfig</a>,
-    _driver: <a class="struct" href="https://doc.rust-lang.org/1.96.0/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;dyn Driver&gt;,
+    _driver: <a class="struct" href="https://doc.rust-lang.org/1.96.0/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;dyn <a class="trait" href="../../driver/trait.Driver.html" title="trait hiver_runtime::driver::Driver">Driver</a>&gt;,
 ) -&gt; <a class="type" href="https://doc.rust-lang.org/1.96.0/std/io/error/type.Result.html" title="type std::io::error::Result">Result</a>&lt;Self&gt;</h4></section></summary><div class="docblock"><p>Create a new scheduler with the specified configuration and driver
 使用指定配置和driver创建新调度器</p>
 <h5 id="errors--错误-2"><a class="doc-anchor" href="#errors--错误-2">§</a>Errors / 错误</h5>

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["IoState"],"struct":["SockAddr"]};
+window.SIDEBAR_ITEMS = {"enum":["IoState"],"struct":["CompletionEntry","SockAddr","SubmitEntry"]};
