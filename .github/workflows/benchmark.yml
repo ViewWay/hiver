@@ -76,10 +76,15 @@ jobs:
           tool: 'cargo'
           output-file-path: benchmark-results.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          # auto-push disabled until a gh-pages baseline branch is set up.
+          # Without a baseline the action has nothing to compare against, so
+          # keep fail-on-alert off to avoid blocking CI on first runs.
+          # Once gh-pages exists, flip auto-push to true and re-enable
+          # fail-on-alert to catch performance regressions.
           auto-push: false
           alert-threshold: '150%'
           comment-on-alert: true
-          fail-on-alert: true
+          fail-on-alert: false
           alert-comment-cc-users: '@ViewWay'
 
       - name: Upload benchmark results
