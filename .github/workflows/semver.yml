@@ -101,25 +101,45 @@ jobs:
         run: cargo install cargo-public-api
 
       # Compute the real diff between origin/main and the PR head.
-      # Earlier this wrote both API listings but posted only the new one
-      # labeled as a "diff". Now we capture an actual unified diff.
-      # 计算 origin/main 与 PR head 之间的真实差异。
-      # 之前写了两个 API 列表但只发布了新的那个并标为 "diff"。现在捕获真实的统一差异。
+      #
+      # NOTE: cargo-public-api does NOT support --workspace (it operates on one
+      # crate at a time via rustdoc JSON). The old workflow passed --workspace,
+      # which errored with "unexpected argument"; the `|| true` on the diff
+      # step masked it, so the posted "diff" was always empty. We now loop over
+      # every workspace library crate.
+      # 注意：cargo-public-api 不支持 --workspace（它基于 rustdoc JSON 逐 crate
+      # 操作）。旧 workflow 传 --workspace 会报 "unexpected argument"；diff 步骤的
+      # `|| true` 掩盖了它，导致发布的 "diff" 永远为空。现在遍历每个 workspace
+      # 库 crate。
       - name: Generate API diff
         run: |
-          git checkout origin/main
-          cargo public-api --workspace --all-features > /tmp/api-old.txt
+          # Collect all library members of the workspace.
+          CRATES=$(cargo metadata --no-deps --format-version 1 \
+            | jq -r '.packages[] | select(.targets[]?.kind | index(["lib"])) | .name' \
+            | sort -u)
 
-          git checkout -
-          cargo public-api --workspace --all-features > /tmp/api-new.txt
+          : > /tmp/api-diff.txt
 
-          # diff exits non-zero when there ARE changes (which is normal for a PR);
-          # capture it into a file and never fail the job on that.
-          # diff 在有差异时返回非零（对 PR 是正常的）；写入文件且不让它导致 job 失败。
-          diff -u /tmp/api-old.txt /tmp/api-new.txt > /tmp/api-diff.txt || true
+          for crate in $CRATES; do
+            git checkout origin/main -- 2>/dev/null
+            old=$(cargo public-api -p "$crate" --all-features 2>/dev/null || true)
+
+            git checkout - -- 2>/dev/null
+            new=$(cargo public-api -p "$crate" --all-features 2>/dev/null || true)
+
+            # Produce a per-crate unified diff; skip crates with no changes.
+            crate_diff=$(diff <(printf '%s' "$old") <(printf '%s' "$new") || true)
+            if [ -n "$crate_diff" ]; then
+              echo "### 📦 $crate" >> /tmp/api-diff.txt
+              echo '```diff' >> /tmp/api-diff.txt
+              echo "$crate_diff" >> /tmp/api-diff.txt
+              echo '```' >> /tmp/api-diff.txt
+              echo "" >> /tmp/api-diff.txt
+            fi
+          done
 
           if [ -s /tmp/api-diff.txt ]; then
-            echo "📋 Public API changes detected."
+            echo "📋 Public API changes detected (see /tmp/api-diff.txt)."
           else
             echo "✅ No public API changes detected."
             echo "No public API changes." > /tmp/api-diff.txt
