@@ -129,7 +129,7 @@ impl std::error::Error for JoinError {}
 /// cancelling it — this is what enables fire-and-forget `spawn`.
 ///
 /// 允许等待任务完成并获取结果。丢弃句柄而未 await 会 **detach** 任务
-///（任务继续运行）而非取消它 —— 这正是支持 fire-and-forget `spawn` 的机制。
+/// （任务继续运行）而非取消它 —— 这正是支持 fire-and-forget `spawn` 的机制。
 pub struct JoinHandle<T>
 {
     /// The async-executor task, when spawned inside a runtime OR via fallback.
@@ -140,7 +140,7 @@ pub struct JoinHandle<T>
     /// task runs on a runtime's executor (which `block_on` already drives).
     /// 回退路径（无 runtime 上下文）专用:拥有 `task` 的临时执行器。`wait()` 通过
     /// `executor.run(...)` 驱动它。当任务运行在 runtime 的执行器上时为 `None`
-    ///（`block_on` 已在驱动它）。
+    /// （`block_on` 已在驱动它）。
     fallback_executor: Option<&'static async_executor::Executor<'static>>,
     /// Task id assigned at spawn time.
     /// spawn 时分配的任务 id。
@@ -161,7 +161,9 @@ impl<T> JoinHandle<T>
     /// 检查任务是否已完成（成功完成、已取消或发生 panic）。
     pub fn is_finished(&self) -> bool
     {
-        self.task.as_ref().is_some_and(async_executor::Task::is_finished)
+        self.task
+            .as_ref()
+            .is_some_and(async_executor::Task::is_finished)
     }
 
     /// Wait for the task to complete and retrieve its result.
@@ -315,9 +317,9 @@ where
 /// 独立 [`block_on`] 使用的无操作 raw waker vtable。
 const NOOP_RAW_WAKER_VTABLE: RawWakerVTable = RawWakerVTable::new(
     |_| RawWaker::new(ptr::null(), &NOOP_RAW_WAKER_VTABLE), // clone
-    |_| {},                                                      // drop
-    |_| {},                                                      // wake
-    |_| {},                                                      // wake_by_ref
+    |_| {},                                                 // drop
+    |_| {},                                                 // wake
+    |_| {},                                                 // wake_by_ref
 );
 
 /// Block on a future to completion.
@@ -330,7 +332,7 @@ const NOOP_RAW_WAKER_VTABLE: RawWakerVTable = RawWakerVTable::new(
 /// [`crate::Runtime::block_on`] instead.
 ///
 /// 这是独立（非 runtime）入口点,供不在 `Runtime::block_on` 内的代码使用
-///（如 `hiver_runtime::task::block_on`）。它 spawn 一个专用线程,在紧密循环中
+/// （如 `hiver_runtime::task::block_on`）。它 spawn 一个专用线程,在紧密循环中
 /// 轮询 future 并经通道回传结果。runtime 驱动的执行请改用
 /// [`crate::Runtime::block_on`]。
 ///

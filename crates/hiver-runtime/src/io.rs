@@ -53,7 +53,10 @@ impl TcpStream
     /// Read data from the stream into `buf`, returning the number of bytes
     /// read. Returns `Ok(0)` when the peer has closed the connection (EOF).
     /// 从流中读取数据到 `buf`,返回读取的字节数。对端关闭连接时返回 `Ok(0)`(EOF)。
-    pub fn read<'a, 'b>(&'a mut self, buf: &'b mut [u8]) -> impl Future<Output = io::Result<usize>> + 'a
+    pub fn read<'a, 'b>(
+        &'a mut self,
+        buf: &'b mut [u8],
+    ) -> impl Future<Output = io::Result<usize>> + 'a
     where
         'b: 'a,
     {
@@ -65,7 +68,10 @@ impl TcpStream
 
     /// Write all of `buf` to the stream.
     /// 将 `buf` 全部写入流。
-    pub fn write_all<'a, 'b>(&'a mut self, buf: &'b [u8]) -> impl Future<Output = io::Result<()>> + 'a
+    pub fn write_all<'a, 'b>(
+        &'a mut self,
+        buf: &'b [u8],
+    ) -> impl Future<Output = io::Result<()>> + 'a
     where
         'b: 'a,
     {
@@ -88,7 +94,14 @@ impl TcpStream
     #[must_use]
     pub fn split(&mut self) -> (ReadHalf, WriteHalf)
     {
-        (ReadHalf { inner: self.inner.clone() }, WriteHalf { inner: self.inner.clone() })
+        (
+            ReadHalf {
+                inner: self.inner.clone(),
+            },
+            WriteHalf {
+                inner: self.inner.clone(),
+            },
+        )
     }
 
     /// Shut down the read, write, or both halves of the connection.
@@ -262,7 +275,9 @@ mod tests
             .block_on(async { TcpListener::bind("127.0.0.1:0").await })
             .expect("block_on should succeed")
             .expect("bind to 127.0.0.1:0 should succeed");
-        let addr = listener.local_addr().expect("listener should have a local addr");
+        let addr = listener
+            .local_addr()
+            .expect("listener should have a local addr");
         assert!(addr.port() != 0, "ephemeral bind should assign a real port");
     }
 }

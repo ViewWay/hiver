@@ -28,17 +28,15 @@
 //!
 //! # Implementation plan / 实现计划
 //!
-//! 1. Add `io-uring = "0.7"` under `[target.'cfg(target_os = "linux")'.dependencies]`
-//!    (gated by the `io-uring` feature) in `Cargo.toml`.
-//! 2. Implement `IoUringDriver` here: a `Driver`-equivalent that owns an
-//!    `io_uring::IoUring` instance, registers FDs as `SubmissionQueuee`s, and
-//!    drains the completion queue into wakers — mirroring `async-io`'s
-//!    `Reactor::react()` but with ring buffers instead of epoll.
-//! 3. In `runtime.rs`, add `#[cfg(all(target_os="linux", feature="io-uring"))]`
-//!    selection logic in `Runtime::with_config` to build an `IoUringDriver`
-//!    instead of relying on `async-io`.
-//! 4. The `async-net` I/O types would need io_uring-aware equivalents (or use
-//!    `monoio`'s net types), since async-net is bound to the async-io reactor.
+//! 1. Add `io-uring = "0.7"` under `[target.'cfg(target_os = "linux")'.dependencies]` (gated by the
+//!    `io-uring` feature) in `Cargo.toml`.
+//! 2. Implement `IoUringDriver` here: a `Driver`-equivalent that owns an `io_uring::IoUring`
+//!    instance, registers FDs as `SubmissionQueuee`s, and drains the completion queue into wakers —
+//!    mirroring `async-io`'s `Reactor::react()` but with ring buffers instead of epoll.
+//! 3. In `runtime.rs`, add `#[cfg(all(target_os="linux", feature="io-uring"))]` selection logic in
+//!    `Runtime::with_config` to build an `IoUringDriver` instead of relying on `async-io`.
+//! 4. The `async-net` I/O types would need io_uring-aware equivalents (or use `monoio`'s net
+//!    types), since async-net is bound to the async-io reactor.
 //!
 //! # Why this is deferred / 为何暂缓
 //!
@@ -63,7 +61,7 @@
 /// (now-removed) self-built `Driver` trait, but backed by ring buffers.
 ///
 /// 实现后,这将是一个拥有 `io_uring::IoUring` 实例的结构体,提供与
-///（现已移除的）自研 `Driver` trait 类似的 `submit`/`wait`/`register` 方法,
+/// （现已移除的）自研 `Driver` trait 类似的 `submit`/`wait`/`register` 方法,
 /// 但以环形缓冲区为支撑。
 pub struct IoUringDriver;
 
@@ -80,8 +78,8 @@ impl IoUringDriver
     {
         Err(std::io::Error::new(
             std::io::ErrorKind::Unsupported,
-            "io_uring backend is reserved but not yet implemented; \
-             use the default async-io backend",
+            "io_uring backend is reserved but not yet implemented; use the default async-io \
+             backend",
         ))
     }
 }

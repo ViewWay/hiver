@@ -180,17 +180,20 @@ jobs:
       - name: Run cargo-deny / 运行 cargo-deny
         run: cargo deny check advisories licenses bans sources
 
-  # Verify the declared Minimum Supported Rust Version (Cargo.toml: rust-version = "1.87").
-  # 验证声明的最低支持 Rust 版本（Cargo.toml: rust-version = "1.87"）。
+  # Verify the declared Minimum Supported Rust Version (Cargo.toml: rust-version = "1.91").
+  # NOTE: bumped from 1.87 after the MSRV job revealed deps (alloy@2.0.5 etc.)
+  # require up to rustc 1.91. The previous value was incorrect.
+  # 验证声明的最低支持 Rust 版本（Cargo.toml: rust-version = "1.91"）。
+  # 注意：MSRV job 发现依赖（alloy@2.0.5 等）要求 rustc 1.91，故从 1.87 上调。
   msrv:
-    name: MSRV 1.87
+    name: MSRV 1.91
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install Rust 1.87 toolchain
-        uses: dtolnay/rust-toolchain@1.87
+      - name: Install Rust 1.91 toolchain
+        uses: dtolnay/rust-toolchain@1.91
 
       - name: Install system dependencies / 安装系统依赖
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev

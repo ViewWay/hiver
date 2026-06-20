@@ -3,14 +3,14 @@
 //!
 //! Demonstrates the Spring-Boot-style fully-annotated entry point, where the
 //! framework auto-wires everything:
-//! 1. `#[hiver_main]` boots Hiver's own runtime, loads config, runs
-//!    auto-configurations, collects routes via `inventory`, and binds + serves.
+//! 1. `#[hiver_main]` boots Hiver's own runtime, loads config, runs auto-configurations, collects
+//!    routes via `inventory`, and binds + serves.
 //! 2. `#[controller]` registers the controller as a singleton bean.
 //! 3. `#[get]` contributes routes discovered at startup via `inventory`.
 //!
 //! 演示 Spring Boot 风格的全注解入口,框架自动接通一切:
-//! 1. `#[hiver_main]` 启动 Hiver 自有 runtime、加载配置、运行自动配置、经
-//!    `inventory` 收集路由,并绑定 + 提供服务。
+//! 1. `#[hiver_main]` 启动 Hiver 自有 runtime、加载配置、运行自动配置、经 `inventory`
+//!    收集路由,并绑定 + 提供服务。
 //! 2. `#[controller]` 将控制器注册为单例 bean。
 //! 3. `#[get]` 经 `inventory` 贡献启动时被发现的路由。
 //!
@@ -27,8 +27,8 @@
 //! 与 `http_server_example`(手动经 `.get()` 接线路由)不同,本示例*仅*使用
 //! 注解 —— 无手动 router 构造。
 
-use hiver_macros::{controller, get, hiver_main};
 use hiver_http::Request;
+use hiver_macros::{controller, get, hiver_main};
 
 /// The application entry point. `#[hiver_main]` generates `MyApp::run()` which
 /// boots the runtime, runs auto-configurations, collects all `#[get]` routes,

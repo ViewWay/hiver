@@ -289,7 +289,7 @@ impl Timeout
             {
                 self.success_count.fetch_add(1, Ordering::Relaxed);
                 Ok(value)
-            }
+            },
             futures::future::Either::Right(_) =>
             {
                 self.timeout_count.fetch_add(1, Ordering::Relaxed);
@@ -301,7 +301,7 @@ impl Timeout
                     name: self.name.clone(),
                     timeout: duration,
                 })
-            }
+            },
         }
     }
 }

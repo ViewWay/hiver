@@ -32,6 +32,11 @@ allow = [
     "BSD-3-Clause",
     "ISC",
     "Unicode-DFS-2016",
+    # Added after the new `deny` CI job surfaced transitive deps using these:
+    # 新增 `deny` CI job 曝光的传递依赖所使用的许可证:
+    "MPL-2.0",   # Mozilla Public License 2.0 (weak copyleft, file-scoped) — e.g. ascii_utils via async-graphql
+    "BSL-1.0",   # Boost Software License 1.0 (permissive, OSI-approved)
+    "Zlib",      # zlib License (permissive, OSI-approved)
 ]
 # The confidence threshold for detecting a license from license text.
 # 从许可证文本检测许可证的置信度阈值。

@@ -49,7 +49,7 @@ Workflows (工作流)
 | `test` | `cargo test --workspace --lib` + integration tests (socket / waker / e2e) | 45m |
 | `audit` | `cargo audit` (advisory scanning with tracked ignore list) | 20m |
 | `deny` | `cargo deny check advisories licenses bans sources` (uses `deny.toml`) | 20m |
-| `msrv` | `cargo check --workspace --lib` on Rust 1.87 (`rust-version`) | 30m |
+| `msrv` | `cargo check --workspace --lib` on Rust 1.91 (`rust-version`) | 30m |
 
 **Key Commands**:
 ```bash
@@ -59,7 +59,7 @@ cargo build --workspace
 cargo test --workspace --lib --exclude hiver-benches -- --test-threads=1
 cargo audit --ignore <RUSTSEC-...>   # see ci.yml for the full list
 cargo deny check advisories licenses bans sources
-cargo check --workspace --lib        # on toolchain 1.87
+cargo check --workspace --lib        # on toolchain 1.91
 ```
 
 **Estimated Runtime**: 20-30 minutes (all jobs parallel)

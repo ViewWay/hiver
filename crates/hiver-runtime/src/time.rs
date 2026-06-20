@@ -21,13 +21,12 @@
     clippy::manual_async_fn
 )]
 
+pub use std::time::{Duration, Instant};
 use std::{
     future::Future,
     pin::Pin,
     task::{Context, Poll},
 };
-
-pub use std::time::{Duration, Instant};
 
 /// A future that completes after the specified duration.
 /// 在指定持续时间后完成的 future。

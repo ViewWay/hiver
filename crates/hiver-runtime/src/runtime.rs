@@ -22,11 +22,7 @@
 //! }
 //! ```
 
-use std::{
-    future::Future,
-    io,
-    sync::RwLock,
-};
+use std::{future::Future, io, sync::RwLock};
 
 use crate::time::Duration;
 
@@ -158,7 +154,9 @@ impl RuntimeBuilder
 
     /// Set the driver type (removed: the reactor is always async-io).
     /// 设置 driver 类型(已移除:reactor 始终为 async-io)。
-    #[deprecated(note = "driver selection is no longer configurable; the reactor is always async-io")]
+    #[deprecated(
+        note = "driver selection is no longer configurable; the reactor is always async-io"
+    )]
     pub fn driver_type(self, _driver_type: ()) -> Self
     {
         self

@@ -11,18 +11,20 @@
 //! battle-tested libraries.
 //!
 //! `hiver-runtime` 构建于 [`async-executor`] + [`async-io`] + [`async-net`] 生态
-//!（与 `smol` 由相同 crate 组成）:一个由 reactor 感知 `block_on` 驱动的多任务
+//! （与 `smol` 由相同 crate 组成）:一个由 reactor 感知 `block_on` 驱动的多任务
 //! 执行器,提供跨平台 epoll/kqueue/IOCP I/O。这保持了公共接口稳定
-//!（`Runtime`、`block_on`、`spawn`、`io::*`、`time::*`）,同时将底层调度与 I/O
+//! （`Runtime`、`block_on`、`spawn`、`io::*`、`time::*`）,同时将底层调度与 I/O
 //! 委托给久经验证的库。
 //!
 //! # Features / 功能
 //!
-//! - Multi-task executor via [`async_executor::Executor`] / 经 [`async_executor::Executor`] 的多任务执行器
+//! - Multi-task executor via [`async_executor::Executor`] / 经 [`async_executor::Executor`]
+//!   的多任务执行器
 //! - Reactor-aware `block_on` (smol's driver) / reactor 感知的 `block_on`（smol 的驱动器）
 //! - Cross-platform async I/O (TCP/UDP) via async-net / 经 async-net 的跨平台异步 I/O（TCP/UDP）
 //! - Timers via async-io / 经 async-io 的定时器
-//! - Fire-and-forget `spawn` (task is detached on handle drop) / fire-and-forget `spawn`（句柄丢弃时 detach 任务）
+//! - Fire-and-forget `spawn` (task is detached on handle drop) / fire-and-forget
+//!   `spawn`（句柄丢弃时 detach 任务）
 //!
 //! # Example / 示例
 //!
@@ -95,4 +97,3 @@ pub use select::{
 };
 pub use task::{JoinError, JoinHandle, TaskId, gen_task_id, spawn};
 pub use time::{Duration, Instant, sleep, sleep_until};
-

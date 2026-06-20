@@ -42,10 +42,8 @@ pub fn test_impl(item: TokenStream) -> TokenStream
     // synchronous and returns ().
     // 从签名移除 `async` 与 `-> ReturnType`:wrapper 是同步的且返回 ()。
     item_fn.sig.asyncness = None;
-    let has_explicit_unit_return = matches!(
-        &item_fn.sig.output,
-        ReturnType::Default | ReturnType::Type(_, _)
-    );
+    let has_explicit_unit_return =
+        matches!(&item_fn.sig.output, ReturnType::Default | ReturnType::Type(_, _));
     let _ = has_explicit_unit_return;
     // Force the output type to () regardless of what the async fn returned — the
     // block_on result is unwrapped and discarded.

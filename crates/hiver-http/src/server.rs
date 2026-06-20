@@ -173,7 +173,8 @@ impl Server
         // fires — equivalent to the original infinite accept loop.)
         // (`std::future::pending` 永不完成,故关闭分支永不触发 —— 等价于原先的
         // 无限 accept 循环。)
-        self.run_with_shutdown(service, std::future::pending()).await
+        self.run_with_shutdown(service, std::future::pending())
+            .await
     }
 
     /// Run the server until the `shutdown` future resolves, then stop accepting
@@ -215,39 +216,35 @@ impl Server
             let accept_fut = listener.accept();
             match futures::future::select(accept_fut.boxed(), shutdown.as_mut()).await
             {
-                futures::future::Either::Left((accept_result, _)) =>
+                futures::future::Either::Left((accept_result, _)) => match accept_result
                 {
-                    match accept_result
+                    Ok((stream, peer_addr)) =>
                     {
-                        Ok((stream, peer_addr)) =>
+                        let service = service.clone();
+                        let config = config.clone();
+                        let count = connection_count.clone();
+                        let current = count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                        if current >= max_conns
                         {
-                            let service = service.clone();
-                            let config = config.clone();
-                            let count = connection_count.clone();
-                            let current = count
-                                .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                            if current >= max_conns
-                            {
-                                count.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
-                                tracing::warn!(
-                                    "Max connections ({}) reached, rejecting {}",
-                                    max_conns,
-                                    peer_addr
-                                );
-                                drop(stream);
-                                continue;
-                            }
+                            count.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
+                            tracing::warn!(
+                                "Max connections ({}) reached, rejecting {}",
+                                max_conns,
+                                peer_addr
+                            );
+                            drop(stream);
+                            continue;
+                        }
 
-                            spawn(async move {
-                                handle_connection(stream, peer_addr, service, config).await;
-                                count.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
-                            });
-                        },
-                        Err(e) =>
-                        {
-                            tracing::error!("Error accepting connection: {}", e);
-                        },
-                    }
+                        spawn(async move {
+                            handle_connection(stream, peer_addr, service, config).await;
+                            count.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
+                        });
+                    },
+                    Err(e) =>
+                    {
+                        tracing::error!("Error accepting connection: {}", e);
+                    },
                 },
                 // Shutdown signal fired: stop accepting.
                 // 关闭信号触发:停止接受。
@@ -282,16 +279,14 @@ impl Server
             // 要么某连接完成(由其自身任务轮询),要么排空截止时间到 —— 先到为准。
             use futures::future::FutureExt;
             let tick = hiver_runtime::time::sleep(std::time::Duration::from_millis(50));
-            match futures::future::select(
-                tick.boxed(),
-                drain_deadline.as_mut(),
-            )
-            .await
+            match futures::future::select(tick.boxed(), drain_deadline.as_mut()).await
             {
                 futures::future::Either::Left((_, _)) => continue,
-                futures::future::Either::Right((_, _)) => {
+                futures::future::Either::Right((_, _)) =>
+                {
                     tracing::warn!(
-                        "Drain timeout reached with {} connections still in flight, forcing shutdown",
+                        "Drain timeout reached with {} connections still in flight, forcing \
+                         shutdown",
                         in_flight
                     );
                     break;
@@ -357,14 +352,15 @@ async fn handle_connection<S>(
             match futures::future::select(read_fut.boxed(), timeout_fut.boxed()).await
             {
                 futures::future::Either::Left((res, _)) => res,
-                futures::future::Either::Right((_, _)) => {
+                futures::future::Either::Right((_, _)) =>
+                {
                     tracing::warn!(
                         "Request timeout ({}s) from {}, closing connection",
                         config.request_timeout.as_secs(),
                         peer_addr
                     );
                     break;
-                }
+                },
             }
         };
         match read_result
@@ -408,9 +404,9 @@ async fn handle_connection<S>(
                             // (或为 HTTP/1.0 且无 keep-alive),则在此响应后关闭套接字,
                             // 而非永久循环。否则 encoder 上下文保持默认(keep-alive=true),
                             // close 请求会使客户端挂起。
-                            encoder.context_mut().update_keep_alive_from_header(
-                                request.header("connection"),
-                            );
+                            encoder
+                                .context_mut()
+                                .update_keep_alive_from_header(request.header("connection"));
 
                             // Handle the request
                             let response = match service.call(request).await

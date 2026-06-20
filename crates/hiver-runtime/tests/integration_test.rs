@@ -174,7 +174,9 @@ fn test_bind_future_tcp()
         .block_on(async { TcpListener::bind("127.0.0.1:0").await })
         .expect("block_on should succeed")
         .expect("bind to 127.0.0.1:0 should succeed");
-    let addr = listener.local_addr().expect("listener should have a local addr");
+    let addr = listener
+        .local_addr()
+        .expect("listener should have a local addr");
     assert_ne!(addr.port(), 0, "ephemeral bind should assign a real port");
 }
 
@@ -220,10 +222,7 @@ fn test_connect_future()
     let outer = runtime
         .block_on(async { TcpStream::connect("127.0.0.1:1").await })
         .expect("block_on itself should not fail");
-    assert!(
-        outer.is_err(),
-        "connect to a closed port should fail (refused)"
-    );
+    assert!(outer.is_err(), "connect to a closed port should fail (refused)");
 }
 
 // ─── benchmark-style tests ──────────────────────────────────────────────────

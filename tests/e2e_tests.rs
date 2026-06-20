@@ -559,13 +559,11 @@ mod http_server_e2e
         for _ in 0..40
         {
             let result = (|| -> std::io::Result<String> {
-                let mut stream =
-                    TcpStream::connect_timeout(&addr, Duration::from_millis(200))?;
+                let mut stream = TcpStream::connect_timeout(&addr, Duration::from_millis(200))?;
                 stream.set_read_timeout(Some(Duration::from_millis(800)))?;
                 stream.set_write_timeout(Some(Duration::from_millis(800)))?;
-                let req = format!(
-                    "GET {path} HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
-                );
+                let req =
+                    format!("GET {path} HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n");
                 stream.write_all(req.as_bytes())?;
                 let mut buf = [0u8; 4096];
                 let n = stream.read(&mut buf)?;
@@ -574,16 +572,15 @@ mod http_server_e2e
             match result
             {
                 Ok(resp) if resp.starts_with("HTTP") => return resp,
-                Ok(other) => {
+                Ok(other) =>
+                {
                     last = other;
                     thread::sleep(Duration::from_millis(50));
-                }
+                },
                 Err(_) => thread::sleep(Duration::from_millis(50)),
             }
         }
-        panic!(
-            "http_get({path}) failed after retries; last response: {last:?}"
-        );
+        panic!("http_get({path}) failed after retries; last response: {last:?}");
     }
 
     #[test]
@@ -624,12 +621,14 @@ mod http_server_e2e
 
 mod annotated_app_e2e
 {
-    use std::io::{Read, Write};
-    use std::net::TcpStream;
-    use std::path::PathBuf;
-    use std::process::{Child, Command, Stdio};
-    use std::thread;
-    use std::time::Duration;
+    use std::{
+        io::{Read, Write},
+        net::TcpStream,
+        path::PathBuf,
+        process::{Child, Command, Stdio},
+        thread,
+        time::Duration,
+    };
 
     /// Path to the annotated example binary (built by the test harness).
     /// 注解示例二进制路径(由测试工具构建)。
@@ -645,8 +644,8 @@ mod annotated_app_e2e
         if !target.exists()
         {
             panic!(
-                "annotated_app_example binary not found at {}. \
-                 Build it first: cargo build -p hiver-examples --bin annotated_app_example",
+                "annotated_app_example binary not found at {}. Build it first: cargo build -p \
+                 hiver-examples --bin annotated_app_example",
                 target.display()
             );
         }
@@ -686,9 +685,8 @@ mod annotated_app_e2e
                 let mut stream = TcpStream::connect_timeout(&addr, Duration::from_millis(200))?;
                 stream.set_read_timeout(Some(Duration::from_millis(800)))?;
                 stream.set_write_timeout(Some(Duration::from_millis(800)))?;
-                let req = format!(
-                    "GET {path} HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
-                );
+                let req =
+                    format!("GET {path} HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n");
                 stream.write_all(req.as_bytes())?;
                 let mut buf = [0u8; 4096];
                 let n = stream.read(&mut buf)?;
@@ -697,10 +695,11 @@ mod annotated_app_e2e
             match result
             {
                 Ok(resp) if resp.starts_with("HTTP") => return resp,
-                Ok(other) => {
+                Ok(other) =>
+                {
                     last = other;
                     thread::sleep(Duration::from_millis(50));
-                }
+                },
                 Err(_) => thread::sleep(Duration::from_millis(50)),
             }
         }
@@ -722,13 +721,7 @@ mod annotated_app_e2e
         let _ = child.kill();
         let _ = child.wait();
 
-        assert!(
-            resp.starts_with("HTTP/1.1 200"),
-            "hello status line wrong: {resp}"
-        );
-        assert!(
-            resp.contains("Hello from annotated Hiver!"),
-            "hello body missing: {resp}"
-        );
+        assert!(resp.starts_with("HTTP/1.1 200"), "hello status line wrong: {resp}");
+        assert!(resp.contains("Hello from annotated Hiver!"), "hello body missing: {resp}");
     }
 }

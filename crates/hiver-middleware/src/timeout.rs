@@ -96,13 +96,14 @@ where
             match futures::future::select(handler_fut, timer_fut).await
             {
                 futures::future::Either::Left((response, _)) => response,
-                futures::future::Either::Right((_, _)) => {
+                futures::future::Either::Right((_, _)) =>
+                {
                     tracing::warn!("Request timed out after {:?}", timeout);
                     Err(hiver_http::Error::Timeout(format!(
                         "Request timed out after {:?}",
                         timeout
                     )))
-                }
+                },
             }
         })
     }
