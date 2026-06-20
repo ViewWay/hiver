@@ -75,6 +75,18 @@ pub mod select;
 pub mod task;
 pub mod time;
 
+// io_uring backend — reserved for a future Linux-only high-performance reactor
+// (see the `io-uring` feature flag in Cargo.toml). Not implemented yet; this
+// module exists only when the feature + Linux target are both active, so it is
+// inert on all other configurations.
+//
+// io_uring 后端 —— 为未来的 Linux 专用高性能 reactor 预留（见 Cargo.toml 的
+// `io-uring` feature flag）。尚未实现;此模块仅当 feature 与 Linux target 同时
+// 激活时存在,故在所有其它配置下均为惰性。
+#[cfg(all(target_os = "linux", feature = "io-uring"))]
+#[allow(clippy::module_inception)]
+pub mod iouring;
+
 // Re-exports / 重新导出
 pub use channel::{Receiver, RecvError, SendError, Sender, bounded, unbounded};
 pub use runtime::{Runtime, RuntimeBuilder, RuntimeConfig};

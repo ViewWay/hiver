@@ -23,6 +23,40 @@ rustdoc-args = ["--cfg", "docsrs"]
 [lints]
 workspace = true
 
+[features]
+# Default backend: async-io (cross-platform epoll/kqueue/IOCP reactor via the
+# `async-io` crate). Stable, portable, used by smol.
+# 默认后端:async-io（经 `async-io` crate 的跨平台 epoll/kqueue/IOCP reactor）。
+# 稳定、可移植,smol 所用。
+default = []
+
+# High-performance io_uring backend (Linux only). When enabled on Linux, the
+# runtime will prefer a thread-per-core io_uring reactor (via the `io-uring`
+# crate, modeled after monoio) over the default async-io reactor. This preserves
+# the "self-built high-performance runtime" narrative for latency-sensitive
+# Linux deployments.
+#
+# STATUS: reserved (feature flag + docs only). The concrete `IoUringDriver` is
+# NOT yet implemented — it requires a Linux environment to build and benchmark.
+# On non-Linux platforms this feature compiles to a no-op (the runtime falls
+# back to async-io). When implementing, add:
+#   #[cfg(all(target_os = "linux", feature = "io-uring"))]
+#   mod iouring;  // a Driver impl backed by the io-uring crate
+# and select it in Runtime::with_config when the feature is active on Linux.
+#
+# 高性能 io_uring 后端（仅 Linux）。在 Linux 上启用时,runtime 将优先使用
+# thread-per-core 的 io_uring reactor（经 `io-uring` crate,参考 monoio）而非
+# 默认的 async-io reactor。这为延迟敏感的 Linux 部署保留了"自研高性能 runtime"
+# 的叙事。
+#
+# 状态:预留（仅 feature flag + 文档）。具体的 `IoUringDriver` 尚未实现 ——
+# 它需要 Linux 环境来构建与基准测试。在非 Linux 平台上此 feature 编译为 no-op
+#（runtime 回退到 async-io）。实现时请添加:
+#   #[cfg(all(target_os = "linux", feature = "io-uring"))]
+#   mod iouring;  // 基于 io-uring crate 的 Driver 实现
+# 并在 Runtime::with_config 中,当此 feature 在 Linux 上激活时选用它。
+io-uring = []
+
 [dependencies]
 # Zero-copy bytes / 零拷贝字节
 bytes = { workspace = true }
