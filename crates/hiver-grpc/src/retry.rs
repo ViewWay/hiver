@@ -252,7 +252,7 @@ mod tests
         assert_eq!(p.max_attempts(), 0);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_retry_succeeds_on_second_attempt()
     {
         let p = RetryPolicy::fixed(2).with_initial_delay(Duration::from_millis(1));
@@ -275,7 +275,7 @@ mod tests
         assert_eq!(result.unwrap(), 42);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_retry_exhausted()
     {
         let p = RetryPolicy::fixed(1).with_initial_delay(Duration::from_millis(1));
@@ -286,7 +286,7 @@ mod tests
         assert_eq!(result.unwrap_err().code(), tonic::Code::Unavailable);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_non_retryable_error()
     {
         let p = RetryPolicy::fixed(5).with_initial_delay(Duration::from_millis(1));

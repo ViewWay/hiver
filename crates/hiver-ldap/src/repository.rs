@@ -531,7 +531,7 @@ mod tests
         assert_eq!(repo.base(), "ou=people,dc=example,dc=com");
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_simple_repository_find_all_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -542,7 +542,7 @@ mod tests
         assert!(result.is_empty());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_simple_repository_find_by_id_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -553,7 +553,7 @@ mod tests
         assert!(result.is_none());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_simple_repository_exists_by_id_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -616,7 +616,7 @@ mod tests
         assert_eq!(dn, "uid=jane,ou=people,dc=example,dc=com");
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_typed_repository_find_all_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -632,7 +632,7 @@ mod tests
         assert!(result.is_empty());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_typed_repository_find_by_id_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -648,7 +648,7 @@ mod tests
         assert!(result.is_none());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_typed_repository_exists_by_id_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -664,7 +664,7 @@ mod tests
         assert!(!result);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_typed_repository_count_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");

@@ -274,7 +274,7 @@ mod tests
         assert!(ops.template().context_source().url().contains("localhost"));
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_modify_dn_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -285,7 +285,7 @@ mod tests
         assert!(result.is_ok());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_modify_dn_with_superior_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -301,7 +301,7 @@ mod tests
         assert!(result.is_ok());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_compare_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -314,7 +314,7 @@ mod tests
         assert!(!result.unwrap());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_abandon_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");

@@ -482,7 +482,7 @@ mod tests
         assert!(result.is_err());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_stub_connection()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -491,7 +491,7 @@ mod tests
         assert_eq!(conn.url(), "ldap://localhost:389");
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_stub_connection_unbind()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -501,7 +501,7 @@ mod tests
         assert!(!conn.is_connected());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_stub_simple_bind()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");

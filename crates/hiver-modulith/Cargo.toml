@@ -42,3 +42,5 @@ inventory = { workspace = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+hiver-runtime = { path = "../hiver-runtime" }
+hiver-macros = { path = "../hiver-macros" }

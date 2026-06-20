@@ -209,7 +209,7 @@ mod tests
         assert_eq!(service.name(), "user-service");
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_lifecycle_init_and_stop()
     {
         let service = UserService;

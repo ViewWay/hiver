@@ -98,7 +98,7 @@ mod tests
     use super::*;
     use crate::event::BusEventType;
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_stream_bus_publish()
     {
         let binder = Arc::new(InMemoryBinder::new());
@@ -127,7 +127,7 @@ mod tests
         assert_eq!(bus.name(), "stream");
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_stream_bus_subscribe()
     {
         let binder = Arc::new(InMemoryBinder::new());

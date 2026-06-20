@@ -513,7 +513,7 @@ mod tests
 {
     use super::*;
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_auth_interceptor_ok()
     {
         let ic = AuthInterceptor::new("secret");
@@ -523,7 +523,7 @@ mod tests
         assert!(ic.intercept(req).await.is_ok());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_auth_interceptor_fail()
     {
         let ic = AuthInterceptor::new("secret");
@@ -531,7 +531,7 @@ mod tests
         assert!(ic.intercept(req).await.is_err());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_logging_interceptor()
     {
         let ic = LoggingInterceptor::new();

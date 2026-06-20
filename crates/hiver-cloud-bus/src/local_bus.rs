@@ -89,7 +89,7 @@ mod tests
     use super::*;
     use crate::event::BusEventType;
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_publish_subscribe()
     {
         let bus = LocalBus::new();
@@ -113,7 +113,7 @@ mod tests
         assert_eq!(events[1], BusEventType::Ack);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_no_subscribers_error()
     {
         let bus = LocalBus::new();
@@ -121,7 +121,7 @@ mod tests
         assert!(result.is_err());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_multiple_subscribers()
     {
         let bus = LocalBus::new();
@@ -149,7 +149,7 @@ mod tests
         assert_eq!(bus.name(), "local");
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_subscriber_count()
     {
         let bus = LocalBus::new();

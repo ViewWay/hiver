@@ -247,7 +247,7 @@ mod tests
         }
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_context_source_get_context()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -255,7 +255,7 @@ mod tests
         assert!(conn.is_connected());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_context_source_anonymous_context()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -263,7 +263,7 @@ mod tests
         assert!(conn.is_connected());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_connection_unbind()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -273,7 +273,7 @@ mod tests
         assert!(!conn.is_connected());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_connection_simple_bind()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -282,7 +282,7 @@ mod tests
         assert!(result.is_ok());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_context_with_credentials()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com")
@@ -303,7 +303,7 @@ mod tests
         assert_eq!(template.context_source().base_dn(), "dc=example,dc=com");
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_template_authenticate()
     {
         let template = test_template();
@@ -311,7 +311,7 @@ mod tests
         assert!(ok);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_template_search_empty()
     {
         let template = test_template();
@@ -322,7 +322,7 @@ mod tests
         assert!(results.is_empty());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_template_lookup_none()
     {
         let template = test_template();
@@ -341,7 +341,7 @@ mod tests
         assert!(result.is_none());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_template_bind_ok()
     {
         let template = test_template();
@@ -351,7 +351,7 @@ mod tests
         assert!(result.is_ok());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_template_unbind_ok()
     {
         let template = test_template();
@@ -359,7 +359,7 @@ mod tests
         assert!(result.is_ok());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_template_modify_ok()
     {
         let template = test_template();
@@ -369,7 +369,7 @@ mod tests
         assert!(result.is_ok());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_template_exists_false()
     {
         let template = test_template();
@@ -380,7 +380,7 @@ mod tests
         assert!(!exists);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_template_count_zero()
     {
         let template = test_template();
@@ -421,7 +421,7 @@ mod tests
         assert_eq!(repo.build_id_dn(&"bob".to_string()), "uid=bob,ou=people,dc=example,dc=com");
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_person_repo_find_all_empty()
     {
         let repo = person_repo();
@@ -429,7 +429,7 @@ mod tests
         assert!(results.is_empty());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_person_repo_find_by_id_none()
     {
         let repo = person_repo();
@@ -437,7 +437,7 @@ mod tests
         assert!(result.is_none());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_person_repo_exists_false()
     {
         let repo = person_repo();
@@ -445,7 +445,7 @@ mod tests
         assert!(!exists);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_person_repo_count_zero()
     {
         let repo = person_repo();

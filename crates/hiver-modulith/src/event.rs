@@ -170,7 +170,7 @@ mod tests
         }
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_publish_and_subscribe()
     {
         let publisher = InMemoryEventPublisher::new();
@@ -186,7 +186,7 @@ mod tests
         assert_eq!(counter.count.load(Ordering::SeqCst), 1);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_no_subscribers()
     {
         let publisher = InMemoryEventPublisher::new();

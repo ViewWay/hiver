@@ -193,6 +193,11 @@ mod tests
 {
     use super::*;
 
+    // Stays on #[tokio::test]: this test exercises the tonic/hyper gRPC client,
+    // whose internals require the tokio runtime. The fully-qualified path
+    // avoids shadowing #[hiver_macros::test].
+    // 保留在 #[tokio::test] 上:本测试演练 tonic/hyper gRPC 客户端,其内部需要
+    // tokio runtime。全限定路径避免遮蔽 #[hiver_macros::test]。
     #[tokio::test]
     async fn test_builder_lazy()
     {

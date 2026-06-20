@@ -309,7 +309,7 @@ mod tests
         assert!(template.context_source().url().contains("localhost"));
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_authenticate_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -321,7 +321,7 @@ mod tests
         assert!(result.unwrap());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_search_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -341,7 +341,7 @@ mod tests
         assert!(result.unwrap().is_empty());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_search_attrs_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -353,7 +353,7 @@ mod tests
         assert!(result.unwrap().is_empty());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_lookup_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -373,7 +373,7 @@ mod tests
         assert!(result.unwrap().is_none());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_bind_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -384,7 +384,7 @@ mod tests
         assert!(result.is_ok());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_unbind_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -393,7 +393,7 @@ mod tests
         assert!(result.is_ok());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_modify_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -404,7 +404,7 @@ mod tests
         assert!(result.is_ok());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_exists_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
@@ -413,7 +413,7 @@ mod tests
         assert!(result.is_ok());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_count_stub()
     {
         let ctx = LdapContextSource::new("ldap://localhost:389", "dc=example,dc=com");
