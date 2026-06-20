@@ -53,10 +53,10 @@ async-trait = { workspace = true }
 futures = { workspace = true }
 
 # AMQP client / AMQP客户端
-lapin = { version = "2.5", optional = true }
+lapin = { workspace = true, optional = true }
 
 # UUID for correlation IDs / 关联 ID 用 UUID
-uuid = { version = "1", features = ["v4"] }
+uuid = { workspace = true, features = ["v4"] }
 
 # Logging / 日志
 tracing = { workspace = true }

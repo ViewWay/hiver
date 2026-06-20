@@ -42,10 +42,10 @@ hiver-data-macros = { path = "../hiver-data-macros", version = "0.1.0-alpha.6" }
 hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6" }
 
 # Sea ORM 2.0 RC with sqlx 0.8 support
-sea-orm = { version = "2.0.0-rc", optional = true, features = ["runtime-tokio-rustls", "sqlx-sqlite", "sqlx-postgres", "sqlx-mysql", "macros"] }
+sea-orm = { workspace = true, optional = true }
 
 # Diesel (optional)
-diesel = { version = "2.2", optional = true, features = ["postgres", "mysql", "sqlite"] }
+diesel = { workspace = true, optional = true }
 
 # SQLx (optional)
 sqlx = { workspace = true, optional = true }
@@ -62,10 +62,10 @@ serde_json = { workspace = true }
 async-trait = { workspace = true }
 
 # UUID support
-uuid = { version = "1.12", features = ["v4", "serde"] }
+uuid = { workspace = true, features = ["v4", "serde"] }
 
 # Chrono for datetime
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { workspace = true, features = ["serde"] }
 
 # Logging
 tracing = { workspace = true }

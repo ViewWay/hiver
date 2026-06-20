@@ -36,50 +36,81 @@ jobs:
 
       - name: Check for direct version specifications
         run: |
+          set -euo pipefail
           echo "🔍 Checking for direct version specifications in crates..."
 
-          # Find all Cargo.toml files in crates directory
+          # Strategy: only scan inside dependency tables ([dependencies],
+          # [dev-dependencies], [build-dependencies], and target-specific
+          # variants like [target.'cfg(...)'.dependencies]).
+          #
+          # We deliberately do NOT scan the whole file, because:
+          #  - Cargo's package-metadata shorthand is legitimate and idiomatic:
+          #        [package]
+          #        version.workspace = true
+          #        edition.workspace = true
+          #    An earlier version of this check grepped `.workspace = true`
+          #    globally and produced ~13 false positives on valid metadata.
+          #  - `[features]` tables also look like deps syntactically
+          #    (`lapin = ["dep:lapin"]`) and caused false positives too.
+          #
+          # IMPORTANT: use POSIX [[:space:]] not \s — the \s regex token is a
+          # GNU extension and silently fails to match on BSD awk (macOS),
+          # causing the whole check to report zero violations.
+          #
+          # 策略：仅扫描依赖表（[dependencies] / [dev-dependencies] /
+          # [build-dependencies] 及 target 专有变体）。
+          # 故意不扫描整个文件：package 元数据简写（version.workspace = true 等）
+          # 合法且符合习惯；[features] 表语法上也像依赖（lapin = ["dep:lapin"]）。
+          # 重要：使用 POSIX [[:space:]] 而非 \s —— \s 是 GNU 扩展，在 BSD awk
+          # （macOS）上静默不匹配，会导致整项检查报告零违规。
+
           CRATES=$(find crates -name "Cargo.toml" -type f)
           ERRORS=0
 
+          extract_dep_lines() {
+            # Print only dependency lines that fall under a *dependencies table.
+            # A path dependency (path = "..") is a workspace-internal reference
+            # and correctly uses inline version — exclude it.
+            # 仅打印位于 *dependencies 表下的依赖行。
+            # path 依赖（path = ".."）是 workspace 内部引用，内联 version 是
+            # 正确的 —— 排除它。
+            awk '
+              /^[[:space:]]*\[/ {
+                sect = $0
+                sub(/^[[:space:]]*\[[[:space:]]*/, "", sect)
+                sub(/[[:space:]]*\].*$/, "", sect)
+                in_deps = (sect ~ /dependencies$/)
+                next
+              }
+              in_deps && /^[[:space:]]*[A-Za-z0-9_-]+[[:space:]]*=/ { print }
+            ' "$1" \
+              | grep -E 'version[[:space:]]*=[[:space:]]*"[0-9]' \
+              | grep -v 'workspace = true' \
+              | grep -v 'path = ' \
+              | grep -v '# Note:' || true
+          }
+
           for file in $CRATES; do
             echo "Checking $file..."
-
-            # Check for direct version specifications (excluding workspace = true)
-            # Pattern: version = "X.Y.Z" or version = "X.Y" but not { workspace = true }
-            if grep -E '^\s*[a-zA-Z0-9_-]+\s*=\s*\{?\s*version\s*=\s*"[0-9]' "$file" | grep -v "workspace = true" | grep -v "optional = true" | grep -v "# Note:" > /dev/null; then
+            hits=$(extract_dep_lines "$file")
+            if [ -n "$hits" ]; then
               echo "❌ Found direct version specification in $file:"
-              grep -E '^\s*[a-zA-Z0-9_-]+\s*=\s*\{?\s*version\s*=\s*"[0-9]' "$file" | grep -v "workspace = true" | grep -v "optional = true" | grep -v "# Note:" || true
-              ERRORS=$((ERRORS + 1))
-            fi
-
-            # Check for old-style workspace syntax (dep.workspace = true)
-            if grep -E '\.workspace\s*=\s*true' "$file" > /dev/null; then
-              echo "❌ Found old-style workspace syntax in $file:"
-              grep -E '\.workspace\s*=\s*true' "$file" || true
+              echo "$hits" | sed 's/^/    /'
               ERRORS=$((ERRORS + 1))
             fi
           done
 
           if [ $ERRORS -gt 0 ]; then
             echo ""
-            echo "❌ Found $ERRORS issue(s) with dependency specifications."
+            echo "❌ Found $ERRORS file(s) with direct (non-workspace) dependency versions."
             echo ""
-            echo "Please ensure:"
-            echo "1. All dependencies use { workspace = true } instead of direct versions"
-            echo "2. Use { workspace = true } instead of .workspace = true syntax"
-            echo "3. Add missing dependencies to workspace Cargo.toml if needed"
+            echo "Fix: move the version into the root Cargo.toml [workspace.dependencies],"
+            echo "then reference it in the crate as:"
+            echo '  <dep> = { workspace = true, features = [...] }   # (+ optional = true if needed)'
             echo ""
-            echo "Example of correct format:"
-            echo '  serde = { workspace = true }'
-            echo '  tokio = { workspace = true, features = ["macros"] }'
-            echo ""
-            echo "::error::$ERRORS workspace dependency issue(s) found. See log above."
+            echo "::error::$ERRORS file(s) have non-workspace dependency versions. See log above."
             # Fail the job: this check must gate merges, not just warn.
-            # Previously the job always printed "✅" and exited 0, so violations
-            # never blocked anything.
             # 让 job 失败：此检查必须阻止违规合并，而非仅警告。
-            # 之前该 job 总是打印 "✅" 并以 0 退出，违规从不被阻止。
             exit 1
           fi
 

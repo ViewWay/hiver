@@ -33,10 +33,10 @@ serde = { workspace = true, features = ["derive"] }
 async-trait = "0.1"
 
 # UUID support (for entity IDs)
-uuid = { version = "1.12", features = ["v4", "serde"] }
+uuid = { workspace = true, features = ["v4", "serde"] }
 
 # Chrono for datetime
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { workspace = true, features = ["serde"] }
 
 # Hex encoding for bytes
 hex = "0.4"

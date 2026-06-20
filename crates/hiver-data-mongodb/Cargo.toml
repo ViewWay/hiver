@@ -30,7 +30,7 @@ hiver-data-macros = { path = "../hiver-data-macros", version = "0.1.0-alpha.6" }
 hiver-runtime = { path = "../hiver-runtime", version = "0.1.0-alpha.6", optional = true }
 
 # MongoDB driver
-mongodb = { version = "3.7" }
+mongodb = { workspace = true }
 
 # Error handling
 thiserror = { workspace = true }
@@ -44,10 +44,10 @@ serde_json = { workspace = true }
 async-trait = { workspace = true }
 
 # UUID support
-uuid = { version = "1.12", features = ["v4", "serde"] }
+uuid = { workspace = true, features = ["v4", "serde"] }
 
 # Chrono for datetime
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { workspace = true, features = ["serde"] }
 
 # Logging
 tracing = { workspace = true }

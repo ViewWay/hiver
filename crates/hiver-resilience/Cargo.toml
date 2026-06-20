@@ -59,15 +59,15 @@ pin-project-lite = { workspace = true }
 rand = { workspace = true }
 
 # Service discovery / 服务发现 (Spring Cloud Service Discovery)
-consul = { version = "0.4", optional = true }
-etcd-rs = { version = "1.0", optional = true }
-nacos = { version = "0.0", optional = true }
+consul = { workspace = true, optional = true }
+etcd-rs = { workspace = true, optional = true }
+nacos = { workspace = true, optional = true }
 
 # Async runtime / 异步运行时
 tokio = { workspace = true, features = ["time"] }
 
 # Metrics / 指标 (Spring Cloud Circuit Breaker Metrics)
-prometheus = { version = "0.14", optional = true }
+prometheus = { workspace = true, optional = true }
 metrics = { workspace = true }
 
 # Tower middleware support (Spring Web Filter equivalent)

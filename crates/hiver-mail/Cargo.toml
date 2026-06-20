@@ -32,7 +32,7 @@ async-trait = { workspace = true }
 
 # Email / 邮件
 # Equivalent to: Spring JavaMailSender (javax.mail)
-lettre = { version = "0.11", default-features = false, features = ["tokio1-rustls-tls", "smtp-transport", "builder"] }
+lettre = { workspace = true }
 
 # Serialization / 序列化
 serde = { workspace = true, features = ["derive"] }
