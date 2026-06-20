@@ -4,16 +4,29 @@
 # Runs on every push to main and every PR.
 # 每次 push 到 main 和每个 PR 都会运行。
 #
-# Jobs: fmt → clippy → build → test → audit (all parallel)
-# 发布由 auto-publish.yml 在 CI 通过后自动触发。
+# Jobs: fmt → clippy → build → test → audit → deny → msrv (all parallel)
+# 发布由 release.yml 在推送 v* tag 后自动触发。
 
 name: CI
+
+permissions:
+  contents: read
 
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.github/**/*.md'
   pull_request:
     branches: [main]
+
+# Cancel superseded runs on the same branch / PR — saves runner minutes.
+# 取消同一分支/PR 上被取代的运行 —— 节省 runner 分钟数。
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   CARGO_TERM_COLOR: always
@@ -23,8 +36,9 @@ jobs:
   fmt:
     name: Format
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: dtolnay/rust-toolchain@nightly
         with:
@@ -36,8 +50,9 @@ jobs:
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -54,8 +69,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: dtolnay/rust-toolchain@stable
 
@@ -70,8 +86,9 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: dtolnay/rust-toolchain@stable
 
@@ -108,8 +125,9 @@ jobs:
   audit:
     name: Security Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: dtolnay/rust-toolchain@stable
 
@@ -119,6 +137,13 @@ jobs:
         run: cargo install cargo-audit
 
       - name: Run security audit / 运行安全审计
+        # NOTE: the ignore list is tracked here (not in deny.toml) because
+        # cargo-audit and cargo-deny have different ignore granularity and
+        # these specific RUSTSEC ids are known/accepted transitive advisories.
+        # The `deny` job below covers license/bans/source checks.
+        # 注意：忽略列表在此跟踪（不在 deny.toml 中），因为 cargo-audit 和
+        # cargo-deny 的忽略粒度不同，这些 RUSTSEC id 是已知/接受的传递性公告。
+        # 下面的 `deny` job 覆盖 license/bans/source 检查。
         run: |
           cargo audit \
             --ignore RUSTSEC-2023-0071 \
@@ -133,3 +158,44 @@ jobs:
             --ignore RUSTSEC-2024-0370 \
             --ignore RUSTSEC-2025-0134 \
             --ignore RUSTSEC-2026-0172
+
+  # Authoritative license / bans / source-registry check using deny.toml.
+  # Splits cleanly from `audit` above (advisory ignore granularity differs).
+  # 使用 deny.toml 的权威 license / bans / source-registry 检查。
+  # 与上面的 `audit`（公告忽略粒度不同）清晰分离。
+  deny:
+    name: cargo-deny
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-deny / 安装 cargo-deny
+        run: cargo install cargo-deny
+
+      - name: Run cargo-deny / 运行 cargo-deny
+        run: cargo deny check advisories licenses bans sources
+
+  # Verify the declared Minimum Supported Rust Version (Cargo.toml: rust-version = "1.87").
+  # 验证声明的最低支持 Rust 版本（Cargo.toml: rust-version = "1.87"）。
+  msrv:
+    name: MSRV 1.87
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Rust 1.87 toolchain
+        uses: dtolnay/rust-toolchain@1.87
+
+      - name: Install system dependencies / 安装系统依赖
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Verify workspace builds on MSRV / 验证 workspace 在 MSRV 上构建
+        run: cargo check --workspace --lib

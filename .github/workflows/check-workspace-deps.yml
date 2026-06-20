@@ -63,7 +63,7 @@ jobs:
 
           if [ $ERRORS -gt 0 ]; then
             echo ""
-            echo "⚠️ Found $ERRORS issue(s) with dependency specifications."
+            echo "❌ Found $ERRORS issue(s) with dependency specifications."
             echo ""
             echo "Please ensure:"
             echo "1. All dependencies use { workspace = true } instead of direct versions"
@@ -74,7 +74,13 @@ jobs:
             echo '  serde = { workspace = true }'
             echo '  tokio = { workspace = true, features = ["macros"] }'
             echo ""
-            echo "::warning::$ERRORS workspace dependency issue(s) found. See log above."
+            echo "::error::$ERRORS workspace dependency issue(s) found. See log above."
+            # Fail the job: this check must gate merges, not just warn.
+            # Previously the job always printed "✅" and exited 0, so violations
+            # never blocked anything.
+            # 让 job 失败：此检查必须阻止违规合并，而非仅警告。
+            # 之前该 job 总是打印 "✅" 并以 0 退出，违规从不被阻止。
+            exit 1
           fi
 
           echo "✅ All crates use workspace dependencies correctly!"

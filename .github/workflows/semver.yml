@@ -8,7 +8,7 @@ name: SemVer Checks
 
 permissions:
   contents: read
-  pull-requests: read
+  pull-requests: write
 
 on:
   pull_request:
@@ -18,6 +18,10 @@ on:
       - '**/*.rs'
       - '**/Cargo.toml'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -25,6 +29,7 @@ jobs:
   semver-check:
     name: API Compatibility Check
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -34,27 +39,23 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Cache cargo registry
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Cache cargo index
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+      - name: Cache cargo build
+        uses: Swatinem/rust-cache@v2
 
       - name: Install cargo-semver-checks
         run: cargo install cargo-semver-checks
 
+      # NOTE: `--fail-on-error` is intentionally NOT followed by `|| true`.
+      # Earlier the `|| true` swallowed every failure, making this check
+      # cosmetic. Let real breaking-change failures fail the PR.
+      # 注意：`--fail-on-error` 后面故意不加 `|| true`。
+      # 之前 `|| true` 吞掉了所有失败，使此检查形同虚设。让真正的破坏性变更失败阻止 PR。
       - name: Run semver checks
         run: |
           cargo semver-checks check-release \
             --workspace \
             --all-features \
-            --fail-on-error || true
+            --fail-on-error
 
       - name: Generate semver report
         if: always()
@@ -68,10 +69,10 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📋 What gets checked:" >> $GITHUB_STEP_SUMMARY
           echo "- Public API changes" >> $GITHUB_STEP_SUMMARY
-          "- Trait method signatures" >> $GITHUB_STEP_SUMMARY
-          "- Struct field visibility" >> $GITHUB_STEP_SUMMARY
-          "- Enum variant changes" >> $GITHUB_STEP_SUMMARY
-          "- Type parameter changes" >> $GITHUB_STEP_SUMMARY
+          echo "- Trait method signatures" >> $GITHUB_STEP_SUMMARY
+          echo "- Struct field visibility" >> $GITHUB_STEP_SUMMARY
+          echo "- Enum variant changes" >> $GITHUB_STEP_SUMMARY
+          echo "- Type parameter changes" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📚 Resources:" >> $GITHUB_STEP_SUMMARY
           echo "- [Semantic Versioning 2.0.0](https://semver.org/)" >> $GITHUB_STEP_SUMMARY
@@ -83,6 +84,7 @@ jobs:
   api-diff:
     name: Public API Diff
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -92,9 +94,17 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Cache cargo build
+        uses: Swatinem/rust-cache@v2
+
       - name: Install cargo-public-api
         run: cargo install cargo-public-api
 
+      # Compute the real diff between origin/main and the PR head.
+      # Earlier this wrote both API listings but posted only the new one
+      # labeled as a "diff". Now we capture an actual unified diff.
+      # 计算 origin/main 与 PR head 之间的真实差异。
+      # 之前写了两个 API 列表但只发布了新的那个并标为 "diff"。现在捕获真实的统一差异。
       - name: Generate API diff
         run: |
           git checkout origin/main
@@ -103,7 +113,17 @@ jobs:
           git checkout -
           cargo public-api --workspace --all-features > /tmp/api-new.txt
 
-          diff -u /tmp/api-old.txt /tmp/api-new.txt || true
+          # diff exits non-zero when there ARE changes (which is normal for a PR);
+          # capture it into a file and never fail the job on that.
+          # diff 在有差异时返回非零（对 PR 是正常的）；写入文件且不让它导致 job 失败。
+          diff -u /tmp/api-old.txt /tmp/api-new.txt > /tmp/api-diff.txt || true
+
+          if [ -s /tmp/api-diff.txt ]; then
+            echo "📋 Public API changes detected."
+          else
+            echo "✅ No public API changes detected."
+            echo "No public API changes." > /tmp/api-diff.txt
+          fi
 
       - name: Comment PR with API changes
         if: github.event_name == 'pull_request'
@@ -111,7 +131,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const diff = fs.readFileSync('/tmp/api-new.txt', 'utf8');
+            const diff = fs.readFileSync('/tmp/api-diff.txt', 'utf8');
             const output = `## 📦 Public API Changes\n\n\`\`\`diff\n${diff}\n\`\`\``;
             github.rest.issues.createComment({
               issue_number: context.issue.number,
