@@ -272,22 +272,36 @@ impl Timeout
 
         let duration = self.config.timeout;
 
-        if let Ok(value) = tokio::time::timeout(duration, f()).await
+        // Race the operation against a timer on Hiver's own runtime. Using
+        // `tokio::time::timeout` here would silently never resolve when this
+        // crate runs under hiver_runtime (tokio's time driver is inactive), so
+        // we use `select(op, hiver_runtime::time::sleep)` instead.
+        // 将操作与 Hiver 自有 runtime 上的定时器竞争。若此处用
+        // `tokio::time::timeout`,在本 crate 运行于 hiver_runtime 下时会静默
+        // 永不完成（tokio 的 time driver 未激活),故改用
+        // `select(op, hiver_runtime::time::sleep)`。
+        use futures::future::FutureExt;
+        let op = f();
+        let timer = hiver_runtime::time::sleep(duration);
+        match futures::future::select(op.boxed_local(), timer).await
         {
-            self.success_count.fetch_add(1, Ordering::Relaxed);
-            Ok(value)
-        }
-        else
-        {
-            self.timeout_count.fetch_add(1, Ordering::Relaxed);
-            if let Some(ref callback) = self.config.on_timeout
+            futures::future::Either::Left((value, _)) =>
             {
-                callback();
+                self.success_count.fetch_add(1, Ordering::Relaxed);
+                Ok(value)
             }
-            Err(TimeoutError::Elapsed {
-                name: self.name.clone(),
-                timeout: duration,
-            })
+            futures::future::Either::Right(_) =>
+            {
+                self.timeout_count.fetch_add(1, Ordering::Relaxed);
+                if let Some(ref callback) = self.config.on_timeout
+                {
+                    callback();
+                }
+                Err(TimeoutError::Elapsed {
+                    name: self.name.clone(),
+                    timeout: duration,
+                })
+            }
         }
     }
 }
@@ -346,10 +360,15 @@ impl TimeoutRegistry
 /// 如需完整功能，请使用 `Timeout::call`。
 pub async fn timeout<T>(duration: Duration, fut: impl Future<Output = T>) -> Result<T>
 {
-    match tokio::time::timeout(duration, fut).await
+    // Race the future against a timer on Hiver's runtime (see Timeout::call
+    // for why tokio::time::timeout is unsafe here).
+    // 将 future 与 Hiver runtime 上的定时器竞争（原因见 Timeout::call,
+    // 为何此处 tokio::time::timeout 不安全）。
+    use futures::future::FutureExt;
+    match futures::future::select(fut.boxed_local(), hiver_runtime::time::sleep(duration)).await
     {
-        Ok(value) => Ok(value),
-        Err(_) => Err(TimeoutError::Elapsed {
+        futures::future::Either::Left((value, _)) => Ok(value),
+        futures::future::Either::Right(_) => Err(TimeoutError::Elapsed {
             name: "anonymous".to_string(),
             timeout: duration,
         }),
@@ -369,6 +388,12 @@ mod tests
     use std::sync::atomic::AtomicUsize;
 
     use super::*;
+    // Async tests use the fully-qualified #[hiver_macros::test] path so the
+    // built-in #[test] (used by the sync config tests below) stays unshadowed.
+    // Do NOT add `use hiver_macros::test;` — it shadows built-in #[test].
+    // 异步测试用全限定路径 #[hiver_macros::test],使内置 #[test]（下面的同步
+    // config 测试用）保持不被遮蔽。不要加 `use hiver_macros::test;`
+    // —— 它会遮蔽内置 #[test]。
 
     // -----------------------------------------------------------------------
     // Config tests
@@ -500,7 +525,7 @@ mod tests
     // Async tests (require tokio runtime)
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_call_succeeds_within_timeout()
     {
         let config = TimeoutConfig::new().with_timeout(Duration::from_secs(5));
@@ -515,7 +540,7 @@ mod tests
         assert_eq!(m.timeout_count, 0);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_call_times_out()
     {
         let config = TimeoutConfig::new().with_timeout(Duration::from_millis(10));
@@ -523,7 +548,7 @@ mod tests
 
         let result = t
             .call(|| async {
-                tokio::time::sleep(Duration::from_secs(10)).await;
+                hiver_runtime::time::sleep(Duration::from_secs(10)).await;
                 "never"
             })
             .await;
@@ -545,7 +570,7 @@ mod tests
         assert_eq!(m.success_count, 0);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_call_with_closure_capturing_state()
     {
         let config = TimeoutConfig::new().with_timeout(Duration::from_secs(1));
@@ -562,7 +587,7 @@ mod tests
         assert_eq!(result.unwrap(), vec![1, 2, 3]);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_callback_invoked_on_timeout()
     {
         let counter = Arc::new(AtomicUsize::new(0));
@@ -578,14 +603,14 @@ mod tests
 
         let _ = t
             .call(|| async {
-                tokio::time::sleep(Duration::from_secs(10)).await;
+                hiver_runtime::time::sleep(Duration::from_secs(10)).await;
             })
             .await;
 
         assert_eq!(counter.load(Ordering::Relaxed), 1);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_callback_not_invoked_on_success()
     {
         let counter = Arc::new(AtomicUsize::new(0));
@@ -603,7 +628,7 @@ mod tests
         assert_eq!(counter.load(Ordering::Relaxed), 0);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_zero_timeout()
     {
         // A zero timeout still gives the future one poll. A future that is
@@ -615,7 +640,7 @@ mod tests
         assert_eq!(result.unwrap(), 99);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     #[ignore = "flaky: race between zero timeout and future completion"]
     async fn test_zero_timeout_with_pending()
     {
@@ -625,7 +650,7 @@ mod tests
 
         let result = t
             .call(|| async {
-                tokio::time::sleep(Duration::from_nanos(1)).await;
+                hiver_runtime::time::sleep(Duration::from_nanos(1)).await;
                 "late"
             })
             .await;
@@ -633,7 +658,7 @@ mod tests
         assert!(result.is_err());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_multiple_calls_metrics_accumulate()
     {
         let config = TimeoutConfig::new().with_timeout(Duration::from_millis(50));
@@ -650,7 +675,7 @@ mod tests
         {
             let _ = t
                 .call(|| async {
-                    tokio::time::sleep(Duration::from_secs(10)).await;
+                    hiver_runtime::time::sleep(Duration::from_secs(10)).await;
                 })
                 .await;
         }
@@ -661,21 +686,21 @@ mod tests
         assert_eq!(m.timeout_count, 2);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_convenience_timeout_function()
     {
         let result = timeout(Duration::from_secs(1), async { "ok" }).await;
         assert_eq!(result.unwrap(), "ok");
 
         let result = timeout(Duration::from_millis(5), async {
-            tokio::time::sleep(Duration::from_secs(10)).await;
+            hiver_runtime::time::sleep(Duration::from_secs(10)).await;
             "late"
         })
         .await;
         assert!(result.is_err());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_timeout_with_result_type()
     {
         let config = TimeoutConfig::new().with_timeout(Duration::from_secs(1));
@@ -685,7 +710,7 @@ mod tests
         assert_eq!(result.unwrap(), 100);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_timeout_cloned_shares_metrics()
     {
         let config = TimeoutConfig::new().with_timeout(Duration::from_secs(1));
@@ -695,7 +720,7 @@ mod tests
         let _ = t1.call(|| async {}).await;
         let _ = t2
             .call(|| async {
-                tokio::time::sleep(Duration::from_secs(10)).await;
+                hiver_runtime::time::sleep(Duration::from_secs(10)).await;
             })
             .await;
 

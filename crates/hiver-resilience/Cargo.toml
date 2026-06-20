@@ -87,7 +87,10 @@ full = ["circuit-breaker", "rate-limit", "retry", "timeout", "bulkhead", "fallba
 
 [dev-dependencies]
 # Testing / 测试 (Spring Test)
+# tokio is retained for benches/legacy tests; new async tests use #[hiver::test].
+# tokio 为 benches/遗留测试保留;新的异步测试用 #[hiver::test]。
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+hiver-macros = { path = "../hiver-macros" }
 criterion = { workspace = true }
 
 # Benchmarks will be added in Phase 4

@@ -57,6 +57,7 @@ mod scheduled;
 mod spring_cloud;
 mod spring_di;
 mod spring_stereotype;
+mod test_attr;
 mod transactional;
 
 use proc_macro::TokenStream;
@@ -171,6 +172,35 @@ pub fn bean(attr: TokenStream, item: TokenStream) -> TokenStream
 pub fn profile(attr: TokenStream, item: TokenStream) -> TokenStream
 {
     spring_stereotype::profile(attr, item)
+}
+
+/// Attribute macro for async tests that run on Hiver's own runtime.
+/// 用于在 Hiver 自有 runtime 上运行异步测试的属性宏。
+///
+/// This is the Hiver equivalent of `#[tokio::test]`. It wraps an `async fn`
+/// test body in `hiver_runtime::Runtime::block_on`, so that the async code
+/// (including `hiver_runtime::time::sleep`, async I/O, and `spawn`) runs against
+/// the framework's reactor — not tokio's.
+///
+/// 这是 Hiver 版的 `#[tokio::test]`。它把 `async fn` 测试体包裹进
+/// `hiver_runtime::Runtime::block_on`,使异步代码（包括 `hiver_runtime::time::sleep`、
+/// 异步 I/O、`spawn`）在框架自身的 reactor 上运行 —— 而非 tokio 的。
+///
+/// # Example / 示例
+///
+/// ```rust,ignore
+/// use hiver_macros::test;
+///
+/// #[test]
+/// async fn sleeps_on_hiver_runtime() {
+///     hiver_runtime::time::sleep(std::time::Duration::from_millis(10)).await;
+///     assert!(true);
+/// }
+/// ```
+#[proc_macro_attribute]
+pub fn test(_attr: TokenStream, item: TokenStream) -> TokenStream
+{
+    test_attr::test_impl(item)
 }
 
 #[proc_macro_attribute]

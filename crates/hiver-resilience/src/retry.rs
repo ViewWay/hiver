@@ -368,7 +368,7 @@ where
             let delay = policy.calculate_delay(attempt);
             if !delay.is_zero()
             {
-                tokio::time::sleep(delay).await;
+                hiver_runtime::time::sleep(delay).await;
                 total_delay += delay;
             }
         }
