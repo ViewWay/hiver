@@ -1,7 +1,7 @@
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, Span};
 use quote::quote;
-use syn::{ItemFn, parse_macro_input};
+use syn::{FnArg, ItemFn, parse_macro_input};
 
 fn parse_route_path(attr: &TokenStream) -> syn::Result<String>
 {
@@ -36,21 +36,64 @@ macro_rules! impl_route_macro {
 
             let register_fn = quote::format_ident!("__hiver_route_register_{}", func_name);
 
+            // Collect each handler parameter (pattern + type) so we can emit a
+            // FromRequest extraction site per argument. This is what makes
+            // `async fn get_user(Path(id): Path<u64>) -> ...` work: each param
+            // is extracted from the Request before the handler is called.
+            // 收集每个处理程序参数（模式 + 类型），以便为每个参数发射一个
+            // FromRequest 提取点。这正是让
+            // `async fn get_user(Path(id): Path<u64>) -> ...` 生效的关键:在调用
+            // 处理程序前，每个参数都从 Request 中提取。
+            let param_info: Vec<_> = input
+                .sig
+                .inputs
+                .iter()
+                .filter_map(|arg| match arg
+                {
+                    FnArg::Typed(pat_type) => {
+                        Some(((*pat_type.pat).clone(), (*pat_type.ty).clone()))
+                    }
+                    FnArg::Receiver(_) => None,
+                })
+                .collect();
+
+            let extract_stmts = param_info.iter().map(|(pat, ty)| {
+                quote! {
+                    let #pat: #ty = match <#ty as hiver_http::FromRequest>::from_request(&req).await {
+                        Ok(val) => val,
+                        Err(e) => {
+                            let resp = hiver_http::Response::builder()
+                                .status(hiver_http::StatusCode::BAD_REQUEST)
+                                .body(hiver_http::Body::from(
+                                    format!("Parameter extraction failed: {:?}", e)
+                                ))
+                                .unwrap_or_else(|_| hiver_http::Response::new(hiver_http::StatusCode::INTERNAL_SERVER_ERROR));
+                            return hiver_http::Result::Ok(resp);
+                        }
+                    };
+                }
+            });
+
+            let call_args = param_info.iter().map(|(pat, _)| pat);
+
             let expanded = quote! {
                 #input
 
                 #[allow(non_snake_case)]
                 fn #register_fn(router: hiver_router::Router) -> hiver_router::Router {
-                    router.route(#path, hiver_http::Method::$method, #func_name)
-                }
-
-                #[automatically_derived]
-                impl #func_name {
-                    /// Register this route onto a Router.
-                    /// 将此路由注册到 Router 上。
-                    pub fn register_route(router: hiver_router::Router) -> hiver_router::Router {
-                        #register_fn(router)
-                    }
+                    // The handler passed to `Router::route` is a closure that
+                    // extracts all parameters from the Request via FromRequest,
+                    // calls the user's handler, and converts the result via
+                    // IntoResponse. This satisfies `Handler<S>: From<Fn(Request)->Fut>`.
+                    // 传给 `Router::route` 的处理程序是一个闭包:它经 FromRequest
+                    // 从 Request 提取所有参数，调用用户的处理程序，并通过
+                    // IntoResponse 转换结果。这满足
+                    // `Handler<S>: From<Fn(Request)->Fut>`。
+                    router.route(#path, hiver_http::Method::$method, move |req: hiver_http::Request| async move {
+                        #(#extract_stmts)*
+                        let result = #func_name(#(#call_args),*).await;
+                        hiver_http::Result::Ok(hiver_http::IntoResponse::into_response(result))
+                    })
                 }
 
                 ::inventory::submit! {

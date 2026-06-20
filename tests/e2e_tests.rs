@@ -467,3 +467,268 @@ mod response_e2e
         assert_eq!(entity.headers().len(), 2);
     }
 }
+// ============================================================
+// HTTP server end-to-end over a real socket.
+// HTTP 服务端端到端(真实 socket)。
+//
+// Spawns the `http_server_example` binary (Hiver\'s own stack: custom runtime
+// waker path → TCP accept → HTTP/1.1 parse → Router dispatch → handler →
+// response encode) and asserts a real std::net client receives a correct HTTP
+// response. This gates "can this framework actually serve a request?".
+// 启动 `http_server_example` 二进制(Hiver 自有技术栈:自定义 runtime waker 路径
+// → TCP accept → HTTP/1.1 解析 → Router 分发 → 处理程序 → 响应编码),并断言
+// 真实 std::net 客户端收到正确的 HTTP 响应。把守"本框架能否真正服务请求?"。
+// ============================================================
+
+mod http_server_e2e
+{
+    use std::{
+        io::{Read, Write},
+        net::TcpStream,
+        path::PathBuf,
+        process::{Child, Command, Stdio},
+        thread,
+        time::Duration,
+    };
+
+    /// Build the example binary on first use and return its path.
+    /// 首次使用时构建示例二进制并返回其路径。
+    fn example_bin() -> PathBuf
+    {
+        // The test harness runs with CARGO_MANIFEST_DIR = tests/. The binary
+        // is built by `cargo test` into the workspace target dir.
+        // 测试工具以 CARGO_MANIFEST_DIR = tests/ 运行。二进制由 `cargo test`
+        // 构建到 workspace target 目录。
+        let target = env!("CARGO_MANIFEST_DIR")
+            .parse::<PathBuf>()
+            .unwrap()
+            .join("..")
+            .join("target")
+            .join("debug")
+            .join("http_server_example");
+        if !target.exists()
+        {
+            panic!(
+                "http_server_example binary not found at {}.                  Build it first: \
+                 cargo build -p hiver-examples --bin http_server_example",
+                target.display()
+            );
+        }
+        target
+    }
+
+    /// Spawn the example server and wait until it is accepting connections.
+    /// 启动示例服务端并等待其接受连接。
+    fn spawn_server() -> Child
+    {
+        let bin = example_bin();
+        let child = Command::new(&bin)
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+            .unwrap_or_else(|e| panic!("failed to spawn {}: {e}", bin.display()));
+
+        // Wait until the port is accepting (retry for up to ~5s). Treat
+        // connection refusals and transient WouldBlock as "not ready yet".
+        // 等待端口接受连接(最多重试约 5s)。将连接拒绝与瞬时 WouldBlock 视为
+        // "尚未就绪"。
+        for _ in 0..100
+        {
+            match TcpStream::connect_timeout(
+                &"127.0.0.1:8080".parse().unwrap(),
+                Duration::from_millis(200),
+            )
+            {
+                Ok(_) => return child,
+                Err(_) => thread::sleep(Duration::from_millis(50)),
+            }
+        }
+        panic!("server did not start listening on 127.0.0.1:8080");
+    }
+
+    fn http_get(path: &str) -> String
+    {
+        // The server runs on a custom busy-poll runtime; connections may need a
+        // few retries (connect can transiently return WouldBlock on macOS). Use
+        // a bounded read (not read_to_end) so a misbehaving server can't hang us.
+        // 服务端运行于自定义忙轮询 runtime;连接可能需要重试若干次
+        // (在 macOS 上 connect 可能瞬时返回 WouldBlock)。使用有界读取
+        // (非 read_to_end),使异常服务端无法挂起我们。
+        let addr: std::net::SocketAddr = "127.0.0.1:8080".parse().unwrap();
+        let mut last = String::new();
+        for _ in 0..40
+        {
+            let result = (|| -> std::io::Result<String> {
+                let mut stream =
+                    TcpStream::connect_timeout(&addr, Duration::from_millis(200))?;
+                stream.set_read_timeout(Some(Duration::from_millis(800)))?;
+                stream.set_write_timeout(Some(Duration::from_millis(800)))?;
+                let req = format!(
+                    "GET {path} HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
+                );
+                stream.write_all(req.as_bytes())?;
+                let mut buf = [0u8; 4096];
+                let n = stream.read(&mut buf)?;
+                Ok(String::from_utf8_lossy(&buf[..n]).into_owned())
+            })();
+            match result
+            {
+                Ok(resp) if resp.starts_with("HTTP") => return resp,
+                Ok(other) => {
+                    last = other;
+                    thread::sleep(Duration::from_millis(50));
+                }
+                Err(_) => thread::sleep(Duration::from_millis(50)),
+            }
+        }
+        panic!(
+            "http_get({path}) failed after retries; last response: {last:?}"
+        );
+    }
+
+    #[test]
+    fn server_serves_http_over_real_socket()
+    {
+        // One server, multiple requests — avoids two tests racing on port 8080.
+        // 一个服务端,多个请求 —— 避免两个测试在 8080 端口上竞争。
+        let mut child = spawn_server();
+
+        // /hello -> 200 with the greeting body.
+        // /hello -> 200 与问候正文。
+        let resp = http_get("/hello");
+        assert!(resp.starts_with("HTTP/1.1 200"), "hello status line wrong: {resp}");
+        assert!(resp.contains("Hello from Hiver!"), "hello body missing: {resp}");
+
+        // /echo -> 200.
+        let resp = http_get("/echo");
+        assert!(resp.starts_with("HTTP/1.1 200"), "echo status line wrong: {resp}");
+
+        let _ = child.kill();
+        let _ = child.wait();
+    }
+}
+
+// ============================================================
+// Annotated application end-to-end (full `#[hiver_main]` path).
+// 注解驱动应用端到端(完整 `#[hiver_main]` 路径)。
+//
+// Spawns the `annotated_app_example` binary, which boots entirely via
+// annotations: `#[hiver_main]` → runtime + auto-config + inventory route
+// collection → Router → WebServer → bind + serve. Verifies that a route
+// contributed by `#[get]` (not wired by hand) is actually discoverable and
+// serves over a real socket.
+// 启动 `annotated_app_example` 二进制,完全经注解启动:`#[hiver_main]` → runtime
+// + 自动配置 + inventory 路由收集 → Router → WebServer → 绑定 + 服务。验证经
+// `#[get]` 贡献(非手动接线)的路由确实可被发现,并经真实 socket 服务。
+// ============================================================
+
+mod annotated_app_e2e
+{
+    use std::io::{Read, Write};
+    use std::net::TcpStream;
+    use std::path::PathBuf;
+    use std::process::{Child, Command, Stdio};
+    use std::thread;
+    use std::time::Duration;
+
+    /// Path to the annotated example binary (built by the test harness).
+    /// 注解示例二进制路径(由测试工具构建)。
+    fn example_bin() -> PathBuf
+    {
+        let target = env!("CARGO_MANIFEST_DIR")
+            .parse::<PathBuf>()
+            .unwrap()
+            .join("..")
+            .join("target")
+            .join("debug")
+            .join("annotated_app_example");
+        if !target.exists()
+        {
+            panic!(
+                "annotated_app_example binary not found at {}. \
+                 Build it first: cargo build -p hiver-examples --bin annotated_app_example",
+                target.display()
+            );
+        }
+        target
+    }
+
+    /// Spawn the annotated app and wait until it accepts connections.
+    /// 启动注解应用并等待其接受连接。
+    fn spawn_app() -> Child
+    {
+        let bin = example_bin();
+        let child = Command::new(&bin)
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+            .unwrap_or_else(|e| panic!("failed to spawn {}: {e}", bin.display()));
+
+        let addr: std::net::SocketAddr = "127.0.0.1:8080".parse().unwrap();
+        for _ in 0..100
+        {
+            match TcpStream::connect_timeout(&addr, Duration::from_millis(200))
+            {
+                Ok(_) => return child,
+                Err(_) => thread::sleep(Duration::from_millis(50)),
+            }
+        }
+        panic!("annotated app did not start listening on 127.0.0.1:8080");
+    }
+
+    fn http_get(path: &str) -> String
+    {
+        let addr: std::net::SocketAddr = "127.0.0.1:8080".parse().unwrap();
+        let mut last = String::new();
+        for _ in 0..40
+        {
+            let result = (|| -> std::io::Result<String> {
+                let mut stream = TcpStream::connect_timeout(&addr, Duration::from_millis(200))?;
+                stream.set_read_timeout(Some(Duration::from_millis(800)))?;
+                stream.set_write_timeout(Some(Duration::from_millis(800)))?;
+                let req = format!(
+                    "GET {path} HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
+                );
+                stream.write_all(req.as_bytes())?;
+                let mut buf = [0u8; 4096];
+                let n = stream.read(&mut buf)?;
+                Ok(String::from_utf8_lossy(&buf[..n]).into_owned())
+            })();
+            match result
+            {
+                Ok(resp) if resp.starts_with("HTTP") => return resp,
+                Ok(other) => {
+                    last = other;
+                    thread::sleep(Duration::from_millis(50));
+                }
+                Err(_) => thread::sleep(Duration::from_millis(50)),
+            }
+        }
+        panic!("annotated http_get({path}) failed; last: {last:?}");
+    }
+
+    #[test]
+    fn annotated_app_serves_inventory_collected_routes()
+    {
+        let mut child = spawn_app();
+
+        // /hello is contributed by `#[get("/hello")]` and discovered via
+        // inventory at startup (the `RouterAutoConfiguration` logs
+        // "Registered N routes from inventory"). It is NOT wired by hand.
+        // /hello 由 `#[get("/hello")]` 贡献,启动时经 inventory 发现
+        // (`RouterAutoConfiguration` 打印 "Registered N routes from inventory")。
+        // 它不是手动接线的。
+        let resp = http_get("/hello");
+        let _ = child.kill();
+        let _ = child.wait();
+
+        assert!(
+            resp.starts_with("HTTP/1.1 200"),
+            "hello status line wrong: {resp}"
+        );
+        assert!(
+            resp.contains("Hello from annotated Hiver!"),
+            "hello body missing: {resp}"
+        );
+    }
+}

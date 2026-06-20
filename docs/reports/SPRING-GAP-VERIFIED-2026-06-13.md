@@ -5,6 +5,14 @@
 > 验证方法 / Method: codegraph 符号检索（797 文件索引）+ crate 规模实测 + 代码核对
 > 验证范围 / Scope: 11 个 Spring 核心能力的对等符号存在性与深度
 
+> **2026-06-17 重大更新 / MAJOR UPDATE**: 打通真实 HTTP 服务门面——修复自定义 runtime 的
+> waker(io.rs 在 WouldBlock 时不注册 FD/waker 的死锁)+ 新增 `Router::route()`(此前 `#[get]` 宏
+> 调用的方法不存在、无法编译)+ `#[get]`/`#[post]` 宏现按参数发射 `FromRequest` 提取代码 + 全局
+> Handle 使 scheduler worker 线程上的 spawn 任务也能注册 I/O。新增端到端 socket 测试
+> (`tests/e2e_tests.rs::http_server_e2e`)与可运行示例 `examples/src/http_server_example.rs`,
+> 均已验证: `curl http://127.0.0.1:8080/hello` → `200 Hello from Hiver!`。
+> **这是项目首个证明"框架能真正服务 HTTP 请求"的测试。**
+
 ---
 
 ## ⚠️ 取代声明 / Supersedes

@@ -81,16 +81,28 @@ where
         let timeout = self.timeout;
 
         Box::pin(async move {
-            // Use tokio::time::timeout for the timeout functionality
-            // 使用tokio::time::timeout实现超时功能
-            if let Ok(response) = tokio::time::timeout(timeout, next.call(req, state)).await
+            // Race the handler against a timer. IMPORTANT: use Hiver's own
+            // runtime timer (hiver_runtime::time::sleep), NOT tokio::time::timeout.
+            // The HTTP server runs on hiver_runtime; tokio's time driver is not
+            // active there, so tokio::time::timeout would never resolve and the
+            // response would silently never be returned.
+            // 将处理程序与定时器竞争。重要:使用 Hiver 自有 runtime 的定时器
+            // (hiver_runtime::time::sleep),而非 tokio::time::timeout。
+            // HTTP 服务端运行于 hiver_runtime;tokio 的 time driver 在那里未激活,
+            // 故 tokio::time::timeout 永不完成,响应会被静默丢弃。
+            use futures::future::FutureExt;
+            let handler_fut = next.call(req, state).boxed();
+            let timer_fut = hiver_runtime::time::sleep(timeout);
+            match futures::future::select(handler_fut, timer_fut).await
             {
-                response
-            }
-            else
-            {
-                tracing::warn!("Request timed out after {:?}", timeout);
-                Err(hiver_http::Error::Timeout(format!("Request timed out after {:?}", timeout)))
+                futures::future::Either::Left((response, _)) => response,
+                futures::future::Either::Right((_, _)) => {
+                    tracing::warn!("Request timed out after {:?}", timeout);
+                    Err(hiver_http::Error::Timeout(format!(
+                        "Request timed out after {:?}",
+                        timeout
+                    )))
+                }
             }
         })
     }

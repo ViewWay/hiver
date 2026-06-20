@@ -237,6 +237,53 @@ impl<S> Router<S>
         self
     }
 
+    /// Register a route for an arbitrary HTTP method. This is the unified
+    /// entry point the `#[get]`/`#[post]`/… route macros call:
+    /// `router.route("/x", Method::GET, handler)`. It dispatches to the same
+    /// per-method `Routes` field as the dedicated `.get()`/`.post()`/… builders.
+    ///
+    /// 为任意 HTTP 方法注册路由。这是 `#[get]`/`#[post]`/… 路由宏调用的
+    /// 统一入口:`router.route("/x", Method::GET, handler)`。它分发到与专用
+    /// `.get()`/`.post()`/… 构建器相同的按方法 `Routes` 字段。
+    ///
+    /// # Panics / 恐慌
+    ///
+    /// Panics for `TRACE`/`CONNECT` (no route table for those methods).
+    /// 对 `TRACE`/`CONNECT` 触发恐慌(无对应方法的路由表)。
+    #[allow(clippy::needless_pass_by_value)]
+    pub fn route(
+        mut self,
+        path: impl Into<String>,
+        method: hiver_http::Method,
+        handler: impl Into<Handler<S>>,
+    ) -> Self
+    {
+        let path = path.into();
+        let handler = handler.into();
+        let param_names = extract_param_names(&path);
+        let route = Route {
+            pattern: path.clone(),
+            handler,
+            param_names,
+        };
+        let target = match method
+        {
+            Method::GET => &mut self.get_routes,
+            Method::POST => &mut self.post_routes,
+            Method::PUT => &mut self.put_routes,
+            Method::DELETE => &mut self.delete_routes,
+            Method::PATCH => &mut self.patch_routes,
+            Method::HEAD => &mut self.head_routes,
+            Method::OPTIONS => &mut self.options_routes,
+            Method::TRACE | Method::CONNECT =>
+            {
+                panic!("route(): TRACE/CONNECT routing is not supported / 不支持")
+            },
+        };
+        target.patterns.insert(path, route);
+        self
+    }
+
     /// Match a route for the given method and path
     /// 匹配给定方法和路径的路由
     fn match_route(&self, method: Method, path: &str)

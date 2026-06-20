@@ -177,4 +177,99 @@ mod tests
         assert_eq!(RetryDecision::Retry, RetryDecision::Retry);
         assert_ne!(RetryDecision::Retry, RetryDecision::Stop);
     }
+
+    // ============================================================
+    // Additional coverage: source() delegation through the wrappers,
+    // and Display for the RetryDecision variants.
+    // 额外覆盖：经包装器的 source() 委派，以及 RetryDecision 变体的 Display。
+    // ============================================================
+
+    /// A nested error source used to verify source() delegation.
+    /// 用于验证 source() 委派的嵌套错误源。
+    #[derive(Debug)]
+    struct DeepError;
+
+    impl fmt::Display for DeepError
+    {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+        {
+            write!(f, "deep cause")
+        }
+    }
+    impl std::error::Error for DeepError {}
+
+    /// An error that carries a source, to verify wrapper source() forwarding.
+    /// 携带 source 的错误，用于验证包装器的 source() 转发。
+    #[derive(Debug)]
+    struct WithSource
+    {
+        inner: DeepError,
+    }
+
+    impl fmt::Display for WithSource
+    {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+        {
+            write!(f, "outer with source")
+        }
+    }
+    impl std::error::Error for WithSource
+    {
+        fn source(&self) -> Option<&(dyn std::error::Error + 'static)>
+        {
+            Some(&self.inner)
+        }
+    }
+
+    #[test]
+    fn test_retryable_error_delegates_source()
+    {
+        // RetryableError::source() must forward to the inner error's source().
+        // RetryableError::source() 必须转发到内部错误的 source()。
+        let err = RetryableError::new(WithSource { inner: DeepError });
+        let src = std::error::Error::source(&err);
+        assert!(src.is_some(), "source should be forwarded");
+        assert_eq!(src.unwrap().to_string(), "deep cause");
+    }
+
+    #[test]
+    fn test_fatal_error_delegates_source()
+    {
+        // FatalError::source() must forward to the inner error's source().
+        // FatalError::source() 必须转发到内部错误的 source()。
+        let err = FatalError::new(WithSource { inner: DeepError });
+        let src = std::error::Error::source(&err);
+        assert!(src.is_some(), "source should be forwarded");
+        assert_eq!(src.unwrap().to_string(), "deep cause");
+    }
+
+    #[test]
+    fn test_retryable_and_fatal_prefixes_in_display()
+    {
+        // Pin the "[retryable]" / "[fatal]" prefixes produced by Display.
+        // 固化 Display 产生的 "[retryable]" / "[fatal]" 前缀。
+        let r = RetryableError::new(std::io::Error::other("x"));
+        let f = FatalError::new(std::io::Error::other("y"));
+        let rs = r.to_string();
+        let fs = f.to_string();
+        assert!(rs.starts_with("[retryable]"), "got: {rs}");
+        assert!(fs.starts_with("[fatal]"), "got: {fs}");
+        assert!(rs.contains("x"));
+        assert!(fs.contains("y"));
+    }
+
+    #[test]
+    fn test_retry_decision_debug_and_copy()
+    {
+        // RetryDecision is Copy + Debug; ensure cloning a variant and formatting
+        // it via Debug does not panic (guards the derives).
+        // RetryDecision 是 Copy + Debug；确保克隆变体并通过 Debug 格式化
+        // 不 panic（保护 derive 实现）。
+        let d = RetryDecision::Stop;
+        let d2 = d;
+        let s = format!("{d2:?}");
+        assert!(s.contains("Stop"));
+        let r = RetryDecision::Retry;
+        assert_eq!(format!("{r:?}"), "Retry");
+    }
 }

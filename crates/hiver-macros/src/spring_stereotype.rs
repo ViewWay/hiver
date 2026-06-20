@@ -58,7 +58,13 @@ pub fn hiver_main(_attr: TokenStream, item: TokenStream) -> TokenStream
                 let start_time = Instant::now();
 
                 let class_name = "hiver.Application";
-                let rt = ::tokio::runtime::Runtime::new()?;
+                // Use Hiver's own runtime: the HTTP server (`hiver_http::Server`)
+                // drives async I/O via `hiver_runtime`, so the entry point must run
+                // on it (not tokio) for spawn/accept/waker to work.
+                // 使用 Hiver 自有 runtime:HTTP 服务端(`hiver_http::Server`)经
+                // `hiver_runtime` 驱动异步 I/O,故入口必须在其上运行(而非 tokio),
+                // spawn/accept/waker 才能生效。
+                let mut rt = hiver_runtime::Runtime::new()?;
 
                 let mut ctx = ApplicationContext::new();
 
@@ -161,8 +167,8 @@ pub fn hiver_main(_attr: TokenStream, item: TokenStream) -> TokenStream
                 Ok(())
             }
 
-            pub fn context() -> anyhow::Result<ApplicationContext> {
-                Ok(ApplicationContext::new())
+            pub fn context() -> anyhow::Result<hiver_starter::core::ApplicationContext> {
+                Ok(hiver_starter::core::ApplicationContext::new())
             }
         }
     };

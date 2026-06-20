@@ -1812,6 +1812,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-net"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b948000fad4873c1c9339d60f2623323a0cfd3816e5181033c6a5cb68b2accf7"
+dependencies = [
+ "async-io 2.6.0",
+ "blocking",
+ "futures-lite 2.6.1",
+]
+
+[[package]]
 name = "async-reactor-trait"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5453,10 +5464,12 @@ dependencies = [
  "hiver-observability",
  "hiver-resilience",
  "hiver-router",
+ "hiver-runtime",
  "hiver-security",
  "hiver-starter",
  "hiver-validation",
  "hiver-web3",
+ "inventory",
  "reqwest 0.12.28",
  "serde",
  "serde_json",
@@ -5957,12 +5970,17 @@ version = "0.1.0-alpha.6"
 dependencies = [
  "anyhow",
  "arc-swap",
+ "async-executor",
+ "async-io 2.6.0",
+ "async-net",
+ "blocking",
  "bytes",
  "criterion",
  "crossbeam",
  "dashmap",
  "flume",
  "futures",
+ "futures-lite 2.6.1",
  "futures-util",
  "io-uring",
  "kqueue",
@@ -6176,6 +6194,7 @@ dependencies = [
  "hiver-modulith",
  "hiver-response",
  "hiver-router",
+ "hiver-runtime",
  "hiver-spel",
  "hiver-state-machine",
  "lapin",

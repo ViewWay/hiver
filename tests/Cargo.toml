@@ -27,6 +27,7 @@ hiver-modulith = { path = "../crates/hiver-modulith" }
 hiver-state-machine = { path = "../crates/hiver-state-machine" }
 hiver-http = { path = "../crates/hiver-http" }
 hiver-router = { path = "../crates/hiver-router" }
+hiver-runtime = { path = "../crates/hiver-runtime" }
 hiver-extractors = { path = "../crates/hiver-extractors" }
 hiver-response = { path = "../crates/hiver-response" }
 hiver-mcp = { path = "../crates/hiver-mcp" }

@@ -89,6 +89,22 @@ jobs:
           #   - io_uring_enter timeout via EXT_ARG — sigsz uninit fixed (7dd3083)
           # valgrind ERROR SUMMARY: 0 errors. Runtime covered by main test job.
 
+      - name: Run integration tests (socket / waker / e2e) / 运行集成测试(socket / waker / e2e)
+        run: |
+          # These exercise real sockets on THIS platform's driver:
+          #   - Linux (here): epoll + io_uring FD→waker path
+          #   - macOS (local dev): kqueue FD→waker path
+          # 这些在本平台 driver 上演练真实 socket:
+          #   - Linux(此处):epoll + io_uring FD→waker 路径
+          #   - macOS(本地开发):kqueue FD→waker 路径
+          cargo test -p hiver-runtime --test waker_tcp_test -- --test-threads=1
+          # The http_server_e2e test spawns the example binary over a real socket.
+          # Build the binary first so the subprocess test can find it.
+          # http_server_e2e 测试经真实 socket 启动示例二进制。先构建二进制,
+          # 使子进程测试能找到它。
+          cargo build -p hiver-examples --bin http_server_example
+          cargo test -p hiver-tests --test e2e http_server_e2e -- --test-threads=1
+
   audit:
     name: Security Audit
     runs-on: ubuntu-latest

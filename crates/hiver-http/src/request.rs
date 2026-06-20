@@ -47,6 +47,7 @@ impl From<&http::Method> for Method
     {
         match method.as_str()
         {
+            "GET" => Method::GET,
             "POST" => Method::POST,
             "PUT" => Method::PUT,
             "PATCH" => Method::PATCH,

@@ -165,6 +165,28 @@ impl Server
     where
         S: HttpService + Clone + 'static,
     {
+        // No explicit shutdown signal: run until the process is killed.
+        // Graceful shutdown is available via `run_with_shutdown`.
+        // 无显式关闭信号:运行直到进程被终止。
+        // 优雅关闭可经 `run_with_shutdown` 获得。
+        // (`std::future::pending` never resolves, so the shutdown branch never
+        // fires — equivalent to the original infinite accept loop.)
+        // (`std::future::pending` 永不完成,故关闭分支永不触发 —— 等价于原先的
+        // 无限 accept 循环。)
+        self.run_with_shutdown(service, std::future::pending()).await
+    }
+
+    /// Run the server until the `shutdown` future resolves, then stop accepting
+    /// new connections and wait for in-flight ones to finish (bounded by the
+    /// keep-alive timeout). This is the graceful-shutdown entry point.
+    ///
+    /// 运行服务端直到 `shutdown` future 完成,随后停止接受新连接,并等待处理中的
+    /// 连接结束(受 keep-alive 超时约束)。这是优雅关闭入口。
+    pub async fn run_with_shutdown<S, F>(self, service: S, shutdown: F) -> Result<()>
+    where
+        S: HttpService + Clone + 'static,
+        F: std::future::Future<Output = ()>,
+    {
         tracing::info!("Starting HTTP server on {}", self.addr);
 
         // Bind the listener
@@ -179,41 +201,105 @@ impl Server
         let connection_count = Arc::new(std::sync::atomic::AtomicUsize::new(0));
         let max_conns = config.max_connections;
 
-        // Accept connections loop — enforce max_connections via atomic counter.
-        // 连接接受循环 — 通过原子计数器强制执行最大连接数。
+        // Accept connections loop — race against the shutdown signal. When it
+        // fires, stop accepting and let in-flight connections drain (each has
+        // its own request/keep-alive timeout, so the process can't hang).
+        // 连接接受循环 —— 与关闭信号竞争。信号触发时,停止接受,让处理中的
+        // 连接排空(每个连接各有请求/keep-alive 超时,故进程不会挂起)。
+        let mut shutdown = Box::pin(shutdown);
+        let accepting = loop
+        {
+            // Poll accept and shutdown concurrently: first to win decides.
+            // 并发轮询 accept 与 shutdown:先完成者决定走向。
+            use futures::future::FutureExt;
+            let accept_fut = listener.accept();
+            match futures::future::select(accept_fut.boxed(), shutdown.as_mut()).await
+            {
+                futures::future::Either::Left((accept_result, _)) =>
+                {
+                    match accept_result
+                    {
+                        Ok((stream, peer_addr)) =>
+                        {
+                            let service = service.clone();
+                            let config = config.clone();
+                            let count = connection_count.clone();
+                            let current = count
+                                .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                            if current >= max_conns
+                            {
+                                count.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
+                                tracing::warn!(
+                                    "Max connections ({}) reached, rejecting {}",
+                                    max_conns,
+                                    peer_addr
+                                );
+                                drop(stream);
+                                continue;
+                            }
+
+                            spawn(async move {
+                                handle_connection(stream, peer_addr, service, config).await;
+                                count.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
+                            });
+                        },
+                        Err(e) =>
+                        {
+                            tracing::error!("Error accepting connection: {}", e);
+                        },
+                    }
+                },
+                // Shutdown signal fired: stop accepting.
+                // 关闭信号触发:停止接受。
+                futures::future::Either::Right((_, _)) =>
+                {
+                    tracing::info!("Shutdown signal received, draining connections");
+                    break;
+                },
+            }
+        };
+
+        let _ = accepting;
+
+        // Graceful drain: wait for in-flight connections to finish, bounded by
+        // the keep-alive timeout so a stuck connection can't block shutdown
+        // forever.
+        // 优雅排空:等待处理中的连接结束,受 keep-alive 超时约束,使卡住的连接
+        // 无法永久阻塞关闭。
+        let drain_deadline = hiver_runtime::time::sleep(config.keep_alive_timeout);
+        let drain_deadline = Box::pin(drain_deadline);
+        let mut drain_deadline = drain_deadline;
         loop
         {
-            match listener.accept().await
+            let in_flight = connection_count.load(std::sync::atomic::Ordering::Relaxed);
+            if in_flight == 0
             {
-                Ok((stream, peer_addr)) =>
-                {
-                    let service = service.clone();
-                    let config = config.clone();
-                    let count = connection_count.clone();
-                    let current = count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-                    if current >= max_conns
-                    {
-                        count.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
-                        tracing::warn!(
-                            "Max connections ({}) reached, rejecting {}",
-                            max_conns,
-                            peer_addr
-                        );
-                        drop(stream);
-                        continue;
-                    }
-
-                    spawn(async move {
-                        handle_connection(stream, peer_addr, service, config).await;
-                        count.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
-                    });
-                },
-                Err(e) =>
-                {
-                    tracing::error!("Error accepting connection: {}", e);
+                tracing::info!("All connections drained, shutting down");
+                break;
+            }
+            // Either a connection finishes (polled by its own task) or the drain
+            // deadline elapses — whichever comes first.
+            // 要么某连接完成(由其自身任务轮询),要么排空截止时间到 —— 先到为准。
+            use futures::future::FutureExt;
+            let tick = hiver_runtime::time::sleep(std::time::Duration::from_millis(50));
+            match futures::future::select(
+                tick.boxed(),
+                drain_deadline.as_mut(),
+            )
+            .await
+            {
+                futures::future::Either::Left((_, _)) => continue,
+                futures::future::Either::Right((_, _)) => {
+                    tracing::warn!(
+                        "Drain timeout reached with {} connections still in flight, forcing shutdown",
+                        in_flight
+                    );
+                    break;
                 },
             }
         }
+
+        Ok(())
     }
 
     /// Get the bound address
@@ -252,15 +338,36 @@ async fn handle_connection<S>(
     S: HttpService + 'static,
 {
     let mut parser = proto::RequestParser::new();
-    let encoder = proto::ResponseEncoder::new();
+    let mut encoder = proto::ResponseEncoder::new();
 
     tracing::debug!("New connection from {}", peer_addr);
 
     loop
     {
-        // Read data from the stream
+        // Read data from the stream, bounded by the configured request timeout
+        // so a slow or half-open client cannot pin a connection worker forever.
+        // On timeout we close the connection (break) rather than hang.
+        // 从流读取数据,受配置的请求超时约束,使慢速或半开客户端无法永久
+        // 占用连接 worker。超时时关闭连接(break)而非挂起。
         let mut read_buf = vec![0u8; config.max_buffer_size];
-        match stream.read(&mut read_buf).await
+        let read_result = {
+            use futures::future::FutureExt;
+            let read_fut = stream.read(&mut read_buf);
+            let timeout_fut = hiver_runtime::time::sleep(config.request_timeout);
+            match futures::future::select(read_fut.boxed(), timeout_fut.boxed()).await
+            {
+                futures::future::Either::Left((res, _)) => res,
+                futures::future::Either::Right((_, _)) => {
+                    tracing::warn!(
+                        "Request timeout ({}s) from {}, closing connection",
+                        config.request_timeout.as_secs(),
+                        peer_addr
+                    );
+                    break;
+                }
+            }
+        };
+        match read_result
         {
             Ok(0) =>
             {
@@ -289,6 +396,20 @@ async fn handle_connection<S>(
                                 peer_addr,
                                 request.method(),
                                 request.path()
+                            );
+
+                            // Honor the request's Connection header: if the
+                            // client sent "Connection: close" (or is HTTP/1.0
+                            // without keep-alive), close the socket after this
+                            // response instead of looping forever. Without this,
+                            // the encoder context stays at its default (keep-alive
+                            // = true) and close requests hang the client.
+                            // 遵循请求的 Connection 头:若客户端发送 "Connection: close"
+                            // (或为 HTTP/1.0 且无 keep-alive),则在此响应后关闭套接字,
+                            // 而非永久循环。否则 encoder 上下文保持默认(keep-alive=true),
+                            // close 请求会使客户端挂起。
+                            encoder.context_mut().update_keep_alive_from_header(
+                                request.header("connection"),
                             );
 
                             // Handle the request

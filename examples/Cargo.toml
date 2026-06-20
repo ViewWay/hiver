@@ -53,6 +53,14 @@ path = "src/techempower_benchmark.rs"
 name = "stress_test"
 path = "src/stress_test.rs"
 
+[[bin]]
+name = "http_server_example"
+path = "src/http_server_example.rs"
+
+[[bin]]
+name = "annotated_app_example"
+path = "src/annotated_app_example.rs"
+
 [dependencies]
 # Core framework / 核心框架
 hiver-core = { path = "../crates/hiver-core" }
@@ -84,6 +92,8 @@ hiver-web3 = { path = "../crates/hiver-web3" }
 hiver-grpc = { path = "../crates/hiver-grpc" }
 
 # Async runtime / 异步运行时
+hiver-runtime = { path = "../crates/hiver-runtime" }
+inventory = "0.3"
 tokio = { workspace = true, features = ["full"] }
 
 # Serialization / 序列化

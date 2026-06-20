@@ -121,8 +121,15 @@ pub fn encode_response(response: &Response, ctx: &ConnectionContext) -> Result<B
         }
     }
 
-    // End of headers
-    write!(buffer, "\r").map_err(|_| {
+    // End of headers: blank line (\r\n). Each header line already ends with
+    // \r\n (writeln! of "...\r"), so this completes the \r\n\r\n terminator
+    // that delimits headers from body. Previously only a bare \r was written,
+    // which left clients waiting for the rest of the terminator — the body was
+    // sent but never parsed.
+    // 头部结束:空行(\r\n)。每个头行已以 \r\n 结尾(writeln! 的 "...\r"),
+    // 故此处补全分隔头部与正文的 \r\n\r\n 终止符。此前只写了裸 \r,
+    // 导致客户端等待终止符余下部分 —— 正文已发送却从未被解析。
+    write!(buffer, "\r\n").map_err(|_| {
         crate::Error::InvalidResponse("Failed to write header terminator".to_string())
     })?;
 

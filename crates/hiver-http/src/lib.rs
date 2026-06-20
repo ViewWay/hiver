@@ -502,6 +502,17 @@ impl FromRequest for Vec<u8>
     }
 }
 
+impl FromRequest for Request
+{
+    /// Identity extractor: clone the whole request so a handler can take the
+    /// raw `Request` as a parameter.
+    /// 身份提取器:克隆整个请求,使处理程序可将原始 `Request` 作为参数。
+    async fn from_request(req: &Request) -> Result<Self>
+    {
+        Ok(req.clone())
+    }
+}
+
 impl<T: serde::de::DeserializeOwned> FromRequest for Json<T>
 {
     async fn from_request(req: &Request) -> Result<Self>
