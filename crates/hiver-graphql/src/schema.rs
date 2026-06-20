@@ -125,7 +125,7 @@ impl SchemaBuilder {
 mod tests {
     use super::*;
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_empty_schema() {
         let schema = SchemaBuilder::new().build();
         let ctx = crate::context::GraphQLContext::new();
@@ -133,7 +133,7 @@ mod tests {
         assert!(result.is_err());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_type_registry() {
         let mut reg = TypeRegistry::new();
         reg.register(TypeDef { name: "User".into(), definition: "type User { id: ID! }".into(), description: None });

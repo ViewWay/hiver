@@ -283,7 +283,7 @@ mod tests
 
     /// Test consumer creation with config
     /// 测试使用配置创建消费者
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_consumer_new()
     {
         let config = ConsumerConfig::new("test-group");
@@ -293,7 +293,7 @@ mod tests
 
     /// Test consumer subscribe and subscription tracking
     /// 测试消费者订阅和订阅跟踪
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_consumer_subscribe()
     {
         let config = ConsumerConfig::new("test-group");
@@ -308,7 +308,7 @@ mod tests
 
     /// Test consumer duplicate subscription is idempotent
     /// 测试消费者重复订阅是幂等的
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_consumer_subscribe_idempotent()
     {
         let config = ConsumerConfig::new("test-group");
@@ -322,7 +322,7 @@ mod tests
 
     /// Test consumer unsubscribe clears all topics
     /// 测试消费者取消订阅清除所有主题
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_consumer_unsubscribe()
     {
         let config = ConsumerConfig::new("test-group");
@@ -404,7 +404,7 @@ mod tests
 
     /// Test listener start and stop lifecycle
     /// 测试监听器启动和停止生命周期
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_listener_lifecycle()
     {
         let listener = ConsumerListener::new("listener-1", vec!["topic-a".to_string()], "my-group");

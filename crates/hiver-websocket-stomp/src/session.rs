@@ -663,7 +663,7 @@ mod tests
         assert_eq!(messages.len(), 1);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_memory_broker()
     {
         let broker = MemoryBroker::new();

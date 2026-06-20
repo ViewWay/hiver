@@ -228,14 +228,14 @@ mod tests
         }
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_load()
     {
         let loader = DataLoader::new(TestLoader);
         assert_eq!(loader.load(1).await, Some("user_1".into()));
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_cache_hit()
     {
         let loader = DataLoader::new(TestLoader);
@@ -243,7 +243,7 @@ mod tests
         assert_eq!(loader.load(1).await, Some("cached".into()));
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_load_many()
     {
         let loader = DataLoader::new(TestLoader);
@@ -251,7 +251,7 @@ mod tests
         assert_eq!(results[&1], Some("user_1".into()));
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_clear()
     {
         let loader = DataLoader::new(TestLoader);

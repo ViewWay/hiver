@@ -85,7 +85,7 @@ mod tests
 
     /// Test full consumer lifecycle: subscribe -> poll -> commit -> unsubscribe
     /// 测试完整消费者生命周期：订阅 -> 轮询 -> 提交 -> 取消订阅
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_consumer_full_lifecycle()
     {
         let config =
@@ -185,7 +185,7 @@ mod tests
 
     /// Test consumer group with listener lifecycle
     /// 测试消费者组与监听器生命周期
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_consumer_group_with_listener()
     {
         let group = ConsumerGroup::new("order-processors")

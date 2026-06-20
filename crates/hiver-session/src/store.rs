@@ -555,7 +555,7 @@ mod tests
 {
     use super::*;
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_memory_session_store()
     {
         let store = MemorySessionStore::new();
@@ -570,7 +570,7 @@ mod tests
         assert_eq!(found.unwrap().id(), session.id());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_memory_session_store_delete()
     {
         let store = MemorySessionStore::new();
@@ -582,7 +582,7 @@ mod tests
         assert!(found.is_none());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_memory_session_store_ids()
     {
         let store = MemorySessionStore::new();

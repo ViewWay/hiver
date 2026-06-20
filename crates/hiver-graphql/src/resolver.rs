@@ -146,7 +146,7 @@ mod tests
         }
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_registry()
     {
         let mut reg = ResolverRegistry::new();

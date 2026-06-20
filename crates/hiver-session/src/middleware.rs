@@ -366,7 +366,7 @@ mod tests
     use super::*;
     use crate::MemorySessionStore;
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_session_context()
     {
         let store = Arc::new(MemorySessionStore::new()) as Arc<dyn SessionStore>;
@@ -391,7 +391,7 @@ mod tests
         assert!(!context.exists());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_session_manager()
     {
         let store = Arc::new(MemorySessionStore::new()) as Arc<dyn SessionStore>;

@@ -395,7 +395,7 @@ mod engine_impl
                 .build()
         }
 
-        #[tokio::test]
+        #[hiver_macros::test]
         async fn test_hello_query()
         {
             let engine = make_engine();
@@ -410,7 +410,7 @@ mod engine_impl
             );
         }
 
-        #[tokio::test]
+        #[hiver_macros::test]
         async fn test_arithmetic_query()
         {
             let engine = make_engine();
@@ -425,7 +425,7 @@ mod engine_impl
             );
         }
 
-        #[tokio::test]
+        #[hiver_macros::test]
         async fn test_sdl()
         {
             let engine = make_engine();
@@ -433,7 +433,7 @@ mod engine_impl
             assert!(sdl.contains("hello"));
         }
 
-        #[tokio::test]
+        #[hiver_macros::test]
         async fn test_introspection()
         {
             let engine = make_engine();
@@ -450,7 +450,7 @@ mod engine_impl
             assert!(html.contains("/ws/graphql"));
         }
 
-        #[tokio::test]
+        #[hiver_macros::test]
         async fn test_variables()
         {
             let engine = make_engine();

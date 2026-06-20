@@ -328,7 +328,7 @@ mod tests
 {
     use super::*;
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_session_creation()
     {
         let session = Session::new(SessionId::new());
@@ -336,7 +336,7 @@ mod tests
         assert_eq!(session.attribute_count().await, 0);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_session_attributes()
     {
         let session = Session::new(SessionId::new());
@@ -348,7 +348,7 @@ mod tests
         assert_eq!(session.attribute_count().await, 2);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_session_remove()
     {
         let session = Session::new(SessionId::new());
@@ -359,7 +359,7 @@ mod tests
         assert_eq!(session.attribute_count().await, 0);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_session_clear()
     {
         let session = Session::new(SessionId::new());
@@ -371,7 +371,7 @@ mod tests
         assert_eq!(session.attribute_count().await, 0);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_session_expiration()
     {
         let session = Session::new(SessionId::new());
@@ -380,8 +380,9 @@ mod tests
         // Session should not be expired immediately
         assert!(!session.is_expired().await);
 
-        // After more than 1 second, session should be expired
-        tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
+        // After more than 1 second, session should be expired. Use Hiver's
+        // runtime sleep (tokio's time driver is inactive under #[hiver::test]).
+        hiver_runtime::time::sleep(std::time::Duration::from_secs(2)).await;
         assert!(session.is_expired().await);
     }
 }

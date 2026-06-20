@@ -707,7 +707,7 @@ mod tests
         assert_eq!(event.principal(), Some("user123"));
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_event_publisher()
     {
         let publisher = SessionEventPublisher::new();
@@ -722,7 +722,7 @@ mod tests
             .await;
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_concurrent_session_control_prevent_new()
     {
         let control =
@@ -739,7 +739,7 @@ mod tests
         assert_eq!(control.session_count("user1").await, 2);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_concurrent_session_control_expire_oldest()
     {
         let control =
@@ -760,7 +760,7 @@ mod tests
         assert!(!sessions.contains(&s1_clone)); // s1 was expired
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_concurrent_session_remove()
     {
         let control = ConcurrentSessionControl::new(5);
@@ -780,7 +780,7 @@ mod tests
         assert_eq!(control.tracked_user_count().await, 0);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_concurrent_session_multiple_users()
     {
         let control = ConcurrentSessionControl::new(1);
@@ -796,7 +796,7 @@ mod tests
         assert_eq!(control.tracked_user_count().await, 2);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_concurrent_session_with_publisher()
     {
         let publisher = SessionEventPublisher::new();

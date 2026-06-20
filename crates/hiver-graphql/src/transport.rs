@@ -99,7 +99,7 @@ mod tests {
     use super::*;
     use crate::schema::SchemaBuilder;
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_handler() {
         let schema = SchemaBuilder::new().build();
         let handler = GraphQLHandler::new(schema);

@@ -928,7 +928,7 @@ mod tests
     // Config tests
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_config_default()
     {
         let config = StompConfig::default();
@@ -958,7 +958,7 @@ mod tests
     // Authentication tests
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_connect_without_auth_succeeds()
     {
         let (handler, mut rx) = setup();
@@ -973,7 +973,7 @@ mod tests
         assert_eq!(frames[0].command, crate::frame::StompCommand::Connected);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_connect_with_auth_success()
     {
         let mut creds = HashMap::new();
@@ -994,7 +994,7 @@ mod tests
         assert_eq!(frames[0].command, crate::frame::StompCommand::Connected);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_connect_with_auth_wrong_password()
     {
         let mut creds = HashMap::new();
@@ -1013,7 +1013,7 @@ mod tests
         assert_eq!(frames[0].command, crate::frame::StompCommand::Error);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_connect_with_auth_unknown_user()
     {
         let creds = HashMap::<String, String>::new();
@@ -1031,7 +1031,7 @@ mod tests
         assert_eq!(frames[0].command, crate::frame::StompCommand::Error);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_connect_require_login_missing_login_header()
     {
         let creds = HashMap::<String, String>::new();
@@ -1050,7 +1050,7 @@ mod tests
         }
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_connect_require_login_missing_passcode_header()
     {
         let creds = HashMap::<String, String>::new();
@@ -1071,7 +1071,7 @@ mod tests
         }
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_connect_optional_login_records_user()
     {
         // require_login=false, but login is provided — should still record.
@@ -1097,7 +1097,7 @@ mod tests
     // ACK tests
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_ack_removes_pending_message()
     {
         let (handler, mut rx) = setup();
@@ -1139,7 +1139,7 @@ mod tests
         assert_eq!(handler.session().pending_ack_count(), 0);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_ack_unknown_id_returns_error()
     {
         let (handler, _rx) = setup();
@@ -1150,7 +1150,7 @@ mod tests
         assert!(result.is_err());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_ack_with_receipt()
     {
         let (handler, mut rx) = setup();
@@ -1193,7 +1193,7 @@ mod tests
     // NACK tests
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_nack_redelivers_message()
     {
         let (handler, mut rx) = setup();
@@ -1240,7 +1240,7 @@ mod tests
         assert_eq!(redelivered[0].header("redelivery-count"), Some(&"2".to_string()));
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_nack_exhausted_dead_letters()
     {
         let mut config = StompConfig::default();
@@ -1309,7 +1309,7 @@ mod tests
         assert_eq!(dead[0], ack_id);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_nack_unknown_id_returns_error()
     {
         let (handler, _rx) = setup();
@@ -1324,7 +1324,7 @@ mod tests
     // Subscription mismatch test
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_ack_subscription_mismatch_returns_error()
     {
         let (handler, mut rx) = setup();
@@ -1359,7 +1359,7 @@ mod tests
     // Auto ack mode does not track pending
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_auto_ack_mode_no_pending_tracking()
     {
         let (handler, mut rx) = setup();
