@@ -337,8 +337,19 @@ unsafe fn raw_waker_drop(data: *const ())
 /// 允许等待任务完成并检索结果。
 pub struct JoinHandle<T>
 {
-    inner: Option<Arc<TaskInner<T>>>,
-    raw_core: Option<raw_task::TaskRef>,
+    /// The async-executor task, when spawned inside a runtime OR via fallback.
+    /// 在 runtime 内 spawn 或经回退 spawn 时持有的 async-executor 任务。
+    task: Option<async_executor::Task<T>>,
+    /// For the fallback path (no runtime context): the ephemeral executor that
+    /// owns `task`. `wait()` drives it via `executor.run(...)`. `None` when the
+    /// task runs on a runtime's executor (which `block_on` already drives).
+    /// 回退路径（无 runtime 上下文）专用:拥有 `task` 的临时执行器。`wait()` 通过
+    /// `executor.run(...)` 驱动它。当任务运行在 runtime 的执行器上时为 `None`
+    ///（`block_on` 已在驱动它）。
+    fallback_executor: Option<&'static async_executor::Executor<'static>>,
+    /// Task id assigned at spawn time.
+    /// spawn 时分配的任务 id。
+    id: TaskId,
 }
 
 impl<T> JoinHandle<T>
@@ -348,14 +359,7 @@ impl<T> JoinHandle<T>
     #[must_use]
     pub fn id(&self) -> TaskId
     {
-        if let Some(refs) = &self.raw_core
-            && let Some(core) = refs.core()
-        {
-            return core.id();
-        }
-        self.inner
-            .as_ref()
-            .map_or(crate::scheduler::TaskId::UNKNOWN, |i| i.id)
+        self.id
     }
 
     /// Check if the task has finished (completed, cancelled, or panicked).
@@ -363,43 +367,78 @@ impl<T> JoinHandle<T>
     #[must_use]
     pub fn is_finished(&self) -> bool
     {
-        if let Some(refs) = &self.raw_core
-            && let Some(core) = refs.core()
-        {
-            return core.is_completed();
-        }
-        self.inner
-            .as_ref()
-            .and_then(|i| TaskState::from_u8(i.state.load(Ordering::Acquire)))
-            .is_some_and(TaskState::is_finished)
+        self.task.as_ref().is_some_and(|t| t.is_finished())
     }
 
     /// Wait for the task to complete and retrieve its result.
     /// 等待任务完成并获取其结果。
-    pub async fn wait(self) -> Result<T, JoinError>
+    ///
+    /// If the task panicked, returns `JoinError::TaskPanic`. If the handle was
+    /// detached/cancelled, returns `JoinError::TaskCancelled`.
+    ///
+    /// 若任务 panic,返回 `JoinError::TaskPanic`。若句柄已 detach/取消,
+    /// 返回 `JoinError::TaskCancelled`。
+    pub async fn wait(mut self) -> Result<T, JoinError>
     {
-        if let Some(refs) = &self.raw_core
-            && let Some(core) = refs.core()
+        let task = self.task.take().ok_or(JoinError::TaskCancelled)?;
+
+        // If this is a fallback task (no runtime driving an executor), we must
+        // drive its ephemeral executor ourselves here.
+        // 若为回退任务（无 runtime 驱动执行器）,必须在此自行驱动其临时执行器。
+        if let Some(executor) = self.fallback_executor
         {
-            std::future::poll_fn(|cx| {
-                if core.is_completed()
-                {
-                    Poll::Ready(())
-                }
-                else
-                {
-                    cx.waker().wake_by_ref();
-                    Poll::Pending
-                }
-            })
-            .await;
-            return unsafe { raw_task::read_output::<T>(core) }.ok_or(JoinError::TaskCancelled);
+            // `executor.run(task)` drives both the task and the executor on the
+            // current thread and returns the task's output. It borrows the
+            // executor, so it is not `UnwindSafe`; wrap in `AssertUnwindSafe`
+            // (safe: on unwind we just drop the executor and task — no partial
+            // state escapes) and `catch_unwind` turns a task panic into
+            // `JoinError::TaskPanic`.
+            // `executor.run(task)` 在当前线程同时驱动任务与执行器,返回任务输出。
+            // 它借用执行器,故非 `UnwindSafe`;用 `AssertUnwindSafe` 包裹
+            //（安全:unwind 时直接丢弃执行器与任务,无部分状态逃逸）,
+            // `catch_unwind` 将任务 panic 转为 `JoinError::TaskPanic`。
+            use futures::FutureExt;
+            return match std::panic::AssertUnwindSafe(executor.run(task))
+                .catch_unwind()
+                .await
+            {
+                Ok(value) => Ok(value),
+                Err(_) => Err(JoinError::TaskPanic),
+            };
         }
-        if let Some(inner) = self.inner
+
+        // In-runtime path: the runtime's `block_on` is already driving the
+        // executor, so we can simply await the task. `Task` is `Unpin`, so
+        // `catch_unwind` works directly.
+        // runtime 内路径:runtime 的 `block_on` 已在驱动执行器,故可直接 await 任务。
+        // `Task` 是 `Unpin`,故 `catch_unwind` 可直接使用。
+        use futures::FutureExt;
+        match task.catch_unwind().await
         {
-            return WaitForTask::new(inner).await;
+            Ok(value) => Ok(value),
+            Err(_) => Err(JoinError::TaskPanic),
         }
-        Err(JoinError::TaskCancelled)
+    }
+}
+
+impl<T> Drop for JoinHandle<T>
+{
+    fn drop(&mut self)
+    {
+        // CRITICAL for fire-and-forget semantics: `async_executor::Task`
+        // CANCELS its task when dropped (per async-task docs: "tasks get
+        // canceled when dropped, use `.detach()` to run them in the
+        // background"). If the caller did not `wait()` on this handle (which
+        // takes the task), we must detach it so the spawned task keeps running
+        // to completion in the background.
+        // 对 fire-and-forget 语义至关重要:`async_executor::Task` 在 drop 时会
+        // 取消其任务（依 async-task 文档:"tasks get canceled when dropped, use
+        // .detach() to run them in the background"）。若调用方未对本句柄调用
+        // `wait()`（它会取走 task）,必须 detach,使 spawn 的任务在后台继续运行至完成。
+        if let Some(task) = self.task.take()
+        {
+            task.detach();
+        }
     }
 }
 
@@ -541,73 +580,36 @@ where
     F: Future<Output = T> + Send + 'static,
     T: Send + 'static,
 {
-    // Try to use the scheduler if a runtime context is available
-    // 如果运行时上下文可用，尝试使用调度器
+    // Try to use the runtime's executor if a runtime context is available.
+    // 若运行时上下文可用,尝试使用 runtime 的执行器。
     if let Some(handle) = crate::runtime::Handle::try_current()
     {
-        let (raw_task, task_ref) = raw_task::allocate_task(future, handle.scheduler().clone());
-
-        let id = task_ref
-            .core()
-            .map_or(crate::scheduler::TaskId::UNKNOWN, raw_task::TaskCore::id);
-        let _ = handle.scheduler().submit(raw_task);
-
-        return JoinHandle {
-            inner: Some(Arc::new(TaskInner {
-                id,
-                state: AtomicU8::new(TaskState::Running as u8),
-                ref_count: AtomicUsize::new(1),
-                scheduler: handle.scheduler().clone(),
-                raw_task: AtomicUsize::new(0),
-                output: lock::OptionalCell::new(),
-                waiter: futures::task::AtomicWaker::new(),
-            })),
-            raw_core: Some(task_ref),
-        };
+        if let Some(executor) = handle.executor()
+        {
+            let task = executor.spawn(future);
+            return JoinHandle {
+                task: Some(task),
+                fallback_executor: None,
+                id: gen_task_id(),
+            };
+        }
     }
 
-    // Fallback: thread-per-task executor (when no runtime context)
-    // 回退：每任务一线程执行器（无运行时上下文时）
-    let id = gen_task_id();
-    let inner = Arc::new(TaskInner {
-        id,
-        state: AtomicU8::new(TaskState::Running as u8),
-        ref_count: AtomicUsize::new(1),
-        scheduler: SchedulerHandle::new_default(),
-        raw_task: AtomicUsize::new(0),
-        output: lock::OptionalCell::new(),
-        waiter: futures::task::AtomicWaker::new(),
-    });
-
-    let inner_clone = inner.clone();
-
-    std::thread::spawn(move || {
-        let mut future = Box::pin(future);
-        let waker = Waker::noop();
-        let mut context = Context::from_waker(waker);
-
-        let result = loop
-        {
-            match Pin::new(&mut future).poll(&mut context)
-            {
-                Poll::Ready(value) => break value,
-                Poll::Pending =>
-                {
-                    std::thread::sleep(std::time::Duration::from_millis(1));
-                },
-            }
-        };
-
-        inner_clone.output.set(result);
-        inner_clone
-            .state
-            .store(TaskState::Completed as u8, Ordering::Release);
-        inner_clone.waiter.wake();
-    });
+    // Fallback: drive the future on a fresh ephemeral executor (no runtime
+    // context). The previous thread-per-task fallback busy-poll-slept; using a
+    // real executor here is both correct and efficient. `JoinHandle::wait`
+    // drives this ephemeral executor via `executor.run(task)`.
+    // 回退:在新建的临时执行器上驱动 future（无运行时上下文）。旧的每任务一线程
+    // 回退会忙轮询-休眠;此处使用真正的执行器既正确又高效。`JoinHandle::wait`
+    // 通过 `executor.run(task)` 驱动此临时执行器。
+    let executor: &'static async_executor::Executor<'static> =
+        Box::leak(Box::new(async_executor::Executor::new()));
+    let task = executor.spawn(future);
 
     JoinHandle {
-        inner: Some(inner),
-        raw_core: None,
+        task: Some(task),
+        fallback_executor: Some(executor),
+        id: gen_task_id(),
     }
 }
 

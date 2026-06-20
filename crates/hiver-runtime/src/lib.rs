@@ -73,6 +73,7 @@
 pub mod channel;
 pub mod driver;
 pub mod io;
+pub mod io_registry;
 pub mod runtime;
 pub mod scheduler;
 pub mod select;

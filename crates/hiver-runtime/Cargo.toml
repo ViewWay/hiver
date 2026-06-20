@@ -27,6 +27,19 @@ workspace = true
 # Zero-copy bytes / 零拷贝字节
 bytes = { workspace = true }
 
+# Async executor + I/O driver (replaces self-built scheduler/driver)
+# 异步执行器 + I/O driver（替代自研 scheduler/driver）
+# async-executor provides the multi-task executor; async-io provides the
+# cross-platform epoll/kqueue/IOCP reactor + Timer; async-net provides
+# TcpListener/TcpStream/UdpSocket; futures-lite provides block_on.
+# async-executor 提供多任务执行器;async-io 提供跨平台 epoll/kqueue/IOCP reactor +
+# Timer;async-net 提供 TcpListener/TcpStream/UdpSocket;futures-lite 提供 block_on。
+async-executor = "1"
+async-io = "2"
+async-net = "2"
+blocking = "1"
+futures-lite = "2"
+
 # Concurrency utilities / 并发工具 (Spring Task Executor)
 rustc-hash = "2.1"
 flume = "0.11"

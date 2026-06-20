@@ -249,41 +249,19 @@ fn test_bind_future_tcp()
 {
     use hiver_runtime::io::TcpListener;
 
-    // Test that bind creates a valid future
-    // 测试bind创建有效的future
-    let future = TcpListener::bind("invalid_address");
+    // The new async-net-based `bind` returns an opaque future (not an enum),
+    // so we verify behavior by actually driving it: a valid ephemeral bind
+    // must succeed and yield a listener with a real local address.
+    // 新的基于 async-net 的 `bind` 返回不透明 future（非枚举),故通过实际驱动来
+    // 验证行为:合法临时绑定必须成功,并产生具有真实本地地址的监听器。
+    let mut runtime = hiver_runtime::Runtime::new().unwrap();
 
-    // Should be Error variant
-    // 应该是Error变体
-    match future
-    {
-        hiver_runtime::io::BindFuture::Error(_) =>
-        {
-            // Expected / 符合预期
-        },
-        hiver_runtime::io::BindFuture::Done =>
-        {
-            panic!("Expected Error future for invalid address");
-        },
-        _ =>
-        {
-            // Binding state is also valid for valid addresses
-            // Binding状态对有效地址也是有效的
-        },
-    }
-
-    let future = TcpListener::bind("127.0.0.1:0");
-
-    // Should not be Error variant for valid address
-    // 有效地址不应该返回Error变体
-    if let hiver_runtime::io::BindFuture::Error(_) = future
-    {
-        panic!("Expected non-Error future for valid address");
-    }
-    else
-    {
-        // Expected / 符合预期
-    }
+    let listener = runtime
+        .block_on(async { TcpListener::bind("127.0.0.1:0").await })
+        .expect("block_on should succeed")
+        .expect("bind to 127.0.0.1:0 should succeed");
+    let addr = listener.local_addr().expect("listener should have a local addr");
+    assert_ne!(addr.port(), 0, "ephemeral bind should assign a real port");
 }
 
 #[test]
@@ -291,41 +269,21 @@ fn test_bind_future_udp()
 {
     use hiver_runtime::io::UdpSocket;
 
-    // Test that bind creates a valid future
-    // 测试bind创建有效的future
-    let future = UdpSocket::bind("invalid_address");
+    let mut runtime = hiver_runtime::Runtime::new().unwrap();
 
-    // Should be Error variant
-    // 应该是Error变体
-    match future
-    {
-        hiver_runtime::io::BindUdpFuture::Error(_) =>
-        {
-            // Expected / 符合预期
-        },
-        hiver_runtime::io::BindUdpFuture::Done =>
-        {
-            panic!("Expected Error future for invalid address");
-        },
-        _ =>
-        {
-            // Binding state is also valid for valid addresses
-            // Binding状态对有效地址也是有效的
-        },
-    }
-
-    let future = UdpSocket::bind("127.0.0.1:0");
-
-    // Should not be Error variant for valid address
-    // 有效地址不应该返回Error变体
-    if let hiver_runtime::io::BindUdpFuture::Error(_) = future
-    {
-        panic!("Expected non-Error future for valid address");
-    }
-    else
-    {
-        // Expected / 符合预期
-    }
+    let mut socket = runtime
+        .block_on(async { UdpSocket::bind("127.0.0.1:0").await })
+        .expect("block_on should succeed")
+        .expect("udp bind to 127.0.0.1:0 should succeed");
+    // Drive a trivial operation to prove the UDP socket is usable. Borrow
+    // mutably inside the async block so `send_to(&mut self, ..)` is satisfied.
+    // 驱动一个琐碎操作以证明 UDP socket 可用。在 async 块内可变借用,
+    // 以满足 `send_to(&mut self, ..)`。
+    let peer = "127.0.0.1:1".parse().unwrap();
+    let _ = runtime
+        .block_on(async { socket.send_to(b"x", peer).await })
+        .expect("block_on should succeed");
+    drop(socket);
 }
 
 #[test]
@@ -333,39 +291,25 @@ fn test_connect_future()
 {
     use hiver_runtime::io::TcpStream;
 
-    // Test invalid address
-    // 测试无效地址
-    let future = TcpStream::connect("not_an_address");
+    // Connecting to a TCP port where nothing listens should fail (refused),
+    // proving the future resolves rather than hanging on the driver. Port 1
+    // is a privileged port virtually never bound by a listener in tests.
+    // 连接到一个没有监听者的 TCP 端口应失败(拒绝),证明 future 会 resolve 而非
+    // 挂在 driver 上。端口 1 是特权端口,测试中几乎不会有监听者绑定它。
+    let mut runtime = hiver_runtime::Runtime::new().unwrap();
 
-    match future
-    {
-        hiver_runtime::io::ConnectFuture::Error(_) =>
-        {
-            // Expected / 符合预期
-        },
-        hiver_runtime::io::ConnectFuture::Done =>
-        {
-            panic!("Expected Error future for invalid address");
-        },
-        _ =>
-        {
-            // Connecting state is also valid for valid addresses
-            // Connecting状态对有效地址也是有效的
-        },
-    }
-
-    // Test valid address format
-    // 测试有效地址格式
-    let future = TcpStream::connect("127.0.0.1:8080");
-
-    if let hiver_runtime::io::ConnectFuture::Error(_) = future
-    {
-        panic!("Expected non-Error future for valid address");
-    }
-    else
-    {
-        // Expected / 符合预期
-    }
+    // `block_on` returns `io::Result<F::Output>` and the inner future returns
+    // `io::Result<TcpStream>`. Flatten both: the refused connect must surface
+    // as an inner `Err`.
+    // `block_on` 返回 `io::Result<F::Output>`,内层 future 返回
+    // `io::Result<TcpStream>`。展平两层:被拒绝的连接以内层 `Err` 呈现。
+    let outer = runtime
+        .block_on(async { TcpStream::connect("127.0.0.1:1").await })
+        .expect("block_on itself should not fail");
+    assert!(
+        outer.is_err(),
+        "connect to a closed port should fail (refused)"
+    );
 }
 
 #[test]

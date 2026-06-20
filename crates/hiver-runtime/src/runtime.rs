@@ -25,13 +25,13 @@
 use std::{
     future::Future,
     io,
-    pin::Pin,
-    sync::Arc,
-    task::{Context, Poll, Waker},
+    sync::{Arc, RwLock},
+    task::Waker,
 };
 
 use crate::{
-    driver::{Driver, DriverFactory, DriverType},
+    driver::{Driver, DriverFactory, DriverType, Interest},
+    io_registry::IoRegistry,
     scheduler::{Scheduler, SchedulerConfig, SchedulerHandle},
     time::{Duration, Instant},
 };
@@ -39,6 +39,25 @@ use crate::{
 thread_local! {
     static CURRENT_HANDLE: std::cell::RefCell<Option<Handle>> = const { std::cell::RefCell::new(None) };
 }
+
+/// Global handle store so that tasks running on *worker threads* (which do not
+/// inherit the main thread's thread-local) can still access the runtime's
+/// driver and I/O registry to register FD interest.
+///
+/// 全局 handle 存储,使运行在 *worker 线程* 上的任务(不继承主线程的
+/// thread-local)仍可访问运行时的 driver 与 I/O 注册表以注册 FD 兴趣。
+///
+/// This is a **resettable** global (RwLock<Option<Handle>>, not OnceLock) so
+/// that `block_on` clears it on exit. With OnceLock the first test's handle
+/// leaked into every subsequent test, breaking test isolation — `try_current()`
+/// would return a stale handle from a torn-down runtime. Each `block_on` sets
+/// it on entry and clears it on exit.
+///
+/// 这是**可重置**的全局存储(RwLock<Option<Handle>>,非 OnceLock),以便
+/// `block_on` 在退出时清空它。若用 OnceLock,首个测试的 handle 会泄漏到后续
+/// 每个测试,破坏测试隔离——`try_current()` 会返回已销毁 runtime 的过期
+/// handle。每次 `block_on` 在进入时设置、退出时清空。
+static GLOBAL_HANDLE: RwLock<Option<Handle>> = RwLock::new(None);
 
 /// Runtime configuration / 运行时配置
 ///
@@ -211,8 +230,20 @@ pub struct Runtime
     config: RuntimeConfig,
     /// Waker for the main task / 主任务的waker
     main_waker: Option<Waker>,
+    /// FD-keyed I/O waker registry (above-driver bookkeeping) / 以 FD 为键的 I/O waker
+    /// 注册表（driver 之上的簿记）
+    io_registry: IoRegistry,
     /// Last time the timer was advanced / 上次推进定时器的时间
     last_timer_advance: Instant,
+    /// Async executor that drives spawned tasks. Stored as a `'static`
+    /// reference (the executor is leaked from the heap) so that `spawn()`
+    /// can reach it via the `Handle` without lifetime gymnastics, and so the
+    /// executor outlives any `Handle` clone handed to user code.
+    ///
+    /// 异步执行器,驱动被 spawn 的任务。以 `'static` 引用存储（执行器从堆上
+    /// leak）,使 `spawn()` 能经由 `Handle` 访问它而无需生命周期 gymnastics,
+    /// 且执行器的生命周期长于任何交给用户代码的 `Handle` 克隆。
+    executor: &'static async_executor::Executor<'static>,
 }
 
 impl Runtime
@@ -255,12 +286,24 @@ impl Runtime
         // 使用driver创建调度器
         let scheduler = Scheduler::with_config_and_driver(&config.scheduler, driver.clone())?;
 
+        // Create the executor. Leaked to obtain a `'static` reference so that
+        // `spawn()` can capture it through the `Handle` (which needs `'static`
+        // to be safely stored in a thread-local / global). The executor lives
+        // for the process lifetime; runtimes are not torn down repeatedly.
+        // 创建执行器。leak 以获得 `'static` 引用,使 `spawn()` 能经由 `Handle`
+        //（需 `'static` 才能安全存于 thread-local / 全局）捕获它。执行器存活于
+        // 进程生命周期;runtime 不会被反复销毁。
+        let executor: &'static async_executor::Executor<'static> =
+            Box::leak(Box::new(async_executor::Executor::new()));
+
         Ok(Self {
+            io_registry: IoRegistry::new(),
             scheduler,
             driver,
             config,
             main_waker: None,
             last_timer_advance: Instant::now(),
+            executor,
         })
     }
 
@@ -285,55 +328,74 @@ impl Runtime
     ///     println!("Hello, world!");
     /// });
     /// ```
-    pub fn block_on<F: Future<Output = ()>>(&mut self, future: F) -> io::Result<()>
+    pub fn block_on<F: Future>(&mut self, future: F) -> io::Result<F::Output>
+    where
+        F::Output: Send,
     {
         // Set the current runtime handle for this thread
         // 为当前线程设置运行时句柄
         let handle = Handle {
             scheduler_handle: self.scheduler.handle(),
+            driver: Some(self.driver.clone()),
+            io_registry: self.io_registry.clone(),
+            executor: Some(self.executor),
         };
         Handle::set_current(Some(handle));
+        // NOTE: we deliberately do NOT write the process-global `GLOBAL_HANDLE`
+        // here. In the new single-thread-executor design, every spawned task
+        // runs on THIS thread (the one driving `executor.run`), so it inherits
+        // the thread-local `CURRENT_HANDLE` directly — no worker threads, no
+        // global fallback needed. Writing the global caused parallel tests'
+        // `block_on` calls to race on the same `RwLock` (one test's exit
+        // cleared the other's live handle), hanging the suite.
+        // 注意:此处故意不写入进程全局 `GLOBAL_HANDLE`。在新的单线程执行器设计中,
+        // 每个 spawn 出的任务都在当前线程（驱动 `executor.run` 的那个）上运行,
+        // 故直接继承 thread-local `CURRENT_HANDLE`——无需 worker 线程、无需全局
+        // 回退。写入全局会导致并行测试的 `block_on` 在同一 `RwLock` 上竞争（一个
+        // 测试退出清空了另一个仍活着的 handle）,使测试套件挂起。
 
-        // Pin the future
-        // Pin future
-        let mut future = Box::pin(future);
+        // Drive the main future to completion on THIS thread, together with
+        // any tasks spawned onto the executor. `executor.run(future)` polls the
+        // main future and drains the executor's ready queue in the same loop.
+        //
+        // CRITICAL: we drive this with `async_io::block_on` (not
+        // `futures_lite::future::block_on`). `async_io::block_on` is the
+        // reactor-aware driver that smol itself uses — it locks the async-io
+        // reactor, calls `react()` to process I/O events, and uses a custom
+        // waker (`BlockOnWaker`) that notifies the reactor when woken from
+        // another thread. `futures_lite::block_on` is a plain parker that does
+        // NOT drive the reactor — under it, a future blocked on `accept()`
+        // would never make progress, and fire-and-forget spawned tasks (which
+        // rely on the reactor to wake their read/timer wakers) would hang. This
+        // was the root cause of the HTTP server's "connection reset" failure.
+        //
+        // 在当前线程上把主 future 驱动至完成,同时驱动任何被 spawn 到执行器上的
+        // 任务。`executor.run(future)` 在同一循环里轮询主 future 并排空执行器的
+        // 就绪队列。
+        //
+        // 关键:此处用 `async_io::block_on`（而非 `futures_lite::future::block_on`）
+        // 驱动。`async_io::block_on` 是 smol 自身使用的 reactor 感知驱动器 —— 它
+        // 锁定 async-io reactor、调用 `react()` 处理 I/O 事件,并使用自定义 waker
+        //（`BlockOnWaker`）在被其它线程唤醒时通知 reactor。`futures_lite::block_on`
+        // 是普通 parker,不驱动 reactor —— 在其下,阻塞于 `accept()` 的 future 永远
+        // 不会推进,依赖 reactor 唤醒其 read/timer waker 的 fire-and-forget 任务会
+        // 挂起。这正是 HTTP 服务端 "connection reset" 失败的根因。
+        let result = async_io::block_on(self.executor.run(future));
 
-        // Create a waker for the main task
-        // 为主任务创建waker
-        let handle = self.scheduler.handle();
-        let waker = handle.waker();
-        let mut context = Context::from_waker(&waker);
-        self.main_waker = Some(waker.clone());
-
-        // Run the event loop
-        // 运行事件循环
-        let result = loop
-        {
-            // Poll the future
-            // 轮询future
-            match Pin::new(&mut future).poll(&mut context)
-            {
-                Poll::Ready(()) =>
-                {
-                    // Future completed, flush any remaining events
-                    // Future完成，刷新任何剩余事件
-                    let _ = self.flush_events();
-                    break Ok(());
-                },
-                Poll::Pending =>
-                {
-                    // Future is not ready, run the event loop
-                    // Future未就绪，运行事件循环
-                    self.run_once()?;
-                },
-            }
-        };
-
-        // Clear the thread-local handle
-        // 清除线程本地句柄
+        // Clear the thread-local handle.
+        // 清除线程本地句柄。
         Handle::set_current(None);
+        // The global is never written by `block_on` in the new design (see
+        // entry comment), but clear it defensively in case some other path set
+        // it, so `try_current()` outside a runtime returns `None`.
+        // 新设计中 `block_on` 从不写入全局（见入口注释),但防御性地清空它,
+        // 以防其它路径写入,使 runtime 之外的 `try_current()` 返回 `None`。
+        if let Ok(mut g) = GLOBAL_HANDLE.write()
+        {
+            *g = None;
+        }
 
-        result
+        Ok(result)
     }
 
     /// Run a single iteration of the event loop
@@ -386,12 +448,19 @@ impl Runtime
     {
         while let Some(completion) = self.driver.get_completion()
         {
-            // Notify the task associated with this completion
-            // 通知与此完成关联的任务
+            // io_uring path: user_data is a task id -> wake via scheduler.
+            // io_uring 路径：user_data 是任务 id -> 通过调度器唤醒。
             if let Some(waker) = self.scheduler.get_task_waker(completion.user_data)
             {
                 waker.wake();
             }
+            // kqueue / epoll path: user_data carries the FD (see kqueue.rs/
+            // epoll.rs where completions are tagged with the FD). Wake the task
+            // parked on that FD via the I/O registry.
+            // kqueue / epoll 路径：user_data 携带 FD（见 kqueue.rs/epoll.rs 中
+            // completion 以 FD 打标）。通过 I/O 注册表唤醒挂起在该 FD 上的任务。
+            self.io_registry
+                .wake(completion.user_data as std::os::fd::RawFd);
             self.driver.advance_completion();
         }
     }
@@ -446,6 +515,16 @@ pub struct Handle
 {
     /// The scheduler handle / 调度器句柄
     scheduler_handle: SchedulerHandle,
+    /// The I/O driver (for registering FD interest) / I/O driver（用于注册 FD 兴趣）
+    driver: Option<Arc<dyn Driver>>,
+    /// The FD-keyed I/O waker registry / 以 FD 为键的 I/O waker 注册表
+    io_registry: IoRegistry,
+    /// The async executor, used by `spawn()` to schedule tasks. `'static` so
+    /// the handle can be cloned into spawned futures and stored in the
+    /// thread-local / global handle slots.
+    /// 异步执行器,`spawn()` 用它调度任务。`'static` 使句柄可被克隆进被 spawn
+    /// 的 future,并存于 thread-local / 全局句柄槽。
+    executor: Option<&'static async_executor::Executor<'static>>,
 }
 
 impl Handle
@@ -465,9 +544,23 @@ impl Handle
 
     /// Try to get a handle to the current runtime. Returns None if outside a runtime.
     /// 尝试获取当前运行时的句柄。如果在运行时外部则返回None。
+    ///
+    /// Worker threads spawned by the scheduler do not inherit the main thread's
+    /// thread-local, so this falls back to a process-global handle set by
+    /// `block_on`. This lets spawned tasks register I/O interest.
+    /// 调度器生成的 worker 线程不继承主线程的 thread-local,故此处回退到由
+    /// `block_on` 设置的进程全局 handle。这使被 spawn 的任务能注册 I/O 兴趣。
     pub fn try_current() -> Option<Self>
     {
-        CURRENT_HANDLE.with(|h| h.borrow().clone())
+        let local = CURRENT_HANDLE.with(|h| h.borrow().clone());
+        if local.is_some()
+        {
+            local
+        }
+        else
+        {
+            GLOBAL_HANDLE.read().ok()?.clone()
+        }
     }
 
     /// Set the current runtime handle for this thread
@@ -482,6 +575,68 @@ impl Handle
     pub fn scheduler(&self) -> &SchedulerHandle
     {
         &self.scheduler_handle
+    }
+
+    /// Get the I/O driver, if available (only inside a runtime context).
+    /// 获取 I/O driver（仅在运行时上下文内可用）。
+    #[must_use]
+    pub fn driver(&self) -> Option<Arc<dyn Driver>>
+    {
+        self.driver.clone()
+    }
+
+    /// Get the FD-keyed I/O waker registry.
+    /// 获取以 FD 为键的 I/O waker 注册表。
+    #[must_use]
+    pub fn io_registry(&self) -> IoRegistry
+    {
+        self.io_registry.clone()
+    }
+
+    /// Get the async executor backing this runtime, if available.
+    /// `spawn()` uses this to schedule tasks. Returns `None` for the fallback
+    /// handle created outside a runtime.
+    ///
+    /// 获取支撑本 runtime 的异步执行器（若可用）。`spawn()` 用它调度任务。
+    /// 在 runtime 之外创建的回退句柄返回 `None`。
+    #[must_use]
+    pub fn executor(&self) -> Option<&'static async_executor::Executor<'static>>
+    {
+        self.executor
+    }
+
+    /// Register interest in `fd` with the driver and store `waker` for it.
+    /// This is the one-call helper async I/O futures use before parking on
+    /// `WouldBlock`.
+    ///
+    /// 向 driver 注册对 `fd` 的兴趣并为其存储 `waker`。这是异步 I/O future
+    /// 在因 `WouldBlock` 挂起前使用的一站式辅助方法。
+    ///
+    /// # Errors / 错误
+    ///
+    /// Returns the driver error if registration fails. The waker is still
+    /// stored best-effort.
+    /// 若注册失败则返回 driver 错误。waker 仍尽力存储。
+    pub fn register_io(
+        &self,
+        fd: std::os::fd::RawFd,
+        interest: Interest,
+        waker: Waker,
+    ) -> std::io::Result<()>
+    {
+        self.io_registry.register(fd, waker);
+        if let Some(driver) = &self.driver
+        {
+            // Best-effort: ignore AlreadyExists from re-registration (kqueue
+            // EV_ADD on an already-registered filter is idempotent; epoll
+            // EPOLL_CTL_MOD handles it). If register fails we still keep the
+            // waker so the busy-poll fallback in block_on can drive progress.
+            // 尽力而为：忽略重复注册的 AlreadyExists（kqueue EV_ADD 对已注册
+            // filter 幂等；epoll EPOLL_CTL_MOD 会处理）。若注册失败仍保留
+            // waker，使 block_on 的忙轮询回退可推进。
+            let _ = driver.register(fd, interest);
+        }
+        Ok(())
     }
 }
 

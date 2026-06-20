@@ -569,29 +569,32 @@ pub fn global_timer() -> &'static TimerWheel
     GLOBAL_TIMER.get_or_init(|| TimerWheel::new())
 }
 
-/// Sleep future that completes after the specified duration
-/// 在指定持续时间后完成的sleep future
+/// Sleep future that completes after the specified duration.
+/// 在指定持续时间后完成的 sleep future。
+///
+/// Backed by [`async_io::Timer`], which is driven by the same `async-io`
+/// reactor that `Runtime::block_on` polls (alongside the executor and the
+/// network I/O). This replaces the former self-built `TimerWheel`, which
+/// required `block_on`'s old `advance_timers()` step — that step no longer
+/// runs, so a `TimerWheel`-based sleep would never wake.
+///
+/// 由 [`async_io::Timer`] 支撑,该 Timer 由 `Runtime::block_on` 轮询的同一
+/// `async-io` reactor 驱动(与执行器、网络 I/O 一起)。这替代了原先自研的
+/// `TimerWheel`——后者依赖 `block_on` 旧的 `advance_timers()` 步骤,而该步骤
+/// 现已不再运行,故基于 `TimerWheel` 的 sleep 永不会唤醒。
 pub struct Sleep
 {
-    /// Duration to sleep / 睡眠持续时间
-    duration: Duration,
-    /// Whether the timer has been registered
-    /// 定时器是否已注册
-    registered: bool,
-    /// Start time / 开始时间
-    start: Option<Instant>,
+    inner: async_io::Timer,
 }
 
 impl Sleep
 {
-    /// Create a new sleep future
-    /// 创建新的sleep future
+    /// Create a new sleep future.
+    /// 创建新的 sleep future。
     pub fn new(duration: Duration) -> Self
     {
         Self {
-            duration,
-            registered: false,
-            start: None,
+            inner: async_io::Timer::after(duration),
         }
     }
 }
@@ -602,31 +605,12 @@ impl Future for Sleep
 
     fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<()>
     {
-        if self.registered
+        // Delegate to async_io::Timer; it returns the Instant at which it fired.
+        // 委托给 async_io::Timer;它返回触发时刻的 Instant。
+        match Pin::new(&mut self.inner).poll(cx)
         {
-            // Check if the duration has elapsed
-            // 检查持续时间是否已过
-            if let Some(start) = self.start
-                && start.elapsed() >= self.duration
-            {
-                return Poll::Ready(());
-            }
-            Poll::Pending
-        }
-        else
-        {
-            // First poll: register the timer
-            // 第一次轮询：注册定时器
-            self.registered = true;
-            self.start = Some(Instant::now());
-
-            // Insert timer into the global timer wheel
-            // 将定时器插入全局时间轮
-            global_timer().insert_timer_with_waker(self.duration, cx.waker().clone());
-
-            // Check if already expired
-            // 检查是否已到期
-            Poll::Pending
+            Poll::Ready(_) => Poll::Ready(()),
+            Poll::Pending => Poll::Pending,
         }
     }
 }
