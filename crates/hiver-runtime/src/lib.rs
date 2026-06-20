@@ -1,21 +1,28 @@
-//! Hiver Runtime - High-performance async runtime
-//! Hiver运行时 - 高性能异步运行时
+//! Hiver Runtime - async runtime on async-executor / async-io
+//! Hiver 运行时 - 基于 async-executor / async-io 的异步运行时
 //!
 //! # Overview / 概述
 //!
-//! `hiver-runtime` provides a high-performance async runtime based on io-uring
-//! with thread-per-core architecture for maximum scalability.
+//! `hiver-runtime` builds on the [`async-executor`] + [`async-io`] + [`async-net`]
+//! ecosystem (the same crates `smol` is composed of): a multi-task executor driven
+//! by a reactor-aware `block_on`, with cross-platform epoll/kqueue/IOCP I/O.
+//! This keeps the public surface stable (`Runtime`, `block_on`, `spawn`,
+//! `io::*`, `time::*`) while delegating the low-level scheduling and I/O to
+//! battle-tested libraries.
 //!
-//! `hiver-runtime` 提供基于io-uring的高性能异步运行时，采用thread-per-core架构
-//! 以实现最大可扩展性。
+//! `hiver-runtime` 构建于 [`async-executor`] + [`async-io`] + [`async-net`] 生态
+//!（与 `smol` 由相同 crate 组成）:一个由 reactor 感知 `block_on` 驱动的多任务
+//! 执行器,提供跨平台 epoll/kqueue/IOCP I/O。这保持了公共接口稳定
+//!（`Runtime`、`block_on`、`spawn`、`io::*`、`time::*`）,同时将底层调度与 I/O
+//! 委托给久经验证的库。
 //!
 //! # Features / 功能
 //!
-//! - io-uring based I/O (Linux) / 基于io-uring的I/O（Linux）
-//! - epoll/kqueue fallback / epoll/kqueue回退支持
-//! - Thread-per-core scheduler / Thread-per-core调度器
-//! - Timer wheel for efficient timers / 高效定时器的时间轮
-//! - Zero-copy I/O primitives / 零拷贝I/O原语
+//! - Multi-task executor via [`async_executor::Executor`] / 经 [`async_executor::Executor`] 的多任务执行器
+//! - Reactor-aware `block_on` (smol's driver) / reactor 感知的 `block_on`（smol 的驱动器）
+//! - Cross-platform async I/O (TCP/UDP) via async-net / 经 async-net 的跨平台异步 I/O（TCP/UDP）
+//! - Timers via async-io / 经 async-io 的定时器
+//! - Fire-and-forget `spawn` (task is detached on handle drop) / fire-and-forget `spawn`（句柄丢弃时 detach 任务）
 //!
 //! # Example / 示例
 //!
@@ -34,30 +41,21 @@
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
-// Allow unsafe operations in unsafe functions for Rust 2024 edition compatibility
-// 允许unsafe函数中的unsafe操作以兼容Rust 2024版本
-#![expect(unsafe_op_in_unsafe_fn)]
-// Allow unsafe code - runtime requires unsafe for low-level system operations
-// 允许unsafe代码 - 运行时需要unsafe进行底层系统操作
+// The standalone task::block_on uses a no-op RawWaker; runtime I/O now goes
+// through async-net/async-io (no hand-written unsafe). Keep the allow for the
+// few remaining std::os::fd shims.
+// 独立的 task::block_on 使用 no-op RawWaker;runtime 的 I/O 现经由
+// async-net/async-io（无手写 unsafe）。保留此 allow 供少量残留的 std::os::fd shim。
 #![allow(unsafe_code)]
-// Runtime-specific allowances: unwrap on mutex locks is acceptable as poisoning
-// is handled at a higher level, and integer casts are necessary for FFI.
-// 运行时特定允许：mutex上的unwrap是可接受的，因为中毒在更高层处理，
-// 且整数转换对于FFI是必要的。
+// Runtime-specific allowances: mutex unwrap is acceptable (poisoning handled
+// higher up), integer casts are needed for FFI.
+// 运行时特定允许:mutex unwrap 可接受（中毒在更高层处理）,整数转换 FFI 需要。
 #![allow(clippy::unwrap_used)]
-// Allow integer casts for FFI and system calls
-// 允许用于FFI和系统调用的整数转换
 #![allow(clippy::cast_possible_wrap)]
 #![allow(clippy::cast_possible_truncation)]
 #![allow(clippy::cast_sign_loss)]
-// Allow indexing - runtime code does bounds checking at higher levels
-// 允许索引 - 运行时代码在更高层进行边界检查
 #![allow(clippy::indexing_slicing)]
-// Allow doc_markdown - bilingual documentation may trigger false positives
-// 允许doc_markdown - 双语文档可能触发误报
 #![allow(clippy::doc_markdown)]
-// Allow additional lints for runtime code
-// 允许运行时代码的额外检查
 #![allow(clippy::ptr_arg)]
 #![allow(clippy::std_instead_of_core)]
 #![allow(clippy::manual_is_power_of_two)]
@@ -71,25 +69,18 @@
 
 // Public modules / 公共模块
 pub mod channel;
-pub mod driver;
 pub mod io;
-pub mod io_registry;
 pub mod runtime;
-pub mod scheduler;
 pub mod select;
 pub mod task;
 pub mod time;
 
 // Re-exports / 重新导出
 pub use channel::{Receiver, RecvError, SendError, Sender, bounded, unbounded};
-pub use driver::{DriverConfig, DriverConfigBuilder, DriverFactory, DriverType};
 pub use runtime::{Runtime, RuntimeBuilder, RuntimeConfig};
-pub use scheduler::{
-    Scheduler, SchedulerConfig, SchedulerHandle, WorkStealingConfig, WorkStealingHandle,
-    WorkStealingScheduler, gen_task_id,
-};
 pub use select::{
     SelectMultiple, SelectMultipleOutput, SelectTwo, SelectTwoOutput, select_multiple, select_two,
 };
-pub use task::{JoinError, JoinHandle, spawn};
+pub use task::{JoinError, JoinHandle, TaskId, gen_task_id, spawn};
 pub use time::{Duration, Instant, sleep, sleep_until};
+

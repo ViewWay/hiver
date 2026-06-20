@@ -100,7 +100,6 @@ impl TcpStream
 
     /// Returns the remote socket address of this peer.
     /// 返回对端的远程套接字地址。
-    #[must_use]
     pub fn peer_addr(&self) -> io::Result<SocketAddr>
     {
         self.inner.peer_addr()
@@ -108,7 +107,6 @@ impl TcpStream
 
     /// Returns the local socket address.
     /// 返回本地套接字地址。
-    #[must_use]
     pub fn local_addr(&self) -> io::Result<SocketAddr>
     {
         self.inner.local_addr()
@@ -173,7 +171,6 @@ impl TcpListener
 
     /// Returns the local socket address this listener is bound to.
     /// 返回本监听器绑定的本地套接字地址。
-    #[must_use]
     pub fn local_addr(&self) -> io::Result<SocketAddr>
     {
         self.inner.local_addr()

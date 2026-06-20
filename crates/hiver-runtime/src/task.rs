@@ -1,340 +1,135 @@
-//! Task management module
-//! 任务管理模块
+//! Task module
+//! 任务模块
 //!
-//! # Overview / 概述
+//! Provides the task spawning and joining primitives. In the
+//! async-executor/async-io backend, `spawn` submits to the runtime's
+//! [`async_executor::Executor`] (reached via [`crate::runtime::Handle`]) and
+//! returns a [`JoinHandle`] that wraps the [`async_executor::Task`].
+//! Fire-and-forget semantics are supported via [`JoinHandle::Drop`], which
+//! detaches the underlying task so it keeps running when the handle is
+//! dropped without being awaited.
 //!
-//! This module provides task spawning and management with support for:
-//! - Task lifecycle tracking (Running, Completed, Cancelled)
-//! - Wake-up notifications for async polling
-//! - Join handles for awaiting task completion
-//!
-//! 本模块提供任务生成和管理，支持：
-//! - 任务生命周期跟踪（运行中、已完成、已取消）
-//! - 异步轮询的唤醒通知
-//! - 等待任务完成的join句柄
+//! 提供任务 spawn 与 join 原语。在 async-executor/async-io 后端,`spawn` 将任务
+//! 提交到 runtime 的 [`async_executor::Executor`]（经 [`crate::runtime::Handle`]
+//! 访问）,并返回包裹 [`async_executor::Task`] 的 [`JoinHandle`]。
+//! fire-and-forget 语义经由 [`JoinHandle::Drop`] 支持 —— 它 detach 底层任务,
+//! 使句柄在未被 await 即丢弃时任务仍继续运行。
 
-#![allow(private_interfaces)]
-
-pub mod raw_task;
+#![allow(
+    clippy::indexing_slicing,
+    clippy::float_cmp,
+    clippy::module_inception,
+    clippy::items_after_statements,
+    clippy::assertions_on_constants,
+    clippy::manual_async_fn
+)]
 
 use std::{
     future::Future,
+    pin::Pin,
+    ptr,
     sync::{
-        Arc,
-        atomic::{AtomicU8, AtomicUsize, Ordering},
+        atomic::{AtomicU64, Ordering},
+        mpsc,
     },
     task::{Context, Poll, RawWaker, RawWakerVTable, Waker},
+    thread,
 };
 
-/// Task ID type
-/// 任务ID类型
-pub use crate::scheduler::TaskId;
-/// Generate a new unique task ID
-/// 生成新的唯一任务ID
-pub use crate::scheduler::gen_task_id;
-use crate::scheduler::{RawTask, SchedulerHandle};
+// ─── TaskId ─────────────────────────────────────────────────────────────────
+// Migrated from the deleted scheduler module. A simple monotonically increasing
+// id assigned at spawn time; the old `TaskState`/`RawTask` machinery is gone.
+// 从已删除的 scheduler 模块迁移而来。spawn 时分配的单调递增 id;
+// 旧的 `TaskState`/`RawTask` 机制已移除。
 
-/// Task state for lifecycle tracking
-/// 任务生命周期跟踪状态
-#[derive(Clone, Copy, PartialEq, Eq)]
-enum TaskState
+/// Unique identifier for a task.
+/// 任务的唯一标识符。
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct TaskId(u64);
+
+impl TaskId
 {
-    /// Task is currently running / 任务正在运行
-    Running = 0,
-    /// Task is waiting for wake-up / 任务正在等待唤醒
-    Waiting = 1,
-    /// Task has completed successfully / 任务已成功完成
-    Completed = 2,
-    /// Task was cancelled / 任务已被取消
-    Cancelled = 3,
-    /// Task panicked / 任务发生panic
-    Panicked = 4,
-}
+    /// The "unknown" sentinel used before an id is assigned.
+    /// 分配 id 前使用的 "未知" 哨兵值。
+    pub const UNKNOWN: TaskId = TaskId(0);
 
-impl TaskState
-{
-    /// Create from u8 value
-    /// 从u8值创建
-    fn from_u8(value: u8) -> Option<Self>
-    {
-        match value
-        {
-            0 => Some(Self::Running),
-            1 => Some(Self::Waiting),
-            2 => Some(Self::Completed),
-            3 => Some(Self::Cancelled),
-            4 => Some(Self::Panicked),
-            _ => None,
-        }
-    }
-
-    /// Check if task is finished
-    /// 检查任务是否已完成
-    fn is_finished(self) -> bool
-    {
-        matches!(self, Self::Completed | Self::Cancelled | Self::Panicked)
-    }
-}
-
-/// Inner task data shared between task, waker, and join handle
-/// 任务、waker和join句柄之间共享的内部任务数据
-#[allow(dead_code)]
-struct TaskInner<T>
-{
-    /// Task ID / 任务ID
-    id: TaskId,
-    /// Task state / 任务状态
-    state: AtomicU8,
-    /// Reference count / 引用计数
-    ref_count: AtomicUsize,
-    /// Scheduler handle for re-scheduling / 用于重新调度的调度器句柄
-    scheduler: SchedulerHandle,
-    /// Raw task pointer for wake-up / 用于唤醒的原始任务指针
-    raw_task: AtomicUsize,
-    /// Task output (available when completed) / 任务输出（完成时可用）
-    output: lock::OptionalCell<T>,
-    /// Waker for waiters / 等待者的waker
-    waiter: futures::task::AtomicWaker,
-}
-
-/// Lock-free cell for optional task output
-/// 用于可选任务输出的线程安全单元
-mod lock
-{
-    use std::{
-        mem::MaybeUninit,
-        sync::{
-            Mutex,
-            atomic::{AtomicU8, Ordering},
-        },
-    };
-
-    pub(super) struct OptionalCell<T>
-    {
-        inner: Mutex<MaybeUninit<T>>,
-        initialized: AtomicU8,
-    }
-
-    impl<T> OptionalCell<T>
-    {
-        #[allow(dead_code)]
-        pub(super) fn new() -> Self
-        {
-            Self {
-                inner: Mutex::new(MaybeUninit::uninit()),
-                initialized: AtomicU8::new(0),
-            }
-        }
-
-        #[allow(dead_code)]
-        pub(super) fn set(&self, value: T)
-        {
-            let mut inner = self.inner.lock().unwrap();
-            *inner = MaybeUninit::new(value);
-            self.initialized.store(1, Ordering::Release);
-        }
-
-        #[allow(dead_code)]
-        pub(super) unsafe fn get(&self) -> Option<T>
-        {
-            if self.initialized.load(Ordering::Acquire) == 1
-            {
-                let inner = self.inner.lock().unwrap();
-                // Read the MaybeUninit value and assume it's initialized
-                Some(inner.assume_init_read())
-            }
-            else
-            {
-                None
-            }
-        }
-    }
-
-    // SAFETY: When T is Send, we can safely share this cell across threads
-    // The inner Mutex ensures proper synchronization
-    unsafe impl<T: Send> Send for OptionalCell<T> {}
-    unsafe impl<T: Send> Sync for OptionalCell<T> {}
-
-    impl<T> Drop for OptionalCell<T>
-    {
-        fn drop(&mut self)
-        {
-            if self.initialized.load(Ordering::Acquire) == 1
-            {
-                let mut inner = self.inner.lock().unwrap();
-                // Drop the initialized value
-                unsafe {
-                    std::ptr::drop_in_place(inner.as_mut_ptr());
-                }
-            }
-        }
-    }
-}
-
-/// A spawned task
-/// 生成的任务
-///
-/// Wraps a future and manages its execution lifecycle.
-/// 包装一个future并管理其执行生命周期。
-#[allow(dead_code)]
-pub struct Task<T>
-{
-    inner: Arc<TaskInner<T>>,
-}
-
-impl<T> Task<T>
-{
-    /// Create a new task
-    /// 创建新任务
-    #[allow(dead_code)]
-    fn new<F>(_future: F, id: TaskId, scheduler: SchedulerHandle) -> (Self, RawTask)
-    where
-        F: Future<Output = T> + Send + 'static,
-        T: Send + 'static,
-    {
-        let inner = Arc::new(TaskInner {
-            id,
-            state: AtomicU8::new(TaskState::Running as u8),
-            ref_count: AtomicUsize::new(2), // Task + waker
-            scheduler,
-            raw_task: AtomicUsize::new(0),
-            output: lock::OptionalCell::new(),
-            waiter: futures::task::AtomicWaker::new(),
-        });
-
-        let raw_task = Arc::into_raw(inner.clone()) as RawTask;
-        inner.raw_task.store(raw_task as usize, Ordering::Release);
-
-        let task = Task { inner };
-        (task, raw_task)
-    }
-
-    /// Get the task ID
-    /// 获取任务ID
+    /// Construct from a raw `u64`.
+    /// 从原始 `u64` 构造。
     #[must_use]
-    pub fn id(&self) -> TaskId
+    pub const fn from_u64(id: u64) -> Self
     {
-        self.inner.id
+        Self(id)
     }
 
-    /// Poll the task future
-    /// 轮询任务future
-    #[allow(dead_code)]
-    fn poll(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<T>
+    /// Convert to a raw `u64`.
+    /// 转换为原始 `u64`。
+    #[must_use]
+    pub const fn as_u64(self) -> u64
     {
-        // This would be called by the executor
-        // For now, we'll use a simpler approach
-        // 这将由执行器调用
-        // 目前我们使用更简单的方法
-        Poll::Pending
+        self.0
     }
 }
 
-use std::pin::Pin;
-
-impl<T> Drop for Task<T>
+impl std::fmt::Display for TaskId
 {
-    fn drop(&mut self)
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
     {
-        // Clear the raw_task pointer to prevent use-after-free
-        // 清除raw_task指针以防止use-after-free
-        self.inner.raw_task.store(0, Ordering::Release);
+        write!(f, "{}", self.0)
     }
 }
 
-/// Custom waker for task wake-up notifications
-/// 用于任务唤醒通知的自定义waker
+/// Counter backing [`gen_task_id`].
+/// 支撑 [`gen_task_id`] 的计数器。
+static NEXT_TASK_ID: AtomicU64 = AtomicU64::new(1);
+
+/// Generate a new, unique [`TaskId`].
+/// 生成新的、唯一的 [`TaskId`]。
+#[must_use]
+pub fn gen_task_id() -> TaskId
+{
+    TaskId(NEXT_TASK_ID.fetch_add(1, Ordering::Relaxed))
+}
+
+// ─── JoinHandle / JoinError ─────────────────────────────────────────────────
+
+/// Error returned by [`JoinHandle::wait`] when a task fails to produce its
+/// output.
+/// [`JoinHandle::wait`] 在任务未能产出其输出时返回的错误。
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum JoinError
+{
+    /// The task was cancelled (its handle was awaited after the task was
+    /// detached/already consumed).
+    /// 任务被取消（任务被 detach/已消费后才 await 其句柄）。
+    TaskCancelled,
+    /// The task panicked before completing.
+    /// 任务在完成前 panic。
+    TaskPanic,
+}
+
+impl std::fmt::Display for JoinError
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        match self
+        {
+            Self::TaskCancelled => write!(f, "Task was cancelled"),
+            Self::TaskPanic => write!(f, "Task panicked"),
+        }
+    }
+}
+
+impl std::error::Error for JoinError {}
+
+/// Join handle for a spawned task.
+/// 被 spawn 任务的 join 句柄。
 ///
-/// Uses the vtable pattern for raw waker implementation.
-/// 使用vtable模式实现原始waker。
-#[allow(dead_code)]
-fn task_waker(inner: &Arc<TaskInner<()>>) -> Waker
-{
-    // Clone and convert to raw pointer
-    // 克隆并转换为原始指针
-    let cloned = inner.clone();
-    let data = Arc::into_raw(cloned) as *const ();
-
-    unsafe { Waker::from_raw(RawWaker::new(data, &RAW_WAKER_VTABLE)) }
-}
-
-/// VTable for the task waker
-/// 任务waker的VTable
+/// Allows awaiting task completion and retrieving the result. Dropping the
+/// handle without awaiting **detaches** the task (it keeps running) rather than
+/// cancelling it — this is what enables fire-and-forget `spawn`.
 ///
-/// Provides functions for cloning, waking, and dropping the waker.
-/// 提供克隆、唤醒和删除waker的函数。
-#[allow(dead_code)]
-static RAW_WAKER_VTABLE: RawWakerVTable =
-    RawWakerVTable::new(raw_waker_clone, raw_waker_wake, raw_waker_wake_by_ref, raw_waker_drop);
-
-#[allow(dead_code)]
-unsafe fn raw_waker_clone(data: *const ()) -> RawWaker
-{
-    // Increment reference count
-    // 增加引用计数
-    let inner = &*(data as *const TaskInner<()>);
-    inner.ref_count.fetch_add(1, Ordering::Relaxed);
-
-    RawWaker::new(data, &RAW_WAKER_VTABLE)
-}
-
-#[allow(dead_code)]
-unsafe fn raw_waker_wake(data: *const ())
-{
-    raw_waker_wake_by_ref(data);
-    raw_waker_drop(data);
-}
-
-#[allow(dead_code)]
-unsafe fn raw_waker_wake_by_ref(data: *const ())
-{
-    let inner = &*(data as *const TaskInner<()>);
-
-    // Try to transition from Waiting to Running
-    // 尝试从Waiting转换到Running
-    if inner
-        .state
-        .compare_exchange(
-            TaskState::Waiting as u8,
-            TaskState::Running as u8,
-            Ordering::Release,
-            Ordering::Relaxed,
-        )
-        .is_err()
-    {
-        return; // Not in waiting state
-    }
-
-    // Re-schedule the task
-    // 重新调度任务
-    let raw_task = inner.raw_task.load(Ordering::Acquire) as RawTask;
-    if raw_task as usize != 0
-    {
-        let _ = inner.scheduler.submit(raw_task);
-    }
-}
-
-#[allow(dead_code)]
-unsafe fn raw_waker_drop(data: *const ())
-{
-    let inner = &*(data as *const TaskInner<()>);
-
-    // Decrement reference count
-    // 减少引用计数
-    if inner.ref_count.fetch_sub(1, Ordering::Release) == 1
-    {
-        // Last reference, deallocate
-        // 最后一个引用，释放内存
-        // Note: This is handled by Arc, we don't need explicit deallocation
-        // 注意：这由Arc处理，我们不需要显式释放
-    }
-}
-
-/// Join handle for spawned tasks
-/// 生成任务的join句柄
-///
-/// Allows awaiting task completion and retrieving the result.
-/// 允许等待任务完成并检索结果。
+/// 允许等待任务完成并获取结果。丢弃句柄而未 await 会 **detach** 任务
+///（任务继续运行）而非取消它 —— 这正是支持 fire-and-forget `spawn` 的机制。
 pub struct JoinHandle<T>
 {
     /// The async-executor task, when spawned inside a runtime OR via fallback.
@@ -354,8 +149,8 @@ pub struct JoinHandle<T>
 
 impl<T> JoinHandle<T>
 {
-    /// Get the task ID
-    /// 获取任务ID
+    /// Get the task ID.
+    /// 获取任务 ID。
     #[must_use]
     pub fn id(&self) -> TaskId
     {
@@ -363,21 +158,20 @@ impl<T> JoinHandle<T>
     }
 
     /// Check if the task has finished (completed, cancelled, or panicked).
-    /// 检查任务是否已完成（成功完成、已取消或发生panic）。
-    #[must_use]
+    /// 检查任务是否已完成（成功完成、已取消或发生 panic）。
     pub fn is_finished(&self) -> bool
     {
-        self.task.as_ref().is_some_and(|t| t.is_finished())
+        self.task.as_ref().is_some_and(async_executor::Task::is_finished)
     }
 
     /// Wait for the task to complete and retrieve its result.
     /// 等待任务完成并获取其结果。
     ///
-    /// If the task panicked, returns `JoinError::TaskPanic`. If the handle was
-    /// detached/cancelled, returns `JoinError::TaskCancelled`.
+    /// If the task panicked, returns [`JoinError::TaskPanic`]. If the handle
+    /// was already consumed, returns [`JoinError::TaskCancelled`].
     ///
-    /// 若任务 panic,返回 `JoinError::TaskPanic`。若句柄已 detach/取消,
-    /// 返回 `JoinError::TaskCancelled`。
+    /// 若任务 panic,返回 [`JoinError::TaskPanic`]。若句柄已被消费,
+    /// 返回 [`JoinError::TaskCancelled`]。
     pub async fn wait(mut self) -> Result<T, JoinError>
     {
         let task = self.task.take().ok_or(JoinError::TaskCancelled)?;
@@ -442,118 +236,25 @@ impl<T> Drop for JoinHandle<T>
     }
 }
 
-/// Future for waiting on task completion
-/// 等待任务完成的future
-struct WaitForTask<T>
-{
-    inner: Option<Arc<TaskInner<T>>>,
-}
+// ─── spawn ──────────────────────────────────────────────────────────────────
 
-impl<T> WaitForTask<T>
-{
-    fn new(inner: Arc<TaskInner<T>>) -> Self
-    {
-        Self { inner: Some(inner) }
-    }
-}
-
-impl<T> Future for WaitForTask<T>
-{
-    type Output = Result<T, JoinError>;
-
-    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>
-    {
-        let inner = self.inner.as_ref().unwrap();
-
-        // Register waker so the completing task can wake us
-        inner.waiter.register(cx.waker());
-
-        // Check current state
-        // 检查当前状态
-        let state = TaskState::from_u8(inner.state.load(Ordering::Acquire));
-
-        match state
-        {
-            Some(TaskState::Completed) =>
-            {
-                // Get the output
-                // 获取输出
-                let output = unsafe { inner.output.get() };
-                if let Some(result) = output
-                {
-                    self.inner = None;
-                    Poll::Ready(Ok(result))
-                }
-                else
-                {
-                    // Should not happen
-                    // 不应该发生
-                    Poll::Ready(Err(JoinError::TaskCancelled))
-                }
-            },
-            Some(TaskState::Cancelled) =>
-            {
-                self.inner = None;
-                Poll::Ready(Err(JoinError::TaskCancelled))
-            },
-            Some(TaskState::Panicked) =>
-            {
-                self.inner = None;
-                Poll::Ready(Err(JoinError::TaskPanic))
-            },
-            Some(TaskState::Running | TaskState::Waiting) =>
-            {
-                // Task still running, park this future
-                // 任务仍在运行，暂停此future
-                Poll::Pending
-            },
-            None => Poll::Ready(Err(JoinError::TaskCancelled)),
-        }
-    }
-}
-
-impl<T> Drop for WaitForTask<T>
-{
-    fn drop(&mut self)
-    {
-        // Clear inner to prevent holding reference
-        // 清除inner以防止持有引用
-        self.inner = None;
-    }
-}
-
-/// Error from joining a task
-/// 加入任务的错误
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum JoinError
-{
-    /// Task was cancelled
-    TaskCancelled,
-    /// Task panicked
-    TaskPanic,
-}
-
-impl std::fmt::Display for JoinError
-{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
-        match self
-        {
-            Self::TaskCancelled => write!(f, "Task was cancelled"),
-            Self::TaskPanic => write!(f, "Task panicked"),
-        }
-    }
-}
-
-impl std::error::Error for JoinError {}
-
-/// Spawn a new async task
-/// 生成新的异步任务
+/// Spawn a new async task on the current runtime.
+/// 在当前 runtime 上 spawn 新的异步任务。
+///
+/// If called within a `block_on` context, the task is submitted to the runtime's
+/// [`async_executor::Executor`] and runs concurrently with the main future.
+/// If called outside any runtime, the task runs on a fresh ephemeral executor
+/// driven by [`JoinHandle::wait`].
+///
+/// 若在 `block_on` 上下文内调用,任务提交到 runtime 的 [`async_executor::Executor`]
+/// 并与主 future 并发运行。若在任何 runtime 之外调用,任务运行于由
+/// [`JoinHandle::wait`] 驱动的全新临时执行器上。
 ///
 /// # Panics / 恐慌
 ///
-/// Panics if called outside of a runtime context.
-/// 如果在运行时上下文之外调用则恐慌。
+/// Panics if called outside of a runtime context **and** the ephemeral executor
+/// cannot be constructed (effectively never).
+/// 若在 runtime 上下文之外调用 **且** 临时执行器无法构造（实际不会发生）则恐慌。
 ///
 /// # Example / 示例
 ///
@@ -570,11 +271,6 @@ impl std::error::Error for JoinError {}
 ///     assert_eq!(result, 42);
 /// }
 /// ```
-///
-/// Note: This is a simplified implementation for Phase 2.
-/// Full integration with the runtime scheduler will be added in Phase 3.
-/// 注意：这是第2阶段的简化实现。
-/// 与运行时调度器的完全集成将在第3阶段添加。
 pub fn spawn<F, T>(future: F) -> JoinHandle<T>
 where
     F: Future<Output = T> + Send + 'static,
@@ -613,11 +309,30 @@ where
     }
 }
 
-/// Block on a future to completion
-/// 阻塞等待future完成
+// ─── standalone block_on (thread + mpsc) ────────────────────────────────────
+
+/// No-op raw waker vtable used by the standalone [`block_on`].
+/// 独立 [`block_on`] 使用的无操作 raw waker vtable。
+const NOOP_RAW_WAKER_VTABLE: RawWakerVTable = RawWakerVTable::new(
+    |_| RawWaker::new(ptr::null(), &NOOP_RAW_WAKER_VTABLE), // clone
+    |_| {},                                                      // drop
+    |_| {},                                                      // wake
+    |_| {},                                                      // wake_by_ref
+);
+
+/// Block on a future to completion.
+/// 阻塞等待 future 完成。
 ///
-/// This function will block the current thread until the future completes.
-/// 此函数将阻塞当前线程直到future完成。
+/// This is the standalone (non-runtime) entry point used by code that is not
+/// already inside a `Runtime::block_on` (e.g. `hiver_runtime::task::block_on`).
+/// It spawns a dedicated thread that polls the future in a tight loop and sends
+/// the result back over a channel. For runtime-driven execution use
+/// [`crate::Runtime::block_on`] instead.
+///
+/// 这是独立（非 runtime）入口点,供不在 `Runtime::block_on` 内的代码使用
+///（如 `hiver_runtime::task::block_on`）。它 spawn 一个专用线程,在紧密循环中
+/// 轮询 future 并经通道回传结果。runtime 驱动的执行请改用
+/// [`crate::Runtime::block_on`]。
 ///
 /// # Example / 示例
 ///
@@ -628,46 +343,35 @@ where
 ///     println!("Hello from async!");
 /// });
 /// ```
-///
-/// Note: This creates a temporary runtime for the execution.
-/// 注意：这会创建一个临时运行时来执行。
 pub fn block_on<F, T>(future: F) -> T
 where
     F: Future<Output = T> + Send + 'static,
     T: Send + 'static,
 {
-    use std::{
-        pin::Pin,
-        ptr,
-        sync::mpsc,
-        task::{Context, Poll, RawWaker, Waker},
-        thread,
-    };
-
-    // Channel to communicate the result
-    // 通道用于通信结果
+    // Channel to communicate the result.
+    // 通道用于通信结果。
     let (sender, receiver) = mpsc::channel();
 
-    // Create a no-op waker (we poll in a tight loop)
-    // 创建一个无操作的waker（我们在紧密循环中轮询）
+    // Create a no-op waker (we poll in a tight loop).
+    // 创建一个无操作的 waker（我们在紧密循环中轮询）。
     let waker = unsafe { Waker::from_raw(RawWaker::new(ptr::null(), &NOOP_RAW_WAKER_VTABLE)) };
 
-    // Spawn a thread to run the future
-    // 生成一个线程来运行future
+    // Spawn a thread to run the future.
+    // 生成一个线程来运行 future。
     thread::spawn(move || {
         let mut future = Box::pin(future);
         let mut cx = Context::from_waker(&waker);
 
-        // Poll until complete
-        // 轮询直到完成
+        // Poll until complete.
+        // 轮询直到完成。
         loop
         {
             match Pin::as_mut(&mut future).poll(&mut cx)
             {
                 Poll::Ready(result) =>
                 {
-                    // Send result (ignore send errors - receiver may be dropped)
-                    // 发送结果（忽略发送错误 - 接收器可能已被删除）
+                    // Send result (ignore send errors - receiver may be dropped).
+                    // 发送结果（忽略发送错误 - 接收器可能已被删除）。
                     let _ = sender.send(result);
                     break;
                 },
@@ -684,30 +388,16 @@ where
         }
     });
 
-    // Block until result is ready
-    // 阻塞直到结果就绪
+    // Block until result is ready.
+    // 阻塞直到结果就绪。
     receiver
         .recv()
         .unwrap_or_else(|_| panic!("block_on: Failed to receive result from executor"))
 }
 
-// No-op raw waker vtable for simple polling
-// 用于简单轮询的无操作raw waker vtable
-const NOOP_RAW_WAKER_VTABLE: RawWakerVTable = RawWakerVTable::new(
-    |_| RawWaker::new(std::ptr::null(), &NOOP_RAW_WAKER_VTABLE), // clone
-    |_| {},                                                      // drop
-    |_| {},                                                      // wake
-    |_| {},                                                      // wake_by_ref
-);
+// ─── tests ──────────────────────────────────────────────────────────────────
 
 #[cfg(test)]
-#[allow(
-    clippy::indexing_slicing,
-    clippy::float_cmp,
-    clippy::module_inception,
-    clippy::items_after_statements,
-    clippy::assertions_on_constants
-)]
 mod tests
 {
     use super::*;
@@ -721,12 +411,18 @@ mod tests
     }
 
     #[test]
-    fn test_task_state()
+    fn test_task_id_uniqueness()
     {
-        assert_eq!(TaskState::Running as u8, 0);
-        assert_eq!(TaskState::Completed as u8, 2);
-        assert!(TaskState::Completed.is_finished());
-        assert!(!TaskState::Running.is_finished());
+        use std::collections::HashSet;
+        let ids: HashSet<_> = (0..100).map(|_| gen_task_id()).collect();
+        assert_eq!(ids.len(), 100, "all generated task IDs should be unique");
+    }
+
+    #[test]
+    fn test_task_id_unknown()
+    {
+        assert_eq!(TaskId::UNKNOWN, TaskId::from_u64(0));
+        assert_eq!(TaskId::UNKNOWN.as_u64(), 0);
     }
 
     #[test]
@@ -783,42 +479,5 @@ mod tests
             a + b
         });
         assert_eq!(result, 30);
-    }
-
-    #[test]
-    fn test_task_id_uniqueness()
-    {
-        use std::collections::HashSet;
-        let ids: HashSet<_> = (0..100).map(|_| gen_task_id()).collect();
-        assert_eq!(ids.len(), 100, "all generated task IDs should be unique");
-    }
-
-    #[test]
-    fn test_task_state_is_finished()
-    {
-        assert!(TaskState::Completed.is_finished());
-        assert!(TaskState::Cancelled.is_finished());
-        assert!(TaskState::Panicked.is_finished());
-        assert!(!TaskState::Running.is_finished());
-        assert!(!TaskState::Waiting.is_finished());
-    }
-
-    #[test]
-    fn test_task_state_from_u8_roundtrip()
-    {
-        let states = [
-            TaskState::Running,
-            TaskState::Waiting,
-            TaskState::Completed,
-            TaskState::Cancelled,
-            TaskState::Panicked,
-        ];
-        for state in states
-        {
-            let byte = state as u8;
-            let parsed = TaskState::from_u8(byte);
-            assert!(parsed == Some(state));
-        }
-        assert!(TaskState::from_u8(255).is_none());
     }
 }

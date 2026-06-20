@@ -25,16 +25,10 @@
 use std::{
     future::Future,
     io,
-    sync::{Arc, RwLock},
-    task::Waker,
+    sync::RwLock,
 };
 
-use crate::{
-    driver::{Driver, DriverFactory, DriverType, Interest},
-    io_registry::IoRegistry,
-    scheduler::{Scheduler, SchedulerConfig, SchedulerHandle},
-    time::{Duration, Instant},
-};
+use crate::time::Duration;
 
 thread_local! {
     static CURRENT_HANDLE: std::cell::RefCell<Option<Handle>> = const { std::cell::RefCell::new(None) };
@@ -61,20 +55,33 @@ static GLOBAL_HANDLE: RwLock<Option<Handle>> = RwLock::new(None);
 
 /// Runtime configuration / 运行时配置
 ///
-/// Configuration for the async runtime including scheduler and driver settings.
-/// 异步运行时的配置，包括调度器和驱动设置。
+/// Configuration values for the async runtime. In the async-executor/async-io
+/// backend these are kept for API/Builder compatibility but most no longer drive
+/// runtime internals (the executor and reactor manage their own queues and
+/// driver). `enable_parking` / `park_timeout` are retained for compatibility
+/// with existing call sites and tests.
+///
+/// 异步运行时的配置值。在 async-executor/async-io 后端中,这些为 API/Builder
+/// 兼容性而保留,但多数已不再驱动 runtime 内部（执行器与 reactor 自行管理其队列
+/// 与 driver）。`enable_parking` / `park_timeout` 为兼容既有调用点与测试而保留。
 #[derive(Debug, Clone)]
 pub struct RuntimeConfig
 {
-    /// Scheduler configuration / 调度器配置
-    pub scheduler: SchedulerConfig,
-    /// Driver type to use / 要使用的driver类型
-    pub driver_type: DriverType,
-    /// Driver I/O configuration / Driver I/O配置
-    pub driver_io: crate::driver::DriverConfig,
-    /// Enable thread parking / 启用线程休眠
+    /// Worker thread count hint (compat; async-executor is single-thread
+    /// block_on-driven, so this is informational only).
+    /// 工作线程数提示(兼容;async-executor 为单线程 block_on 驱动,故仅作信息用途)。
+    pub worker_threads: usize,
+    /// Scheduler queue size hint (compat).
+    /// 调度器队列大小提示(兼容)。
+    pub queue_size: usize,
+    /// Thread name prefix (compat).
+    /// 线程名前缀(兼容)。
+    pub thread_name: String,
+    /// Enable thread parking (compat).
+    /// 启用线程休眠(兼容)。
     pub enable_parking: bool,
-    /// Park timeout / 休眠超时
+    /// Park timeout (compat).
+    /// 休眠超时(兼容)。
     pub park_timeout: Duration,
 }
 
@@ -83,9 +90,9 @@ impl Default for RuntimeConfig
     fn default() -> Self
     {
         Self {
-            scheduler: SchedulerConfig::default(),
-            driver_type: DriverType::Auto,
-            driver_io: crate::driver::DriverConfig::default(),
+            worker_threads: 1,
+            queue_size: 256,
+            thread_name: "hiver-worker".to_string(),
             enable_parking: true,
             park_timeout: Duration::from_millis(100),
         }
@@ -124,57 +131,57 @@ impl RuntimeBuilder
         }
     }
 
-    /// Set the number of worker threads
-    /// 设置工作线程数量
+    /// Set the number of worker threads (compat hint).
+    /// 设置工作线程数量(兼容提示)。
     pub fn worker_threads(mut self, count: usize) -> Self
     {
-        self.config.scheduler.queue_size = count * 256;
-        self.config.scheduler.thread_name = "hiver-worker".to_string();
+        self.config.worker_threads = count;
+        self.config.queue_size = count * 256;
         self
     }
 
-    /// Set the queue size for the scheduler
-    /// 设置调度器的队列大小
+    /// Set the queue size (compat hint).
+    /// 设置队列大小(兼容提示)。
     pub fn queue_size(mut self, size: usize) -> Self
     {
-        self.config.scheduler.queue_size = size;
+        self.config.queue_size = size;
         self
     }
 
-    /// Set the thread name pattern
-    /// 设置线程名称模式
+    /// Set the thread name pattern (compat).
+    /// 设置线程名称模式(兼容)。
     pub fn thread_name(mut self, name: impl Into<String>) -> Self
     {
-        self.config.scheduler.thread_name = name.into();
+        self.config.thread_name = name.into();
         self
     }
 
-    /// Set the driver type
-    /// 设置driver类型
-    pub fn driver_type(mut self, driver_type: DriverType) -> Self
+    /// Set the driver type (removed: the reactor is always async-io).
+    /// 设置 driver 类型(已移除:reactor 始终为 async-io)。
+    #[deprecated(note = "driver selection is no longer configurable; the reactor is always async-io")]
+    pub fn driver_type(self, _driver_type: ()) -> Self
     {
-        self.config.driver_type = driver_type;
         self
     }
 
-    /// Set the I/O driver queue depth
-    /// 设置I/O驱动队列深度
-    pub fn io_entries(mut self, entries: u32) -> Self
+    /// Set the I/O driver queue depth (removed: async-io manages its own sizing).
+    /// 设置 I/O driver 队列深度(已移除:async-io 自行管理其容量)。
+    #[deprecated(note = "io_entries is no longer configurable; async-io manages its own sizing")]
+    pub fn io_entries(self, _entries: u32) -> Self
     {
-        self.config.driver_io.entries = entries;
         self
     }
 
-    /// Enable or disable thread parking
-    /// 启用或禁用线程休眠
+    /// Enable or disable thread parking (compat).
+    /// 启用或禁用线程休眠(兼容)。
     pub fn enable_parking(mut self, enable: bool) -> Self
     {
         self.config.enable_parking = enable;
         self
     }
 
-    /// Set the park timeout
-    /// 设置休眠超时
+    /// Set the park timeout (compat).
+    /// 设置休眠超时(兼容)。
     pub fn park_timeout(mut self, timeout: Duration) -> Self
     {
         self.config.park_timeout = timeout;
@@ -222,19 +229,13 @@ impl Default for RuntimeBuilder
 /// ```
 pub struct Runtime
 {
-    /// The scheduler / 调度器
-    scheduler: Scheduler,
-    /// The driver / 驱动
-    driver: Arc<dyn Driver>,
-    /// Runtime configuration / 运行时配置
+    /// Runtime configuration (mostly compat; the executor/reactor manage
+    /// their own internals). Retained so `Runtime` can be reconstructed /
+    /// inspected by tooling, and to keep the builder chain coherent.
+    /// 运行时配置(多数为兼容;执行器/reactor 自行管理其内部)。保留以便
+    /// tooling 重建/检视 `Runtime`,并保持 builder 链一致。
+    #[allow(dead_code)]
     config: RuntimeConfig,
-    /// Waker for the main task / 主任务的waker
-    main_waker: Option<Waker>,
-    /// FD-keyed I/O waker registry (above-driver bookkeeping) / 以 FD 为键的 I/O waker
-    /// 注册表（driver 之上的簿记）
-    io_registry: IoRegistry,
-    /// Last time the timer was advanced / 上次推进定时器的时间
-    last_timer_advance: Instant,
     /// Async executor that drives spawned tasks. Stored as a `'static`
     /// reference (the executor is leaked from the heap) so that `spawn()`
     /// can reach it via the `Handle` without lifetime gymnastics, and so the
@@ -270,22 +271,18 @@ impl Runtime
     /// Create a new runtime with the specified configuration
     /// 使用指定配置创建新的运行时
     ///
+    /// In the async-executor/async-io backend most configuration is
+    /// informational; the executor and reactor manage their own internals.
+    ///
+    /// 在 async-executor/async-io 后端,多数配置仅作信息用途;执行器与 reactor
+    /// 自行管理其内部。
+    ///
     /// # Errors / 错误
     ///
-    /// Returns an error if:
-    /// 返回错误如果：
-    /// - Driver creation fails / Driver创建失败
-    /// - Scheduler creation fails / 调度器创建失败
+    /// Returns an error if executor creation fails (extremely unlikely).
+    /// 若执行器创建失败则返回错误(极不可能)。
     pub fn with_config(config: RuntimeConfig) -> io::Result<Self>
     {
-        // Create the driver
-        // 创建driver
-        let driver = DriverFactory::create_with_config(config.driver_type, config.driver_io)?;
-
-        // Create the scheduler with the driver
-        // 使用driver创建调度器
-        let scheduler = Scheduler::with_config_and_driver(&config.scheduler, driver.clone())?;
-
         // Create the executor. Leaked to obtain a `'static` reference so that
         // `spawn()` can capture it through the `Handle` (which needs `'static`
         // to be safely stored in a thread-local / global). The executor lives
@@ -296,15 +293,7 @@ impl Runtime
         let executor: &'static async_executor::Executor<'static> =
             Box::leak(Box::new(async_executor::Executor::new()));
 
-        Ok(Self {
-            io_registry: IoRegistry::new(),
-            scheduler,
-            driver,
-            config,
-            main_waker: None,
-            last_timer_advance: Instant::now(),
-            executor,
-        })
+        Ok(Self { config, executor })
     }
 
     /// Run a future to completion on this runtime
@@ -335,9 +324,6 @@ impl Runtime
         // Set the current runtime handle for this thread
         // 为当前线程设置运行时句柄
         let handle = Handle {
-            scheduler_handle: self.scheduler.handle(),
-            driver: Some(self.driver.clone()),
-            io_registry: self.io_registry.clone(),
             executor: Some(self.executor),
         };
         Handle::set_current(Some(handle));
@@ -397,128 +383,18 @@ impl Runtime
 
         Ok(result)
     }
-
-    /// Run a single iteration of the event loop
-    /// 运行事件循环的单次迭代
-    fn run_once(&mut self) -> io::Result<()>
-    {
-        // Submit any pending I/O operations
-        // 提交任何挂起的I/O操作
-        let _ = self.driver.submit();
-
-        // Wait for events with timeout
-        // 带超时等待事件
-        let timeout = if self.config.enable_parking
-        {
-            Some(self.config.park_timeout)
-        }
-        else
-        {
-            None
-        };
-
-        if let Some(to) = timeout
-        {
-            let (_events, timed_out) = self.driver.wait_timeout(to)?;
-            if timed_out
-            {
-                // Timeout occurred, this is normal for idle periods
-                // 超时发生，这对空闲期是正常的
-            }
-        }
-        else
-        {
-            let _events = self.driver.wait()?;
-        }
-
-        // Process completions
-        // 处理完成事件
-        self.process_completions();
-
-        // Advance the timer wheel
-        // 推进时间轮
-        self.advance_timers();
-
-        Ok(())
-    }
-
-    /// Process completion events from the driver
-    /// 处理来自driver的完成事件
-    fn process_completions(&mut self)
-    {
-        while let Some(completion) = self.driver.get_completion()
-        {
-            // io_uring path: user_data is a task id -> wake via scheduler.
-            // io_uring 路径：user_data 是任务 id -> 通过调度器唤醒。
-            if let Some(waker) = self.scheduler.get_task_waker(completion.user_data)
-            {
-                waker.wake();
-            }
-            // kqueue / epoll path: user_data carries the FD (see kqueue.rs/
-            // epoll.rs where completions are tagged with the FD). Wake the task
-            // parked on that FD via the I/O registry.
-            // kqueue / epoll 路径：user_data 携带 FD（见 kqueue.rs/epoll.rs 中
-            // completion 以 FD 打标）。通过 I/O 注册表唤醒挂起在该 FD 上的任务。
-            self.io_registry
-                .wake(completion.user_data as std::os::fd::RawFd);
-            self.driver.advance_completion();
-        }
-    }
-
-    /// Advance the timer wheel and wake expired timers
-    /// 推进时间轮并唤醒到期的定时器
-    fn advance_timers(&mut self)
-    {
-        use crate::time::global_timer;
-
-        let now = Instant::now();
-        let elapsed = now.duration_since(self.last_timer_advance);
-
-        // Convert elapsed time to ticks (1ms per tick)
-        // 将经过时间转换为滴答数（每毫秒1个滴答）
-        let ticks_to_advance = elapsed.as_millis() as u64;
-
-        if ticks_to_advance > 0
-        {
-            let _expired = global_timer().advance(ticks_to_advance);
-            self.last_timer_advance = now;
-        }
-    }
-
-    /// Flush any remaining events in the driver
-    /// 刷新driver中的任何剩余事件
-    fn flush_events(&mut self) -> io::Result<()>
-    {
-        // Submit pending operations
-        // 提交挂起的操作
-        let _ = self.driver.submit();
-
-        // Process any remaining completions without blocking
-        // 不阻塞地处理任何剩余的完成事件
-        let _ = self.driver.wait_timeout(Duration::from_millis(0))?;
-
-        // Process completions
-        // 处理完成事件
-        self.process_completions();
-
-        Ok(())
-    }
 }
 
 /// Spawning handle for the runtime
 /// 运行时的生成句柄
 ///
-/// Provides access to runtime functionality from within tasks.
-/// 从任务内部提供运行时功能访问。
+/// Provides access to the runtime's executor so that tasks running inside
+/// `block_on` can call `spawn()` to schedule more tasks.
+/// 提供对运行时执行器的访问,使运行在 `block_on` 内部的任务可调用 `spawn()`
+/// 以调度更多任务。
 #[derive(Clone)]
 pub struct Handle
 {
-    /// The scheduler handle / 调度器句柄
-    scheduler_handle: SchedulerHandle,
-    /// The I/O driver (for registering FD interest) / I/O driver（用于注册 FD 兴趣）
-    driver: Option<Arc<dyn Driver>>,
-    /// The FD-keyed I/O waker registry / 以 FD 为键的 I/O waker 注册表
-    io_registry: IoRegistry,
     /// The async executor, used by `spawn()` to schedule tasks. `'static` so
     /// the handle can be cloned into spawned futures and stored in the
     /// thread-local / global handle slots.
@@ -545,11 +421,12 @@ impl Handle
     /// Try to get a handle to the current runtime. Returns None if outside a runtime.
     /// 尝试获取当前运行时的句柄。如果在运行时外部则返回None。
     ///
-    /// Worker threads spawned by the scheduler do not inherit the main thread's
-    /// thread-local, so this falls back to a process-global handle set by
-    /// `block_on`. This lets spawned tasks register I/O interest.
-    /// 调度器生成的 worker 线程不继承主线程的 thread-local,故此处回退到由
-    /// `block_on` 设置的进程全局 handle。这使被 spawn 的任务能注册 I/O 兴趣。
+    /// In the single-thread-executor design, tasks spawned inside `block_on`
+    /// run on the same thread, so they inherit the thread-local `CURRENT_HANDLE`
+    /// directly. The process-global `GLOBAL_HANDLE` is a defensive fallback.
+    /// 在单线程执行器设计中,在 `block_on` 内 spawn 的任务运行于同一线程,
+    /// 故直接继承 thread-local `CURRENT_HANDLE`。进程全局 `GLOBAL_HANDLE`
+    /// 为防御性回退。
     pub fn try_current() -> Option<Self>
     {
         let local = CURRENT_HANDLE.with(|h| h.borrow().clone());
@@ -570,29 +447,6 @@ impl Handle
         CURRENT_HANDLE.with(|h| *h.borrow_mut() = handle);
     }
 
-    /// Get the scheduler handle
-    /// 获取调度器句柄
-    pub fn scheduler(&self) -> &SchedulerHandle
-    {
-        &self.scheduler_handle
-    }
-
-    /// Get the I/O driver, if available (only inside a runtime context).
-    /// 获取 I/O driver（仅在运行时上下文内可用）。
-    #[must_use]
-    pub fn driver(&self) -> Option<Arc<dyn Driver>>
-    {
-        self.driver.clone()
-    }
-
-    /// Get the FD-keyed I/O waker registry.
-    /// 获取以 FD 为键的 I/O waker 注册表。
-    #[must_use]
-    pub fn io_registry(&self) -> IoRegistry
-    {
-        self.io_registry.clone()
-    }
-
     /// Get the async executor backing this runtime, if available.
     /// `spawn()` uses this to schedule tasks. Returns `None` for the fallback
     /// handle created outside a runtime.
@@ -603,40 +457,6 @@ impl Handle
     pub fn executor(&self) -> Option<&'static async_executor::Executor<'static>>
     {
         self.executor
-    }
-
-    /// Register interest in `fd` with the driver and store `waker` for it.
-    /// This is the one-call helper async I/O futures use before parking on
-    /// `WouldBlock`.
-    ///
-    /// 向 driver 注册对 `fd` 的兴趣并为其存储 `waker`。这是异步 I/O future
-    /// 在因 `WouldBlock` 挂起前使用的一站式辅助方法。
-    ///
-    /// # Errors / 错误
-    ///
-    /// Returns the driver error if registration fails. The waker is still
-    /// stored best-effort.
-    /// 若注册失败则返回 driver 错误。waker 仍尽力存储。
-    pub fn register_io(
-        &self,
-        fd: std::os::fd::RawFd,
-        interest: Interest,
-        waker: Waker,
-    ) -> std::io::Result<()>
-    {
-        self.io_registry.register(fd, waker);
-        if let Some(driver) = &self.driver
-        {
-            // Best-effort: ignore AlreadyExists from re-registration (kqueue
-            // EV_ADD on an already-registered filter is idempotent; epoll
-            // EPOLL_CTL_MOD handles it). If register fails we still keep the
-            // waker so the busy-poll fallback in block_on can drive progress.
-            // 尽力而为：忽略重复注册的 AlreadyExists（kqueue EV_ADD 对已注册
-            // filter 幂等；epoll EPOLL_CTL_MOD 会处理）。若注册失败仍保留
-            // waker，使 block_on 的忙轮询回退可推进。
-            let _ = driver.register(fd, interest);
-        }
-        Ok(())
     }
 }
 
@@ -656,7 +476,7 @@ mod tests
     fn test_runtime_config_default()
     {
         let config = RuntimeConfig::default();
-        assert_eq!(config.scheduler.queue_size, 256);
+        assert_eq!(config.queue_size, 256);
         assert!(config.enable_parking);
         assert_eq!(config.park_timeout.as_millis(), 100);
     }
@@ -670,20 +490,24 @@ mod tests
             .thread_name("test-worker")
             .enable_parking(false);
 
-        assert_eq!(builder.config.scheduler.queue_size, 512);
-        assert_eq!(builder.config.scheduler.thread_name, "test-worker");
+        assert_eq!(builder.config.queue_size, 512);
+        assert_eq!(builder.config.thread_name, "test-worker");
         assert!(!builder.config.enable_parking);
     }
 
     #[test]
     fn test_runtime_builder_driver_config()
     {
+        // driver_type/io_entries are now no-ops (reactor is always async-io);
+        // verify park_timeout still propagates.
+        // driver_type/io_entries 现为 no-op（reactor 始终为 async-io);
+        // 验证 park_timeout 仍可传播。
+        #[allow(deprecated)]
         let builder = RuntimeBuilder::new()
-            .driver_type(DriverType::Auto)
+            .driver_type(())
             .io_entries(512)
             .park_timeout(Duration::from_millis(50));
 
-        assert_eq!(builder.config.driver_io.entries, 512);
         assert_eq!(builder.config.park_timeout.as_millis(), 50);
     }
 
@@ -809,8 +633,8 @@ mod tests
             .block_on(async {
                 let h1 = crate::task::spawn(async { 1i32 });
                 let h2 = crate::task::spawn(async { 2i32 });
-                assert_ne!(h1.id(), crate::scheduler::TaskId::UNKNOWN);
-                assert_ne!(h2.id(), crate::scheduler::TaskId::UNKNOWN);
+                assert_ne!(h1.id(), crate::task::TaskId::UNKNOWN);
+                assert_ne!(h2.id(), crate::task::TaskId::UNKNOWN);
                 assert_ne!(h1.id(), h2.id());
                 let _ = h1.wait().await;
                 let _ = h2.wait().await;
@@ -940,8 +764,9 @@ mod tests
                 let handle = Handle::current();
                 assert!(Handle::try_current().is_some());
 
-                // Verify scheduler handle is functional
-                let _scheduler = handle.scheduler();
+                // Verify the executor is reachable via the handle.
+                // 验证执行器可经由 handle 访问。
+                assert!(handle.executor().is_some());
             })
             .unwrap();
 
