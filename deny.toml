@@ -32,6 +32,7 @@ allow = [
     "BSD-3-Clause",
     "ISC",
     "Unicode-DFS-2016",
+    "Unicode-3.0",   # newer Unicode License v3 (OSI-approved) — used by idna/url/icu_*/alloy/mongodb/lettre
     # Added after the new `deny` CI job surfaced transitive deps using these:
     # 新增 `deny` CI job 曝光的传递依赖所使用的许可证:
     "MPL-2.0",   # Mozilla Public License 2.0 (weak copyleft, file-scoped) — e.g. ascii_utils via async-graphql
