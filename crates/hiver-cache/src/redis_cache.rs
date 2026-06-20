@@ -675,7 +675,7 @@ mod tests
     // 不需要运行 Redis 实例的单元测试。
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_falls_back_to_memory()
     {
         // Use an invalid URL — Redis will be unreachable, so fallback kicks in.
@@ -695,7 +695,7 @@ mod tests
         assert_eq!(val, Some("value1".to_string()));
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_degraded_mode()
     {
         // No fallback — degraded (no-op) mode.
@@ -713,7 +713,7 @@ mod tests
         assert_eq!(cache.size().await, 0);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_put_and_get_memory_fallback()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -725,7 +725,7 @@ mod tests
         assert_eq!(cache.get(&"missing".to_string()).await, None);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_put_with_ttl_memory_fallback()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -738,7 +738,7 @@ mod tests
         assert_eq!(cache.get(&"ttl_key".to_string()).await, Some("ttl_val".to_string()));
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_invalidate_memory_fallback()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -753,7 +753,7 @@ mod tests
         assert_eq!(cache.get(&"k".to_string()).await, None);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_invalidate_all_memory_fallback()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -769,7 +769,7 @@ mod tests
         assert_eq!(cache.get(&"b".to_string()).await, None);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_stats_tracking()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -789,7 +789,7 @@ mod tests
         assert!((stats.hit_rate - 0.5).abs() < f64::EPSILON);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_clear_resets_stats()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -805,7 +805,7 @@ mod tests
         assert_eq!(stats.hits, 0);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_contains_key_memory_fallback()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -817,7 +817,7 @@ mod tests
         assert!(cache.contains_key(&"yes".to_string()).await);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_size_memory_fallback()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -981,7 +981,7 @@ mod tests
     // full_key 测试。
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_full_key_without_prefix()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").no_fallback();
@@ -992,7 +992,7 @@ mod tests
         assert_eq!(cache.full_key(&"mykey".to_string()), "\"mykey\"");
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_full_key_with_prefix()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1")
@@ -1008,7 +1008,7 @@ mod tests
     // 克隆测试。
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_clone()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -1027,7 +1027,7 @@ mod tests
     // 重连测试（仍然不可达，应返回 false）。
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_reconnect_when_unavailable()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -1046,7 +1046,7 @@ mod tests
     // 多种数据类型测试。
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_cache_different_value_types()
     {
         // String values
@@ -1079,7 +1079,7 @@ mod tests
     // 覆盖写入测试。
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_put_overwrites_existing_value()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -1098,7 +1098,7 @@ mod tests
     // 并发访问测试。
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_concurrent_access()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -1127,7 +1127,7 @@ mod tests
     // 结构体值序列化测试。
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_cache_struct_value()
     {
         #[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
@@ -1157,7 +1157,7 @@ mod tests
     // 整数键类型测试。
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_integer_key_type()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -1174,7 +1174,7 @@ mod tests
     // TTL 专用：put_with_ttl 应使用显式 TTL，而非默认值。
     // -----------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_put_with_ttl_explicit()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1")

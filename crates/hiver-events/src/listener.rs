@@ -966,13 +966,13 @@ mod tests
         assert!(result.is_ok());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_async_listener_fn()
     {
         let listener = AsyncListenerFn::new(|event: &TestEvent| {
             let value = event.value;
             async move {
-                tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
+                hiver_runtime::time::sleep(std::time::Duration::from_millis(10)).await;
                 println!("Async value: {}", value);
                 Ok(())
             }
@@ -994,7 +994,7 @@ mod tests
         assert_eq!(listener.count(), 1);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_boxed_consumer()
     {
         let listener = TestListener::new();

@@ -487,7 +487,7 @@ mod tests
         assert!(names.contains(&"userList".to_string()));
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_caching_execute()
     {
         use std::{
@@ -545,7 +545,7 @@ mod tests
         assert_eq!(call_count.load(Ordering::SeqCst), 1); // Should not increment again
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_caching_execute_and_update()
     {
         use std::collections::HashMap;

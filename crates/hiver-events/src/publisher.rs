@@ -459,7 +459,7 @@ mod tests
         }
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_publisher_creation()
     {
         let publisher = ApplicationEventPublisher::new();
@@ -467,7 +467,7 @@ mod tests
         assert!(!publisher.has_listeners::<TestEvent>().await);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_register_consumer()
     {
         let publisher = ApplicationEventPublisher::new();
@@ -480,7 +480,7 @@ mod tests
         assert!(publisher.has_listeners::<TestEvent>().await);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_publish_sync()
     {
         let publisher = ApplicationEventPublisher::with_strategy(PublishStrategy::Sync);
@@ -498,11 +498,16 @@ mod tests
             .unwrap();
 
         // Give time for processing
-        tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
+        hiver_runtime::time::sleep(std::time::Duration::from_millis(10)).await;
 
         assert_eq!(listener.count(), 1);
     }
 
+    // Stays on #[tokio::test]: exercises production code that uses
+    // tokio::task::spawn_blocking + tokio::runtime::Handle (publisher.rs:211),
+    // which requires the tokio runtime.
+    // 保留在 #[tokio::test] 上:演练使用 tokio::task::spawn_blocking +
+    // tokio::runtime::Handle 的生产代码（publisher.rs:211),需要 tokio runtime。
     #[tokio::test]
     async fn test_publish_async()
     {
@@ -518,12 +523,12 @@ mod tests
         publisher.publish_event(event).await.unwrap();
 
         // Give time for processing
-        tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
+        hiver_runtime::time::sleep(std::time::Duration::from_millis(50)).await;
 
         assert_eq!(listener.count(), 1);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_unregister()
     {
         let publisher = ApplicationEventPublisher::new();
@@ -537,7 +542,7 @@ mod tests
         assert_eq!(publisher.consumer_count::<TestEvent>().await, 0);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_no_listener_error()
     {
         let publisher = ApplicationEventPublisher::new();
@@ -550,6 +555,8 @@ mod tests
         assert!(result.is_err());
     }
 
+    // Stays on #[tokio::test]: exercises production code that uses
+    // tokio::task::spawn_blocking (publisher.rs:211).
     #[tokio::test]
     async fn test_context_event()
     {
@@ -585,7 +592,7 @@ mod tests
         let event = ContextRefreshedEvent::new("test_app");
         publisher.publish_event(event).await.unwrap();
 
-        tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
+        hiver_runtime::time::sleep(std::time::Duration::from_millis(10)).await;
 
         assert_eq!(call_count.load(std::sync::atomic::Ordering::Relaxed), 1);
     }

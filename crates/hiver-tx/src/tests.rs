@@ -47,7 +47,7 @@ mod tests
     // NoopTransactionManager tests (begin/commit/rollback)
     // ------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_noop_begin_commit()
     {
         let mgr = NoopTransactionManager;
@@ -60,7 +60,7 @@ mod tests
         mgr.commit(status).await.unwrap();
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_noop_begin_rollback()
     {
         let mgr = NoopTransactionManager;
@@ -72,7 +72,7 @@ mod tests
         mgr.rollback(status).await.unwrap();
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_noop_name()
     {
         let mgr = NoopTransactionManager;
@@ -181,7 +181,7 @@ mod tests
     // DelegatingTransactionManager tests
     // ------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_delegate_begin_commit_default()
     {
         let mut registry = TransactionManagerRegistry::new();
@@ -196,7 +196,7 @@ mod tests
         delegate.commit(status).await.unwrap();
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_delegate_begin_rollback_default()
     {
         let mut registry = TransactionManagerRegistry::new();
@@ -209,7 +209,7 @@ mod tests
         delegate.rollback(status).await.unwrap();
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_delegate_begin_for_named_source()
     {
         let mut registry = TransactionManagerRegistry::new();
@@ -230,7 +230,7 @@ mod tests
         delegate.rollback_for("inventory", s2).await.unwrap();
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_delegate_begin_for_unknown_returns_not_found()
     {
         let mut registry = TransactionManagerRegistry::new();
@@ -257,7 +257,7 @@ mod tests
         assert!(registry.into_delegate().is_err());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_delegate_name()
     {
         let mut registry = TransactionManagerRegistry::new();
@@ -316,7 +316,7 @@ mod tests
         }
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_multi_source_distinct_managers()
     {
         let mut registry = TransactionManagerRegistry::new();
@@ -346,7 +346,7 @@ mod tests
         delegate.commit_for("sqlite", s_sqlite).await.unwrap();
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_multi_source_cross_commit_independent()
     {
         // Two independent data sources: committing one does not affect the other.

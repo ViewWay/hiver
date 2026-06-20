@@ -231,7 +231,7 @@ mod tests
     use super::*;
     use crate::manager::SimpleTransactionManager;
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_transaction_template()
     {
         let manager = Arc::new(SimpleTransactionManager::new());
@@ -245,7 +245,7 @@ mod tests
         assert_eq!(result, 42);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_transaction_template_rollback()
     {
         let manager = Arc::new(SimpleTransactionManager::new());

@@ -409,7 +409,7 @@ mod tests
         }
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_commit_lifecycle()
     {
         let registry = SynchronizationRegistry::new();
@@ -427,7 +427,7 @@ mod tests
         assert_eq!(counter.after_completion.load(Ordering::SeqCst), 1);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_rollback_lifecycle()
     {
         let registry = SynchronizationRegistry::new();
@@ -444,7 +444,7 @@ mod tests
         assert_eq!(counter.after_completion.load(Ordering::SeqCst), 1);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_phase_listener()
     {
         let fired = Arc::new(AtomicUsize::new(0));
@@ -461,7 +461,7 @@ mod tests
         assert_eq!(fired.load(Ordering::SeqCst), 1);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_before_commit_veto()
     {
         struct VetoSync;
@@ -478,7 +478,7 @@ mod tests
         assert!(registry.trigger_before_commit("tx4").await.is_err());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_clear()
     {
         let registry = SynchronizationRegistry::new();

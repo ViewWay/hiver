@@ -341,7 +341,7 @@ mod tests
         assert!(def.read_only);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_simple_transaction_manager()
     {
         let manager = SimpleTransactionManager::new();

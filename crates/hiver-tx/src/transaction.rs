@@ -247,7 +247,7 @@ mod tests
 {
     use super::*;
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_transaction()
     {
         let tx = Transaction::new("test");
@@ -257,7 +257,7 @@ mod tests
         assert!(tx.status().is_new_transaction());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_transaction_holder()
     {
         let holder = TransactionHolder::new();

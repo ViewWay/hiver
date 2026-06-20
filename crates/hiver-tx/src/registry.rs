@@ -465,7 +465,7 @@ mod tests
     // DelegatingTransactionManager tests
     // ------------------------------------------------------------------
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_delegate_uses_default_manager()
     {
         let mut registry = TransactionManagerRegistry::new();
@@ -480,7 +480,7 @@ mod tests
         delegate.commit(status).await.unwrap();
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_delegate_begin_for_named_source()
     {
         let mut registry = TransactionManagerRegistry::new();
@@ -501,7 +501,7 @@ mod tests
         delegate.rollback_for("inventory", status2).await.unwrap();
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_delegate_begin_for_unknown_fails()
     {
         let mut registry = TransactionManagerRegistry::new();

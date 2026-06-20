@@ -1024,7 +1024,7 @@ mod tests
 
     // --- TransactionalEventPublisher Tests ---
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_register_and_publish_after_commit()
     {
         let publisher = TransactionalEventPublisher::new();
@@ -1063,7 +1063,7 @@ mod tests
         assert_eq!(counter.load(Ordering::SeqCst), 1);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_no_listeners_for_phase()
     {
         let publisher = TransactionalEventPublisher::new();
@@ -1076,7 +1076,7 @@ mod tests
         assert!(results.is_empty());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_multiple_listeners_same_phase()
     {
         let publisher = TransactionalEventPublisher::new();
@@ -1116,7 +1116,7 @@ mod tests
         assert_eq!(counter2.load(Ordering::SeqCst), 1);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_different_event_types()
     {
         let publisher = TransactionalEventPublisher::new();
@@ -1158,7 +1158,7 @@ mod tests
         assert_eq!(payment_counter.load(Ordering::SeqCst), 1);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_listener_order()
     {
         let publisher = TransactionalEventPublisher::new();
@@ -1205,7 +1205,7 @@ mod tests
         assert_eq!(*order, vec![1, 2]); // Lower order executes first
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_clear_listeners()
     {
         let publisher = TransactionalEventPublisher::new();
@@ -1241,7 +1241,7 @@ mod tests
 
     // --- TransactionalEventBridge Tests ---
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_bridge_commit_lifecycle()
     {
         let publisher = TransactionalEventPublisher::new();
@@ -1296,7 +1296,7 @@ mod tests
         assert!(!results.is_empty());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_bridge_rollback_lifecycle()
     {
         let publisher = TransactionalEventPublisher::new();
@@ -1331,7 +1331,7 @@ mod tests
         assert!(!results.is_empty());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_bridge_noop_when_inactive()
     {
         let publisher = TransactionalEventPublisher::new();
@@ -1345,7 +1345,7 @@ mod tests
         assert!(results.is_empty());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_listener_with_condition()
     {
         let listener = TransactionalEventListener::new::<OrderCreatedEvent, _>(

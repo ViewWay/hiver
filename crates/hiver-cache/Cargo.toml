@@ -83,6 +83,8 @@ tracing = { workspace = true, optional = true }
 [dev-dependencies]
 # Testing / 测试
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+hiver-runtime = { path = "../hiver-runtime" }
+hiver-macros = { path = "../hiver-macros" }
 dashmap = { workspace = true }
 once_cell = { workspace = true }
 criterion = { workspace = true }

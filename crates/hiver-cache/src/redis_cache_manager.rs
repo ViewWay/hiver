@@ -268,7 +268,7 @@ mod tests
         CacheConfig::new(name).ttl_secs(300)
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_manager_creates_cache_in_fallback()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -288,7 +288,7 @@ mod tests
         assert_eq!(cache.get(&"k".to_string()).await, Some("v".to_string()));
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_manager_get_cache_names()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -306,7 +306,7 @@ mod tests
         assert!(names.contains(&"cache_b".to_string()));
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_manager_get_cache_returns_worker()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -327,7 +327,7 @@ mod tests
         assert_eq!(w.name(), "products");
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_manager_get_cache_missing()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -336,7 +336,7 @@ mod tests
         assert!(manager.get_cache("nonexistent").is_none());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_manager_worker_stats()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -357,7 +357,7 @@ mod tests
         assert_eq!(stats.misses, 1);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_manager_worker_clear()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -377,7 +377,7 @@ mod tests
         assert_eq!(cache.get(&"b".to_string()).await, None);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_manager_no_fallback()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").no_fallback();
@@ -395,7 +395,7 @@ mod tests
         assert_eq!(cache.get(&"k".to_string()).await, None);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_manager_multiple_caches_isolated()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();
@@ -415,7 +415,7 @@ mod tests
         assert_eq!(cache_b.get(&"key".to_string()).await, Some("from_b".to_string()));
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_redis_cache_manager_cache_exists()
     {
         let redis_cfg = RedisConfig::new("redis://127.0.0.1:1").fallback_to_memory();

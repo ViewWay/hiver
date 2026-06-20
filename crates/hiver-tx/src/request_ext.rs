@@ -203,7 +203,7 @@ mod tests
     use super::*;
     use crate::Transaction;
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_transaction_context_ext()
     {
         let mut req = Request::from_method_uri(Method::GET, "/test");

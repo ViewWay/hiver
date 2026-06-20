@@ -509,7 +509,7 @@ mod tests
         }
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_registry_creation()
     {
         let registry = EventRegistry::new();
@@ -517,7 +517,7 @@ mod tests
         assert!(!registry.has_consumers::<TestEvent>().await);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_register_consumer()
     {
         let registry = EventRegistry::new();
@@ -531,7 +531,7 @@ mod tests
         assert!(registry.has_consumers::<TestEvent>().await);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_unregister()
     {
         let registry = EventRegistry::new();
@@ -546,7 +546,7 @@ mod tests
         assert!(!registry.has_consumers::<TestEvent>().await);
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_multicaster()
     {
         let multicaster = EventMulticaster::new();
@@ -565,7 +565,7 @@ mod tests
         assert!(result.is_ok());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_context_event_multicast()
     {
         let multicaster = EventMulticaster::new();
@@ -583,7 +583,7 @@ mod tests
         assert!(result.is_ok());
     }
 
-    #[tokio::test]
+    #[hiver_macros::test]
     async fn test_subscription()
     {
         let subscription = EventSubscription::new::<TestEvent>("test_consumer").with_order(10);
