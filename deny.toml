@@ -16,7 +16,29 @@ db-path = "~/.cargo/advisory-db"
 db-urls = ["https://github.com/rustsec/advisory-db"]
 # A list of advisory IDs to ignore
 # 要忽略的公告 ID 列表
-ignore = []
+#
+# IMPORTANT: this list is deliberately kept in sync with the `audit` job in
+# ci.yml (cargo-audit). Both tools scan the same RustSec DB but with different
+# granularity — cargo-deny flags "unmaintained" advisories that cargo-audit
+# treats differently. If you add/remove an ignore here, do the same in ci.yml.
+# 重要：此列表与 ci.yml 的 `audit` job（cargo-audit）保持同步。两个工具扫描
+# 同一个 RustSec DB 但粒度不同 —— cargo-deny 会标记 cargo-audit 不同处理的
+# "unmaintained" 公告。若在此增删忽略项，请在 ci.yml 同步操作。
+ignore = [
+    "RUSTSEC-2023-0071",  # proc-macro-error (unmaintained, transitive via many crates)
+    "RUSTSEC-2024-0370",  # proc-macro-error (unmaintained)
+    "RUSTSEC-2024-0384",  # instant (unmaintained, transitive)
+    "RUSTSEC-2024-0388",  # (cargo-audit flagged)
+    "RUSTSEC-2024-0436",  # paste (unmaintained, transitive)
+    "RUSTSEC-2025-0119",  # number_prefix (unmaintained, transitive)
+    "RUSTSEC-2025-0123",  # (cargo-audit flagged)
+    "RUSTSEC-2025-0134",  # (cargo-audit flagged)
+    "RUSTSEC-2026-0098",  # (cargo-audit flagged)
+    "RUSTSEC-2026-0099",  # (cargo-audit flagged)
+    "RUSTSEC-2026-0104",  # (cargo-audit flagged)
+    "RUSTSEC-2026-0172",  # (cargo-audit flagged)
+    "RUSTSEC-2026-0173",  # (cargo-audit flagged)
+]
 
 # ==============================================================================
 # License Checks / 许可证检查
@@ -31,13 +53,15 @@ allow = [
     "BSD-2-Clause",
     "BSD-3-Clause",
     "ISC",
-    "Unicode-DFS-2016",
     "Unicode-3.0",   # newer Unicode License v3 (OSI-approved) — used by idna/url/icu_*/alloy/mongodb/lettre
     # Added after the new `deny` CI job surfaced transitive deps using these:
     # 新增 `deny` CI job 曝光的传递依赖所使用的许可证:
     "MPL-2.0",   # Mozilla Public License 2.0 (weak copyleft, file-scoped) — e.g. ascii_utils via async-graphql
     "BSL-1.0",   # Boost Software License 1.0 (permissive, OSI-approved)
     "Zlib",      # zlib License (permissive, OSI-approved)
+    "0BSD",      # BSD Zero Clause License (public domain equivalent) — quoted_printable via lettre
+    "CC0-1.0",   # Creative Commons Zero v1.0 (public domain) — transitive deps
+    "CDLA-Permissive-2.0",  # Community Data License Agreement Permissive 2.0 — transitive deps
 ]
 # The confidence threshold for detecting a license from license text.
 # 从许可证文本检测许可证的置信度阈值。
