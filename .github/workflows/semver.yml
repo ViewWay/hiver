@@ -45,17 +45,21 @@ jobs:
       - name: Install cargo-semver-checks
         run: cargo install cargo-semver-checks
 
-      # NOTE: `--fail-on-error` is intentionally NOT followed by `|| true`.
-      # Earlier the `|| true` swallowed every failure, making this check
-      # cosmetic. Let real breaking-change failures fail the PR.
-      # 注意：`--fail-on-error` 后面故意不加 `|| true`。
-      # 之前 `|| true` 吞掉了所有失败，使此检查形同虚设。让真正的破坏性变更失败阻止 PR。
+      # NOTE: do NOT append `|| true`. Earlier the `|| true` swallowed every
+      # failure, making this check cosmetic. Real breaking changes must fail
+      # the PR. cargo-semver-checks fails (exit 1) on violations by default;
+      # the `--fail-on-error` flag was removed in a recent release and now
+      # errors with "unexpected argument", so we pass only --workspace and
+      # --all-features.
+      # 注意：不要加 `|| true`。之前 `|| true` 吞掉所有失败，使检查形同虚设。
+      # 真正的破坏性变更必须让 PR 失败。cargo-semver-checks 默认在违规时
+      # 失败（exit 1）；`--fail-on-error` 在近期版本已移除，现在会报
+      # "unexpected argument"，故只传 --workspace 和 --all-features。
       - name: Run semver checks
         run: |
           cargo semver-checks check-release \
             --workspace \
-            --all-features \
-            --fail-on-error
+            --all-features
 
       - name: Generate semver report
         if: always()
