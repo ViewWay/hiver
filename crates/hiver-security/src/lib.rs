@@ -149,7 +149,7 @@ pub use permission::{
     PermissionDef, PermissionEvaluator, PermissionRegistry,
 };
 pub use post_authorize::{PostAuthorize, PostAuthorizeOptions};
-pub use pre_authorize::{PreAuthorize, SecurityExpression};
+pub use pre_authorize::{PreAuthorize, PreAuthorizeOptions, SecurityExpression, check_pre_authorize};
 pub use rbac::{
     AuditLog, AuditLogger, ConsoleAuditLogger, PermissionEntry, RbacConfig, RbacManager,
     RolePermission, UserRole,

@@ -39,6 +39,10 @@ name = "validation_example"
 path = "src/validation_example.rs"
 
 [[bin]]
+name = "pre_auth_test"
+path = "src/pre_auth_test.rs"
+
+[[bin]]
 name = "starter_example"
 path = "src/starter_example.rs"
 

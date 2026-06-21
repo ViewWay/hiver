@@ -290,9 +290,77 @@ pub fn secured(_attr: TokenStream, item: TokenStream) -> TokenStream
     item
 }
 
-pub fn pre_authorize(_attr: TokenStream, item: TokenStream) -> TokenStream
+pub fn pre_authorize(attr: TokenStream, item: TokenStream) -> TokenStream
 {
-    item
+    // Parse the expression string, e.g. #[pre_authorize("hasRole('ADMIN')")]
+    // 解析表达式字符串,如 #[pre_authorize("hasRole('ADMIN')")]
+    let expr = match attr.to_string().trim_matches(|c: char| c == '"' || c.is_whitespace()).to_string().as_str() {
+        "" => {
+            return syn::Error::new(
+                proc_macro2::Span::call_site(),
+                "#[pre_authorize] requires an expression string, e.g. #[pre_authorize(\"hasRole('ADMIN')\")]",
+            )
+            .to_compile_error()
+            .into();
+        }
+        s => s.to_string()
+    };
+
+    let mut item_fn = match syn::parse_macro_input!(item as syn::ItemFn) {
+        f => f,
+    };
+
+    // This macro only wraps async fn handlers. If the fn is not async, emit an
+    // error.
+    // 此宏仅包装 async fn 处理程序。若 fn 非 async,emit error。
+    if item_fn.sig.asyncness.is_none() {
+        return syn::Error::new_spanned(
+            &item_fn.sig.fn_token,
+            "#[pre_authorize] must be applied to an async fn",
+        )
+        .to_compile_error()
+        .into();
+    }
+
+    // Extract the original block (the handler body).
+    // 提取原始块（处理程序 body）。
+    let original_block = item_fn.block;
+
+    // Build the authorization-guard block that runs check_pre_authorize before
+    // the original body.
+    // 构建授权守卫块:在原始 body 之前运行 check_pre_authorize。
+    let new_block = quote::quote! {
+        {
+            // Create a SecurityContext. In a full framework integration this
+            // would be injected from the request (e.g. extracted from the JWT
+            // by auth middleware). For now, build a default context — an
+            // unauthenticated user — so #[pre_authorize("hasRole(...)")] will
+            // correctly deny access unless the context is populated.
+            // 创建 SecurityContext。在完整框架集成中,这将从请求注入
+            //（如由 auth 中间件从 JWT 提取)。目前构建默认上下文 —— 未认证用户
+            // —— 使 #[pre_authorize("hasRole(...)")] 在上下文未填充时正确拒绝。
+            let __hiver_sec_ctx = hiver_security::SecurityContext::new();
+            let __hiver_authorized = hiver_security::check_pre_authorize(
+                &__hiver_sec_ctx,
+                #expr,
+            )
+            .await
+            .unwrap_or(false);
+
+            if !__hiver_authorized {
+                ::std::panic!(
+                    "access denied by #[pre_authorize({})]",
+                    #expr
+                );
+            }
+
+            #original_block
+        }
+    };
+
+    item_fn.block = syn::parse_quote! { #new_block };
+
+    quote::quote! { #item_fn }.into()
 }
 
 pub fn post_authorize(_attr: TokenStream, item: TokenStream) -> TokenStream
