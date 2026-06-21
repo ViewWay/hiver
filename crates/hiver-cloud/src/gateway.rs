@@ -387,10 +387,67 @@ impl Gateway for SimpleGateway
                 req = filter.process_request(req).await;
             }
 
-            // Forward to target
-            // In a real implementation, this would make an HTTP request
-            GatewayResponse::new(http::StatusCode::OK)
-                .body(format!("Routed to: {}", route.uri).into_bytes())
+            // Build the upstream URL: route.uri + path + query.
+            // 构建上游 URL:route.uri + path + query。
+            let upstream_url = match req.query
+            {
+                Some(ref q) if !q.is_empty() => format!("{}{}?{}", route.uri, req.path, q),
+                _ => format!("{}{}", route.uri, req.path),
+            };
+
+            // Forward the request to the upstream via reqwest.
+            // 经 reqwest 将请求转发到上游。
+            let client = reqwest::Client::new();
+            let mut builder = client
+                .request(
+                    reqwest::Method::from_bytes(req.method.as_str().as_bytes())
+                        .unwrap_or(reqwest::Method::GET),
+                    &upstream_url,
+                )
+                .header("x-forwarded-path", &req.path);
+
+            // Forward request headers.
+            // 转发请求 headers。
+            for (k, v) in &req.headers
+            {
+                builder = builder.header(k.as_str(), v.as_str());
+            }
+
+            // Forward body if non-empty.
+            // 若 body 非空则转发。
+            if !req.body.is_empty()
+            {
+                builder = builder.body(req.body.clone());
+            }
+
+            match builder.send().await
+            {
+                Ok(resp) =>
+                {
+                    let status =
+                        http::StatusCode::from_u16(resp.status().as_u16()).unwrap_or(
+                            http::StatusCode::INTERNAL_SERVER_ERROR,
+                        );
+
+                    // Copy response headers.
+                    // 复制响应 headers。
+                    let mut response = GatewayResponse::new(status);
+                    for (k, v) in resp.headers()
+                    {
+                        if let Ok(vstr) = v.to_str()
+                        {
+                            response = response.header(k.as_str(), vstr.to_string());
+                        }
+                    }
+
+                    // Read response body.
+                    // 读取响应 body。
+                    let body = resp.bytes().await.unwrap_or_default();
+                    response.body(body.to_vec())
+                },
+                Err(e) => GatewayResponse::new(http::StatusCode::BAD_GATEWAY)
+                    .body(format!("Upstream error: {e}").into_bytes()),
+            }
         }
         else
         {
