@@ -86,8 +86,11 @@ impl<T> std::error::Error for SendError<T> {}
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RecvError
 {
-    /// The channel is empty and closed
-    /// 通道为空且已关闭
+    /// The channel is empty but not closed (senders still exist).
+    /// 通道为空但未关闭（仍有发送者）。
+    Empty,
+    /// The channel is empty and closed (all senders dropped).
+    /// 通道为空且已关闭（所有发送者已 drop）。
     Closed,
 }
 
@@ -97,6 +100,7 @@ impl std::fmt::Display for RecvError
     {
         match self
         {
+            RecvError::Empty => write!(f, "Channel empty"),
             RecvError::Closed => write!(f, "Channel closed"),
         }
     }
@@ -135,11 +139,30 @@ pub fn unbounded<T>() -> (Sender<T>, Receiver<T>)
     (sender, receiver)
 }
 
-/// Bounded mpsc channel
-/// 有界mpsc通道
+/// Bounded mpsc channel with real backpressure.
+/// 具有真实背压的有界 mpsc 通道。
 ///
-/// Creates a channel with a bounded buffer.
-/// 创建具有有界缓冲区的通道。
+/// Creates a channel with a bounded buffer of `cap` slots. Unlike the old
+/// implementation (which silently ignored the cap), this delegates to
+/// [`async_channel::bounded`], which provides true backpressure: `send().await`
+/// will **park the sender** when the buffer is full, until a receiver consumes
+/// a slot. This prevents unbounded memory growth under fast-producer /
+/// slow-consumer patterns.
+///
+/// 创建一个具有 `cap` 容量槽的有界缓冲通道。与旧实现（静默忽略容量）不同,
+/// 此处委托给 [`async_channel::bounded`],提供真实背压:当缓冲区满时,
+/// `send().await` 会 **park 发送者**,直到接收者消费一个槽。这防止了快生产者/
+/// 慢消费者模式下的无界内存增长。
+///
+/// The returned `Sender`/`Receiver` are `async_channel` types with async
+/// `send().await` and `recv().await`. `try_recv` returns
+/// `Result<T, async_channel::TryRecvError>` where `TryRecvError::Empty`
+/// distinguishes "temporarily empty" from `Closed`.
+///
+/// 返回的 `Sender`/`Receiver` 是 `async_channel` 类型,具有异步
+/// `send().await` 与 `recv().await`。`try_recv` 返回
+/// `Result<T, async_channel::TryRecvError>`,其中 `TryRecvError::Empty`
+/// 区分 "暂时为空" 与 `Closed`。
 ///
 /// # Example / 示例
 ///
@@ -147,23 +170,12 @@ pub fn unbounded<T>() -> (Sender<T>, Receiver<T>)
 /// use hiver_runtime::channel::bounded;
 ///
 /// let (tx, rx) = bounded::<i32>(16);
+/// // tx.send(42).await.unwrap();  // parks if buffer is full
 /// ```
 #[must_use]
-pub fn bounded<T>(cap: usize) -> (Sender<T>, Receiver<T>)
+pub fn bounded<T>(cap: usize) -> (async_channel::Sender<T>, async_channel::Receiver<T>)
 {
-    let shared = Arc::new(ChannelShared {
-        buffer: Mutex::new(VecDeque::with_capacity(cap)),
-        sender_count: AtomicUsize::new(1),
-        is_receiver_alive: AtomicBool::new(true),
-        recv_waker: Mutex::new(None),
-    });
-
-    let sender = Sender {
-        shared: shared.clone(),
-    };
-    let receiver = Receiver { shared };
-
-    (sender, receiver)
+    async_channel::bounded(cap)
 }
 
 /// Shared state for the channel
@@ -320,15 +332,15 @@ impl<T> Receiver<T>
         }
         else if self.shared.sender_count.load(Ordering::Acquire) == 0
         {
-            // No senders left
-            // 没有发送器了
+            // No senders left — channel is closed.
+            // 没有发送器了 —— 通道已关闭。
             Err(RecvError::Closed)
         }
         else
         {
-            // Channel empty but senders still exist
-            // 通道为空但发送器仍然存在
-            Err(RecvError::Closed)
+            // Channel is empty but senders still exist — try again later.
+            // 通道为空但发送器仍然存在 —— 稍后重试。
+            Err(RecvError::Empty)
         }
     }
 
@@ -446,9 +458,9 @@ mod tests
     #[test]
     fn test_bounded_channel_creation()
     {
-        let (tx, _rx) = bounded::<i32>(16);
-        assert!(!tx.is_closed());
-        assert_eq!(tx.sender_count(), 1);
+        // bounded() now returns async_channel types. Verify basic construction.
+        // bounded() 现在返回 async_channel 类型。验证基本构造。
+        let (_tx, _rx) = bounded::<i32>(16);
     }
 
     #[test]
@@ -484,7 +496,9 @@ mod tests
         // Verify received data and order
         assert_eq!(rx.try_recv().unwrap(), 42);
         assert_eq!(rx.try_recv().unwrap(), 100);
-        assert_eq!(rx.try_recv(), Err(RecvError::Closed));
+        // Channel is empty but the sender still exists → Empty, not Closed.
+        // 通道为空但发送者仍存在 → Empty,而非 Closed。
+        assert_eq!(rx.try_recv(), Err(RecvError::Empty));
     }
 
     #[test]
@@ -524,12 +538,22 @@ mod tests
     #[test]
     fn test_bounded_channel_full()
     {
-        let (tx, rx) = bounded::<i32>(2);
-        assert!(tx.send(1).is_ok());
-        assert!(tx.send(2).is_ok());
-        // Third send should still succeed (unbounded buffer semantics via VecDeque)
-        assert!(tx.send(3).is_ok());
-        assert_eq!(rx.len(), 3);
+        // bounded() now uses async_channel with real backpressure: the 3rd send
+        // into a capacity-2 channel must PARK until a slot is freed.
+        // bounded() 现在使用具有真实背压的 async_channel:向容量为 2 的通道
+        // 第 3 次 send 必须 PARK 直到有槽释放。
+        let (tx, _rx) = bounded::<i32>(2);
+
+        // Fill the buffer (try_send succeeds immediately for the first 2).
+        // 填满缓冲区（前 2 次 try_send 立即成功）。
+        tx.try_send(1).unwrap();
+        tx.try_send(2).unwrap();
+
+        // The 3rd try_send must fail (Full) — proving the capacity bound is
+        // enforced. The old implementation would have accepted it.
+        // 第 3 次 try_send 必须失败（Full）—— 证明容量限制生效。
+        // 旧实现会接受它。
+        assert!(tx.try_send(3).is_err(), "capacity-2 channel must reject 3rd send");
     }
 
     #[test]
