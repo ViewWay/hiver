@@ -95,5 +95,5 @@ pub use runtime::{Runtime, RuntimeBuilder, RuntimeConfig};
 pub use select::{
     SelectMultiple, SelectMultipleOutput, SelectTwo, SelectTwoOutput, select_multiple, select_two,
 };
-pub use task::{JoinError, JoinHandle, TaskId, gen_task_id, spawn};
+pub use task::{JoinError, JoinHandle, TaskId, gen_task_id, spawn, spawn_blocking};
 pub use time::{Duration, Instant, sleep, sleep_until};

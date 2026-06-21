@@ -311,6 +311,44 @@ where
     }
 }
 
+// ─── spawn_blocking ─────────────────────────────────────────────────────────
+
+/// Run a blocking closure on a dedicated thread pool, returning a future that
+/// resolves to its result.
+/// 在专用线程池上运行阻塞闭包,返回一个解析为其结果的 future。
+///
+/// This is the Hiver equivalent of `tokio::task::spawn_blocking`. It offloads
+/// synchronous, potentially-blocking work (DB calls, file I/O, CPU-bound crypto)
+/// off the async reactor thread so it doesn't stall the event loop. The closure
+/// runs on the `blocking` crate's internal thread pool (part of the smol
+/// ecosystem, compatible with async-io).
+///
+/// 这是 Hiver 版的 `tokio::task::spawn_blocking`。它将同步、可能阻塞的工作
+///（DB 调用、文件 I/O、CPU 密集加密）从异步 reactor 线程卸载,使其不会卡住事件
+/// 循环。闭包运行在 `blocking` crate 的内部线程池上(smol 生态的一部分,
+/// 与 async-io 兼容）。
+///
+/// # Example / 示例
+///
+/// ```rust,no_run,ignore
+/// use hiver_runtime::task::spawn_blocking;
+///
+/// async fn handler() -> std::io::Result<String> {
+///     // This sync call runs off the async thread.
+///     let result = spawn_blocking(|| {
+///         std::fs::read_to_string("/etc/hostname").unwrap_or_default()
+///     }).await;
+///     Ok(result)
+/// }
+/// ```
+pub fn spawn_blocking<F, R>(f: F) -> blocking::Task<R>
+where
+    F: FnOnce() -> R + Send + 'static,
+    R: Send + 'static,
+{
+    blocking::unblock(f)
+}
+
 // ─── standalone block_on (thread + mpsc) ────────────────────────────────────
 
 /// No-op raw waker vtable used by the standalone [`block_on`].
@@ -481,5 +519,27 @@ mod tests
             a + b
         });
         assert_eq!(result, 30);
+    }
+
+    #[test]
+    fn test_spawn_blocking_returns_result()
+    {
+        // spawn_blocking runs a sync closure on a dedicated thread pool and
+        // returns a future. Drive it via Runtime::block_on so the async-io
+        // reactor polls it to completion.
+        // spawn_blocking 在专用线程池上运行同步闭包并返回 future。
+        // 经 Runtime::block_on 驱动,使 async-io reactor 将其轮询至完成。
+        let mut rt = crate::Runtime::new().unwrap();
+        let result = rt
+            .block_on(async {
+                spawn_blocking(|| {
+                    // Simulate blocking work.
+                    std::thread::sleep(std::time::Duration::from_millis(10));
+                    42i32
+                })
+                .await
+            })
+            .unwrap();
+        assert_eq!(result, 42);
     }
 }
