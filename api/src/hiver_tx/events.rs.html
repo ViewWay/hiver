@@ -409,7 +409,7 @@
 <a href=#409 id=409 data-nosnippet>409</a>        }
 <a href=#410 id=410 data-nosnippet>410</a>    }
 <a href=#411 id=411 data-nosnippet>411</a>
-<a href=#412 id=412 data-nosnippet>412</a>    <span class="attr">#[tokio::test]
+<a href=#412 id=412 data-nosnippet>412</a>    <span class="attr">#[hiver_macros::test]
 <a href=#413 id=413 data-nosnippet>413</a>    </span><span class="kw">async fn </span>test_commit_lifecycle()
 <a href=#414 id=414 data-nosnippet>414</a>    {
 <a href=#415 id=415 data-nosnippet>415</a>        <span class="kw">let </span>registry = SynchronizationRegistry::new();
@@ -427,7 +427,7 @@
 <a href=#427 id=427 data-nosnippet>427</a>        <span class="macro">assert_eq!</span>(counter.after_completion.load(Ordering::SeqCst), <span class="number">1</span>);
 <a href=#428 id=428 data-nosnippet>428</a>    }
 <a href=#429 id=429 data-nosnippet>429</a>
-<a href=#430 id=430 data-nosnippet>430</a>    <span class="attr">#[tokio::test]
+<a href=#430 id=430 data-nosnippet>430</a>    <span class="attr">#[hiver_macros::test]
 <a href=#431 id=431 data-nosnippet>431</a>    </span><span class="kw">async fn </span>test_rollback_lifecycle()
 <a href=#432 id=432 data-nosnippet>432</a>    {
 <a href=#433 id=433 data-nosnippet>433</a>        <span class="kw">let </span>registry = SynchronizationRegistry::new();
@@ -444,7 +444,7 @@
 <a href=#444 id=444 data-nosnippet>444</a>        <span class="macro">assert_eq!</span>(counter.after_completion.load(Ordering::SeqCst), <span class="number">1</span>);
 <a href=#445 id=445 data-nosnippet>445</a>    }
 <a href=#446 id=446 data-nosnippet>446</a>
-<a href=#447 id=447 data-nosnippet>447</a>    <span class="attr">#[tokio::test]
+<a href=#447 id=447 data-nosnippet>447</a>    <span class="attr">#[hiver_macros::test]
 <a href=#448 id=448 data-nosnippet>448</a>    </span><span class="kw">async fn </span>test_phase_listener()
 <a href=#449 id=449 data-nosnippet>449</a>    {
 <a href=#450 id=450 data-nosnippet>450</a>        <span class="kw">let </span>fired = Arc::new(AtomicUsize::new(<span class="number">0</span>));
@@ -461,7 +461,7 @@
 <a href=#461 id=461 data-nosnippet>461</a>        <span class="macro">assert_eq!</span>(fired.load(Ordering::SeqCst), <span class="number">1</span>);
 <a href=#462 id=462 data-nosnippet>462</a>    }
 <a href=#463 id=463 data-nosnippet>463</a>
-<a href=#464 id=464 data-nosnippet>464</a>    <span class="attr">#[tokio::test]
+<a href=#464 id=464 data-nosnippet>464</a>    <span class="attr">#[hiver_macros::test]
 <a href=#465 id=465 data-nosnippet>465</a>    </span><span class="kw">async fn </span>test_before_commit_veto()
 <a href=#466 id=466 data-nosnippet>466</a>    {
 <a href=#467 id=467 data-nosnippet>467</a>        <span class="kw">struct </span>VetoSync;
@@ -478,7 +478,7 @@
 <a href=#478 id=478 data-nosnippet>478</a>        <span class="macro">assert!</span>(registry.trigger_before_commit(<span class="string">"tx4"</span>).<span class="kw">await</span>.is_err());
 <a href=#479 id=479 data-nosnippet>479</a>    }
 <a href=#480 id=480 data-nosnippet>480</a>
-<a href=#481 id=481 data-nosnippet>481</a>    <span class="attr">#[tokio::test]
+<a href=#481 id=481 data-nosnippet>481</a>    <span class="attr">#[hiver_macros::test]
 <a href=#482 id=482 data-nosnippet>482</a>    </span><span class="kw">async fn </span>test_clear()
 <a href=#483 id=483 data-nosnippet>483</a>    {
 <a href=#484 id=484 data-nosnippet>484</a>        <span class="kw">let </span>registry = SynchronizationRegistry::new();

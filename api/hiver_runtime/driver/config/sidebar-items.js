@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["DriverType"],"struct":["DriverConfig","DriverConfigBuilder","DriverFactory"]};

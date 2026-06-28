@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["BindFuture","BindUdpFuture","ConnectFuture"],"struct":["AcceptFuture","ConnectUdpFuture","ReadFuture","ReadHalf","RecvFromFuture","SendToFuture","TcpListener","TcpStream","UdpSocket","WriteAllFuture","WriteHalf"]};
+window.SIDEBAR_ITEMS = {"struct":["ReadHalf","TcpListener","TcpStream","UdpSocket","WriteHalf"]};

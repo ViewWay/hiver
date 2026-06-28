@@ -81,46 +81,59 @@
 <a href=#81 id=81 data-nosnippet>81</a>        <span class="kw">let </span>timeout = <span class="self">self</span>.timeout;
 <a href=#82 id=82 data-nosnippet>82</a>
 <a href=#83 id=83 data-nosnippet>83</a>        Box::pin(<span class="kw">async move </span>{
-<a href=#84 id=84 data-nosnippet>84</a>            <span class="comment">// Use tokio::time::timeout for the timeout functionality
-<a href=#85 id=85 data-nosnippet>85</a>            // 使用tokio::time::timeout实现超时功能
-<a href=#86 id=86 data-nosnippet>86</a>            </span><span class="kw">if let </span><span class="prelude-val">Ok</span>(response) = tokio::time::timeout(timeout, next.call(req, state)).<span class="kw">await
-<a href=#87 id=87 data-nosnippet>87</a>            </span>{
-<a href=#88 id=88 data-nosnippet>88</a>                response
-<a href=#89 id=89 data-nosnippet>89</a>            }
-<a href=#90 id=90 data-nosnippet>90</a>            <span class="kw">else
-<a href=#91 id=91 data-nosnippet>91</a>            </span>{
-<a href=#92 id=92 data-nosnippet>92</a>                <span class="macro">tracing::warn!</span>(<span class="string">"Request timed out after {:?}"</span>, timeout);
-<a href=#93 id=93 data-nosnippet>93</a>                <span class="prelude-val">Err</span>(hiver_http::Error::Timeout(<span class="macro">format!</span>(<span class="string">"Request timed out after {:?}"</span>, timeout)))
-<a href=#94 id=94 data-nosnippet>94</a>            }
-<a href=#95 id=95 data-nosnippet>95</a>        })
-<a href=#96 id=96 data-nosnippet>96</a>    }
-<a href=#97 id=97 data-nosnippet>97</a>}
-<a href=#98 id=98 data-nosnippet>98</a>
-<a href=#99 id=99 data-nosnippet>99</a><span class="attr">#[cfg(test)]
-<a href=#100 id=100 data-nosnippet>100</a>#[allow(
-<a href=#101 id=101 data-nosnippet>101</a>    clippy::indexing_slicing,
-<a href=#102 id=102 data-nosnippet>102</a>    clippy::float_cmp,
-<a href=#103 id=103 data-nosnippet>103</a>    clippy::module_inception,
-<a href=#104 id=104 data-nosnippet>104</a>    clippy::items_after_statements,
-<a href=#105 id=105 data-nosnippet>105</a>    clippy::assertions_on_constants
-<a href=#106 id=106 data-nosnippet>106</a>)]
-<a href=#107 id=107 data-nosnippet>107</a></span><span class="kw">mod </span>tests
-<a href=#108 id=108 data-nosnippet>108</a>{
-<a href=#109 id=109 data-nosnippet>109</a>    <span class="kw">use </span>super::<span class="kw-2">*</span>;
-<a href=#110 id=110 data-nosnippet>110</a>
-<a href=#111 id=111 data-nosnippet>111</a>    <span class="attr">#[test]
-<a href=#112 id=112 data-nosnippet>112</a>    </span><span class="kw">fn </span>test_timeout_creation()
-<a href=#113 id=113 data-nosnippet>113</a>    {
-<a href=#114 id=114 data-nosnippet>114</a>        <span class="kw">let </span>timeout = TimeoutMiddleware::new(Duration::from_secs(<span class="number">30</span>));
-<a href=#115 id=115 data-nosnippet>115</a>        <span class="macro">assert_eq!</span>(timeout.timeout, Duration::from_secs(<span class="number">30</span>));
-<a href=#116 id=116 data-nosnippet>116</a>    }
-<a href=#117 id=117 data-nosnippet>117</a>
-<a href=#118 id=118 data-nosnippet>118</a>    <span class="attr">#[test]
-<a href=#119 id=119 data-nosnippet>119</a>    </span><span class="kw">fn </span>test_timeout_builder()
-<a href=#120 id=120 data-nosnippet>120</a>    {
-<a href=#121 id=121 data-nosnippet>121</a>        <span class="kw">let </span>timeout =
-<a href=#122 id=122 data-nosnippet>122</a>            TimeoutMiddleware::new(Duration::from_secs(<span class="number">10</span>)).with_timeout(Duration::from_secs(<span class="number">60</span>));
-<a href=#123 id=123 data-nosnippet>123</a>        <span class="macro">assert_eq!</span>(timeout.timeout, Duration::from_secs(<span class="number">60</span>));
-<a href=#124 id=124 data-nosnippet>124</a>    }
-<a href=#125 id=125 data-nosnippet>125</a>}
+<a href=#84 id=84 data-nosnippet>84</a>            <span class="comment">// Race the handler against a timer. IMPORTANT: use Hiver's own
+<a href=#85 id=85 data-nosnippet>85</a>            // runtime timer (hiver_runtime::time::sleep), NOT tokio::time::timeout.
+<a href=#86 id=86 data-nosnippet>86</a>            // The HTTP server runs on hiver_runtime; tokio's time driver is not
+<a href=#87 id=87 data-nosnippet>87</a>            // active there, so tokio::time::timeout would never resolve and the
+<a href=#88 id=88 data-nosnippet>88</a>            // response would silently never be returned.
+<a href=#89 id=89 data-nosnippet>89</a>            // 将处理程序与定时器竞争。重要:使用 Hiver 自有 runtime 的定时器
+<a href=#90 id=90 data-nosnippet>90</a>            // (hiver_runtime::time::sleep),而非 tokio::time::timeout。
+<a href=#91 id=91 data-nosnippet>91</a>            // HTTP 服务端运行于 hiver_runtime;tokio 的 time driver 在那里未激活,
+<a href=#92 id=92 data-nosnippet>92</a>            // 故 tokio::time::timeout 永不完成,响应会被静默丢弃。
+<a href=#93 id=93 data-nosnippet>93</a>            </span><span class="kw">use </span>futures::future::FutureExt;
+<a href=#94 id=94 data-nosnippet>94</a>            <span class="kw">let </span>handler_fut = next.call(req, state).boxed();
+<a href=#95 id=95 data-nosnippet>95</a>            <span class="kw">let </span>timer_fut = hiver_runtime::time::sleep(timeout);
+<a href=#96 id=96 data-nosnippet>96</a>            <span class="kw">match </span>futures::future::select(handler_fut, timer_fut).<span class="kw">await
+<a href=#97 id=97 data-nosnippet>97</a>            </span>{
+<a href=#98 id=98 data-nosnippet>98</a>                futures::future::Either::Left((response, <span class="kw">_</span>)) =&gt; response,
+<a href=#99 id=99 data-nosnippet>99</a>                futures::future::Either::Right((<span class="kw">_</span>, <span class="kw">_</span>)) =&gt;
+<a href=#100 id=100 data-nosnippet>100</a>                {
+<a href=#101 id=101 data-nosnippet>101</a>                    <span class="macro">tracing::warn!</span>(<span class="string">"Request timed out after {:?}"</span>, timeout);
+<a href=#102 id=102 data-nosnippet>102</a>                    <span class="prelude-val">Err</span>(hiver_http::Error::Timeout(<span class="macro">format!</span>(
+<a href=#103 id=103 data-nosnippet>103</a>                        <span class="string">"Request timed out after {:?}"</span>,
+<a href=#104 id=104 data-nosnippet>104</a>                        timeout
+<a href=#105 id=105 data-nosnippet>105</a>                    )))
+<a href=#106 id=106 data-nosnippet>106</a>                },
+<a href=#107 id=107 data-nosnippet>107</a>            }
+<a href=#108 id=108 data-nosnippet>108</a>        })
+<a href=#109 id=109 data-nosnippet>109</a>    }
+<a href=#110 id=110 data-nosnippet>110</a>}
+<a href=#111 id=111 data-nosnippet>111</a>
+<a href=#112 id=112 data-nosnippet>112</a><span class="attr">#[cfg(test)]
+<a href=#113 id=113 data-nosnippet>113</a>#[allow(
+<a href=#114 id=114 data-nosnippet>114</a>    clippy::indexing_slicing,
+<a href=#115 id=115 data-nosnippet>115</a>    clippy::float_cmp,
+<a href=#116 id=116 data-nosnippet>116</a>    clippy::module_inception,
+<a href=#117 id=117 data-nosnippet>117</a>    clippy::items_after_statements,
+<a href=#118 id=118 data-nosnippet>118</a>    clippy::assertions_on_constants
+<a href=#119 id=119 data-nosnippet>119</a>)]
+<a href=#120 id=120 data-nosnippet>120</a></span><span class="kw">mod </span>tests
+<a href=#121 id=121 data-nosnippet>121</a>{
+<a href=#122 id=122 data-nosnippet>122</a>    <span class="kw">use </span>super::<span class="kw-2">*</span>;
+<a href=#123 id=123 data-nosnippet>123</a>
+<a href=#124 id=124 data-nosnippet>124</a>    <span class="attr">#[test]
+<a href=#125 id=125 data-nosnippet>125</a>    </span><span class="kw">fn </span>test_timeout_creation()
+<a href=#126 id=126 data-nosnippet>126</a>    {
+<a href=#127 id=127 data-nosnippet>127</a>        <span class="kw">let </span>timeout = TimeoutMiddleware::new(Duration::from_secs(<span class="number">30</span>));
+<a href=#128 id=128 data-nosnippet>128</a>        <span class="macro">assert_eq!</span>(timeout.timeout, Duration::from_secs(<span class="number">30</span>));
+<a href=#129 id=129 data-nosnippet>129</a>    }
+<a href=#130 id=130 data-nosnippet>130</a>
+<a href=#131 id=131 data-nosnippet>131</a>    <span class="attr">#[test]
+<a href=#132 id=132 data-nosnippet>132</a>    </span><span class="kw">fn </span>test_timeout_builder()
+<a href=#133 id=133 data-nosnippet>133</a>    {
+<a href=#134 id=134 data-nosnippet>134</a>        <span class="kw">let </span>timeout =
+<a href=#135 id=135 data-nosnippet>135</a>            TimeoutMiddleware::new(Duration::from_secs(<span class="number">10</span>)).with_timeout(Duration::from_secs(<span class="number">60</span>));
+<a href=#136 id=136 data-nosnippet>136</a>        <span class="macro">assert_eq!</span>(timeout.timeout, Duration::from_secs(<span class="number">60</span>));
+<a href=#137 id=137 data-nosnippet>137</a>    }
+<a href=#138 id=138 data-nosnippet>138</a>}
 </code></pre></div></section></main></body></html>

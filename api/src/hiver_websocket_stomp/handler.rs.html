@@ -928,7 +928,7 @@
 <a href=#928 id=928 data-nosnippet>928</a>    // Config tests
 <a href=#929 id=929 data-nosnippet>929</a>    // -----------------------------------------------------------------------
 <a href=#930 id=930 data-nosnippet>930</a>
-<a href=#931 id=931 data-nosnippet>931</a>    </span><span class="attr">#[tokio::test]
+<a href=#931 id=931 data-nosnippet>931</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#932 id=932 data-nosnippet>932</a>    </span><span class="kw">async fn </span>test_config_default()
 <a href=#933 id=933 data-nosnippet>933</a>    {
 <a href=#934 id=934 data-nosnippet>934</a>        <span class="kw">let </span>config = StompConfig::default();
@@ -958,7 +958,7 @@
 <a href=#958 id=958 data-nosnippet>958</a>    // Authentication tests
 <a href=#959 id=959 data-nosnippet>959</a>    // -----------------------------------------------------------------------
 <a href=#960 id=960 data-nosnippet>960</a>
-<a href=#961 id=961 data-nosnippet>961</a>    </span><span class="attr">#[tokio::test]
+<a href=#961 id=961 data-nosnippet>961</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#962 id=962 data-nosnippet>962</a>    </span><span class="kw">async fn </span>test_connect_without_auth_succeeds()
 <a href=#963 id=963 data-nosnippet>963</a>    {
 <a href=#964 id=964 data-nosnippet>964</a>        <span class="kw">let </span>(handler, <span class="kw-2">mut </span>rx) = setup();
@@ -973,7 +973,7 @@
 <a href=#973 id=973 data-nosnippet>973</a>        <span class="macro">assert_eq!</span>(frames[<span class="number">0</span>].command, <span class="kw">crate</span>::frame::StompCommand::Connected);
 <a href=#974 id=974 data-nosnippet>974</a>    }
 <a href=#975 id=975 data-nosnippet>975</a>
-<a href=#976 id=976 data-nosnippet>976</a>    <span class="attr">#[tokio::test]
+<a href=#976 id=976 data-nosnippet>976</a>    <span class="attr">#[hiver_macros::test]
 <a href=#977 id=977 data-nosnippet>977</a>    </span><span class="kw">async fn </span>test_connect_with_auth_success()
 <a href=#978 id=978 data-nosnippet>978</a>    {
 <a href=#979 id=979 data-nosnippet>979</a>        <span class="kw">let </span><span class="kw-2">mut </span>creds = HashMap::new();
@@ -994,7 +994,7 @@
 <a href=#994 id=994 data-nosnippet>994</a>        <span class="macro">assert_eq!</span>(frames[<span class="number">0</span>].command, <span class="kw">crate</span>::frame::StompCommand::Connected);
 <a href=#995 id=995 data-nosnippet>995</a>    }
 <a href=#996 id=996 data-nosnippet>996</a>
-<a href=#997 id=997 data-nosnippet>997</a>    <span class="attr">#[tokio::test]
+<a href=#997 id=997 data-nosnippet>997</a>    <span class="attr">#[hiver_macros::test]
 <a href=#998 id=998 data-nosnippet>998</a>    </span><span class="kw">async fn </span>test_connect_with_auth_wrong_password()
 <a href=#999 id=999 data-nosnippet>999</a>    {
 <a href=#1000 id=1000 data-nosnippet>1000</a>        <span class="kw">let </span><span class="kw-2">mut </span>creds = HashMap::new();
@@ -1013,7 +1013,7 @@
 <a href=#1013 id=1013 data-nosnippet>1013</a>        <span class="macro">assert_eq!</span>(frames[<span class="number">0</span>].command, <span class="kw">crate</span>::frame::StompCommand::Error);
 <a href=#1014 id=1014 data-nosnippet>1014</a>    }
 <a href=#1015 id=1015 data-nosnippet>1015</a>
-<a href=#1016 id=1016 data-nosnippet>1016</a>    <span class="attr">#[tokio::test]
+<a href=#1016 id=1016 data-nosnippet>1016</a>    <span class="attr">#[hiver_macros::test]
 <a href=#1017 id=1017 data-nosnippet>1017</a>    </span><span class="kw">async fn </span>test_connect_with_auth_unknown_user()
 <a href=#1018 id=1018 data-nosnippet>1018</a>    {
 <a href=#1019 id=1019 data-nosnippet>1019</a>        <span class="kw">let </span>creds = HashMap::&lt;String, String&gt;::new();
@@ -1031,7 +1031,7 @@
 <a href=#1031 id=1031 data-nosnippet>1031</a>        <span class="macro">assert_eq!</span>(frames[<span class="number">0</span>].command, <span class="kw">crate</span>::frame::StompCommand::Error);
 <a href=#1032 id=1032 data-nosnippet>1032</a>    }
 <a href=#1033 id=1033 data-nosnippet>1033</a>
-<a href=#1034 id=1034 data-nosnippet>1034</a>    <span class="attr">#[tokio::test]
+<a href=#1034 id=1034 data-nosnippet>1034</a>    <span class="attr">#[hiver_macros::test]
 <a href=#1035 id=1035 data-nosnippet>1035</a>    </span><span class="kw">async fn </span>test_connect_require_login_missing_login_header()
 <a href=#1036 id=1036 data-nosnippet>1036</a>    {
 <a href=#1037 id=1037 data-nosnippet>1037</a>        <span class="kw">let </span>creds = HashMap::&lt;String, String&gt;::new();
@@ -1050,7 +1050,7 @@
 <a href=#1050 id=1050 data-nosnippet>1050</a>        }
 <a href=#1051 id=1051 data-nosnippet>1051</a>    }
 <a href=#1052 id=1052 data-nosnippet>1052</a>
-<a href=#1053 id=1053 data-nosnippet>1053</a>    <span class="attr">#[tokio::test]
+<a href=#1053 id=1053 data-nosnippet>1053</a>    <span class="attr">#[hiver_macros::test]
 <a href=#1054 id=1054 data-nosnippet>1054</a>    </span><span class="kw">async fn </span>test_connect_require_login_missing_passcode_header()
 <a href=#1055 id=1055 data-nosnippet>1055</a>    {
 <a href=#1056 id=1056 data-nosnippet>1056</a>        <span class="kw">let </span>creds = HashMap::&lt;String, String&gt;::new();
@@ -1071,7 +1071,7 @@
 <a href=#1071 id=1071 data-nosnippet>1071</a>        }
 <a href=#1072 id=1072 data-nosnippet>1072</a>    }
 <a href=#1073 id=1073 data-nosnippet>1073</a>
-<a href=#1074 id=1074 data-nosnippet>1074</a>    <span class="attr">#[tokio::test]
+<a href=#1074 id=1074 data-nosnippet>1074</a>    <span class="attr">#[hiver_macros::test]
 <a href=#1075 id=1075 data-nosnippet>1075</a>    </span><span class="kw">async fn </span>test_connect_optional_login_records_user()
 <a href=#1076 id=1076 data-nosnippet>1076</a>    {
 <a href=#1077 id=1077 data-nosnippet>1077</a>        <span class="comment">// require_login=false, but login is provided — should still record.
@@ -1097,7 +1097,7 @@
 <a href=#1097 id=1097 data-nosnippet>1097</a>    // ACK tests
 <a href=#1098 id=1098 data-nosnippet>1098</a>    // -----------------------------------------------------------------------
 <a href=#1099 id=1099 data-nosnippet>1099</a>
-<a href=#1100 id=1100 data-nosnippet>1100</a>    </span><span class="attr">#[tokio::test]
+<a href=#1100 id=1100 data-nosnippet>1100</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#1101 id=1101 data-nosnippet>1101</a>    </span><span class="kw">async fn </span>test_ack_removes_pending_message()
 <a href=#1102 id=1102 data-nosnippet>1102</a>    {
 <a href=#1103 id=1103 data-nosnippet>1103</a>        <span class="kw">let </span>(handler, <span class="kw-2">mut </span>rx) = setup();
@@ -1139,7 +1139,7 @@
 <a href=#1139 id=1139 data-nosnippet>1139</a>        <span class="macro">assert_eq!</span>(handler.session().pending_ack_count(), <span class="number">0</span>);
 <a href=#1140 id=1140 data-nosnippet>1140</a>    }
 <a href=#1141 id=1141 data-nosnippet>1141</a>
-<a href=#1142 id=1142 data-nosnippet>1142</a>    <span class="attr">#[tokio::test]
+<a href=#1142 id=1142 data-nosnippet>1142</a>    <span class="attr">#[hiver_macros::test]
 <a href=#1143 id=1143 data-nosnippet>1143</a>    </span><span class="kw">async fn </span>test_ack_unknown_id_returns_error()
 <a href=#1144 id=1144 data-nosnippet>1144</a>    {
 <a href=#1145 id=1145 data-nosnippet>1145</a>        <span class="kw">let </span>(handler, _rx) = setup();
@@ -1150,7 +1150,7 @@
 <a href=#1150 id=1150 data-nosnippet>1150</a>        <span class="macro">assert!</span>(result.is_err());
 <a href=#1151 id=1151 data-nosnippet>1151</a>    }
 <a href=#1152 id=1152 data-nosnippet>1152</a>
-<a href=#1153 id=1153 data-nosnippet>1153</a>    <span class="attr">#[tokio::test]
+<a href=#1153 id=1153 data-nosnippet>1153</a>    <span class="attr">#[hiver_macros::test]
 <a href=#1154 id=1154 data-nosnippet>1154</a>    </span><span class="kw">async fn </span>test_ack_with_receipt()
 <a href=#1155 id=1155 data-nosnippet>1155</a>    {
 <a href=#1156 id=1156 data-nosnippet>1156</a>        <span class="kw">let </span>(handler, <span class="kw-2">mut </span>rx) = setup();
@@ -1193,7 +1193,7 @@
 <a href=#1193 id=1193 data-nosnippet>1193</a>    // NACK tests
 <a href=#1194 id=1194 data-nosnippet>1194</a>    // -----------------------------------------------------------------------
 <a href=#1195 id=1195 data-nosnippet>1195</a>
-<a href=#1196 id=1196 data-nosnippet>1196</a>    </span><span class="attr">#[tokio::test]
+<a href=#1196 id=1196 data-nosnippet>1196</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#1197 id=1197 data-nosnippet>1197</a>    </span><span class="kw">async fn </span>test_nack_redelivers_message()
 <a href=#1198 id=1198 data-nosnippet>1198</a>    {
 <a href=#1199 id=1199 data-nosnippet>1199</a>        <span class="kw">let </span>(handler, <span class="kw-2">mut </span>rx) = setup();
@@ -1240,7 +1240,7 @@
 <a href=#1240 id=1240 data-nosnippet>1240</a>        <span class="macro">assert_eq!</span>(redelivered[<span class="number">0</span>].header(<span class="string">"redelivery-count"</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="string">"2"</span>.to_string()));
 <a href=#1241 id=1241 data-nosnippet>1241</a>    }
 <a href=#1242 id=1242 data-nosnippet>1242</a>
-<a href=#1243 id=1243 data-nosnippet>1243</a>    <span class="attr">#[tokio::test]
+<a href=#1243 id=1243 data-nosnippet>1243</a>    <span class="attr">#[hiver_macros::test]
 <a href=#1244 id=1244 data-nosnippet>1244</a>    </span><span class="kw">async fn </span>test_nack_exhausted_dead_letters()
 <a href=#1245 id=1245 data-nosnippet>1245</a>    {
 <a href=#1246 id=1246 data-nosnippet>1246</a>        <span class="kw">let </span><span class="kw-2">mut </span>config = StompConfig::default();
@@ -1309,7 +1309,7 @@
 <a href=#1309 id=1309 data-nosnippet>1309</a>        <span class="macro">assert_eq!</span>(dead[<span class="number">0</span>], ack_id);
 <a href=#1310 id=1310 data-nosnippet>1310</a>    }
 <a href=#1311 id=1311 data-nosnippet>1311</a>
-<a href=#1312 id=1312 data-nosnippet>1312</a>    <span class="attr">#[tokio::test]
+<a href=#1312 id=1312 data-nosnippet>1312</a>    <span class="attr">#[hiver_macros::test]
 <a href=#1313 id=1313 data-nosnippet>1313</a>    </span><span class="kw">async fn </span>test_nack_unknown_id_returns_error()
 <a href=#1314 id=1314 data-nosnippet>1314</a>    {
 <a href=#1315 id=1315 data-nosnippet>1315</a>        <span class="kw">let </span>(handler, _rx) = setup();
@@ -1324,7 +1324,7 @@
 <a href=#1324 id=1324 data-nosnippet>1324</a>    // Subscription mismatch test
 <a href=#1325 id=1325 data-nosnippet>1325</a>    // -----------------------------------------------------------------------
 <a href=#1326 id=1326 data-nosnippet>1326</a>
-<a href=#1327 id=1327 data-nosnippet>1327</a>    </span><span class="attr">#[tokio::test]
+<a href=#1327 id=1327 data-nosnippet>1327</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#1328 id=1328 data-nosnippet>1328</a>    </span><span class="kw">async fn </span>test_ack_subscription_mismatch_returns_error()
 <a href=#1329 id=1329 data-nosnippet>1329</a>    {
 <a href=#1330 id=1330 data-nosnippet>1330</a>        <span class="kw">let </span>(handler, <span class="kw-2">mut </span>rx) = setup();
@@ -1359,7 +1359,7 @@
 <a href=#1359 id=1359 data-nosnippet>1359</a>    // Auto ack mode does not track pending
 <a href=#1360 id=1360 data-nosnippet>1360</a>    // -----------------------------------------------------------------------
 <a href=#1361 id=1361 data-nosnippet>1361</a>
-<a href=#1362 id=1362 data-nosnippet>1362</a>    </span><span class="attr">#[tokio::test]
+<a href=#1362 id=1362 data-nosnippet>1362</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#1363 id=1363 data-nosnippet>1363</a>    </span><span class="kw">async fn </span>test_auto_ack_mode_no_pending_tracking()
 <a href=#1364 id=1364 data-nosnippet>1364</a>    {
 <a href=#1365 id=1365 data-nosnippet>1365</a>        <span class="kw">let </span>(handler, <span class="kw-2">mut </span>rx) = setup();

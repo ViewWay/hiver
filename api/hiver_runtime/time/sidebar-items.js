@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["global_timer","interval","sleep","sleep_until"],"struct":["Duration","Instant","Interval","Sleep","SleepUntil","TimerHandle","TimerWheel"]};
+window.SIDEBAR_ITEMS = {"fn":["interval","sleep","sleep_until"],"struct":["Duration","Instant","Interval","Sleep","SleepUntil"]};

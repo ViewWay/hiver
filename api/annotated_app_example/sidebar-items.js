@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["__hiver_route_register_greet","__hiver_route_register_hello","greet","hello","main"],"struct":["HelloController","MyApp"]};

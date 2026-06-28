@@ -1,0 +1,43 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="io_uring reactor backend (Linux only, feature `io-uring`). io_uring reactor 后端(仅 Linux,feature `io-uring`)。"><title>hiver_runtime::iouring - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-17e0aaed.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="hiver_runtime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.96.0 (ac68faa20 2026-05-25)" data-channel="1.96.0" data-search-js="search-b5634cc7.js" data-stringdex-js="stringdex-2da4960a.js" data-settings-js="settings-170eb4bf.js" ><script src="../../static.files/storage-41dd4d93.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">Module iouring</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../hiver_runtime/index.html">hiver_<wbr>runtime</a><span class="version">0.1.0-alpha.6</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module iouring</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#why-io_uring--为何用-io_uring" title="Why io_uring? / 为何用 io_uring?">Why io_uring? / 为何用 io_uring?</a></li><li><a href="#implementation-plan--实现计划" title="Implementation plan / 实现计划">Implementation plan / 实现计划</a></li><li><a href="#why-this-is-deferred--为何暂缓" title="Why this is deferred / 为何暂缓">Why this is deferred / 为何暂缓</a></li></ul><h3><a href="#structs">Module Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="../index.html">In crate hiver_<wbr>runtime</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">hiver_runtime</a></div><h1>Module <span>iouring</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/hiver_runtime/iouring.rs.html#1-85">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>io_uring reactor backend (Linux only, feature <code>io-uring</code>).
+io_uring reactor 后端(仅 Linux,feature <code>io-uring</code>)。</p>
+<p><strong>Status: reserved / not yet implemented.</strong>
+<strong>状态:预留 / 尚未实现。</strong></p>
+<p>This module is the integration point for a future high-performance
+thread-per-core io_uring reactor, modeled after <a href="https://github.com/bytedance/monoio">monoio</a>. When the
+<code>io-uring</code> feature is active on Linux, <code>Runtime::with_config</code> should prefer
+an <a href="struct.IoUringDriver.html" title="struct hiver_runtime::iouring::IoUringDriver"><code>IoUringDriver</code></a> over the default <code>async-io</code> reactor.</p>
+<p>此模块是未来高性能 thread-per-core io_uring reactor 的接入点,参考 <a href="https://github.com/bytedance/monoio">monoio</a>
+建模。当 <code>io-uring</code> feature 在 Linux 上激活时,<code>Runtime::with_config</code> 应优先
+选用 <a href="struct.IoUringDriver.html" title="struct hiver_runtime::iouring::IoUringDriver"><code>IoUringDriver</code></a> 而非默认的 <code>async-io</code> reactor。</p>
+<h2 id="why-io_uring--为何用-io_uring"><a class="doc-anchor" href="#why-io_uring--为何用-io_uring">§</a>Why io_uring? / 为何用 io_uring?</h2>
+<p>io_uring delivers true zero-syscall-storm async I/O: submissions and
+completions are batched in shared ring buffers, eliminating the per-call
+<code>epoll_wait</code>/<code>read</code>/<code>write</code> syscalls. Combined with thread-per-core (no
+cross-thread work stealing), this is the lowest-latency async model on
+Linux. See <a href="https://kernel.dk/io_uring.pdf">https://kernel.dk/io_uring.pdf</a> and the monoio architecture.</p>
+<p>io_uring 提供真正的零系统调用风暴异步 I/O:提交与完成在共享环形缓冲区中
+批处理,消除每次调用的 <code>epoll_wait</code>/<code>read</code>/<code>write</code> 系统调用。配合
+thread-per-core（无跨线程 work stealing),这是 Linux 上最低延迟的异步模型。
+见 <a href="https://kernel.dk/io_uring.pdf">https://kernel.dk/io_uring.pdf</a> 及 monoio 架构。</p>
+<h2 id="implementation-plan--实现计划"><a class="doc-anchor" href="#implementation-plan--实现计划">§</a>Implementation plan / 实现计划</h2>
+<ol>
+<li>Add <code>io-uring = "0.7"</code> under <code>[target.'cfg(target_os = "linux")'.dependencies]</code> (gated by the
+<code>io-uring</code> feature) in <code>Cargo.toml</code>.</li>
+<li>Implement <code>IoUringDriver</code> here: a <code>Driver</code>-equivalent that owns an <code>io_uring::IoUring</code>
+instance, registers FDs as <code>SubmissionQueuee</code>s, and drains the completion queue into wakers —
+mirroring <code>async-io</code>’s <code>Reactor::react()</code> but with ring buffers instead of epoll.</li>
+<li>In <code>runtime.rs</code>, add <code>#[cfg(all(target_os="linux", feature="io-uring"))]</code> selection logic in
+<code>Runtime::with_config</code> to build an <code>IoUringDriver</code> instead of relying on <code>async-io</code>.</li>
+<li>The <code>async-net</code> I/O types would need io_uring-aware equivalents (or use <code>monoio</code>’s net
+types), since async-net is bound to the async-io reactor.</li>
+</ol>
+<h2 id="why-this-is-deferred--为何暂缓"><a class="doc-anchor" href="#why-this-is-deferred--为何暂缓">§</a>Why this is deferred / 为何暂缓</h2>
+<p>This requires a Linux environment to build, run, and benchmark. On macOS
+(the current dev platform) io_uring does not exist, so the implementation
+cannot be validated here. The reservation (feature flag + this module) lets
+a Linux contributor pick up the work with a clear integration point.</p>
+<p>这需要 Linux 环境来构建、运行与基准测试。在 macOS（当前开发平台）上
+io_uring 不存在,故实现无法在此验证。此预留（feature flag + 本模块）使
+Linux 贡献者可在明确的接入点继续该项工作。</p>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.IoUringDriver.html" title="struct hiver_runtime::iouring::IoUringDriver">IoUring<wbr>Driver</a></dt><dd>Placeholder for the future io_uring reactor driver.
+未来 io_uring reactor driver 的占位符。</dd></dl></section></div></main></body></html>

@@ -98,7 +98,7 @@
 <a href=#98 id=98 data-nosnippet>98</a>    <span class="kw">use </span>super::<span class="kw-2">*</span>;
 <a href=#99 id=99 data-nosnippet>99</a>    <span class="kw">use </span><span class="kw">crate</span>::event::BusEventType;
 <a href=#100 id=100 data-nosnippet>100</a>
-<a href=#101 id=101 data-nosnippet>101</a>    <span class="attr">#[tokio::test]
+<a href=#101 id=101 data-nosnippet>101</a>    <span class="attr">#[hiver_macros::test]
 <a href=#102 id=102 data-nosnippet>102</a>    </span><span class="kw">async fn </span>test_stream_bus_publish()
 <a href=#103 id=103 data-nosnippet>103</a>    {
 <a href=#104 id=104 data-nosnippet>104</a>        <span class="kw">let </span>binder = Arc::new(InMemoryBinder::new());
@@ -127,7 +127,7 @@
 <a href=#127 id=127 data-nosnippet>127</a>        <span class="macro">assert_eq!</span>(bus.name(), <span class="string">"stream"</span>);
 <a href=#128 id=128 data-nosnippet>128</a>    }
 <a href=#129 id=129 data-nosnippet>129</a>
-<a href=#130 id=130 data-nosnippet>130</a>    <span class="attr">#[tokio::test]
+<a href=#130 id=130 data-nosnippet>130</a>    <span class="attr">#[hiver_macros::test]
 <a href=#131 id=131 data-nosnippet>131</a>    </span><span class="kw">async fn </span>test_stream_bus_subscribe()
 <a href=#132 id=132 data-nosnippet>132</a>    {
 <a href=#133 id=133 data-nosnippet>133</a>        <span class="kw">let </span>binder = Arc::new(InMemoryBinder::new());

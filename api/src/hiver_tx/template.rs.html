@@ -231,7 +231,7 @@
 <a href=#231 id=231 data-nosnippet>231</a>    <span class="kw">use </span>super::<span class="kw-2">*</span>;
 <a href=#232 id=232 data-nosnippet>232</a>    <span class="kw">use </span><span class="kw">crate</span>::manager::SimpleTransactionManager;
 <a href=#233 id=233 data-nosnippet>233</a>
-<a href=#234 id=234 data-nosnippet>234</a>    <span class="attr">#[tokio::test]
+<a href=#234 id=234 data-nosnippet>234</a>    <span class="attr">#[hiver_macros::test]
 <a href=#235 id=235 data-nosnippet>235</a>    </span><span class="kw">async fn </span>test_transaction_template()
 <a href=#236 id=236 data-nosnippet>236</a>    {
 <a href=#237 id=237 data-nosnippet>237</a>        <span class="kw">let </span>manager = Arc::new(SimpleTransactionManager::new());
@@ -245,7 +245,7 @@
 <a href=#245 id=245 data-nosnippet>245</a>        <span class="macro">assert_eq!</span>(result, <span class="number">42</span>);
 <a href=#246 id=246 data-nosnippet>246</a>    }
 <a href=#247 id=247 data-nosnippet>247</a>
-<a href=#248 id=248 data-nosnippet>248</a>    <span class="attr">#[tokio::test]
+<a href=#248 id=248 data-nosnippet>248</a>    <span class="attr">#[hiver_macros::test]
 <a href=#249 id=249 data-nosnippet>249</a>    </span><span class="kw">async fn </span>test_transaction_template_rollback()
 <a href=#250 id=250 data-nosnippet>250</a>    {
 <a href=#251 id=251 data-nosnippet>251</a>        <span class="kw">let </span>manager = Arc::new(SimpleTransactionManager::new());

@@ -675,7 +675,7 @@
 <a href=#675 id=675 data-nosnippet>675</a>    // 不需要运行 Redis 实例的单元测试。
 <a href=#676 id=676 data-nosnippet>676</a>    // -----------------------------------------------------------------------
 <a href=#677 id=677 data-nosnippet>677</a>
-<a href=#678 id=678 data-nosnippet>678</a>    </span><span class="attr">#[tokio::test]
+<a href=#678 id=678 data-nosnippet>678</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#679 id=679 data-nosnippet>679</a>    </span><span class="kw">async fn </span>test_redis_cache_falls_back_to_memory()
 <a href=#680 id=680 data-nosnippet>680</a>    {
 <a href=#681 id=681 data-nosnippet>681</a>        <span class="comment">// Use an invalid URL — Redis will be unreachable, so fallback kicks in.
@@ -695,7 +695,7 @@
 <a href=#695 id=695 data-nosnippet>695</a>        <span class="macro">assert_eq!</span>(val, <span class="prelude-val">Some</span>(<span class="string">"value1"</span>.to_string()));
 <a href=#696 id=696 data-nosnippet>696</a>    }
 <a href=#697 id=697 data-nosnippet>697</a>
-<a href=#698 id=698 data-nosnippet>698</a>    <span class="attr">#[tokio::test]
+<a href=#698 id=698 data-nosnippet>698</a>    <span class="attr">#[hiver_macros::test]
 <a href=#699 id=699 data-nosnippet>699</a>    </span><span class="kw">async fn </span>test_redis_cache_degraded_mode()
 <a href=#700 id=700 data-nosnippet>700</a>    {
 <a href=#701 id=701 data-nosnippet>701</a>        <span class="comment">// No fallback — degraded (no-op) mode.
@@ -713,7 +713,7 @@
 <a href=#713 id=713 data-nosnippet>713</a>        <span class="macro">assert_eq!</span>(cache.size().<span class="kw">await</span>, <span class="number">0</span>);
 <a href=#714 id=714 data-nosnippet>714</a>    }
 <a href=#715 id=715 data-nosnippet>715</a>
-<a href=#716 id=716 data-nosnippet>716</a>    <span class="attr">#[tokio::test]
+<a href=#716 id=716 data-nosnippet>716</a>    <span class="attr">#[hiver_macros::test]
 <a href=#717 id=717 data-nosnippet>717</a>    </span><span class="kw">async fn </span>test_redis_cache_put_and_get_memory_fallback()
 <a href=#718 id=718 data-nosnippet>718</a>    {
 <a href=#719 id=719 data-nosnippet>719</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>).fallback_to_memory();
@@ -725,7 +725,7 @@
 <a href=#725 id=725 data-nosnippet>725</a>        <span class="macro">assert_eq!</span>(cache.get(<span class="kw-2">&amp;</span><span class="string">"missing"</span>.to_string()).<span class="kw">await</span>, <span class="prelude-val">None</span>);
 <a href=#726 id=726 data-nosnippet>726</a>    }
 <a href=#727 id=727 data-nosnippet>727</a>
-<a href=#728 id=728 data-nosnippet>728</a>    <span class="attr">#[tokio::test]
+<a href=#728 id=728 data-nosnippet>728</a>    <span class="attr">#[hiver_macros::test]
 <a href=#729 id=729 data-nosnippet>729</a>    </span><span class="kw">async fn </span>test_redis_cache_put_with_ttl_memory_fallback()
 <a href=#730 id=730 data-nosnippet>730</a>    {
 <a href=#731 id=731 data-nosnippet>731</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>).fallback_to_memory();
@@ -738,7 +738,7 @@
 <a href=#738 id=738 data-nosnippet>738</a>        <span class="macro">assert_eq!</span>(cache.get(<span class="kw-2">&amp;</span><span class="string">"ttl_key"</span>.to_string()).<span class="kw">await</span>, <span class="prelude-val">Some</span>(<span class="string">"ttl_val"</span>.to_string()));
 <a href=#739 id=739 data-nosnippet>739</a>    }
 <a href=#740 id=740 data-nosnippet>740</a>
-<a href=#741 id=741 data-nosnippet>741</a>    <span class="attr">#[tokio::test]
+<a href=#741 id=741 data-nosnippet>741</a>    <span class="attr">#[hiver_macros::test]
 <a href=#742 id=742 data-nosnippet>742</a>    </span><span class="kw">async fn </span>test_redis_cache_invalidate_memory_fallback()
 <a href=#743 id=743 data-nosnippet>743</a>    {
 <a href=#744 id=744 data-nosnippet>744</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>).fallback_to_memory();
@@ -753,7 +753,7 @@
 <a href=#753 id=753 data-nosnippet>753</a>        <span class="macro">assert_eq!</span>(cache.get(<span class="kw-2">&amp;</span><span class="string">"k"</span>.to_string()).<span class="kw">await</span>, <span class="prelude-val">None</span>);
 <a href=#754 id=754 data-nosnippet>754</a>    }
 <a href=#755 id=755 data-nosnippet>755</a>
-<a href=#756 id=756 data-nosnippet>756</a>    <span class="attr">#[tokio::test]
+<a href=#756 id=756 data-nosnippet>756</a>    <span class="attr">#[hiver_macros::test]
 <a href=#757 id=757 data-nosnippet>757</a>    </span><span class="kw">async fn </span>test_redis_cache_invalidate_all_memory_fallback()
 <a href=#758 id=758 data-nosnippet>758</a>    {
 <a href=#759 id=759 data-nosnippet>759</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>).fallback_to_memory();
@@ -769,7 +769,7 @@
 <a href=#769 id=769 data-nosnippet>769</a>        <span class="macro">assert_eq!</span>(cache.get(<span class="kw-2">&amp;</span><span class="string">"b"</span>.to_string()).<span class="kw">await</span>, <span class="prelude-val">None</span>);
 <a href=#770 id=770 data-nosnippet>770</a>    }
 <a href=#771 id=771 data-nosnippet>771</a>
-<a href=#772 id=772 data-nosnippet>772</a>    <span class="attr">#[tokio::test]
+<a href=#772 id=772 data-nosnippet>772</a>    <span class="attr">#[hiver_macros::test]
 <a href=#773 id=773 data-nosnippet>773</a>    </span><span class="kw">async fn </span>test_redis_cache_stats_tracking()
 <a href=#774 id=774 data-nosnippet>774</a>    {
 <a href=#775 id=775 data-nosnippet>775</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>).fallback_to_memory();
@@ -789,7 +789,7 @@
 <a href=#789 id=789 data-nosnippet>789</a>        <span class="macro">assert!</span>((stats.hit_rate - <span class="number">0.5</span>).abs() &lt; f64::EPSILON);
 <a href=#790 id=790 data-nosnippet>790</a>    }
 <a href=#791 id=791 data-nosnippet>791</a>
-<a href=#792 id=792 data-nosnippet>792</a>    <span class="attr">#[tokio::test]
+<a href=#792 id=792 data-nosnippet>792</a>    <span class="attr">#[hiver_macros::test]
 <a href=#793 id=793 data-nosnippet>793</a>    </span><span class="kw">async fn </span>test_redis_cache_clear_resets_stats()
 <a href=#794 id=794 data-nosnippet>794</a>    {
 <a href=#795 id=795 data-nosnippet>795</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>).fallback_to_memory();
@@ -805,7 +805,7 @@
 <a href=#805 id=805 data-nosnippet>805</a>        <span class="macro">assert_eq!</span>(stats.hits, <span class="number">0</span>);
 <a href=#806 id=806 data-nosnippet>806</a>    }
 <a href=#807 id=807 data-nosnippet>807</a>
-<a href=#808 id=808 data-nosnippet>808</a>    <span class="attr">#[tokio::test]
+<a href=#808 id=808 data-nosnippet>808</a>    <span class="attr">#[hiver_macros::test]
 <a href=#809 id=809 data-nosnippet>809</a>    </span><span class="kw">async fn </span>test_redis_cache_contains_key_memory_fallback()
 <a href=#810 id=810 data-nosnippet>810</a>    {
 <a href=#811 id=811 data-nosnippet>811</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>).fallback_to_memory();
@@ -817,7 +817,7 @@
 <a href=#817 id=817 data-nosnippet>817</a>        <span class="macro">assert!</span>(cache.contains_key(<span class="kw-2">&amp;</span><span class="string">"yes"</span>.to_string()).<span class="kw">await</span>);
 <a href=#818 id=818 data-nosnippet>818</a>    }
 <a href=#819 id=819 data-nosnippet>819</a>
-<a href=#820 id=820 data-nosnippet>820</a>    <span class="attr">#[tokio::test]
+<a href=#820 id=820 data-nosnippet>820</a>    <span class="attr">#[hiver_macros::test]
 <a href=#821 id=821 data-nosnippet>821</a>    </span><span class="kw">async fn </span>test_redis_cache_size_memory_fallback()
 <a href=#822 id=822 data-nosnippet>822</a>    {
 <a href=#823 id=823 data-nosnippet>823</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>).fallback_to_memory();
@@ -981,7 +981,7 @@
 <a href=#981 id=981 data-nosnippet>981</a>    // full_key 测试。
 <a href=#982 id=982 data-nosnippet>982</a>    // -----------------------------------------------------------------------
 <a href=#983 id=983 data-nosnippet>983</a>
-<a href=#984 id=984 data-nosnippet>984</a>    </span><span class="attr">#[tokio::test]
+<a href=#984 id=984 data-nosnippet>984</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#985 id=985 data-nosnippet>985</a>    </span><span class="kw">async fn </span>test_full_key_without_prefix()
 <a href=#986 id=986 data-nosnippet>986</a>    {
 <a href=#987 id=987 data-nosnippet>987</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>).no_fallback();
@@ -992,7 +992,7 @@
 <a href=#992 id=992 data-nosnippet>992</a>        </span><span class="macro">assert_eq!</span>(cache.full_key(<span class="kw-2">&amp;</span><span class="string">"mykey"</span>.to_string()), <span class="string">"\"mykey\""</span>);
 <a href=#993 id=993 data-nosnippet>993</a>    }
 <a href=#994 id=994 data-nosnippet>994</a>
-<a href=#995 id=995 data-nosnippet>995</a>    <span class="attr">#[tokio::test]
+<a href=#995 id=995 data-nosnippet>995</a>    <span class="attr">#[hiver_macros::test]
 <a href=#996 id=996 data-nosnippet>996</a>    </span><span class="kw">async fn </span>test_full_key_with_prefix()
 <a href=#997 id=997 data-nosnippet>997</a>    {
 <a href=#998 id=998 data-nosnippet>998</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>)
@@ -1008,7 +1008,7 @@
 <a href=#1008 id=1008 data-nosnippet>1008</a>    // 克隆测试。
 <a href=#1009 id=1009 data-nosnippet>1009</a>    // -----------------------------------------------------------------------
 <a href=#1010 id=1010 data-nosnippet>1010</a>
-<a href=#1011 id=1011 data-nosnippet>1011</a>    </span><span class="attr">#[tokio::test]
+<a href=#1011 id=1011 data-nosnippet>1011</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#1012 id=1012 data-nosnippet>1012</a>    </span><span class="kw">async fn </span>test_redis_cache_clone()
 <a href=#1013 id=1013 data-nosnippet>1013</a>    {
 <a href=#1014 id=1014 data-nosnippet>1014</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>).fallback_to_memory();
@@ -1027,7 +1027,7 @@
 <a href=#1027 id=1027 data-nosnippet>1027</a>    // 重连测试（仍然不可达，应返回 false）。
 <a href=#1028 id=1028 data-nosnippet>1028</a>    // -----------------------------------------------------------------------
 <a href=#1029 id=1029 data-nosnippet>1029</a>
-<a href=#1030 id=1030 data-nosnippet>1030</a>    </span><span class="attr">#[tokio::test]
+<a href=#1030 id=1030 data-nosnippet>1030</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#1031 id=1031 data-nosnippet>1031</a>    </span><span class="kw">async fn </span>test_reconnect_when_unavailable()
 <a href=#1032 id=1032 data-nosnippet>1032</a>    {
 <a href=#1033 id=1033 data-nosnippet>1033</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>).fallback_to_memory();
@@ -1046,7 +1046,7 @@
 <a href=#1046 id=1046 data-nosnippet>1046</a>    // 多种数据类型测试。
 <a href=#1047 id=1047 data-nosnippet>1047</a>    // -----------------------------------------------------------------------
 <a href=#1048 id=1048 data-nosnippet>1048</a>
-<a href=#1049 id=1049 data-nosnippet>1049</a>    </span><span class="attr">#[tokio::test]
+<a href=#1049 id=1049 data-nosnippet>1049</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#1050 id=1050 data-nosnippet>1050</a>    </span><span class="kw">async fn </span>test_cache_different_value_types()
 <a href=#1051 id=1051 data-nosnippet>1051</a>    {
 <a href=#1052 id=1052 data-nosnippet>1052</a>        <span class="comment">// String values
@@ -1079,7 +1079,7 @@
 <a href=#1079 id=1079 data-nosnippet>1079</a>    // 覆盖写入测试。
 <a href=#1080 id=1080 data-nosnippet>1080</a>    // -----------------------------------------------------------------------
 <a href=#1081 id=1081 data-nosnippet>1081</a>
-<a href=#1082 id=1082 data-nosnippet>1082</a>    </span><span class="attr">#[tokio::test]
+<a href=#1082 id=1082 data-nosnippet>1082</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#1083 id=1083 data-nosnippet>1083</a>    </span><span class="kw">async fn </span>test_put_overwrites_existing_value()
 <a href=#1084 id=1084 data-nosnippet>1084</a>    {
 <a href=#1085 id=1085 data-nosnippet>1085</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>).fallback_to_memory();
@@ -1098,7 +1098,7 @@
 <a href=#1098 id=1098 data-nosnippet>1098</a>    // 并发访问测试。
 <a href=#1099 id=1099 data-nosnippet>1099</a>    // -----------------------------------------------------------------------
 <a href=#1100 id=1100 data-nosnippet>1100</a>
-<a href=#1101 id=1101 data-nosnippet>1101</a>    </span><span class="attr">#[tokio::test]
+<a href=#1101 id=1101 data-nosnippet>1101</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#1102 id=1102 data-nosnippet>1102</a>    </span><span class="kw">async fn </span>test_concurrent_access()
 <a href=#1103 id=1103 data-nosnippet>1103</a>    {
 <a href=#1104 id=1104 data-nosnippet>1104</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>).fallback_to_memory();
@@ -1127,7 +1127,7 @@
 <a href=#1127 id=1127 data-nosnippet>1127</a>    // 结构体值序列化测试。
 <a href=#1128 id=1128 data-nosnippet>1128</a>    // -----------------------------------------------------------------------
 <a href=#1129 id=1129 data-nosnippet>1129</a>
-<a href=#1130 id=1130 data-nosnippet>1130</a>    </span><span class="attr">#[tokio::test]
+<a href=#1130 id=1130 data-nosnippet>1130</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#1131 id=1131 data-nosnippet>1131</a>    </span><span class="kw">async fn </span>test_cache_struct_value()
 <a href=#1132 id=1132 data-nosnippet>1132</a>    {
 <a href=#1133 id=1133 data-nosnippet>1133</a>        <span class="attr">#[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Debug)]
@@ -1157,7 +1157,7 @@
 <a href=#1157 id=1157 data-nosnippet>1157</a>    // 整数键类型测试。
 <a href=#1158 id=1158 data-nosnippet>1158</a>    // -----------------------------------------------------------------------
 <a href=#1159 id=1159 data-nosnippet>1159</a>
-<a href=#1160 id=1160 data-nosnippet>1160</a>    </span><span class="attr">#[tokio::test]
+<a href=#1160 id=1160 data-nosnippet>1160</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#1161 id=1161 data-nosnippet>1161</a>    </span><span class="kw">async fn </span>test_integer_key_type()
 <a href=#1162 id=1162 data-nosnippet>1162</a>    {
 <a href=#1163 id=1163 data-nosnippet>1163</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>).fallback_to_memory();
@@ -1174,7 +1174,7 @@
 <a href=#1174 id=1174 data-nosnippet>1174</a>    // TTL 专用：put_with_ttl 应使用显式 TTL，而非默认值。
 <a href=#1175 id=1175 data-nosnippet>1175</a>    // -----------------------------------------------------------------------
 <a href=#1176 id=1176 data-nosnippet>1176</a>
-<a href=#1177 id=1177 data-nosnippet>1177</a>    </span><span class="attr">#[tokio::test]
+<a href=#1177 id=1177 data-nosnippet>1177</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#1178 id=1178 data-nosnippet>1178</a>    </span><span class="kw">async fn </span>test_put_with_ttl_explicit()
 <a href=#1179 id=1179 data-nosnippet>1179</a>    {
 <a href=#1180 id=1180 data-nosnippet>1180</a>        <span class="kw">let </span>redis_cfg = RedisConfig::new(<span class="string">"redis://127.0.0.1:1"</span>)

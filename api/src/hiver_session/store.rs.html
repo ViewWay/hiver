@@ -555,7 +555,7 @@
 <a href=#555 id=555 data-nosnippet>555</a>{
 <a href=#556 id=556 data-nosnippet>556</a>    <span class="kw">use </span>super::<span class="kw-2">*</span>;
 <a href=#557 id=557 data-nosnippet>557</a>
-<a href=#558 id=558 data-nosnippet>558</a>    <span class="attr">#[tokio::test]
+<a href=#558 id=558 data-nosnippet>558</a>    <span class="attr">#[hiver_macros::test]
 <a href=#559 id=559 data-nosnippet>559</a>    </span><span class="kw">async fn </span>test_memory_session_store()
 <a href=#560 id=560 data-nosnippet>560</a>    {
 <a href=#561 id=561 data-nosnippet>561</a>        <span class="kw">let </span>store = MemorySessionStore::new();
@@ -570,7 +570,7 @@
 <a href=#570 id=570 data-nosnippet>570</a>        <span class="macro">assert_eq!</span>(found.unwrap().id(), session.id());
 <a href=#571 id=571 data-nosnippet>571</a>    }
 <a href=#572 id=572 data-nosnippet>572</a>
-<a href=#573 id=573 data-nosnippet>573</a>    <span class="attr">#[tokio::test]
+<a href=#573 id=573 data-nosnippet>573</a>    <span class="attr">#[hiver_macros::test]
 <a href=#574 id=574 data-nosnippet>574</a>    </span><span class="kw">async fn </span>test_memory_session_store_delete()
 <a href=#575 id=575 data-nosnippet>575</a>    {
 <a href=#576 id=576 data-nosnippet>576</a>        <span class="kw">let </span>store = MemorySessionStore::new();
@@ -582,7 +582,7 @@
 <a href=#582 id=582 data-nosnippet>582</a>        <span class="macro">assert!</span>(found.is_none());
 <a href=#583 id=583 data-nosnippet>583</a>    }
 <a href=#584 id=584 data-nosnippet>584</a>
-<a href=#585 id=585 data-nosnippet>585</a>    <span class="attr">#[tokio::test]
+<a href=#585 id=585 data-nosnippet>585</a>    <span class="attr">#[hiver_macros::test]
 <a href=#586 id=586 data-nosnippet>586</a>    </span><span class="kw">async fn </span>test_memory_session_store_ids()
 <a href=#587 id=587 data-nosnippet>587</a>    {
 <a href=#588 id=588 data-nosnippet>588</a>        <span class="kw">let </span>store = MemorySessionStore::new();

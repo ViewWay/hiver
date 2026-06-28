@@ -487,7 +487,7 @@
 <a href=#487 id=487 data-nosnippet>487</a>        <span class="macro">assert!</span>(names.contains(<span class="kw-2">&amp;</span><span class="string">"userList"</span>.to_string()));
 <a href=#488 id=488 data-nosnippet>488</a>    }
 <a href=#489 id=489 data-nosnippet>489</a>
-<a href=#490 id=490 data-nosnippet>490</a>    <span class="attr">#[tokio::test]
+<a href=#490 id=490 data-nosnippet>490</a>    <span class="attr">#[hiver_macros::test]
 <a href=#491 id=491 data-nosnippet>491</a>    </span><span class="kw">async fn </span>test_caching_execute()
 <a href=#492 id=492 data-nosnippet>492</a>    {
 <a href=#493 id=493 data-nosnippet>493</a>        <span class="kw">use </span>std::{
@@ -545,7 +545,7 @@
 <a href=#545 id=545 data-nosnippet>545</a>        <span class="macro">assert_eq!</span>(call_count.load(Ordering::SeqCst), <span class="number">1</span>); <span class="comment">// Should not increment again
 <a href=#546 id=546 data-nosnippet>546</a>    </span>}
 <a href=#547 id=547 data-nosnippet>547</a>
-<a href=#548 id=548 data-nosnippet>548</a>    <span class="attr">#[tokio::test]
+<a href=#548 id=548 data-nosnippet>548</a>    <span class="attr">#[hiver_macros::test]
 <a href=#549 id=549 data-nosnippet>549</a>    </span><span class="kw">async fn </span>test_caching_execute_and_update()
 <a href=#550 id=550 data-nosnippet>550</a>    {
 <a href=#551 id=551 data-nosnippet>551</a>        <span class="kw">use </span>std::collections::HashMap;

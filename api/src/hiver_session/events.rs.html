@@ -707,7 +707,7 @@
 <a href=#707 id=707 data-nosnippet>707</a>        <span class="macro">assert_eq!</span>(event.principal(), <span class="prelude-val">Some</span>(<span class="string">"user123"</span>));
 <a href=#708 id=708 data-nosnippet>708</a>    }
 <a href=#709 id=709 data-nosnippet>709</a>
-<a href=#710 id=710 data-nosnippet>710</a>    <span class="attr">#[tokio::test]
+<a href=#710 id=710 data-nosnippet>710</a>    <span class="attr">#[hiver_macros::test]
 <a href=#711 id=711 data-nosnippet>711</a>    </span><span class="kw">async fn </span>test_event_publisher()
 <a href=#712 id=712 data-nosnippet>712</a>    {
 <a href=#713 id=713 data-nosnippet>713</a>        <span class="kw">let </span>publisher = SessionEventPublisher::new();
@@ -722,7 +722,7 @@
 <a href=#722 id=722 data-nosnippet>722</a>            .<span class="kw">await</span>;
 <a href=#723 id=723 data-nosnippet>723</a>    }
 <a href=#724 id=724 data-nosnippet>724</a>
-<a href=#725 id=725 data-nosnippet>725</a>    <span class="attr">#[tokio::test]
+<a href=#725 id=725 data-nosnippet>725</a>    <span class="attr">#[hiver_macros::test]
 <a href=#726 id=726 data-nosnippet>726</a>    </span><span class="kw">async fn </span>test_concurrent_session_control_prevent_new()
 <a href=#727 id=727 data-nosnippet>727</a>    {
 <a href=#728 id=728 data-nosnippet>728</a>        <span class="kw">let </span>control =
@@ -739,7 +739,7 @@
 <a href=#739 id=739 data-nosnippet>739</a>        </span><span class="macro">assert_eq!</span>(control.session_count(<span class="string">"user1"</span>).<span class="kw">await</span>, <span class="number">2</span>);
 <a href=#740 id=740 data-nosnippet>740</a>    }
 <a href=#741 id=741 data-nosnippet>741</a>
-<a href=#742 id=742 data-nosnippet>742</a>    <span class="attr">#[tokio::test]
+<a href=#742 id=742 data-nosnippet>742</a>    <span class="attr">#[hiver_macros::test]
 <a href=#743 id=743 data-nosnippet>743</a>    </span><span class="kw">async fn </span>test_concurrent_session_control_expire_oldest()
 <a href=#744 id=744 data-nosnippet>744</a>    {
 <a href=#745 id=745 data-nosnippet>745</a>        <span class="kw">let </span>control =
@@ -760,7 +760,7 @@
 <a href=#760 id=760 data-nosnippet>760</a>        <span class="macro">assert!</span>(!sessions.contains(<span class="kw-2">&amp;</span>s1_clone)); <span class="comment">// s1 was expired
 <a href=#761 id=761 data-nosnippet>761</a>    </span>}
 <a href=#762 id=762 data-nosnippet>762</a>
-<a href=#763 id=763 data-nosnippet>763</a>    <span class="attr">#[tokio::test]
+<a href=#763 id=763 data-nosnippet>763</a>    <span class="attr">#[hiver_macros::test]
 <a href=#764 id=764 data-nosnippet>764</a>    </span><span class="kw">async fn </span>test_concurrent_session_remove()
 <a href=#765 id=765 data-nosnippet>765</a>    {
 <a href=#766 id=766 data-nosnippet>766</a>        <span class="kw">let </span>control = ConcurrentSessionControl::new(<span class="number">5</span>);
@@ -780,7 +780,7 @@
 <a href=#780 id=780 data-nosnippet>780</a>        <span class="macro">assert_eq!</span>(control.tracked_user_count().<span class="kw">await</span>, <span class="number">0</span>);
 <a href=#781 id=781 data-nosnippet>781</a>    }
 <a href=#782 id=782 data-nosnippet>782</a>
-<a href=#783 id=783 data-nosnippet>783</a>    <span class="attr">#[tokio::test]
+<a href=#783 id=783 data-nosnippet>783</a>    <span class="attr">#[hiver_macros::test]
 <a href=#784 id=784 data-nosnippet>784</a>    </span><span class="kw">async fn </span>test_concurrent_session_multiple_users()
 <a href=#785 id=785 data-nosnippet>785</a>    {
 <a href=#786 id=786 data-nosnippet>786</a>        <span class="kw">let </span>control = ConcurrentSessionControl::new(<span class="number">1</span>);
@@ -796,7 +796,7 @@
 <a href=#796 id=796 data-nosnippet>796</a>        <span class="macro">assert_eq!</span>(control.tracked_user_count().<span class="kw">await</span>, <span class="number">2</span>);
 <a href=#797 id=797 data-nosnippet>797</a>    }
 <a href=#798 id=798 data-nosnippet>798</a>
-<a href=#799 id=799 data-nosnippet>799</a>    <span class="attr">#[tokio::test]
+<a href=#799 id=799 data-nosnippet>799</a>    <span class="attr">#[hiver_macros::test]
 <a href=#800 id=800 data-nosnippet>800</a>    </span><span class="kw">async fn </span>test_concurrent_session_with_publisher()
 <a href=#801 id=801 data-nosnippet>801</a>    {
 <a href=#802 id=802 data-nosnippet>802</a>        <span class="kw">let </span>publisher = SessionEventPublisher::new();

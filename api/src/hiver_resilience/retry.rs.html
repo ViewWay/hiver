@@ -368,7 +368,7 @@
 <a href=#368 id=368 data-nosnippet>368</a>            <span class="kw">let </span>delay = policy.calculate_delay(attempt);
 <a href=#369 id=369 data-nosnippet>369</a>            <span class="kw">if </span>!delay.is_zero()
 <a href=#370 id=370 data-nosnippet>370</a>            {
-<a href=#371 id=371 data-nosnippet>371</a>                tokio::time::sleep(delay).<span class="kw">await</span>;
+<a href=#371 id=371 data-nosnippet>371</a>                hiver_runtime::time::sleep(delay).<span class="kw">await</span>;
 <a href=#372 id=372 data-nosnippet>372</a>                total_delay += delay;
 <a href=#373 id=373 data-nosnippet>373</a>            }
 <a href=#374 id=374 data-nosnippet>374</a>        }

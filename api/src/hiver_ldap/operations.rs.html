@@ -274,7 +274,7 @@
 <a href=#274 id=274 data-nosnippet>274</a>        <span class="macro">assert!</span>(ops.template().context_source().url().contains(<span class="string">"localhost"</span>));
 <a href=#275 id=275 data-nosnippet>275</a>    }
 <a href=#276 id=276 data-nosnippet>276</a>
-<a href=#277 id=277 data-nosnippet>277</a>    <span class="attr">#[tokio::test]
+<a href=#277 id=277 data-nosnippet>277</a>    <span class="attr">#[hiver_macros::test]
 <a href=#278 id=278 data-nosnippet>278</a>    </span><span class="kw">async fn </span>test_modify_dn_stub()
 <a href=#279 id=279 data-nosnippet>279</a>    {
 <a href=#280 id=280 data-nosnippet>280</a>        <span class="kw">let </span>ctx = LdapContextSource::new(<span class="string">"ldap://localhost:389"</span>, <span class="string">"dc=example,dc=com"</span>);
@@ -285,7 +285,7 @@
 <a href=#285 id=285 data-nosnippet>285</a>        <span class="macro">assert!</span>(result.is_ok());
 <a href=#286 id=286 data-nosnippet>286</a>    }
 <a href=#287 id=287 data-nosnippet>287</a>
-<a href=#288 id=288 data-nosnippet>288</a>    <span class="attr">#[tokio::test]
+<a href=#288 id=288 data-nosnippet>288</a>    <span class="attr">#[hiver_macros::test]
 <a href=#289 id=289 data-nosnippet>289</a>    </span><span class="kw">async fn </span>test_modify_dn_with_superior_stub()
 <a href=#290 id=290 data-nosnippet>290</a>    {
 <a href=#291 id=291 data-nosnippet>291</a>        <span class="kw">let </span>ctx = LdapContextSource::new(<span class="string">"ldap://localhost:389"</span>, <span class="string">"dc=example,dc=com"</span>);
@@ -301,7 +301,7 @@
 <a href=#301 id=301 data-nosnippet>301</a>        <span class="macro">assert!</span>(result.is_ok());
 <a href=#302 id=302 data-nosnippet>302</a>    }
 <a href=#303 id=303 data-nosnippet>303</a>
-<a href=#304 id=304 data-nosnippet>304</a>    <span class="attr">#[tokio::test]
+<a href=#304 id=304 data-nosnippet>304</a>    <span class="attr">#[hiver_macros::test]
 <a href=#305 id=305 data-nosnippet>305</a>    </span><span class="kw">async fn </span>test_compare_stub()
 <a href=#306 id=306 data-nosnippet>306</a>    {
 <a href=#307 id=307 data-nosnippet>307</a>        <span class="kw">let </span>ctx = LdapContextSource::new(<span class="string">"ldap://localhost:389"</span>, <span class="string">"dc=example,dc=com"</span>);
@@ -314,7 +314,7 @@
 <a href=#314 id=314 data-nosnippet>314</a>        </span><span class="macro">assert!</span>(!result.unwrap());
 <a href=#315 id=315 data-nosnippet>315</a>    }
 <a href=#316 id=316 data-nosnippet>316</a>
-<a href=#317 id=317 data-nosnippet>317</a>    <span class="attr">#[tokio::test]
+<a href=#317 id=317 data-nosnippet>317</a>    <span class="attr">#[hiver_macros::test]
 <a href=#318 id=318 data-nosnippet>318</a>    </span><span class="kw">async fn </span>test_abandon_stub()
 <a href=#319 id=319 data-nosnippet>319</a>    {
 <a href=#320 id=320 data-nosnippet>320</a>        <span class="kw">let </span>ctx = LdapContextSource::new(<span class="string">"ldap://localhost:389"</span>, <span class="string">"dc=example,dc=com"</span>);

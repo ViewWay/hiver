@@ -283,7 +283,7 @@
 <a href=#283 id=283 data-nosnippet>283</a>
 <a href=#284 id=284 data-nosnippet>284</a>    <span class="doccomment">/// Test consumer creation with config
 <a href=#285 id=285 data-nosnippet>285</a>    /// 测试使用配置创建消费者
-<a href=#286 id=286 data-nosnippet>286</a>    </span><span class="attr">#[tokio::test]
+<a href=#286 id=286 data-nosnippet>286</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#287 id=287 data-nosnippet>287</a>    </span><span class="kw">async fn </span>test_consumer_new()
 <a href=#288 id=288 data-nosnippet>288</a>    {
 <a href=#289 id=289 data-nosnippet>289</a>        <span class="kw">let </span>config = ConsumerConfig::new(<span class="string">"test-group"</span>);
@@ -293,7 +293,7 @@
 <a href=#293 id=293 data-nosnippet>293</a>
 <a href=#294 id=294 data-nosnippet>294</a>    <span class="doccomment">/// Test consumer subscribe and subscription tracking
 <a href=#295 id=295 data-nosnippet>295</a>    /// 测试消费者订阅和订阅跟踪
-<a href=#296 id=296 data-nosnippet>296</a>    </span><span class="attr">#[tokio::test]
+<a href=#296 id=296 data-nosnippet>296</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#297 id=297 data-nosnippet>297</a>    </span><span class="kw">async fn </span>test_consumer_subscribe()
 <a href=#298 id=298 data-nosnippet>298</a>    {
 <a href=#299 id=299 data-nosnippet>299</a>        <span class="kw">let </span>config = ConsumerConfig::new(<span class="string">"test-group"</span>);
@@ -308,7 +308,7 @@
 <a href=#308 id=308 data-nosnippet>308</a>
 <a href=#309 id=309 data-nosnippet>309</a>    <span class="doccomment">/// Test consumer duplicate subscription is idempotent
 <a href=#310 id=310 data-nosnippet>310</a>    /// 测试消费者重复订阅是幂等的
-<a href=#311 id=311 data-nosnippet>311</a>    </span><span class="attr">#[tokio::test]
+<a href=#311 id=311 data-nosnippet>311</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#312 id=312 data-nosnippet>312</a>    </span><span class="kw">async fn </span>test_consumer_subscribe_idempotent()
 <a href=#313 id=313 data-nosnippet>313</a>    {
 <a href=#314 id=314 data-nosnippet>314</a>        <span class="kw">let </span>config = ConsumerConfig::new(<span class="string">"test-group"</span>);
@@ -322,7 +322,7 @@
 <a href=#322 id=322 data-nosnippet>322</a>
 <a href=#323 id=323 data-nosnippet>323</a>    <span class="doccomment">/// Test consumer unsubscribe clears all topics
 <a href=#324 id=324 data-nosnippet>324</a>    /// 测试消费者取消订阅清除所有主题
-<a href=#325 id=325 data-nosnippet>325</a>    </span><span class="attr">#[tokio::test]
+<a href=#325 id=325 data-nosnippet>325</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#326 id=326 data-nosnippet>326</a>    </span><span class="kw">async fn </span>test_consumer_unsubscribe()
 <a href=#327 id=327 data-nosnippet>327</a>    {
 <a href=#328 id=328 data-nosnippet>328</a>        <span class="kw">let </span>config = ConsumerConfig::new(<span class="string">"test-group"</span>);
@@ -404,7 +404,7 @@
 <a href=#404 id=404 data-nosnippet>404</a>
 <a href=#405 id=405 data-nosnippet>405</a>    </span><span class="doccomment">/// Test listener start and stop lifecycle
 <a href=#406 id=406 data-nosnippet>406</a>    /// 测试监听器启动和停止生命周期
-<a href=#407 id=407 data-nosnippet>407</a>    </span><span class="attr">#[tokio::test]
+<a href=#407 id=407 data-nosnippet>407</a>    </span><span class="attr">#[hiver_macros::test]
 <a href=#408 id=408 data-nosnippet>408</a>    </span><span class="kw">async fn </span>test_listener_lifecycle()
 <a href=#409 id=409 data-nosnippet>409</a>    {
 <a href=#410 id=410 data-nosnippet>410</a>        <span class="kw">let </span>listener = ConsumerListener::new(<span class="string">"listener-1"</span>, <span class="macro">vec!</span>[<span class="string">"topic-a"</span>.to_string()], <span class="string">"my-group"</span>);

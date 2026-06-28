@@ -395,7 +395,7 @@
 <a href=#395 id=395 data-nosnippet>395</a>                .build()
 <a href=#396 id=396 data-nosnippet>396</a>        }
 <a href=#397 id=397 data-nosnippet>397</a>
-<a href=#398 id=398 data-nosnippet>398</a>        <span class="attr">#[tokio::test]
+<a href=#398 id=398 data-nosnippet>398</a>        <span class="attr">#[hiver_macros::test]
 <a href=#399 id=399 data-nosnippet>399</a>        </span><span class="kw">async fn </span>test_hello_query()
 <a href=#400 id=400 data-nosnippet>400</a>        {
 <a href=#401 id=401 data-nosnippet>401</a>            <span class="kw">let </span>engine = make_engine();
@@ -410,7 +410,7 @@
 <a href=#410 id=410 data-nosnippet>410</a>            );
 <a href=#411 id=411 data-nosnippet>411</a>        }
 <a href=#412 id=412 data-nosnippet>412</a>
-<a href=#413 id=413 data-nosnippet>413</a>        <span class="attr">#[tokio::test]
+<a href=#413 id=413 data-nosnippet>413</a>        <span class="attr">#[hiver_macros::test]
 <a href=#414 id=414 data-nosnippet>414</a>        </span><span class="kw">async fn </span>test_arithmetic_query()
 <a href=#415 id=415 data-nosnippet>415</a>        {
 <a href=#416 id=416 data-nosnippet>416</a>            <span class="kw">let </span>engine = make_engine();
@@ -425,7 +425,7 @@
 <a href=#425 id=425 data-nosnippet>425</a>            );
 <a href=#426 id=426 data-nosnippet>426</a>        }
 <a href=#427 id=427 data-nosnippet>427</a>
-<a href=#428 id=428 data-nosnippet>428</a>        <span class="attr">#[tokio::test]
+<a href=#428 id=428 data-nosnippet>428</a>        <span class="attr">#[hiver_macros::test]
 <a href=#429 id=429 data-nosnippet>429</a>        </span><span class="kw">async fn </span>test_sdl()
 <a href=#430 id=430 data-nosnippet>430</a>        {
 <a href=#431 id=431 data-nosnippet>431</a>            <span class="kw">let </span>engine = make_engine();
@@ -433,7 +433,7 @@
 <a href=#433 id=433 data-nosnippet>433</a>            <span class="macro">assert!</span>(sdl.contains(<span class="string">"hello"</span>));
 <a href=#434 id=434 data-nosnippet>434</a>        }
 <a href=#435 id=435 data-nosnippet>435</a>
-<a href=#436 id=436 data-nosnippet>436</a>        <span class="attr">#[tokio::test]
+<a href=#436 id=436 data-nosnippet>436</a>        <span class="attr">#[hiver_macros::test]
 <a href=#437 id=437 data-nosnippet>437</a>        </span><span class="kw">async fn </span>test_introspection()
 <a href=#438 id=438 data-nosnippet>438</a>        {
 <a href=#439 id=439 data-nosnippet>439</a>            <span class="kw">let </span>engine = make_engine();
@@ -450,7 +450,7 @@
 <a href=#450 id=450 data-nosnippet>450</a>            <span class="macro">assert!</span>(html.contains(<span class="string">"/ws/graphql"</span>));
 <a href=#451 id=451 data-nosnippet>451</a>        }
 <a href=#452 id=452 data-nosnippet>452</a>
-<a href=#453 id=453 data-nosnippet>453</a>        <span class="attr">#[tokio::test]
+<a href=#453 id=453 data-nosnippet>453</a>        <span class="attr">#[hiver_macros::test]
 <a href=#454 id=454 data-nosnippet>454</a>        </span><span class="kw">async fn </span>test_variables()
 <a href=#455 id=455 data-nosnippet>455</a>        {
 <a href=#456 id=456 data-nosnippet>456</a>            <span class="kw">let </span>engine = make_engine();

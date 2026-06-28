@@ -247,7 +247,7 @@
 <a href=#247 id=247 data-nosnippet>247</a>{
 <a href=#248 id=248 data-nosnippet>248</a>    <span class="kw">use </span>super::<span class="kw-2">*</span>;
 <a href=#249 id=249 data-nosnippet>249</a>
-<a href=#250 id=250 data-nosnippet>250</a>    <span class="attr">#[tokio::test]
+<a href=#250 id=250 data-nosnippet>250</a>    <span class="attr">#[hiver_macros::test]
 <a href=#251 id=251 data-nosnippet>251</a>    </span><span class="kw">async fn </span>test_transaction()
 <a href=#252 id=252 data-nosnippet>252</a>    {
 <a href=#253 id=253 data-nosnippet>253</a>        <span class="kw">let </span>tx = Transaction::new(<span class="string">"test"</span>);
@@ -257,7 +257,7 @@
 <a href=#257 id=257 data-nosnippet>257</a>        <span class="macro">assert!</span>(tx.status().is_new_transaction());
 <a href=#258 id=258 data-nosnippet>258</a>    }
 <a href=#259 id=259 data-nosnippet>259</a>
-<a href=#260 id=260 data-nosnippet>260</a>    <span class="attr">#[tokio::test]
+<a href=#260 id=260 data-nosnippet>260</a>    <span class="attr">#[hiver_macros::test]
 <a href=#261 id=261 data-nosnippet>261</a>    </span><span class="kw">async fn </span>test_transaction_holder()
 <a href=#262 id=262 data-nosnippet>262</a>    {
 <a href=#263 id=263 data-nosnippet>263</a>        <span class="kw">let </span>holder = TransactionHolder::new();
