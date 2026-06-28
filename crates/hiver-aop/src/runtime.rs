@@ -36,13 +36,12 @@ use tokio::sync::RwLock;
 ///
 /// # Example / 示例
 ///
-/// ```rust,no_run,ignore
-/// use hiver_aop::runtime::JoinPoint;
+/// ```rust,ignore
+/// use hiver_aop::{before, runtime::JoinPoint};
 ///
-/// #[Before("execution(* com.example..*.*(..))")]
+/// #[before("execution(* *..*.*(..))")]
 /// fn log_before(join_point: &JoinPoint) {
 ///     println!("Calling: {}", join_point.method_name());
-///     println!("Args: {:?}", join_point.args());
 /// }
 /// ```
 pub struct JoinPoint
@@ -1137,15 +1136,25 @@ impl fmt::Debug for InterceptResult
 ///
 /// # Example / 示例
 ///
-/// ```rust,no_run,ignore
+/// ```rust,no_run
+/// use std::sync::Arc;
+///
 /// use hiver_aop::runtime::{InterceptChain, JoinPoint};
 ///
 /// let mut chain = InterceptChain::new();
 /// chain.before(|jp| println!("Before: {}", jp.method_name()));
 /// chain.after(|jp| println!("After: {}", jp.method_name()));
 ///
-/// let jp = JoinPoint::new(/* ... */);
-/// let result = chain.invoke(jp, || Some(Arc::new(42)));
+/// let jp = JoinPoint::new(
+///     Arc::new("target") as Arc<dyn std::any::Any + Send + Sync>,
+///     "do_work".to_string(),
+///     vec![],
+///     "do_work()".to_string(),
+///     "Worker".to_string(),
+/// );
+/// let result =
+///     chain.invoke(jp, || Some(Arc::new(42_i32) as Arc<dyn std::any::Any + Send + Sync>));
+/// assert_eq!(*result.value::<i32>().unwrap(), 42);
 /// ```
 pub struct InterceptChain
 {

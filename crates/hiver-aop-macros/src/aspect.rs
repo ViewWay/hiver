@@ -13,10 +13,10 @@ use syn::{DeriveInput, parse_macro_input};
 ///
 /// # Example / 示例
 ///
-/// ```rust,no_run,ignore
-/// use hiver_aop::Aspect;
+/// ```rust,ignore
+/// use hiver_aop::aspect; // or the uppercase alias: `use hiver_aop::Aspect;`
 ///
-/// #[Aspect]
+/// #[aspect]
 /// struct LoggingAspect;
 /// ```
 pub(crate) fn impl_aspect(_attr: TokenStream, item: TokenStream) -> TokenStream

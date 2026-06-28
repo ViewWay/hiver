@@ -4,7 +4,7 @@
 [![Documentation](https://docs.rs/hiver-aop/badge.svg)](https://docs.rs/hiver-aop)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](../../LICENSE)
 
-> Spring AOP style annotations for Hiver Framework
+> Spring AOP style annotations for the Hiver Framework
 >
 > Hiver 框架的 Spring AOP 风格注解
 
@@ -12,17 +12,29 @@
 
 ## 📋 Overview / 概述
 
-`hiver-aop` provides Spring AOP-style procedural macros for aspect-oriented programming in the Hiver Framework.
+`hiver-aop` brings Spring AOP / AspectJ-style aspect-oriented programming to
+Rust, built on top of the Hiver Framework. It provides procedural macros to
+*annotate* advice, and a small runtime to *weave* that advice around method
+calls at run time.
 
-`hiver-aop` 为 Hiver 框架提供 Spring AOP 风格的过程宏，支持面向切面编程。
+`hiver-aop` 为 Rust 带来 Spring AOP / AspectJ 风格的面向切面编程，构建于 Hiver 框架之上。
+它提供过程宏用于*标注*通知，并提供一个小型运行时在方法调用周围*织入*这些通知。
 
 **Key Features / 核心特性**:
 
-- ✅ **`#[Aspect]`** - Marks a struct as an aspect / 标记切面
-- ✅ **`@Before`** - Before advice / 前置通知
-- ✅ **`@After`** - After advice / 后置通知
-- ✅ **`@Around`** - Around advice / 环绕通知
-- ✅ **`@Pointcut`** - Pointcut definitions / 切点定义
+- ✅ **`#[aspect]`** (alias `#[Aspect]`) — Marks a struct as an aspect / 标记切面
+- ✅ **`#[before]`** / **`#[Before]`** — Before advice / 前置通知
+- ✅ **`#[after]`** / **`#[After]`** — After advice / 后置通知
+- ✅ **`#[around]`** / **`#[Around]`** — Around advice / 环绕通知
+- ✅ **`#[after_returning]`** / **`#[AfterReturning]`** — After-returning advice / 返回后通知
+- ✅ **`#[after_throwing]`** / **`#[AfterThrowing]`** — After-throwing advice / 异常后通知
+- ✅ **`#[pointcut]`** / **`#[Pointcut]`** — Pointcut definition / 切点定义
+- ✅ Runtime types: `JoinPoint`, `ProceedingJoinPoint`, `AspectRegistry`, `InterceptChain`
+
+Both the lowercase Rust names and the Spring-familiar uppercase names are
+exported, so `use hiver_aop::{aspect, before}` and
+`use hiver_aop::{Aspect, Before}` both work. The examples below use the
+lowercase names (idiomatic Rust); substitute the uppercase aliases freely.
 
 ---
 
@@ -39,552 +51,233 @@ hiver-aop = "0.1"
 
 ### Basic Usage / 基本用法
 
-```rust
-use hiver_aop::{Aspect, Before, After, Around};
+The macros are **attribute macros placed on functions**. They work both on
+free functions and on methods inside an `impl` block:
 
-#[Aspect]
+这些宏是**放置在函数上的属性宏**，既可用于自由函数，也可用于 `impl` 块内的方法：
+
+```rust
+use hiver_aop::{aspect, before, after, around, JoinPoint, ProceedingJoinPoint};
+
+#[aspect]
 struct LoggingAspect;
 
 impl LoggingAspect {
-    #[Before("execution(* com.example..*.*(..))")]
+    #[before("execution(* *..*.*(..))")]
     fn log_before(&self, join_point: &JoinPoint) {
         println!("Entering: {}", join_point.method_name());
     }
 
-    #[After("execution(* com.example..*.*(..))")]
+    #[after("execution(* *..*.*(..))")]
     fn log_after(&self, join_point: &JoinPoint) {
         println!("Exiting: {}", join_point.method_name());
     }
 
-    #[Around("execution(* com.example..*.*(..))")]
-    fn log_around(&self, join_point: JoinPoint) -> Result<(), Error> {
+    #[around("execution(* *..*.*(..))")]
+    fn log_around(join_point: &mut ProceedingJoinPoint) {
         println!("Before: {}", join_point.method_name());
-        let result = join_point.proceed()?;
-        println!("After: {}", join_point.method_name());
-        Ok(result)
+        join_point.proceed(); // let the target method run / 放行目标方法
+        println!("After:  {}", join_point.method_name());
     }
 }
+
+// Free-standing advice is supported too.
+// 也支持独立的通知函数。
+#[before("execution(* *..*.*(..))")]
+fn free_advice(join_point: &JoinPoint) {
+    println!("Free advice: {}", join_point.method_name());
+}
 ```
+
+Each advice macro records its pointcut expression next to the function as a
+companion constant, e.g. the `log_before` example above produces:
+
+每个通知宏会在函数旁以伴生常量记录其切点表达式，例如上面的 `log_before` 会产生：
+
+```rust,ignore
+const _HIVER_BEFORE_LOG_BEFORE_META: (&'static str, &'static str) =
+    ("execution(* *..*.*(..))", "before");
+```
+
+This is valid both at module scope and inside an `impl` block (a nested `impl`
+would not be), so advice can be attached to methods on the aspect struct.
+
+---
+
+## 🔌 Compile-time annotations vs runtime weaving
+## 编译期注解 vs 运行时织入
+
+`hiver-aop` is split in two:
+
+1. **`hiver-aop`** — the facade crate you depend on. It re-exports the macros
+   and the runtime types.
+2. **`hiver-aop-macros`** — the proc-macro crate (not depended on directly).
+
+The macros *annotate* advice and *record* pointcut expressions; they do **not**
+automatically rewrite your business methods (Rust has no class-loading weave
+step the way the JVM does). The actual application of advice happens at run
+time through the runtime API:
+
+`hiver-aop` 分为两部分：
+
+1. **`hiver-aop`** — 你依赖的门面 crate，重新导出宏与运行时类型。
+2. **`hiver-aop-macros`** — 过程宏 crate（不直接依赖）。
+
+宏负责*标注*通知并*记录*切点表达式；它们**不会**自动改写你的业务方法
+（Rust 没有 JVM 那样的类加载织入步骤）。通知的实际应用通过运行时 API 完成：
+
+```rust
+use std::sync::Arc;
+use hiver_aop::runtime::{InterceptChain, JoinPoint};
+
+let mut chain = InterceptChain::new();
+chain.before(|jp| println!("Before: {}", jp.method_name()));
+chain.after( |jp| println!("After:  {}", jp.method_name()));
+
+let jp = JoinPoint::new(
+    Arc::new("target") as Arc<dyn std::any::Any + Send + Sync>,
+    "save_user".to_string(),
+    vec![],
+    "save_user()".to_string(),
+    "service.UserService".to_string(),
+);
+
+let result = chain.invoke(jp, || {
+    println!("target running");
+    Some(Arc::new(200_i32) as Arc<dyn std::any::Any + Send + Sync>)
+});
+assert_eq!(*result.value::<i32>().unwrap(), 200);
+```
+
+For registry-based matching (register many advice, match by pointcut), see
+`AspectRegistry` in the [API docs](https://docs.rs/hiver-aop).
 
 ---
 
 ## 📖 Available Annotations / 可用注解
 
-### `#[Aspect]`
-
-Marks a struct as an AOP aspect.
-将结构体标记为 AOP 切面。
+### `#[aspect]` — mark an aspect / 标记切面
 
 ```rust
-#[Aspect]
+use hiver_aop::aspect;
+
+#[aspect]
 struct LoggingAspect;
 ```
 
-### `@Before("pointcut")`
-
-Before advice - executes before the method.
-前置通知 - 在方法执行前执行。
+### `#[before("pointcut")]` — before advice / 前置通知
 
 ```rust
-#[Before("execution(* com.example..*.*(..))")]
-fn log_before(&self, join_point: &JoinPoint) {
+#[before("execution(* *..*.*(..))")]
+fn log_before(join_point: &JoinPoint) {
     println!("Entering: {}", join_point.method_name());
 }
 ```
 
-### `@After("pointcut")`
+### `#[after("pointcut")]` — after advice / 后置通知
 
-After advice - executes after the method (normal or exceptional exit).
-后置通知 - 在方法执行后执行（正常或异常退出）。
+Executes after the join point (normal or exceptional exit), like `finally`.
+在连接点之后执行（正常或异常退出），类似 `finally`。
 
 ```rust
-#[After("execution(* com.example..*.*(..))")]
-fn log_after(&self, join_point: &JoinPoint) {
+#[after("execution(* *..*.*(..))")]
+fn log_after(join_point: &JoinPoint) {
     println!("Exiting: {}", join_point.method_name());
 }
 ```
 
-### `@Around("pointcut")`
+### `#[around("pointcut")]` — around advice / 环绕通知
 
-Around advice - wraps the method execution, can control execution flow.
-环绕通知 - 包装方法执行，可以控制执行流程。
+Wraps the join point. Take a `&mut ProceedingJoinPoint` and call `proceed()` to
+let the target run.
+包装连接点。接收 `&mut ProceedingJoinPoint`，调用 `proceed()` 以放行目标方法。
 
 ```rust
-#[Around("execution(* com.example..*.*(..))")]
-fn log_around(&self, join_point: JoinPoint) -> Result<(), Error> {
+#[around("execution(* *..*.*(..))")]
+fn log_around(join_point: &mut ProceedingJoinPoint) {
     println!("Before: {}", join_point.method_name());
-    let result = join_point.proceed()?;
-    println!("After: {}", join_point.method_name());
-    Ok(result)
+    join_point.proceed();
+    println!("After:  {}", join_point.method_name());
 }
 ```
 
-### `@Pointcut("expression")`
-
-Defines a reusable pointcut expression.
-定义可重用的切点表达式。
+### `#[pointcut("expression")]` — reusable pointcut / 可重用切点
 
 ```rust
-#[Pointcut("execution(* com.example.service.*.*(..))")]
-fn service_layer() -> PointcutExpression {}
-
-// Reference the pointcut
-// 引用切点
-#[Before("service_layer()")]
-fn log_service(&self, join_point: &JoinPoint) {
-    println!("Service method called");
-}
+#[pointcut("execution(* *.service.*.*(..))")]
+fn service_layer() {}
 ```
 
 ---
 
-## 📚 Pointcut Expressions / 切点表达式
+## 📚 Pointcut Expressions in Rust / Rust 中的切点表达式
 
-### Execution Pattern / 执行模式
+> **Important / 重要** — Hiver AOP pointcuts are **string patterns matched at
+> run time** against a `JoinPoint`'s `method_name()` and `target_class()`.
+> There are **no JVM packages**. Patterns like `com.example..*` work as generic
+> dotted-name patterns, but they carry no Java package semantics. The idiomatic
+> Rust analog is to match module paths / type names such as
+> `crate::service::...`, `*.service.*`, etc.
+>
+> Hiver AOP 的切点是**运行时匹配 `JoinPoint` 的 `method_name()` 与 `target_class()`
+> 的字符串模式**。**没有 JVM 包的概念**。`com.example..*` 之类的模式可作为通用的点号名称
+> 模式工作，但并不具备 Java 包语义。Rust 惯用的等价物是匹配模块路径/类型名，
+> 例如 `crate::service::...`、`*.service.*` 等。
+
+### Execution pattern / 执行模式
 
 ```
-execution(modifiers-pattern? return-type-pattern declaring-type-pattern? method-name-pattern(param-pattern) throws-pattern?)
+execution(return-type-pattern declaring-type-pattern? method-name-pattern(param-pattern))
 ```
+
+- `*` matches a single name segment / 匹配单个名称段
+- `..` matches zero or more segments / 匹配零或多个段
 
 **Examples / 示例**:
 
-```rust
-// All public methods
-// 所有 public 方法
-"execution(public * *(..))"
-
-// All methods in a package
-// 包中的所有方法
-"execution(* com.example..*.*(..))"
-
-// All methods in a class
-// 类中的所有方法
-"execution(* com.example.Service.*(..))"
-
-// Specific method
-// 特定方法
-"execution(* com.example.UserService.getUser(..))"
-
-// Methods with specific parameter types
-// 带有特定参数类型的方法
-"execution(* com.example.UserService.*(String, ..))"
-
-// Methods returning void
-// 返回 void 的方法
-"execution(void com.example..*.*(..))"
+```text
+"execution(* *..*.*(..))"              // any method / 任意方法
+"execution(* *.Service.*(..))"         // methods on types whose name is `<X>.Service`
+"execution(* *.UserService.save_user(..))" // a specific method on a specific type
+"execution(* get*(..))"                // methods whose name matches `get*`
 ```
 
-### Combining Pointcuts / 组合切点
+### Other designators / 其他指示符
 
-```rust
-// AND - both conditions must match
-// AND - 两个条件都必须匹配
-"execution(* com.example..*.*(..)) && execution(public * *(..))"
-
-// OR - either condition must match
-// OR - 任一条件必须匹配
-"execution(* com.example.Service.*(..)) || execution(* com.example.Repository.*(..))"
-
-// NOT - negate the condition
-// NOT - 否定条件
-"execution(* com.example..*.*(..)) && !execution(* com.example..*.*(..))"
+```text
+"within(*)"                            // within any type / 任意类型内
+"within(service.UserService)"          // within a specific type / 特定类型内
+"@annotation(my::Transactional)"       // (parsed; runtime annotation check is not supported)
 ```
 
-### Other Designators / 其他指示符
+### Combining pointcuts / 组合切点
 
-```rust
-// Within a certain type
-// 在特定类型内
-"within(com.example.service.*)"
-
-// Match bean reference (Spring)
-// 匹配 bean 引用（Spring）
-"this(com.example.service.UserService)"
-
-// Match target object
-// 匹配目标对象
-"target(com.example.service.UserService)"
-
-// Match arguments
-// 匹配参数
-"args(String, ..)"
-"args(com.example.User)"
-
-// Methods with specific annotation
-// 带有特定注解的方法
-"@annotation(com.example.Transactional)"
-"@annotation(org.springframework.web.bind.annotation.PostMapping)"
+```text
+"execution(* *..*.*(..)) && within(*.Service)"   // AND — both must match / 都须匹配
+"execution(* *.Service.*(..)) || execution(* *.Repository.*(..))"  // OR — either / 任一
 ```
 
----
-
-## 📚 Examples / 示例
-
-### Example 1: Logging Aspect / 日志切面
-
-```rust
-use hiver_aop::{Aspect, Before, After};
-use tracing::{info, instrument};
-
-#[Aspect]
-struct LoggingAspect;
-
-impl LoggingAspect {
-    #[Before("execution(* com.example..*.*(..))")]
-    fn log_method_entry(&self, join_point: &JoinPoint) {
-        info!(
-            "Entering method: {} with args: {:?}",
-            join_point.method_name(),
-            join_point.args()
-        );
-    }
-
-    #[After("execution(* com.example..*.*(..))")]
-    fn log_method_exit(&self, join_point: &JoinPoint) {
-        info!(
-            "Exiting method: {}",
-            join_point.method_name()
-        );
-    }
-}
-```
-
-### Example 2: Transaction Management Aspect / 事务管理切面
-
-```rust
-use hiver_aop::{Aspect, Around};
-
-#[Aspect]
-struct TransactionAspect;
-
-impl TransactionAspect {
-    #[Around("execution(* com.example.service.*.*(..)) && @annotation(com.example.Transactional)")]
-    fn manage_transaction(&self, join_point: JoinPoint) -> Result<(), Error> {
-        // Begin transaction
-        // 开始事务
-        let tx = Transaction::begin()?;
-
-        match join_point.proceed() {
-            Ok(result) => {
-                tx.commit()?;
-                Ok(result)
-            }
-            Err(e) => {
-                tx.rollback()?;
-                Err(e)
-            }
-        }
-    }
-}
-```
-
-### Example 3: Caching Aspect / 缓存切面
-
-```rust
-use hiver_aop::{Aspect, Around};
-use std::collections::HashMap;
-
-#[Aspect]
-struct CachingAspect {
-    cache: HashMap<String, CachedValue>,
-}
-
-impl CachingAspect {
-    #[Around("execution(* com.example.repository.*.find*(..))")]
-    fn cache_result(&self, join_point: JoinPoint) -> Result<Option<Entity>, Error> {
-        let cache_key = format!("{:?}", join_point.args());
-
-        // Check cache
-        // 检查缓存
-        if let Some(value) = self.cache.get(&cache_key) {
-            return Ok(value.clone());
-        }
-
-        // Execute method
-        // 执行方法
-        let result = join_point.proceed()?;
-
-        // Cache result
-        // 缓存结果
-        self.cache.insert(cache_key, result.clone());
-
-        Ok(result)
-    }
-}
-```
-
-### Example 4: Security Aspect / 安全切面
-
-```rust
-use hiver_aop::{Aspect, Before};
-
-#[Aspect]
-struct SecurityAspect;
-
-impl SecurityAspect {
-    #[Before("execution(* com.example.controller.*.*(..))")]
-    fn check_authorization(&self, join_point: &JoinPoint) {
-        let user = get_current_user();
-
-        if !user.has_permission(join_point.method_name()) {
-            panic!("Unauthorized access to {}", join_point.method_name());
-        }
-    }
-}
-```
-
-### Example 5: Performance Monitoring / 性能监控
-
-```rust
-use hiver_aop::{Aspect, Around};
-use std::time::Instant;
-
-#[Aspect]
-struct PerformanceMonitoringAspect;
-
-impl PerformanceMonitoringAspect {
-    #[Around("execution(* com.example.service.*.*(..))")]
-    fn monitor_performance(&self, join_point: JoinPoint) -> Result<(), Error> {
-        let start = Instant::now();
-
-        let result = join_point.proceed();
-
-        let duration = start.elapsed();
-
-        if duration.as_millis() > 1000 {
-            warn!(
-                "Slow method: {} took {}ms",
-                join_point.method_name(),
-                duration.as_millis()
-            );
-        }
-
-        result
-    }
-}
-```
-
----
-
-## 🔀 Annotation vs Plain Rust / 注解版本 vs 原生 Rust
-
-### Logging Aspect Example / 日志切面示例
-
-#### ❌ Without Annotations (Plain Rust) / 不使用注解
-
-```rust
-// Must manually call logging before/after each method
-// 必须在每个方法前后手动调用日志记录
-struct UserService {
-    db: Database,
-}
-
-impl UserService {
-    async fn get_user(&self, id: i64) -> Result<Option<User>, Error> {
-        // Manual logging - repetitive and error-prone
-        // 手动日志记录 - 重复且容易出错
-        println!("Entering: get_user with id={}", id);
-
-        let result = self.db.find_user(id).await;
-
-        println!("Exiting: get_user");
-        result
-    }
-
-    async fn create_user(&self, user: User) -> Result<User, Error> {
-        println!("Entering: create_user with user={:?}", user);
-
-        let result = self.db.insert_user(&user).await?;
-
-        println!("Exiting: create_user");
-        Ok(result)
-    }
-
-    async fn update_user(&self, id: i64, user: User) -> Result<User, Error> {
-        println!("Entering: update_user with id={}, user={:?}", id, user);
-
-        let result = self.db.update_user(id, &user).await?;
-
-        println!("Exiting: update_user");
-        Ok(result)
-    }
-
-    async fn delete_user(&self, id: i64) -> Result<(), Error> {
-        println!("Entering: delete_user with id={}", id);
-
-        let result = self.db.delete_user(id).await;
-
-        println!("Exiting: delete_user");
-        result
-    }
-}
-
-// Problems:
-// - Logging code repeated in every method / 日志代码在每个方法中重复
-// - Easy to forget logging / 容易忘记记录日志
-// - Cannot centrally manage logging / 无法集中管理日志
-// - Mixes business logic with cross-cutting concerns / 混合业务逻辑和横切关注点
-```
-
-#### ✅ With Annotations (Hiver AOP) / 使用注解
-
-```rust
-use hiver_aop::{Aspect, Before, After};
-
-// Define aspect once - applies to all matching methods
-// 定义切面一次 - 应用于所有匹配的方法
-#[Aspect]
-struct LoggingAspect;
-
-impl LoggingAspect {
-    #[Before("execution(* UserService.*(..))")]
-    fn log_before(&self, join_point: &JoinPoint) {
-        println!("Entering: {}", join_point.method_name());
-    }
-
-    #[After("execution(* UserService.*(..))")]
-    fn log_after(&self, join_point: &JoinPoint) {
-        println!("Exiting: {}", join_point.method_name());
-    }
-}
-
-// Clean business logic - no logging code mixed in
-// 清晰的业务逻辑 - 没有混合日志代码
-struct UserService {
-    db: Database,
-}
-
-impl UserService {
-    async fn get_user(&self, id: i64) -> Result<Option<User>, Error> {
-        // Logging is applied automatically by AOP!
-        // 日志由 AOP 自动应用！
-        self.db.find_user(id).await
-    }
-
-    async fn create_user(&self, user: User) -> Result<User, Error> {
-        self.db.insert_user(&user).await
-    }
-
-    async fn update_user(&self, id: i64, user: User) -> Result<User, Error> {
-        self.db.update_user(id, &user).await
-    }
-
-    async fn delete_user(&self, id: i64) -> Result<(), Error> {
-        self.db.delete_user(id).await
-    }
-}
-
-// Benefits:
-// - Logging separated from business logic / 日志与业务逻辑分离
-// - Consistent logging across all methods / 所有方法的日志一致
-// - Easy to modify logging in one place / 在一个地方轻松修改日志
-// - Business logic remains clean / 业务逻辑保持清晰
-```
-
-**Code Reduction / 代码减少**: Eliminates 50%+ repetitive logging code / 消除 50%+ 的重复日志代码
-
----
-
-### Transaction Management Example / 事务管理示例
-
-#### ❌ Without Annotations / 不使用注解
-
-```rust
-impl PaymentService {
-    async fn process_payment(&self, from: i64, to: i64, amount: i64) -> Result<(), Error> {
-        // Manual transaction management - error-prone
-        // 手动事务管理 - 容易出错
-        let tx = self.begin_transaction().await?;
-
-        match self.debit(&tx, from, amount).await {
-            Ok(_) => match self.credit(&tx, to, amount).await {
-                Ok(_) => {
-                    tx.commit().await?;
-                    Ok(())
-                }
-                Err(e) => {
-                    tx.rollback().await?;
-                    Err(e)
-                }
-            }
-            Err(e) => {
-                tx.rollback().await?;
-                Err(e)
-            }
-        }
-    }
-
-    // Must repeat this pattern for every transactional method
-    // 必须为每个事务方法重复此模式
-    async fn transfer_funds(&self, from: i64, to: i64, amount: i64) -> Result<(), Error> {
-        let tx = self.begin_transaction().await?;
-        // ... same pattern ...
-    }
-}
-```
-
-#### ✅ With Annotations / 使用注解
-
-```rust
-use hiver_aop::{Aspect, Around};
-use hiver_data_annotations::Transactional;
-
-#[Aspect]
-struct TransactionAspect;
-
-impl TransactionAspect {
-    #[Around("execution(* PaymentService.*(..))")]
-    async fn manage_transaction(&self, join_point: JoinPoint) -> Result<(), Error> {
-        let tx = self.begin_transaction().await?;
-
-        match join_point.proceed().await {
-            Ok(_) => {
-                tx.commit().await?;
-                Ok(())
-            }
-            Err(e) => {
-                tx.rollback().await?;
-                Err(e)
-            }
-        }
-    }
-}
-
-impl PaymentService {
-    // Transaction is managed automatically!
-    // 事务自动管理！
-    async fn process_payment(&self, from: i64, to: i64, amount: i64) -> Result<(), Error> {
-        self.debit(from, amount).await?;
-        self.credit(to, amount).await?;
-        Ok(())
-    }
-}
-```
-
----
-
-### Comparison Table / 对比表
-
-| Feature / 功能 | Plain Rust / 原生 Rust | With AOP Annotations / 使用 AOP 注解 |
-|----------------|----------------------|----------------------------------|
-| **Code Duplication** / 代码重复 | ❌ High / 高 | ✅ Low / 低 |
-| **Separation of Concerns** / 关注点分离 | ❌ Mixed / 混合 | ✅ Separated / 分离 |
-| **Maintainability** / 可维护性 | ❌ Changes in many places / 多处修改 | ✅ Change in one place / 一处修改 |
-| **Business Logic Clarity** / 业务逻辑清晰度 | ❌ Obsured by cross-cutting code / 被横切代码模糊 | ✅ Clear and focused / 清晰专注 |
-| **Consistency** / 一致性 | ❌ Easy to miss / 容易遗漏 | ✅ Automatically applied / 自动应用 |
-| **Flexibility** / 灵活性 | ❌ Hard to modify behavior | ✅ Easy to change aspect / 易于修改切面 |
+See `PointcutExpression` in the [API docs](https://docs.rs/hiver-aop) for the
+full matching semantics.
 
 ---
 
 ## 🧪 Testing / 测试
 
-Run tests:
+Run the unit and runtime tests:
 
 ```bash
 cargo test --package hiver-aop
 ```
 
-Run examples:
+Downstream compile regression tests (trybuild) guard the documented API shape
+against breaking again:
+
+```bash
+cargo test --package hiver-aop --test downstream_compile
+```
+
+Run the example:
 
 ```bash
 cargo run --package hiver-aop --example logging_aspect
@@ -595,7 +288,7 @@ cargo run --package hiver-aop --example logging_aspect
 ## 📖 Documentation / 文档
 
 - **API Documentation**: [docs.rs/hiver-aop](https://docs.rs/hiver-aop)
-- **Spring AOP Documentation**: [https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#aop](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#aop)
+- **Spring AOP Reference**: [https://docs.spring.io/spring-framework/reference/core/aop.html](https://docs.spring.io/spring-framework/reference/core/aop.html)
 
 ---
 
@@ -604,19 +297,11 @@ cargo run --package hiver-aop --example logging_aspect
 ### Java / Spring AOP
 
 ```java
-@Aspect
-@Component
+@Aspect @Component
 public class LoggingAspect {
-    private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
-
     @Before("execution(* com.example..*.*(..))")
     public void logBefore(JoinPoint joinPoint) {
         logger.info("Entering: {}", joinPoint.getSignature().toShortString());
-    }
-
-    @After("execution(* com.example..*.*(..))")
-    public void logAfter(JoinPoint joinPoint) {
-        logger.info("Exiting: {}", joinPoint.getSignature().toShortString());
     }
 }
 ```
@@ -624,21 +309,15 @@ public class LoggingAspect {
 ### Rust / Hiver AOP
 
 ```rust
-use hiver_aop::{Aspect, Before, After};
-use tracing::info;
+use hiver_aop::{aspect, before, JoinPoint};
 
-#[Aspect]
+#[aspect]
 struct LoggingAspect;
 
 impl LoggingAspect {
-    #[Before("execution(* com.example..*.*(..))")]
+    #[before("execution(* *..*.*(..))")]
     fn log_before(&self, join_point: &JoinPoint) {
-        info!("Entering: {}", join_point.method_name());
-    }
-
-    #[After("execution(* com.example..*.*(..))")]
-    fn log_after(&self, join_point: &JoinPoint) {
-        info!("Exiting: {}", join_point.method_name());
+        println!("Entering: {}", join_point.method_name());
     }
 }
 ```
@@ -653,9 +332,3 @@ Licensed under either of:
 - MIT license ([LICENSE-MIT](../../LICENSE-MIT) or https://opensource.org/licenses/MIT)
 
 at your option. / 由您选择。
-
----
-
-**Built with ❤️ for Java developers transitioning to Rust**
-
-**为从 Java 转向 Rust 的开发者构建 ❤️**

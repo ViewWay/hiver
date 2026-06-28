@@ -1,0 +1,5 @@
+error[E0432]: unresolved import `hiver_aop::NonExistentAdvice`
+  --> tests/ui/wrong_macro_name_fail.rs:11:5
+   |
+11 | use hiver_aop::NonExistentAdvice;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no `NonExistentAdvice` in the root
