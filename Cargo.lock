@@ -5984,6 +5984,7 @@ version = "0.1.0-alpha.6"
 dependencies = [
  "anyhow",
  "arc-swap",
+ "async-channel",
  "async-executor",
  "async-io 2.6.0",
  "async-net",
