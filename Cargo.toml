@@ -123,7 +123,7 @@ serde_json = "1.0"
 serde_urlencoded = "0.7"
 
 # Bytes & Buffers / 字节和缓冲区
-bytes = "1.9"
+bytes = "1.11"
 bytes-utils = "0.1"
 
 # Multipart / Multipart
