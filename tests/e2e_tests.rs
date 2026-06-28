@@ -491,6 +491,14 @@ mod http_server_e2e
         time::Duration,
     };
 
+    // Distinct port per example binary so the two e2e modules (this and
+    // `annotated_app_e2e`) can run concurrently under `cargo test`'s default
+    // multi-threaded runner without racing on the same listener.
+    // 为每个示例二进制分配不同端口,使两个 e2e 模块(本模块与
+    // `annotated_app_e2e`)可在 `cargo test` 默认多线程运行器下并发运行,
+    // 而不在同一监听器上竞争。
+    const PORT: u16 = 8091;
+
     /// Build the example binary on first use and return its path.
     /// 首次使用时构建示例二进制并返回其路径。
     fn example_bin() -> PathBuf
@@ -522,7 +530,13 @@ mod http_server_e2e
     fn spawn_server() -> Child
     {
         let bin = example_bin();
+        let addr = format!("127.0.0.1:{PORT}");
         let child = Command::new(&bin)
+            // Pin this server to our dedicated port so it cannot collide with
+            // `annotated_app_example` running in parallel.
+            // 将本服务端固定到专用端口,使其不会与并发运行的
+            // `annotated_app_example` 冲突。
+            .env("HIVER_SERVER_PORT", PORT.to_string())
             .stdout(Stdio::null())
             .stderr(Stdio::null())
             .spawn()
@@ -535,7 +549,7 @@ mod http_server_e2e
         for _ in 0..100
         {
             match TcpStream::connect_timeout(
-                &"127.0.0.1:8080".parse().unwrap(),
+                &addr.parse().unwrap(),
                 Duration::from_millis(200),
             )
             {
@@ -543,7 +557,7 @@ mod http_server_e2e
                 Err(_) => thread::sleep(Duration::from_millis(50)),
             }
         }
-        panic!("server did not start listening on 127.0.0.1:8080");
+        panic!("server did not start listening on {addr}");
     }
 
     fn http_get(path: &str) -> String
@@ -554,7 +568,7 @@ mod http_server_e2e
         // 服务端运行于自定义忙轮询 runtime;连接可能需要重试若干次
         // (在 macOS 上 connect 可能瞬时返回 WouldBlock)。使用有界读取
         // (非 read_to_end),使异常服务端无法挂起我们。
-        let addr: std::net::SocketAddr = "127.0.0.1:8080".parse().unwrap();
+        let addr: std::net::SocketAddr = format!("127.0.0.1:{PORT}").parse().unwrap();
         let mut last = String::new();
         for _ in 0..40
         {
@@ -630,6 +644,14 @@ mod annotated_app_e2e
         time::Duration,
     };
 
+    // Distinct port so this module never contends with `http_server_e2e` when
+    // both run concurrently. The `#[hiver_main]` runner maps `HIVER_SERVER_PORT`
+    // → `server.port`, so the env var below overrides the bind address.
+    // 独立端口,使本模块在与 `http_server_e2e` 并发运行时不与之争用。
+    // `#[hiver_main]` 运行器将 `HIVER_SERVER_PORT` → `server.port`,故下面的
+    // 环境变量会覆盖绑定地址。
+    const PORT: u16 = 8092;
+
     /// Path to the annotated example binary (built by the test harness).
     /// 注解示例二进制路径(由测试工具构建)。
     fn example_bin() -> PathBuf
@@ -657,13 +679,15 @@ mod annotated_app_e2e
     fn spawn_app() -> Child
     {
         let bin = example_bin();
+        let addr = format!("127.0.0.1:{PORT}");
         let child = Command::new(&bin)
+            .env("HIVER_SERVER_PORT", PORT.to_string())
             .stdout(Stdio::null())
             .stderr(Stdio::null())
             .spawn()
             .unwrap_or_else(|e| panic!("failed to spawn {}: {e}", bin.display()));
 
-        let addr: std::net::SocketAddr = "127.0.0.1:8080".parse().unwrap();
+        let addr: std::net::SocketAddr = addr.parse().unwrap();
         for _ in 0..100
         {
             match TcpStream::connect_timeout(&addr, Duration::from_millis(200))
@@ -672,12 +696,12 @@ mod annotated_app_e2e
                 Err(_) => thread::sleep(Duration::from_millis(50)),
             }
         }
-        panic!("annotated app did not start listening on 127.0.0.1:8080");
+        panic!("annotated app did not start listening on {addr}");
     }
 
     fn http_get(path: &str) -> String
     {
-        let addr: std::net::SocketAddr = "127.0.0.1:8080".parse().unwrap();
+        let addr: std::net::SocketAddr = format!("127.0.0.1:{PORT}").parse().unwrap();
         let mut last = String::new();
         for _ in 0..40
         {

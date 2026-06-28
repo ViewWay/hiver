@@ -20,6 +20,13 @@
 //! curl http://127.0.0.1:8080/hello
 //! curl http://127.0.0.1:8080/echo
 //! ```
+//!
+//! Override the port with `HIVER_SERVER_PORT` (defaults to 8080):
+//! 经 `HIVER_SERVER_PORT` 覆盖端口(默认 8080):
+//!
+//! ```bash
+//! HIVER_SERVER_PORT=9090 cargo run -p hiver-examples --bin http_server_example
+//! ```
 
 use hiver_http::{IntoResponse, Request, Response, Result as HttpResult, StatusCode};
 use hiver_macros::get;
@@ -47,8 +54,23 @@ fn main() -> std::io::Result<()>
 {
     let mut runtime = Runtime::new()?;
 
-    println!("Hiver HTTP server starting on 127.0.0.1:8080 ...");
-    println!("Try: curl http://127.0.0.1:8080/hello");
+    // Allow tests / operators to pick a distinct port so two example servers
+    // (this and `annotated_app_example`) can run concurrently without racing
+    // on 8080. Honors the same `HIVER_SERVER_PORT` key the starter config
+    // already maps to `server.port`. Defaults to 8080 to keep the docs'
+    // `curl http://127.0.0.1:8080/...` examples working unchanged.
+    // 允许测试/运维选择不同端口,使两个示例服务端(本示例与
+    // `annotated_app_example`)可并发运行而不在 8080 上竞争。沿用 starter 配置
+    // 已映射到 `server.port` 的 `HIVER_SERVER_PORT` 键。默认 8080,保持文档中
+    // `curl http://127.0.0.1:8080/...` 示例不变即可工作。
+    let port: u16 = std::env::var("HIVER_SERVER_PORT")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(8080);
+    let addr = format!("127.0.0.1:{port}");
+
+    println!("Hiver HTTP server starting on {addr} ...");
+    println!("Try: curl http://{addr}/hello");
 
     runtime.block_on(async move {
         // Build the router standalone via the builder API. (The `#[get]` macro
@@ -70,7 +92,7 @@ fn main() -> std::io::Result<()>
 
         let _warmup: Response = "warmup".to_string().into_response();
 
-        let server = hiver_http::Server::bind("127.0.0.1:8080");
+        let server = hiver_http::Server::bind(&addr);
         let _: HttpResult<()> = async { server.run(router).await }.await;
     })?;
 

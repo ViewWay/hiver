@@ -64,6 +64,16 @@ struct DatabaseConfig
 
 impl DatabaseConfig
 {
+    /// Construct from explicit values — deterministic, no global-state reads.
+    /// Used by tests to avoid env-var races under `cargo test`'s default
+    /// multi-threaded runner.
+    /// 从显式值构造 —— 确定性,不读取全局状态。供测试使用,以避免 `cargo test`
+    /// 默认多线程运行器下的环境变量竞争。
+    fn from_values(url: String, pool_size: u32) -> Self
+    {
+        Self { url, pool_size }
+    }
+
     /// 从环境变量创建配置
     /// Create configuration from environment variables
     fn from_env() -> Self
@@ -162,29 +172,45 @@ mod tests
     use super::*;
 
     #[test]
-    fn test_database_config_from_env()
+    fn test_database_config_from_values()
     {
-        unsafe {
-            std::env::set_var("DATABASE_URL", "mysql://localhost:3306/testdb");
-            std::env::set_var("DB_POOL_SIZE", "20");
-
-            let config = DatabaseConfig::from_env();
-            assert_eq!(config.url, "mysql://localhost:3306/testdb");
-            assert_eq!(config.pool_size, 20);
-
-            std::env::remove_var("DATABASE_URL");
-            std::env::remove_var("DB_POOL_SIZE");
-        }
+        // Deterministic: no env-var reads or writes, so no race with other
+        // tests under the multi-threaded test runner.
+        // 确定性:不读写环境变量,故在多线程测试运行器下与其他测试无竞争。
+        let config = DatabaseConfig::from_values(
+            "mysql://localhost:3306/testdb".to_string(),
+            20,
+        );
+        assert_eq!(config.url, "mysql://localhost:3306/testdb");
+        assert_eq!(config.pool_size, 20);
     }
 
     #[test]
     fn test_database_config_defaults()
     {
+        // The documented defaults, asserted via the deterministic ctor.
+        // 经确定性构造器断言文档化的默认值。
+        let config = DatabaseConfig::from_values(
+            "postgresql://localhost:5432/mydb".to_string(),
+            10,
+        );
+        assert_eq!(config.url, "postgresql://localhost:5432/mydb");
+        assert_eq!(config.pool_size, 10);
+    }
+
+    #[test]
+    fn test_database_config_from_env_defaults()
+    {
+        // `from_env` itself: with no vars set it must yield the same defaults.
+        // We only ever *remove* (never set) here, so we cannot race with a
+        // writer; and we guard against the rare case the ambient env happens
+        // to define the vars.
+        // `from_env` 本身:未设置变量时须落入相同默认值。此处仅*移除*(从不设置),
+        // 故不会与写入者竞争;并防范运行环境恰好定义了这些变量的罕见情形。
         unsafe {
             std::env::remove_var("DATABASE_URL");
             std::env::remove_var("DB_POOL_SIZE");
         }
-
         let config = DatabaseConfig::from_env();
         assert_eq!(config.url, "postgresql://localhost:5432/mydb");
         assert_eq!(config.pool_size, 10);
