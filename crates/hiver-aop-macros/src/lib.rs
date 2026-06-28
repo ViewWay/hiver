@@ -1,10 +1,16 @@
 //! AOP procedural macros for Hiver Framework.
 //! Hiver框架的AOP过程宏。
 //!
-//! Provides `#[Aspect]`, `#[Before]`, `#[After]`, `#[Around]`,
-//! `#[AfterReturning]`, `#[AfterThrowing]`, `#[Pointcut]`.
+//! Provides `aspect`, `before`, `after`, `around`, `after_returning`,
+//! `after_throwing`, and `pointcut` attribute macros. They are usually imported
+//! via the `hiver_aop` facade crate, which additionally re-exports them under
+//! Spring-familiar uppercase aliases (`Aspect`, `Before`, `After`, `Around`,
+//! `AfterReturning`, `AfterThrowing`, `Pointcut`).
 //!
-//! Usually imported via `hiver_aop` re-exports rather than directly.
+//! 提供过程宏：`aspect`、`before`、`after`、`around`、`after_returning`、
+//! `after_throwing`、`pointcut`。通常通过 `hiver_aop` 门面 crate 导入，
+//! 该 crate 还会以 Spring 风格的大写别名重新导出
+//! （`Aspect`、`Before`、`After`、`Around`、`AfterReturning`、`AfterThrowing`、`Pointcut`）。
 
 #![warn(missing_docs)]
 #![warn(unreachable_pub)]
